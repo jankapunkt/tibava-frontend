@@ -1,68 +1,29 @@
-# TIB-AV-A Backend
+# TIB-AV-A Frontend
 
 ## TODOs
 
-- [x] Face Detection with DLib
-- [ ] Face Detection with *RetinaFace* ([Repo](https://github.com/deepinsight/insightface/tree/master/detection/RetinaFace))
-- [ ] Shot Boundary Detection with *TransNet v2* ([Repo](https://github.com/soCzech/TransNetV2)) 
-- [ ] Shot Type Classification
+- [x] Initialize layout for video analysis
+- [x] Develop components for face detection(rectangles), graphs for face area visualization and other UI starter inputs
+- [x] Bind graph and rectangles with data from backend
+- [ ] Face rectangles and current play position pointer alignemnt
+- [] Dockerize with suitable base Image
+- [ ] Loading and computational blocker to show the progress
+- []  Checkbox bindings
 
 ## Installation
 
-To install and start the backend run:
+
+You can manually start the frontend with:
 
 ```bash
-docker-compose -f "docker-compose.yml" up -d --build
+npm install
+npm start
 ```
 
-You can manually start the backend with:
 
-```bash
-python backend.py
-```
-
-## REST API
-
-For reference you can check `test_backend.py`. Functions were tested using a local server with `<base_url> = http://128.0.0.1:5000/`
-
-### Sanity Check
+### Current naive state:
 
 ```
-URL: <base_url>/ping
+Click on respective video link to populate resutls from backend
 ```
 
-#### `GET`
-
-Sanity check with: `<base_url>/ping` should return `pong!`
-
-### Face Detection
-
-```
-URL: <base_url>/detect_faces/<int:video_id>
-Parameters
-----------
-video_id : int
-    The identifier of the video
-```
-
-#### `GET` (not implemented yet)
-
-Get precalculated face detection results of a video with a specified `video_id` with: `<base_url>/detect_faces/<int:video_id>`
-
-#### `PUT`
-
-```
-Parameters
-----------
-title : str
-    The title of the video
-path : str
-    The path to the video file
-max_frames : int, optional
-    The maximum number of video frames to process (do not specify if the whole video should be processed)
-```
-
-Run and store face detection of a video with a `video_id`, `title`, and `path` with: `<base_url>/detect_faces/<int:video_id>` and `params={title: <str:title>, path: <str:path>}`.
-
-Optionally you can limit the number of video frames to process using:
-`params={title: <str:title>, path: <str:path>, max_frames: <int:max_frames>}`
