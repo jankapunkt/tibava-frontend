@@ -11,20 +11,29 @@ import {
   YAxis
 } from "recharts";
 import { getPngData } from "recharts-to-png";
-
+import { CSVLink, CSVDownload } from "react-csv";
 export const FaceAnalysisGraph = (args) => {
 
   const [containerRef, { width: containerWidth }] = useMeasure();
   // The chart that we want to download the PNG for.
   const [chart, setChart] = React.useState();
 
-  const handleDownload = React.useCallback(async () => {
+  const handleDownloadPNG = React.useCallback(async () => {
     // Send the chart to getPngData
     const pngData = await getPngData(chart);
     // Use FileSaver to download the PNG
     FileSaver.saveAs(pngData, "videofaceanalysis.png");
   }, [chart]);
-    const colorschemes = ["#C49500","#060606","#0F7800","#AF1F00","#7B7878","#C49500","#588A00","#0F7800","#007245","#008F91","#004091","#040091","#420091","#7F0091","#91004B","#910025","#317A9A"];
+   const handleDownloadCSV = React.useCallback(async () => {
+    console.log("chart object: ")
+    console.log(chart)
+    // Send the chart to getPngData
+    const pngData = await getPngData(chart);
+    // Use FileSaver to download the PNG
+    FileSaver.saveAs(pngData, "videofaceanalysis.png");
+  }, [chart]);
+
+  const colorschemes = ["#C49500","#060606","#0F7800","#AF1F00","#7B7878","#C49500","#588A00","#0F7800","#007245","#008F91","#004091","#040091","#420091","#7F0091","#91004B","#910025","#317A9A"];
 
   var data = args.faceAreaArrForGraph;
   function getRandomColor() {
@@ -56,7 +65,7 @@ export const FaceAnalysisGraph = (args) => {
             height={300}
             width={700}
           >
-            <XAxis dataKey="name" />
+            <XAxis dataKey="frameNum" />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
             <Tooltip />
@@ -64,8 +73,10 @@ export const FaceAnalysisGraph = (args) => {
             {multiLineForGraph}
           </LineChart>
           <span style={{ float: 'left' }}>
-            <button onClick={handleDownload}>Download</button>
+            <button className="btn-stl bg-cb-bl" onClick={handleDownloadPNG}>Download as PNG</button>
           </span>
+          <span style={{ float: 'right' }}>
+          <CSVLink  className="btn-stl bg-cb-bl" data={data} filename={"face-detections.csv"}>Download CSV</CSVLink> </span>
         </>
   );
 };
