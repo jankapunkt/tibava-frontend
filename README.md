@@ -12,7 +12,7 @@
 - [ ] Loading and computational blocker to show the progress
 - [ ] dynamic face rectangle location align if browser resized
 - [ ] Zoom in video content and annotaiotns accoridngly
-- [] story lines with shot boundaries and with color scheme
+- [ ] story lines with shot boundaries and with color scheme
 
 
 ## Installation
