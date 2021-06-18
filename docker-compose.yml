@@ -13,8 +13,8 @@ services:
           context: .
           dockerfile: ./Dockerfile
         ports:
-          - 3000:3000
+          - 8080:8080
         volumes:
           - type: bind
             source: ./media
-            target: /app/src/media
+            target: /app/src/assets

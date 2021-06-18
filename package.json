@@ -1,51 +1,48 @@
 {
-  "name": "tibava",
+  "name": "frontend-vue3",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.6.3",
-    "file-saver": "^2.0.5",
-    "react": "^17.0.1",
-    "react-bootstrap-range-slider": "^2.0.2",
-    "react-collapse-pane": "^1.4.2",
-    "react-columns": "^1.2.1",
-    "react-csv": "^2.0.3",
-    "react-dom": "^17.0.1",
-    "react-player": "^2.8.2",
-    "react-resizable-rotatable-draggable": "^0.2.0",
-    "react-scripts": "4.0.1",
-    "react-timeline-range-slider": "^1.1.2",
-    "react-use": "^17.1.1",
-    "recharts": "^2.0.6",
-    "recharts-to-png": "^0.8.2",
-    "styled-components": "^5.2.1",
-    "video-react": "^0.14.1",
-    "web-vitals": "^0.2.4"
-  },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "dependencies": {
+    "@popperjs/core": "^2.9.2",
+    "axios": "^0.21.1",
+    "bootstrap-icons": "^1.5.0",
+    "bootstrap-vue": "^2.21.2",
+    "canvasjs": "^1.8.3",
+    "chart.js": "^3.3.2",
+    "chokidar": "^3.5.2",
+    "core-js": "^3.6.5",
+    "filepond": "^4.28.2",
+    "filepond-plugin-file-validate-type": "^1.2.6",
+    "vue": "^2.6.11",
+    "vue-chartjs": "^3.5.1",
+    "vue-filepond": "^7.0.0",
+    "vue-router": "^3.2.0",
+    "vue-trend-chart": "^0.15.3",
+    "vuex": "^3.4.0"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@types/canvasjs": "^1.9.6",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.1.0",
+    "bootstrap": "^4.6.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "jquery": "^3.6.0",
+    "node-sass": "^4.14.1",
+    "popper.js": "^1.16.1",
+    "prettier": "^2.2.1",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11"
   }
 }
