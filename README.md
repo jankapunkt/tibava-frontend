@@ -20,5 +20,5 @@ You can manually start the frontend with:
 
 ```bash
 npm install
-npm start
+npm run serve
 ```
