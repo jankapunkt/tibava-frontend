@@ -5,7 +5,7 @@
 /media
 
 # public assets 
-/pulic/*.mp4
+/public/*.mp4
 
 # dependencies
 /node_modules
