@@ -1,9 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # media
-/src/assets/Crash_Course_Engineering_Preview_-_English.mp4
-/src/assets/Electronic_Computing__Crash_Course_Computer_Science_2_-_English_csyt.mp4
+/src/assets/*.mp4
 /media
+
+# public assets 
+/pulic/*.mp4
 
 # dependencies
 /node_modules
