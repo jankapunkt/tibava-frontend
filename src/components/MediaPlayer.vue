@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h2 class="text-color pd-player-tittle">Crash Course Engineering Preview English</h2>
-        <div id="media_player_div"><video ref="media_player" v-on:timeupdate="onPlayTimeChange" class="no-outline" id="media_player"  width="670" height="450"  src=".././assets/Crash_Course_Engineering_Preview_-_English.mp4" controls></video></div>
+        <h2 class="text-color pd-player-tittle text-align-left">{{vidName}}</h2>
+        <div id="media_player_div"><video ref="media_player" v-on:timeupdate="onPlayTimeChange" class="no-outline" id="media_player"  width="550" height="350"  :src="vidFileSrc" controls></video></div>
     </div>
 </template>
 
@@ -9,7 +9,18 @@
 //import axios from "axios";
 
 export default {
-  name: "MediPlayerView",
+  name: "MediaPlayerView",
+  data() {  
+        return {
+            vidFileTitle:"",
+            vidFileSrc: "f9_scene1.mp4",
+            vidName : "Fast & Furious 9 Trailer",
+            publicPath: process.env.BASE_URL
+        }
+  },
+  created: function() {
+        this.$root.$refs.MediaPlayerView = this;
+    },
   methods: {
       onPlayTimeChange: function (event){
         this.$root.$refs.ShotBoundaryView.onPlayTimeChange(event);

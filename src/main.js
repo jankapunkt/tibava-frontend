@@ -9,13 +9,13 @@ import "bootstrap";
 //import 'jquery'; 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
+//import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
 import TrendChart from "vue-trend-chart";
 
 Vue.use(TrendChart);
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
+//Vue.use(BootstrapVue)
+//Vue.use(BootstrapVueIcons)
 
 Vue.config.productionTip = false;
 

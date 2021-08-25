@@ -32,6 +32,9 @@
 export default {
   name: "MetadataView",
   props: ["vidMetadata"],
+  created: function() {
+        this.$root.$refs.MetadataView = this;
+    },
   data() {
         return {
             curMetadata:{ 'codec': '', 'duration': 0, 'ffmpeg_version': '', 'fps': 24.0, 'nframes': 'inf', 'path': '.mp4', 'pix_fmt': '', 'plugin': 'ffmpeg', 'size': [1280, 720], 'source_size': [1280, 720], 'title': '' },
@@ -40,9 +43,6 @@ export default {
   methods: {
       onPlayTimeChange() {
       }
-  },
-  updated:function() {
-      this.curMetadata = this.vidMetadata;
   }
 }
 </script>

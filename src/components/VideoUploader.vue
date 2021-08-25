@@ -1,29 +1,7 @@
 <template>
     <div>
         <div class="container text-align-left">
-            <div class="row">
-                <h4>Video Analysis Queue</h4>
-                <table width="100%" class="text-color">
-                    <tbody>
-                        <tr class="border-down">
-                            <th class="text-align-left">Video File</th>
-                            <th class="text-align-left">Video Extention</th>
-                            <th class="text-align-left">Status</th>
-                            <th class="text-align-left">File Location</th>
-                            <th class="text-align-left">Actions</th>
-                        </tr>
-                        <tr class="border-down" height="40px">
-                            <th class="text-align-left">Crash Course Engineering Preview English</th>
-                            <th class="text-align-left">*.mp4</th>
-                            <th class="text-align-left"><i class="fa fa-spinner fa-pulse fa-lg"></i></th>
-                            <th class="text-align-left">https://127.0.0.1:21/videos/</th>
-                            <th class="text-align-left"><a href="#">Process</a> | <a href="#">Load</a></th>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <br/>
-            <br/>
+            
 <!--             <div class="row">
                 <div class="col-sm-10">
                     <button class="btn btn-primary" id="videoFilebtn"  @click="onFileUpload2($event)">Upload</button>
@@ -31,9 +9,9 @@
                 </div>
             <br/> -->
             <div class="row">
-                <form id="upload_form" enctype="multipart/form-data" method="post">
+                <form id="upload_form" enctype="multipart/form-data">
                     <div class="col-sm-12">
-                        <input type="file" name="file1" id="file1" @change="uploadFile"><br>
+                        <input type="file" name="file1" id="file1" @change="uploadFile" accept="video/*"><br>
                         <progress id="progressBar" value="0" max="100" style="width:1100px;"></progress>
                         <h3 id="status"></h3>
                         <p id="loaded_n_total"></p>
@@ -54,7 +32,7 @@
                     v-on:init="handleFilePondInit"/>
                 </div> -->
                 <div class="col-sm-12">
-                    <form id="upload_form_2">
+                    <div id="upload_form_2">
                         <div class="form-group row">
                             <label for="title" class="col-sm-2 col-form-label">Title</label>
                             <div class="col-sm-10">
@@ -84,26 +62,26 @@
                             <div class="col-sm-10">
                                 <select class="custom-select" id="licence" required>
                                 <option value="">Select Licence</option>
-                                <option value="1">licence 1</option>
-                                <option value="2">licence 2</option>
-                                <option value="3">licence 3</option>
+                                <option value="CC-BY-2.0">CC-BY-2.0</option>
+                                <option value="CC-SA">CC-SA</option>
+                                <option value="CC-NC">CC-NC</option>
                                 </select>
                             </div>
                             <div class="invalid-feedback">This value is not valid</div>
                         </div>
                         <div class="form-group row">
-                            <label for="idetifier" class="col-sm-2 col-form-label">Identifiers</label>
+                            <label for="identifier" class="col-sm-2 col-form-label">Identifiers</label>
                             <div class="col-sm-10">
-                            <input class="form-control" id="idetifier" placeholder="Identifiers DOI or URL">
+                            <input class="form-control" id="identifier" placeholder="Identifiers DOI or URL">
                             </div>
                         </div>
-                        <div class="form-group row">
+<!--                         <div class="form-group row">
                             <label for="releaseDate" class="col-sm-2 col-form-label">Release Date</label>
                             <div class="col-sm-10">
                             <input type="date" class="form-control" id="releaseDate" placeholder="Release Date">
                             </div>
-                        </div>
-                        <div class="form-group row">
+                        </div> -->
+<!--                         <div class="form-group row">
                             <div class="col-sm-2">Select Analysis</div>
                             <div class="col-sm-10">
                             <div class="form-check">
@@ -137,14 +115,42 @@
                                 </label>
                             </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form-group row">
                             <div class="col-sm-10">
                                 <button class="btn btn-primary" v-on:click="onFormSubmit">Submit</button>
                             </div>
                         </div>
-                        </form>
+                        </div>
                 </div>
+            </div>
+
+            <br/>
+            <br/>
+            <div class="row">
+                <h4>Video Analysis Queue</h4>
+                <table width="100%" class="text-color">
+                    <tbody>
+                        <tr class="border-down">
+                            <th class="text-align-left">Title</th>
+                            <th class="text-align-left">Series</th>
+                            <th class="text-align-left">Owner</th>
+                            <th class="text-align-left">File Name</th>
+                            <th class="text-align-left">Status</th>
+                            <th class="text-align-left">Process</th>
+                            <th class="text-align-left">Remove</th>
+                        </tr>
+                        <tr v-for="vid in videos" :key="vid[0]" class="border-down" height="40px">
+                            <th class="text-align-left">{{vid[1]}}</th>
+                            <th class="text-align-left">{{vid[2]}}</th>
+                            <th class="text-align-left">{{vid[3]}}</th>
+                            <th class="text-align-left">{{vid[10]}}</th>
+                            <th class="text-align-left" id="status_icon"><i class="fa fa-spinner fa-pulse fa-lg"></i></th>
+                            <th class="text-align-left"><a href="#" v-on:click="processVideo(vid[0],vid[10])">Process</a> | <a href="#" v-on:click="loadVideo(vid[0])">Load</a></th>
+                            <th class="text-align-left" v-on:click="deleteVideo(vid[0])"><i class="fa fa-trash fa-lg red"></i></th>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -156,22 +162,82 @@ import axios from "axios";
 export default {
   name: "VideoUploaderView",
   data: function() {
-        return { myFiles: "empty" };
+        return { myFiles: "empty",
+                 dbServerLink:"http://localhost:5888/",
+                 videos : [["769c0625-7438-4c13-8517-848ca7a7c989", "f9 movie scene", "Education-101", "JAG", "junaidghauri205@gmail.com", "1", "Education-101-1", "Wed, 21 Jul 2021 08:08:38 GMT", ".\\videos", null, "f9_scene1.mp4"]],
+                 };
     },
   methods: {
     handleFilePondInit: function() {
         console.log('FilePond has initialized');
     },
+    processVideo: function(id,fileName) {
+        console.log("in processVideo id: "+id)
+        console.log("in processVideo file name: "+fileName);
+        //window.location.href
+        //document.getElementById("media_player").src = window.location.href+"media/f9_scene1.9287840e.mp4";
+        console.log("in processVideo this.$root.$refs.MediaPlayerView.$refs: "+this.$root.$refs.MediaPlayerView.$refs);
+    },
+    loadVideo: function(id) {
+        console.log("in loadVideo"+id);
+    },
+    deleteVideo: function(id) {
+        console.log("in deleteVideo"+id);
+        var payload = {"id":id};
+        axios.post(this.dbServerLink+"deleteVideo",payload).then((res) => {
+            console.log("on: deleteVideo: ");
+            console.log(res);
+            if(res.data["status"] == 200){
+                console.log("deleteVideo Successfully :)");
+                this.getAllVideos();
+            }else{
+                console.log("Not deleteVideo Successfull :(");
+            }
+        });
+    },
+    getAllVideos: function() {
+        axios.post(this.dbServerLink+"getAllVideoRecord").then((res) => {
+            console.log("on: getAllVideoRecord: ");
+            console.log(res);
+            if(res.data["status"] == 200){
+                console.log("saved Successfully :)");
+                this.videos = res.data.result;
+            }else{
+                console.log("Not Successfull :(");
+            }
+        });
+    },
     onFormSubmit: function() {
         var allInputs = document.getElementById("upload_form_2").getElementsByTagName("input");
         console.log('in submitted: ',allInputs);
-        var allInputsArr = new Array();
+        var allInputsArr = {};
         for(var i=0;i<allInputs.length;i++){
-            allInputsArr.push({"id":allInputs[0].id,"value":allInputs[0].value});
+            if(allInputs[i].type==="checkbox"){
+                allInputsArr[allInputs[i].id] = allInputs[i].checked;
+            }else{
+                allInputsArr[allInputs[i].id] = allInputs[i].value;
+            }
+            
         }
-        axios.post("http://localhost:5000/"+"saveVideoFormalMetadata", { "user_id": "junaid","videoFormalMetadata":allInputsArr,"timeStamp":new Date().getTime()}).then((res) => {
-            console.log("on: saveVideoFormalMetadata: ");
+        var file = document.getElementById("file1").files[0];
+        if(file){
+            allInputsArr["video_file_name"] = file.name;
+        }else{
+            alert("video file not selected!!!");
+        }
+        allInputsArr["licence"] = document.getElementById("licence").value;
+        let payload = { "user_id": "junaid","videoFormalMetadata":allInputsArr};
+        console.log('Now link is saveVideoRecord');
+        console.log(this.dbServerLink+"saveVideoRecord");
+        axios.post(this.dbServerLink+"saveVideoRecord", payload).then((res) => {
+            console.log("on: saveVideoRecord: ");
             console.log(res);
+            if(res.data["status"] == 200){
+                alert("video saved Successfully :)");
+                this.getAllVideos();
+            }else{
+                alert("video Not Successfull :(");
+            }
         });
     }
     ,
@@ -186,7 +252,7 @@ export default {
     onFileUpload2: function($event) {
         console.log('in onFileUpload');
         console.log($event);
-        axios.post("http://localhost:5000/saveVideo", { "job_id": "", "files": document.getElementById("videoFile").files }).then((res) => {
+        axios.post(this.dbServerLink+"saveVideo", { "job_id": "", "files": document.getElementById("videoFile").files }).then((res) => {
             console.log("results: onFileUpload: ");
             console.log(res);
         });
@@ -200,7 +266,7 @@ export default {
     completeHandler: function(event) {
         var response = JSON.parse(event.target.response);
         console.log("respionse is : ",response);
-        if(response["feedback"]){
+        if(response["status"] === 200){
             document.getElementById("status").innerHTML = "<h5 class='text-color-green'>Upload Successfully</h5>";
         document.getElementById("progressBar").value = 100; 
         }else{
@@ -224,11 +290,12 @@ export default {
         ajax.addEventListener("load", this.completeHandler, false);
         ajax.addEventListener("error",this.errorHandler, false);
         ajax.addEventListener("abort",this.abortHandler, false);
-        ajax.open("POST", "http://localhost:5000/saveVideo");
+        ajax.open("POST", this.dbServerLink+"saveVideo");
         ajax.send(formdata);
     }
   },
   mounted:function() {
+      this.getAllVideos();
   }
 }
 </script>

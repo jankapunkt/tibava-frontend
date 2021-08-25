@@ -4,8 +4,15 @@
             <div class="w3-sidebar w3-bar-block w3-border-right" style="display:none" id="mySidebar">
                 <a href="#"><img src="./../assets/userIcon.png" height="25px" width="25px"/><span>  junaid</span></a>
                 <button v-on:click="w3_close()" class="w3-bar-item w3-large">Close &times;</button>
-                <a href="#" class="w3-bar-item w3-button">File</a>
-                <button class="w3-button w3-block w3-left-align" v-on:click="openSubAccordionMenu()">
+                <a href="#" class="w3-bar-item w3-button">Videos</a>
+                <button class="w3-button w3-block w3-left-align" v-on:click="openSubAccordionMenu('meanuAccordion0')">
+                Videos <i class="fa fa-caret-right"></i>
+                </button>
+                <div id="meanuAccordion0" class="w3-hide w3-white w3-card">
+                    <a href="#" class="w3-bar-item w3-button" v-on:click="openModal()" >List Uploaded Videos</a>
+                    <a href="#" class="w3-bar-item w3-button">Upload New Video</a>
+                </div>
+                <button class="w3-button w3-block w3-left-align" v-on:click="openSubAccordionMenu('meanuAccordion1')">
                 Annotations <i class="fa fa-caret-right"></i>
                 </button>
                 <div id="meanuAccordion1" class="w3-hide w3-white w3-card">
@@ -95,8 +102,8 @@ export default {
     w3_close() {
     document.getElementById("mySidebar").style.display = "none";
     },
-     openSubAccordionMenu() {
-        var x = document.getElementById("meanuAccordion1");
+     openSubAccordionMenu(accordionId) {
+        var x = document.getElementById(accordionId);
         if (x.className.indexOf("w3-show") == -1) {
             x.className += " w3-show";
             x.previousElementSibling.className += " bg-cb-yl";
