@@ -3,20 +3,16 @@
         <div class="container">
             <div class="row">
                 <div><DataViewer/></div>
-                <div class="col-lg-6">
+                <div class="col-lg-5">
                     <MediaPlayer />
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-7">
                     <div class="tab pd-player-tittle">
                         <button class="tablinks_1 active" name="shotDetection_1" v-on:click="openTab">SHOT DETECTION</button>
-                        <button class="tablinks_1" name="faceDetection_1" v-on:click="openTab">FACE DETECTION</button>
                         <button class="tablinks_1" name="video_1" v-on:click="openTab">DETAILS</button>
                     </div>
                     <div id="shotDetection_1" class="tabcontent_1">
                         <AnnotationList :type="typeShots" :vidShotData="vid1ShotData" :vidFaceData="vid1FaceData" />
-                    </div>
-                    <div id="faceDetection_1" class="tabcontent_1 tabcontent">
-                        <AnnotationList :type="typeFaces" :vidShotData="vid1ShotData" :vidFaceData="vid1FaceData" />
                     </div>
                     <div id="video_1" class="tabcontent_1 tabcontent">
                         <VideoList />
@@ -28,7 +24,7 @@
                     <div><ShotBoundaryAnnotations :vidShotData="vid1ShotData" :vidMetadata="vid1Metadata"/></div>
                 </div>
             </div>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-lg-12">
                     <div class="tab">
                         <button class="tab-font-lg tablinks_2 active" name="metadata_2" v-on:click="openTab">METADATA</button>
@@ -41,7 +37,7 @@
                         <div ><FaceAnalysisGraph :vidFaceData="vid1FaceData" :vidMetadata="vid1Metadata" :vidShotData="vid1ShotData" /></div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div><DataViewer/></div>
         </div>
     </div>
@@ -56,9 +52,9 @@ import VideoList from "./VideoList";
 
 //import AnnotationListFace from "./AnnotationListFace";
 import ShotBoundaryAnnotations from "./ShotBoundaryAnnotations";
-import FaceAnalysisGraph from "./FaceAnalysisGraph";
+//import FaceAnalysisGraph from "./FaceAnalysisGraph";
 
-import Metadata from "./Metadata";
+//import Metadata from "./Metadata";
 import DataViewer from "./DataViewer";
 //import tempData from './../assets/tempData.json'
 
@@ -95,10 +91,10 @@ export default {
     },
     components: {
         MediaPlayer,
-        Metadata,
+        //Metadata,
         AnnotationList,
         ShotBoundaryAnnotations,
-        FaceAnalysisGraph,
+        //FaceAnalysisGraph,
         DataViewer,
         VideoList
   },
@@ -136,7 +132,7 @@ export default {
             if(res){
                 var responce = eval("(function(){return " + res.data + ";})()");
                 this.$root.$refs.AnalysisViewerView.vid1Metadata = responce.metadata;
-                this.$root.$refs.MetadataView.curMetadata = responce.metadata;
+                //this.$root.$refs.MetadataView.curMetadata = responce.metadata;
                 this.$root.$refs.AnalysisViewerView.vidId = responce.video_id;
                 axios.post(this.baseUrl1 +"detect_shots", {"video_id": responce.video_id, "path": vidPath}).then((responceShots) => {
                     if(responceShots){

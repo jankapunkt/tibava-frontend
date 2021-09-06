@@ -12,7 +12,7 @@
                 <form id="upload_form" enctype="multipart/form-data">
                     <div class="col-sm-12">
                         <input type="file" name="file1" id="file1" @change="uploadFile" accept="video/*"><br>
-                        <progress id="progressBar" value="0" max="100" style="width:1100px;"></progress>
+                        <progress id="progressBar" value="0" max="100" style="width:1100px; color: #af1414"></progress>
                         <h3 id="status"></h3>
                         <p id="loaded_n_total"></p>
                     </div>

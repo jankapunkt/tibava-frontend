@@ -144,8 +144,31 @@ svg.recharts-surface {
   cursor: pointer;
 }
 .zoom-slider {
+  -webkit-appearance: none;
   width: 250px;
+  height: 10px;
+  border-radius: 5px;
+  background: grey;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 20%;
   background: #a20000;
+  cursor: pointer;
+}
+.zoom-slider::-moz-range-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 20%;
+  background: #a20000;
+  cursor: pointer;
 }
 
 /* ============ End style for slider ==========*/
@@ -394,6 +417,30 @@ a.video-links:hover {
 
 /* ============ Metadata related ==========*/
 
+.div-table-annotation {
+  overflow: scroll;
+  height: 375px;
+}
+.table-annotation {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  font-size: 13px;
+}
+.table-td-annotation {
+  cursor: pointer;
+}
+.table-th-annotation {
+  background: #ccc;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
 ul.annotation {
   width: 100%;
   height: 375px;
@@ -402,7 +449,7 @@ ul.annotation {
   margin: 0;
   padding: 0;
   border: 2px solid #ccc;
-  font-size: 11px;
+  font-size: 13px;
   -webkit-overflow-scrolling: touch;
 }
 li.annotation {
@@ -505,6 +552,10 @@ li.annotation {
 }
 .tib-theme-blue {
   background-color: #4897d2;
+}
+
+.tib-theme-grey {
+  background-color: grey;
 }
 
 .tib-theme-yellow {

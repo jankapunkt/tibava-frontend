@@ -1,52 +1,28 @@
 <template>
     <div>
-        <div class="text-color annotation-list-font">
-                <ul v-if="type == 'typeShots'" class="annotation">
-                  <li v-for="shot in vidShotData" class="annotation" :key="shot.shot_id" :id="'shot_anno_list_'+shot.shot_id">
-                    <div class="container border-container">
-                      <div class="row">
-                        <div class="col-sm-3">
-                          <img :id="'shot_'+shot.shot_id+'_frame_0'" class="img-shot-frame" src="./../assets/ph_shot_start.png" alt="starting" />
-                        </div>
-                        <div class="col-sm-3">
-                          <img :id="'shot_'+shot.shot_id+'_frame_1'" class="img-shot-frame" src="./../assets/ph_shot_middle.png" alt="middle" />
-                        </div>
-                        <div class="col-sm-3">
-                          <img :id="'shot_'+shot.shot_id+'_frame_2'" class="img-shot-frame" src="./../assets/ph_shot_end.png" alt="ending" />
-                        </div>
-                        <div class="col-sm-3 text-align-right">
-                          Shot Id: {{shot.shot_id}}<br/>
-                          Time: {{shot.start_time.slice(3,8)}} - {{shot.end_time.slice(3,8)}}<br/>
-                          Frames: {{shot.start_frame}} - {{shot.end_frame}}<br/>
-                          Duration: 10 sec<br/>
-                        </div>
-                      </div>
-                    </div>
-                    <hr class="border-hr">
-                  </li>
-                </ul>
-                <ul v-else class="annotation">
-                  <li v-for="cluster in faceClustering" :key="cluster.cluster_id" class="annotation">
-                        <div class="container" :id="'listCluster_'+cluster.cluster_id+''" v-on:click="updateFaceOccurance($event)">
-                          <div class="row">
-                              <div class="col-sm-3">
-                                <img :id="'face_'+cluster.cluster_id+'_frame_0'" class="img-face-frame" src="./../assets/ph_face.png" alt="starting" />
-                              </div>
-                              <div class="col-sm-3">
-                                <img :id="'face_'+cluster.cluster_id+'_frame_1'" class="img-face-frame" src="./../assets/ph_face.png" alt="middle" />
-                              </div>
-                              <div class="col-sm-3">
-                                <img :id="'face_'+cluster.cluster_id+'_frame_2'" class="img-face-frame" src="./../assets/ph_face.png" alt="ending" />
-                              </div>
-                              <div class="col-sm-3 text-align-left wrap-text">
-                                Cluster Id: {{cluster.cluster_id}}<br/>
-                                Occurrences:{{cluster.occurrences}}<br/>
-                              </div>
-                          </div>
-                        </div>
-                        <hr class="border-hr">
-                    </li>
-                </ul>
+        <div class="text-color annotation-list-font div-table-annotation">
+            <table width="100%" class="table-annotation">
+              <tr>
+                <th width="25%" class="table-th-annotation">Start</th>
+                <th width="25%" class="table-th-annotation">Middle</th>
+                <th width="25%" class="table-th-annotation">End</th>
+                <th width="25%" class="table-th-annotation">Detail</th>
+              </tr>
+              <tr v-for="shot in vidShotData" class="table-td-annotation " :key="shot.shot_id" :id="'shot_anno_list_'+shot.shot_id">
+                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_0'" class="img-shot-frame" src="./../assets/ph_shot_start.png" alt="starting" /></td>
+                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_1'" class="img-shot-frame" src="./../assets/ph_shot_middle.png" alt="middle" /></td>
+                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_2'" class="img-shot-frame" src="./../assets/ph_shot_end.png" alt="ending" /></td>
+                <td width="25%">
+                  <div class="text-align-right">
+                    Shot Id: {{shot.shot_id}}<br/>
+                    Time: {{shot.start_time.slice(3,8)}} - {{shot.end_time.slice(3,8)}}<br/>
+                    Frames: {{shot.start_frame}} - {{shot.end_frame}}<br/>
+                    Duration: 10 sec<br/>
+                  </div>
+                </td>
+              </tr>
+            </table>
+                
         </div>
     </div>
 </template>
@@ -75,7 +51,7 @@ export default {
             source_size:[1080,720],
             faceCounter:1
             },
-            occuranceColorTheme:"tib-theme-blue",
+            occuranceColorTheme:"tib-theme-grey",
             defaultOccuranceFilterValues:5,
             occuranceFilterValues:[10,15,20,25,30,35,40],
             videoId:"cf13d553ca6aefda1ecefb343b30bd04b860e21a0554ae51aaf0a41c65b666f4",
@@ -376,7 +352,7 @@ export default {
 
 <style>
 .annotation-list-font{
-  font-size: 10px !important;
+  font-size: 15px !important;
 }
 .annotation-list-pad-margin{
   padding: 0px;

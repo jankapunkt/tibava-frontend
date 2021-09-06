@@ -1,5 +1,6 @@
 <template>
   <div>
+    
     <table border="0px" width="100%">
       <tr height="25px">
         <th
@@ -60,11 +61,17 @@
         </th>
       </tr>
     </table>
-    <div class="panel-content">
+    <div class="panel-content timeline-font">
       <table style="width: 1000% !important" id="tableShotTimeLineScrolled" border="1px" class="">
         <tr height="10px">
-          <th width="20px" class="pos-sticky">Timeline #</th>
-          <th :colspan="curVidShotData.length">
+          <th scope="row" width="20px" class="table-th-annotation">Time Index</th>
+          <td :colspan="curVidShotData.length">
+            <canvas id='timeline' />
+          </td>
+        </tr>
+        <tr height="10px">
+          <th scope="row" width="20px" class="table-th-annotation">Timeline #</th>
+          <td :colspan="curVidShotData.length">
             <input
               id="shot_anno_timeline_pointer"
               type="range"
@@ -75,11 +82,11 @@
               class="slider-annotation-timeline-pointer"
               v-on:change="updatePlayerCurrentTime(null)"
             />
-          </th>
+          </td>
         </tr>
         <tr height="50px">
-          <th width="20px">T-1</th>
-          <th
+          <th scope="row" class="table-th-annotation" width="20px">T-1</th>
+          <td 
             v-for="item in curVidShotData"
             :key="item.start_frame"
             :width="getPercentage(item)"
@@ -91,9 +98,12 @@
                 {{ item }}<i class="fa fa-times"></i>
               </button>
             </div>
-          </th>
+          </td>
         </tr>
       </table>
+    </div>
+    <div>
+      <div id="extTimeline"></div>
     </div>
     <div id="sidebarAnnotationItemsModal" class="modal">
       <div class="modal-content">
@@ -182,10 +192,16 @@
 
 <script>
 import axios from "axios";
+import VideoEditingTimeline from 'video-editing-timeline';
+//import  Timeliner  from './ExternalTimeline/timeliner.js'
+//import VueTimeline from "./externalJs/vue-timeline-component.umd.js"
 
 export default {
   name: "ShotBoundaryView",
   props: ["vidShotData", "vidMetadata"],
+  /* components: {
+      VueTimeline
+  }, */
   created: function () {
     this.$root.$refs.ShotBoundaryView = this;
   },
@@ -222,23 +238,17 @@ export default {
       var percent = document.getElementById("zoomRange").value*10;
       var stlVal = "width: "+percent+"% !important";
       document.getElementById("tableShotTimeLineScrolled").style = stlVal;
-      //this.$root.$refs.ShotBoundaryView.timeLineZoomStyle = stlVal;
-      //this.timeLineZoomStyleVal= stlVal;
     },
     zoomOut() {
       document.getElementById("zoomRange").value *= 0.95;
       var percent = document.getElementById("zoomRange").value*10;
       var stlVal = "width: "+percent+"% !important";
       document.getElementById("tableShotTimeLineScrolled").style = stlVal;
-      //this.$root.$refs.ShotBoundaryView.timeLineZoomStyle = stlVal;
-      //this.timeLineZoomStyleVal= stlVal;
     },
     zoomChange() {
       var percent = document.getElementById("zoomRange").value*10;
       var stlVal = "width: "+percent+"% !important";
       document.getElementById("tableShotTimeLineScrolled").style = stlVal;
-      //this.$root.$refs.ShotBoundaryView.timeLineZoomStyle = stlVal;
-      //this.timeLineZoomStyleVal= stlVal;
     },
     deleteAnnotationItem(id) {
       console.log("in deleteAnnotationItem: ", id);
@@ -451,10 +461,24 @@ export default {
         modal.style.display = "none";
       }
     };
+    const config = {
+    el: "#timeline",
+    canvasWidth: 1000,
+    canvasHeight: 30,
+    minimumScale: 10, 
+    minimumScaleTime: 1, 
+    }
+    const videoEditingTimeline = new VideoEditingTimeline(config);
+    console.log("videoEditingTimeline",videoEditingTimeline);
+
   },
 };
 </script>
 
 
 <style>
+@import "https://demos.jquerymobile.com/1.4.2/css/themes/default/jquery.mobile-1.4.2.min.css";
+.timeline-font{
+  font-size: 10px !important;
+}
 </style>
