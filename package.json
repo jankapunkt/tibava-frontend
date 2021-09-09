@@ -22,6 +22,7 @@
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.1",
     "vue-filepond": "^7.0.0",
+    "vue-histogram-slider": "^0.3.8",
     "vue-router": "^3.2.0",
     "vue-trend-chart": "^0.15.3",
     "vuex": "^3.4.0"

@@ -3,20 +3,19 @@
         <div class="text-color annotation-list-font div-table-annotation">
             <table width="100%" class="table-annotation">
               <tr>
-                <th width="25%" class="table-th-annotation">Start</th>
-                <th width="25%" class="table-th-annotation">Middle</th>
-                <th width="25%" class="table-th-annotation">End</th>
-                <th width="25%" class="table-th-annotation">Detail</th>
+                <th width="27%" class="table-th-annotation">Start</th>
+                <th width="27%" class="table-th-annotation">Middle</th>
+                <th width="27%" class="table-th-annotation">End</th>
+                <th width="19%" class="table-th-annotation">Detail</th>
               </tr>
               <tr v-for="shot in vidShotData" class="table-td-annotation " :key="shot.shot_id" :id="'shot_anno_list_'+shot.shot_id">
-                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_0'" class="img-shot-frame" src="./../assets/ph_shot_start.png" alt="starting" /></td>
-                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_1'" class="img-shot-frame" src="./../assets/ph_shot_middle.png" alt="middle" /></td>
-                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_2'" class="img-shot-frame" src="./../assets/ph_shot_end.png" alt="ending" /></td>
-                <td width="25%">
-                  <div class="text-align-right">
+                <td width="27%"><img :id="'shot_'+shot.shot_id+'_frame_0'" class="img-shot-frame" src="./../assets/ph_shot_start.png" alt="starting" /></td>
+                <td width="27%"><img :id="'shot_'+shot.shot_id+'_frame_1'" class="img-shot-frame" src="./../assets/ph_shot_middle.png" alt="middle" /></td>
+                <td width="27%"><img :id="'shot_'+shot.shot_id+'_frame_2'" class="img-shot-frame" src="./../assets/ph_shot_end.png" alt="ending" /></td>
+                <td width="19%">
+                  <div class="text-align-left text-align-top">
                     Shot Id: {{shot.shot_id}}<br/>
                     Time: {{shot.start_time.slice(3,8)}} - {{shot.end_time.slice(3,8)}}<br/>
-                    Frames: {{shot.start_frame}} - {{shot.end_frame}}<br/>
                     Duration: 10 sec<br/>
                   </div>
                 </td>
@@ -51,7 +50,7 @@ export default {
             source_size:[1080,720],
             faceCounter:1
             },
-            occuranceColorTheme:"tib-theme-grey",
+            occuranceColorTheme:"",
             defaultOccuranceFilterValues:5,
             occuranceFilterValues:[10,15,20,25,30,35,40],
             videoId:"cf13d553ca6aefda1ecefb343b30bd04b860e21a0554ae51aaf0a41c65b666f4",
@@ -357,5 +356,8 @@ export default {
 .annotation-list-pad-margin{
   padding: 0px;
   margin: opx;
+}
+.text-align-top {
+  vertical-align: top;
 }
 </style>

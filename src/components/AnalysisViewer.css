@@ -143,6 +143,10 @@ svg.recharts-surface {
   background: #a20000;
   cursor: pointer;
 }
+
+/* ============ End style for slider ==========*/
+
+/* ============ Zoom slider style ==========*/
 .zoom-slider {
   -webkit-appearance: none;
   width: 250px;
@@ -159,7 +163,7 @@ svg.recharts-surface {
   width: 15px;
   height: 15px;
   border-radius: 20%;
-  background: #a20000;
+  background: #af1414;
   cursor: pointer;
 }
 .zoom-slider::-moz-range-thumb {
@@ -167,11 +171,9 @@ svg.recharts-surface {
   width: 15px;
   height: 15px;
   border-radius: 20%;
-  background: #a20000;
+  background: #af1414;
   cursor: pointer;
 }
-
-/* ============ End style for slider ==========*/
 
 /* ============ Start style for Search ==========*/
 div.search input[type="text"] {
@@ -418,7 +420,7 @@ a.video-links:hover {
 /* ============ Metadata related ==========*/
 
 .div-table-annotation {
-  overflow: scroll;
+  overflow-y: scroll;
   height: 375px;
 }
 .table-annotation {
@@ -438,7 +440,21 @@ a.video-links:hover {
   position: sticky;
   top: 0;
   left: 0;
+  z-index: 12;
+}
+.table-th-col-annotation {
+  background: #ccc;
+  position: sticky;
+  top: 0;
+  left: 0;
   z-index: 10;
+}
+
+.table-th-fix-annotation {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 5;
 }
 
 ul.annotation {
@@ -520,7 +536,7 @@ li.annotation {
 
 .panel-content {
   overflow: scroll;
-  height: 100%;
+  max-height: 250px;
   text-align: left;
 }
 .panel {
@@ -649,7 +665,7 @@ li.annotation {
 .text-color-theme-red {
   color: #af1414;
 }
-.text-color-theme-red {
+.text-color-theme-yellow {
   color: #ffcc00;
 }
 .text-color-green {
@@ -754,4 +770,21 @@ div.wrap-text span:hover {
 }
 .menu-item {
   font-weight: normal !important;
+}
+
+.timeline-heading {
+  font-weight: normal !important;
+}
+
+.border-top {
+  border-top: 1px solid;
+}
+.border-bottom {
+  border-bottom: 1px solid;
+}
+.border-left {
+  border-left: 1px solid;
+}
+.border-right {
+  border-right: 1px #ccc;
 }
