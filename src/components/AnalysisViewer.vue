@@ -1,8 +1,11 @@
 <template>
     <div>
         <div class="container">
+            <h2 class="text-color pd-player-tittle text-align-left">{{vidName}}</h2>
             <div class="row">
-                <div><DataViewer/></div>
+                <div>
+                    <DataViewer />
+                </div>
                 <div class="col-lg-5">
                     <MediaPlayer />
                 </div>
@@ -68,6 +71,7 @@ export default {
   created: function() {
         this.$root.$refs.AnalysisViewerView = this;
     },
+
   data() {  
         return {
             colLeft: "col-sm-7",
@@ -84,7 +88,7 @@ export default {
             baseUrl2: "http://127.0.0.1:5111/",
             vidPath : "media/f9_scene1.mp4",
             vidFileTitle : "f9_scene1",
-            vidName : "f9_scene1",
+            vidName : "Fast & Furious 9 Trailer",
             vidId : "cf13d553ca6aefda1ecefb343b30bd04b860e21a0554ae51aaf0a41c65b666f4",
             
         }

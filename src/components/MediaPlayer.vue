@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h2 class="text-color pd-player-tittle text-align-left">{{vidName}}</h2>
         <div id="media_player_div"><video ref="media_player" v-on:timeupdate="onPlayTimeChange" class="no-outline" id="media_player"  width="450" height="350"  :src="vidFileSrc" controls></video></div>
     </div>
 </template>
