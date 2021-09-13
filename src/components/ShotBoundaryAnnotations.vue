@@ -3,23 +3,43 @@
     
     <table border="0px" width="100%">
       <tr height="10px">
-        <th width="20%">
-          <div class="mrg-cb">
-            <input type="checkbox" id="cb_shots" name="cb_shots" disabled checked>
-            <label for="cb_shots"> Shots</label>
-          </div>
+        <th width="5%">
+          <a href="#"><i class="fa fa-plus fa-2x text-color-grey" title="Add Timeline"></i></a>
         </th>
-        <th width="20%">
-          <div class="mrg-cb">
-            <input type="checkbox" id="cb_faces" name="cb_faces" disabled>
-            <label for="cb_faces"> Faces</label>
-          </div>
+        <th width="5%">
+          <a href="#"
+            ><i class="fa fa-minus fa-2x text-color-grey" title="Remove Timeline"></i
+          ></a>
         </th>
-        <th width="10%">
+        <th width="5%">
+          <a href="#"
+            ><i class="fa fa-step-backward fa-2x text-color-grey" title="Last Second"></i
+          ></a>
+        </th>
+        <th width="5%">
+          <a href="#"
+            ><i class="fa fa-backward fa-2x text-color-grey" title="Prev Frame"></i
+          ></a>
+        </th>
+        <th width="5%">
+          <a href="#"><i class="fa fa-forward fa-2x text-color-grey" title="Next Frame"></i></a>
+        </th>
+        <th width="5%">
+          <a href="#"
+            ><i class="fa fa-step-forward fa-2x text-color-grey" title="Next Second"></i
+          ></a>
+        </th>
+        <th width="5%">
+          <a href="#"
+            ><i class="fa fa-compress fa-2x text-color-grey" title="Merge Segments"></i
+          ></a>
+        </th>
+        <th width="5%">
+          <a href="#"><i class="fa fa-cut fa-2x text-color-grey" title="Split Segments"></i></a>
         </th>
         <th width="50%">
           <a href="#" id="zoomOut" v-on:click="zoomOut()"><i class="fa fa-search-minus fa-lg text-color-grey" title="Zoom Out"></i></a>
-          <input type="range" min="1" max="100" value="100" class="zoom-slider text-color-grey" id="zoomRange" v-on:change="zoomChange()">
+          <input type="range" min="1" max="100" value="100" class="zoom-slider text-color-grey" id="zoomRange" v-on:change="zoomChange()" />
           <a href="#" id="zoomIn" v-on:click="zoomIn()"><i class="fa fa-search-plus fa-lg text-color-grey" title="Zoom In"></i></a>
         </th>
       </tr>
@@ -27,13 +47,7 @@
     <div>
       <table border="0px" width="100%" id="globalTimeline">
         <tr height="25px">
-          <th
-            v-for="item in curVidShotData"
-            :key="item.start_frame"
-            class="scene-timeline-a"
-            :width="getPercentage(item)"
-            v-on:click="updatePlayerCurrentTime(item)"
-          >
+          <th v-for="item in curVidShotData" :key="item.start_frame" class="scene-timeline-a" :width="getPercentage(item)" v-on:click="updatePlayerCurrentTime(item)">
             <div class="tooltip">
               <span class="tooltiptext"
                 ><img src="./../assets/constFrame2.png" width="100px" alt=""
