@@ -1,7 +1,6 @@
 <template>
     <div>
         <div class="container">
-            <h2 class="text-color pd-player-tittle text-align-left">{{vidName}}</h2>
             <div class="row">
                 <div><DataViewer/></div>
                 <div class="col-lg-6">
