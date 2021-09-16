@@ -3,56 +3,57 @@
     
     <table border="0px" width="100%">
       <tr height="10px">
-        <th width="5%">
-          <a href="#"><i class="fa fa-plus fa-2x text-color-grey" title="Add Timeline"></i></a>
+        <th width="4%">
+          <a href="#"><i class="fa fa-play fa-lg text-color-grey" title="Add Timeline"></i></a>
         </th>
-        <th width="5%">
+        <th width="4%">
           <a href="#"
-            ><i class="fa fa-minus fa-2x text-color-grey" title="Remove Timeline"></i
+            ><i class="fa fa-pause fa-lg text-color-grey" title="Remove Timeline"></i
           ></a>
         </th>
-        <th width="5%">
+        <th width="4%">
           <a href="#"
-            ><i class="fa fa-step-backward fa-2x text-color-grey" title="Last Second"></i
+            ><i class="fa fa-step-backward fa-lg text-color-grey" title="Last Second"></i
           ></a>
         </th>
-        <th width="5%">
+        <th width="4%">
           <a href="#"
-            ><i class="fa fa-backward fa-2x text-color-grey" title="Prev Frame"></i
+            ><i class="fa fa-backward fa-lg text-color-grey" title="Prev Frame"></i
           ></a>
         </th>
-        <th width="5%">
-          <a href="#"><i class="fa fa-forward fa-2x text-color-grey" title="Next Frame"></i></a>
+        <th width="4%">
+          <a href="#"><i class="fa fa-forward fa-lg text-color-grey" title="Next Frame"></i></a>
         </th>
-        <th width="5%">
+        <th width="4%">
           <a href="#"
-            ><i class="fa fa-step-forward fa-2x text-color-grey" title="Next Second"></i
+            ><i class="fa fa-step-forward fa-lg text-color-grey" title="Next Second"></i
           ></a>
         </th>
-        <th width="5%">
+        <th width="4%">
           <a href="#"
-            ><i class="fa fa-compress fa-2x text-color-grey" title="Merge Segments"></i
+            ><i class="fa fa-compress fa-lg text-color-grey" title="Merge Segments"></i
           ></a>
         </th>
-        <th width="5%">
-          <a href="#"><i class="fa fa-cut fa-2x text-color-grey" title="Split Segments"></i></a>
+        <th width="4%">
+          <a href="#"><i class="fa fa-cut fa-lg text-color-grey" title="Split Segments"></i></a>
         </th>
-        <th width="50%">
+        <th width="68%" class="text-align-right">
           <a href="#" id="zoomOut" v-on:click="zoomOut()"><i class="fa fa-search-minus fa-lg text-color-grey" title="Zoom Out"></i></a>
-          <input type="range" min="1" max="100" value="100" class="zoom-slider text-color-grey" id="zoomRange" v-on:change="zoomChange()" />
+          <input type="range" min="1" max="100" value="100" class="zoom-slider text-color-grey" id="zoomRange" v-on:change="zoomChange()"/>
           <a href="#" id="zoomIn" v-on:click="zoomIn()"><i class="fa fa-search-plus fa-lg text-color-grey" title="Zoom In"></i></a>
         </th>
       </tr>
     </table>
-    <div>
+    <div class="global-timeline">
       <table border="0px" width="100%" id="globalTimeline">
+        <tr height="15px"><th class="scene-timeline-a" colspan="100%"><canvas id='timelineGlobal' /></th></tr>
         <tr height="25px">
-          <th v-for="item in curVidShotData" :key="item.start_frame" class="scene-timeline-a" :width="getPercentage(item)" v-on:click="updatePlayerCurrentTime(item)">
-            <div class="tooltip">
+          <th v-for="item in curVidShotData" :key="item[shotStartFrameIdx]" class="scene-timeline-a" :width="getPercentage(item)" v-on:click="updatePlayerCurrentTime(item)">
+            <!-- <div class="tooltip">
               <span class="tooltiptext"
                 ><img src="./../assets/constFrame2.png" width="100px" alt=""
               /></span>
-            </div>
+            </div> -->
           </th>
         </tr>
       </table>
@@ -61,26 +62,39 @@
     <div class="panel-content timeline-font">
       <table style="width: 1000% !important" id="tableShotTimeLineScrolled" class="">
         <tr height="10px" class="border-top border-bottom">
-          <th scope="row" width="20px" class="table-th-annotation">Timelines</th>
+          <th scope="row" :width="timelineHeadWidth" class="table-th-annotation border-down">Timelines</th>
           <td :colspan="curVidShotData.length" scope="column" class="table-th-col-annotation">
             <canvas id='timeline' />
-            <div style="position: absolute; top: 25%; left: 100px; width: 16px; height: 600%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
+            <div style="position: absolute; top: 25%; left: 100px; width: 16px; height: 750%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
               <canvas class="play-marker" id="playMarker" width="16" height="16"></canvas>
             </div> 
           </td>
         </tr>
-        <tr height="10px" border="0px">
-          <th scope="row" width="20px" class="table-th-annotation"><button class="w3-button" v-on:click="openTimelineOptionsModal()">☰</button>
+        <!-- <tr height="10px" border="0px">
+          <th scope="row" width="20px" class="table-th-annotation"><button class="w3-button" v-on:click="openTimelineEditModal()">☰</button>
           </th>
           <td :colspan="curVidShotData.length" class="table-th-fix-annotation">
             <h6 class="table-th-fix-annotation">Shots</h6>
           </td>
-        </tr>
+        </tr> -->
         <tr v-for="tmline in shotTimelines" :key="tmline[0]" height="40px">
-          <th scope="row" class="table-th-annotation" width="20px">{{tmline[1]}}<i v-if="tmline[1] !== 'Default'" v-on:click="removeTiemline(tmline[0])" class="fa fa-times text-color-theme-red cursor-pointer" title="delet timeline"></i></th>
+          <th scope="row" class="border-down table-th-annotation cursor-default" :width="timelineHeadWidth">
+            <div class="dropup z-20-i">
+                <i class="fa fa-bars cursor-pointer timeline-head-side-margin z-20-i" data-toggle="dropdown" title="delet timeline"></i>
+                <ul class="timeline-dropdown dropdown-menu z-20-i">
+                  <li class="z-20-i"><a href="#" class="timeline-dropdown-anchor z-20-i" v-on:click="duplicateTimeline(tmline[0],tmline[1])">Duplicate<i class="fa fa-files-o cursor-pointer timeline-head-side-margin" title="duplicate"></i></a></li>
+                  <li class="z-20-i"><a href="#" class="timeline-dropdown-anchor z-20-i" v-on:click="removeTiemline(tmline[0])">Remove<i class="fa fa-trash-o cursor-pointer timeline-head-side-margin" title="remove"></i></a></li>
+                  <li class="z-20-i"><a href="#" class="timeline-dropdown-anchor z-20-i" v-on:click="openTimelineEditModal(tmline[0])">Edit<i class="fa fa-edit cursor-pointer timeline-head-side-margin" title="edit"></i></a></li>
+                </ul>
+            </div>
+          {{tmline[1]}}</th>
           <td :colspan="curVidShotData.length">
             <div class="timeline-container">
-              <div v-for="item in curVidShotData" :key="item.start_frame" :style="'width: '+getPercentage(item)+' !important;'" v-on:click="openModal()">1</div>
+              <div class="cursor-pointer" v-for="item in curVidShotData" :key="item[shotStartFrameIdx]" :style="'width: '+getPercentage(item)+' !important;'" v-on:click="openModal(tmline[1],item[annotationIdColIdx])">
+                <button v-if="item[annotationNameColIdx] !=''" class="annotation-text-wrap annotation-tags-btn">
+                  {{ item[annotationNameColIdx] }}<i class="fa fa-times pd-fa-icon"></i>
+                </button>
+              </div>
             </div>
           </td>
         </tr>
@@ -98,7 +112,7 @@
             <div class="col-sm-12">
               <div class="form-group row">
                 <div class="col-sm-5">
-                  <label for="dd_annotation_category"> Category of New Timeline</label>
+                  <label for="dd_annotation_category"> Update Timeline Category</label>
                 </div>
                 <div class="col-sm-4">
                   <div class="dropdown" id="dd_annotation_category" name="dd_annotation_category">
@@ -107,12 +121,13 @@
                     </button>
                     <div class="dropdown-menu">
                       <input type="hidden" id="dd_annotation_category_value" name="" value="">
+                      <input type="hidden" id="dd_timeline_id" name="" value="">
                       <a class="dropdown-item" v-for="category in category_names" :key="category[0]" :id="category[0]" :value="category[1]" href="#" v-on:click="onChangeAnnotationCategoryInTimeline($event,category)">{{category[1]}}</a>
                     </div>
                   </div>
                 </div>
                 <div class="col-sm-3">
-                    <button type="button" class="btn btn-primary" id="newTimeline" v-on:click="addNewTimeline()">Add New</button>
+                    <button type="button" class="btn btn-primary" id="newTimeline" v-on:click="updateTimeline()">Update</button>
                 </div>
               </div>
             </div>
@@ -156,9 +171,9 @@
                 <div class="col-sm-2">
                   <button
                     class="btn btn-primary"
-                    v-on:click="selectAnnotationItem()"
+                    v-on:click="selectSaveAnnotationItem()"
                   >
-                    Select
+                    Save
                   </button>
                 </div>
               </div>
@@ -208,32 +223,41 @@
 <script>
 import axios from "axios";
 import VideoEditingTimeline from 'video-editing-timeline';
+// import VueDropdown from 'vue-dynamic-dropdown'
 
 export default {
   name: "ShotBoundaryView",
-  props: ["vidShotData", "vidMetadata"],
+  props: ["vidMetadata"],
   created: function () {
     this.$root.$refs.ShotBoundaryView = this;
   },
+/*   components: {
+    VueDropdown
+  }, */
   data() {
     return {
       durationMax: 0,
+      editingTimelineId:"",
+      annotationTimelineId:"",
+      annotationCategory:"",
+      shotSeqIdx:4,
+      shotStartFrameIdx:1,
+      shotEndFrameIdx:2,
+      shotStartTimeIdx:5,
+      shotEndTimeIdx:6,
+      annotationNameColIdx:7,
+      annotationIdColIdx:0,
+      currSegmentId:"",
+      currAnnotationItemName:"",
       item_names : [["1","item1"],["2","item2"],["3","item3"]],
       category_names : [["1","category 1"],["2","category 2"],["3","category 3"]],
       durationIndexes:[0,1,2],
       shotTimelines:[["1","Default","1","1"]],
       fps: 24,
+      timelineHeadWidth:"120px",
       timeLineZoomStyle :"width: 1000% !important",
       timeLineZoomStyleVal:1000,
-      curVidShotData: [
-        {
-          end_frame: 71,
-          end_time: "00:00:02.958",
-          shot_id: 0,
-          start_frame: 0,
-          start_time: "00:00:00.000",
-        },
-      ],
+      curVidShotData: [["",0,42,"",2,"",""] ],
       annotationcItems: [],
        events: [{
           name: "event 1",
@@ -335,11 +359,56 @@ export default {
               }
           });
     },
+    duplicateTimeline:function(timelineId,timelineCategory){
+      var payload = {"obj":{"timelineId":timelineId,"timelineCategory":timelineCategory,"videoId":"d626619f-668f-4fd3-8df0-0ffdf86800bf"}};
+      axios.post(this.$root.$refs.DataViewer.dbServerLink+"saveTimeline", payload).then((res) => {
+              console.log("on: addNewTimeline: ");
+              console.log(res);
+              if(res.data["status"] == 200){
+                  alert("Timeline Duplicate Successfully :)");
+                  document.getElementById("timelineOptionsModal").style.display = "none";
+                  this.getAllTimelines();
+                  document.getElementById("category_name_dd").value = "";
+              }else{
+                  alert("Timeline Duplicate Not Successfull :(");
+              }
+          });
+    },
+    updateTimeline:function(){
+      var category_name = document.getElementById("dd_annotation_category_button_in_timeline").innerText;
+      var timelineId = document.getElementById("dd_timeline_id").value;
+      var payload = {"obj":{"category_name":category_name,"timeline_id":timelineId}};
+      axios.post(this.$root.$refs.DataViewer.dbServerLink+"updateTimeline", payload).then((res) => {
+              console.log("on: addNewTimeline: ");
+              console.log(res);
+              if(res.data["status"] == 200){
+                  alert("Timeline Update Successfully :)");
+                  document.getElementById("timelineOptionsModal").style.display = "none";
+                  this.getAllTimelines();
+                  document.getElementById("category_name_dd").value = "";
+              }else{
+                  alert("Timeline Update Not Successfull :(");
+              }
+          });
+    },
     deleteAnnotationItem(id) {
       console.log("in deleteAnnotationItem: ", id);
     },
-    selectAnnotationItem(id) {
-      console.log("in selectAnnotationItem: ", id);
+    selectSaveAnnotationItem() {
+      console.log("in selectSaveAnnotationItem: ");
+      var payload = {"obj":{"annotationId":this.currSegmentId,"annotationItem":this.currAnnotationItemName}};
+        axios.post(this.$root.$refs.DataViewer.dbServerLink+"updateTimelineSegment", payload).then((res) => {
+              console.log("on: in selectSaveAnnotationItem ");
+              console.log(res);
+              if(res.data["status"] == 200){
+                  alert("Annotation Item Saved Successfully :)");
+                  this.getAllAnnotationCategories();
+                  document.getElementById("category_name_dd").value = "";
+              }else{
+                  alert("AnnotationItem Not Successfull :(");
+              }
+          });
+
     },
     saveAnnotationCategory() {
       var category_name = document.getElementById("category_name_dd").value;
@@ -375,6 +444,7 @@ export default {
     onChangeAnnotationItem(event,entry){
       document.getElementById("dd_annotation_item_value").value = event.target.id;
       document.getElementById("dd_annotation_item_button").innerText = entry[2];
+      this.currAnnotationItemName = entry[2];
     },
     saveAnnotationItem() {
       var item_name = document.getElementById("item_name_dd").value;
@@ -395,13 +465,16 @@ export default {
         });
       }
     },
-    getAllAnnotationCategories() {
+    getAllAnnotationCategories(CategoryName="") {
       axios.post(this.$root.$refs.DataViewer.dbServerLink+"getAllAnnotationCategories").then((res) => {
             console.log("on: getAllAnnotationCategories: ");
             console.log(res);
             if(res.data["status"] == 200){
                 console.log("getAllAnnotationCategories Successfully :)");
                 this.category_names = res.data.result;
+                if(CategoryName!==""){
+                  this.updateSelectcategoryAnnotation(CategoryName);
+                }
             }else{
                 console.log("getAllAnnotationCategories Successfull :(");
             }
@@ -428,49 +501,79 @@ export default {
             if(res.data["status"] == 200){
                 console.log("getAllTimelines Successfully :)");
                 this.shotTimelines = res.data.result;
+                this.getTimelineShots(this.shotTimelines[0][0]);
             }else{
                 console.log("getAllTimelines Successfull :(");
             }
         });
     },
-    openModal() {
+    openModal(CategoryName,segmentId) {
       var modal = document.getElementById("sidebarAnnotationItemsModal"); // old annotationTimelineModal
       modal.style.display = "block";
-      this.getAllAnnotationCategories();
-      this.getAllAnnotationItems();
+      this.currSegmentId = segmentId;
+      this.getAllAnnotationCategories(CategoryName);
+      //this.getAllAnnotationItems();
+      
     },
-    openTimelineOptionsModal() {
+    updateSelectcategoryAnnotation:function(CategoryName){
+      for(var k=0;k<this.category_names.length;k++){
+        if(this.category_names[k][1]===CategoryName){
+          document.getElementById("dd_annotation_category_value").value = this.category_names[k][0];
+        document.getElementById("dd_annotation_category_button_in_annotation").innerText = this.category_names[k][1];
+        }
+      }
+      this.getAllAnnotationItems();
+      document.getElementById("dd_annotation_category_button_in_annotation").disabled=true;
+    },
+    openTimelineEditModal(timelineId) {
       var modal = document.getElementById("timelineOptionsModal"); 
       modal.style.display = "block";
+      document.getElementById("dd_timeline_id").value = timelineId;
       this.getAllAnnotationCategories();
     },
     getCurrentPlayTime() {
       return document.getElementById("media_player").currentTime;
     },
     getPercentage(item) {
+      //debugger;
       var percent = 0;
       var totalFrames =
-        this.curVidShotData[this.curVidShotData.length - 1].end_frame;
-      percent = ((item.end_frame - item.start_frame) / totalFrames) * 100;
+        this.curVidShotData[this.curVidShotData.length - 1][this.shotEndFrameIdx];
+      percent = ((item[this.shotEndFrameIdx] - item[this.shotStartFrameIdx]) / totalFrames) * 100;
       return percent + "%";
     },
-    updatePlayerCurrentTime(item) {
+    updatePlayerCurrentTime:function(item) {
       if(item){
         var calculatedTime =
-        this.curVidShotData[item.shot_id].start_frame / this.fps;
+        this.curVidShotData[item[this.shotSeqIdx]][this.shotStartFrameIdx] / this.fps;
         document.getElementById("media_player").currentTime =
           parseInt(calculatedTime);
         document
-          .getElementById("shot_anno_list_" + item.shot_id)
+          .getElementById("shot_anno_list_" + item[this.shotSeqIdx])
           .scrollIntoView({ behavior: "auto" });
         document
-          .getElementById("shot_anno_timeline_1_" + item.shot_id)
+          .getElementById("shot_anno_timeline_1_" + item[this.shotSeqIdx])
           .scrollIntoView({ behavior: "auto", block: "end", inline: "start" });
       }else{
         document.getElementById("media_player").currentTime = document.getElementById("shot_anno_timeline_pointer").value; 
       }
       
     },
+    getTimelineShots:function(timelineId){
+      var payload = {"obj":{"timeline_id":timelineId}};
+      axios.post(this.$root.$refs.DataViewer.dbServerLink+"getAllTimelineSegments",payload).then((res) => {
+            console.log("on: getAllAnnotationItems: ");
+            console.log(res);
+            if(res.data["status"] == 200){
+                console.log("getTimelineShots Successfully :)");
+                this.curVidShotData  = res.data.result;
+                //this.curVidShotData = this.vidShotData;
+                //this.$root.$refs.DataViewer.curVidShotData = this.curVidShotData;
+            }else{
+                console.log("getTimelineShots :(");
+            }
+        });
+    }
   },
   mounted:function(){
     this.getAllTimelines();
@@ -481,8 +584,6 @@ export default {
     this.$root.$refs.ShotBoundaryView.durationMax = this.vidMetadata.duration;
     console.log("duration in metadata is : ",this.vidMetadata.duration);
     this.fps = this.vidMetadata.fps;
-    this.curVidShotData = this.vidShotData;
-    this.$root.$refs.DataViewer.curVidShotData = this.curVidShotData;
     this.$root.$refs.AnnotationListView.updateShotsList();
     var acc = document.getElementsByClassName("accordion");
     var i;
@@ -509,6 +610,7 @@ export default {
       "timelineOptionsModalClose"
     )[0]; 
     span2.onclick = function () {
+      document.getElementById("dd_annotation_category_button_in_annotation").disabled="";
       modal2.style.display = "none";
     };
     window.onclick = function (event) {
@@ -519,20 +621,29 @@ export default {
     };
     const config = {
     el: "#timeline",
-    canvasWidth: 1000,
-    canvasHeight: 30,
-    minimumScale: 10, 
+    canvasWidth: 4000,
+    canvasHeight: 22,
+    minimumScale: 50, 
     minimumScaleTime: 1, 
     }
     const videoEditingTimeline = new VideoEditingTimeline(config);
+    const configGlobal = {
+    el: "#timelineGlobal",
+    canvasWidth: 1110,
+    canvasHeight: 22,
+    minimumScale: 17, 
+    minimumScaleTime: 1, 
+    }
+    const videoEditingTimelineGlobal = new VideoEditingTimeline(configGlobal);
     console.log("videoEditingTimeline",videoEditingTimeline);
+    console.log("videoEditingTimelineGlobal",videoEditingTimelineGlobal);
   },
 };
 </script>
 <style>
 @import "https://demos.jquerymobile.com/1.4.2/css/themes/default/jquery.mobile-1.4.2.min.css";
 .timeline-font{
-  font-size: 10px !important;
+  font-size: 11px !important;
 }
 .timeline-container {
   display: flex;
@@ -545,17 +656,64 @@ export default {
   border: 1px grey solid;
   text-align: center;
   line-height: 30px;
+  min-height: 30px;
 }
 .play-marker{
   z-index: 0;
 }
 
+.z-15{
+  z-index: 15;
+}
 .z-20{
   z-index: 20;
+}
+.z-20-i{
+  z-index: 20 !important;
+}
+.z-25{
+  z-index: 25;
 }
 .cursor-pointer{
   cursor: pointer;
 }
+.cursor-default{
+  cursor: default;
+}
+.timeline-head-side-margin {
+  margin-right: 5px;
+  margin-left: 5px;
+}
 
+.global-timeline{
+  margin-bottom: 8px;
+}
+.zoom-slider-align{
+  text-align: right!important;
+}
+.timeline-dropdown-div{
+  width: 25px !important;
+}
+.timeline-dropdown{
+  font-size: 12px !important;
+  color: grey !important;
+  min-width: 10px !important;
+  /* background-color: lightgrey !important; */
+}
+.timeline-dropdown-anchor{
+  text-decoration: none !important;
+  color: black !important;
+  margin-left: 5px;
+}
+.timeline-dropdown-anchor:hover{
+  color: #af1414 !important;
+}
+.annotation-text-wrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 100%;
+}
 
 </style>

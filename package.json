@@ -21,6 +21,7 @@
     "video-editing-timeline": "^1.0.0",
     "vue": "^2.6.11",
     "vue-chartjs": "^3.5.1",
+    "vue-dynamic-dropdown": "^1.0.12",
     "vue-filepond": "^7.0.0",
     "vue-histogram-slider": "^0.3.8",
     "vue-router": "^3.2.0",

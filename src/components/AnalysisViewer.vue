@@ -3,13 +3,11 @@
         <div class="container">
             <h2 class="text-color pd-player-tittle text-align-left">{{vidName}}</h2>
             <div class="row">
-                <div>
-                    <DataViewer />
-                </div>
-                <div class="col-lg-5">
+                <div><DataViewer/></div>
+                <div class="col-lg-6">
                     <MediaPlayer />
                 </div>
-                <div class="col-lg-7">
+                <div class="col-lg-6">
                     <div class="tab pd-player-tittle">
                         <button class="tablinks_1 active" name="shotDetection_1" v-on:click="openTab">SHOT DETECTION</button>
                         <button class="tablinks_1" name="video_1" v-on:click="openTab">DETAILS</button>
@@ -24,7 +22,7 @@
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <div><ShotBoundaryAnnotations :vidShotData="vid1ShotData" :vidMetadata="vid1Metadata"/></div>
+                    <div><ShotBoundaryAnnotations :vidMetadata="vid1Metadata"/></div>
                 </div>
             </div>
             <!-- <div class="row">
@@ -78,6 +76,7 @@ export default {
             colRight : "col-sm-5",
             typeShots : "typeShots",
             typeFaces : "typeFaces",
+            firstTime:false,
             jobRecallTime:5000,
             vid1Metadata:{ 'codec': '', 'duration': 0, 'ffmpeg_version': '', 'fps': 24.0, 'nframes': 'inf', 'path': '.mp4', 'pix_fmt': '', 'plugin': 'ffmpeg', 'size': [1280, 720], 'source_size': [1280, 720], 'title': '' },
             jobsInProcess:{},
@@ -127,9 +126,28 @@ export default {
                             clearInterval(this.jobsInProcess[jobId]["intervalHandler"]);
                             this.vid1ShotData = responceShots.data.shots;
                             this.$root.$refs.ShotBoundaryView.curVidShotData = this.vid1ShotData;
+                            this.$root.$refs.DataViewer.curVidShotData = this.vid1ShotData;
+                            if(this.firstTime){
+                                this.saveVideoTimelineSegments(this.vid1ShotData);
+                            }
+                            
                         }
                     }
                 });
+    },
+    saveVideoTimelineSegments:function (shots){
+    var payload = {"obj":{"shots":shots,"timeline_id":"17476c5c-e15f-4a04-9ecd-fe2051454df8"}};
+      axios.post(this.$root.$refs.DataViewer.dbServerLink+"saveTimelineSegments", payload).then((res) => {
+              console.log("on: getVideoMetaData: ");
+              console.log(res);
+              if(res.data["status"] == 200){
+                  alert("saveVideoTimelineSegments Successfully :)");
+                  this.firstTime = false;
+              }else{
+                  alert("saveVideoTimelineSegments Not Successfully :(");
+              }
+          });
+
     },
     getVideoMetaData:function (vidPath,vidFileTitle){
          axios.get(this.baseUrl1 +"read_meta", {params:{"title": vidFileTitle, "path": vidPath}}).then((res) => {

@@ -3,20 +3,20 @@
         <div class="text-color annotation-list-font div-table-annotation">
             <table width="100%" class="table-annotation">
               <tr>
-                <th width="27%" class="table-th-annotation">Start</th>
-                <th width="27%" class="table-th-annotation">Middle</th>
-                <th width="27%" class="table-th-annotation">End</th>
-                <th width="19%" class="table-th-annotation">Detail</th>
+                <th width="25%" class="table-th-annotation">Start</th>
+                <th width="25%" class="table-th-annotation">Middle</th>
+                <th width="25%" class="table-th-annotation">End</th>
+                <th width="25%" class="table-th-annotation">Detail</th>
               </tr>
               <tr v-for="shot in vidShotData" class="table-td-annotation " :key="shot.shot_id" :id="'shot_anno_list_'+shot.shot_id">
-                <td width="27%"><img :id="'shot_'+shot.shot_id+'_frame_0'" class="img-shot-frame" src="./../assets/ph_shot_start.png" alt="starting" /></td>
-                <td width="27%"><img :id="'shot_'+shot.shot_id+'_frame_1'" class="img-shot-frame" src="./../assets/ph_shot_middle.png" alt="middle" /></td>
-                <td width="27%"><img :id="'shot_'+shot.shot_id+'_frame_2'" class="img-shot-frame" src="./../assets/ph_shot_end.png" alt="ending" /></td>
-                <td width="19%">
+                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_0'" class="img-shot-frame" src="./../assets/ph_shot_start.png" alt="starting" /></td>
+                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_1'" class="img-shot-frame" src="./../assets/ph_shot_middle.png" alt="middle" /></td>
+                <td width="25%"><img :id="'shot_'+shot.shot_id+'_frame_2'" class="img-shot-frame" src="./../assets/ph_shot_end.png" alt="ending" /></td>
+                <td width="25%">
                   <div class="text-align-left text-align-top">
                     Shot Id: {{shot.shot_id}}<br/>
                     Time: {{shot.start_time.slice(3,8)}} - {{shot.end_time.slice(3,8)}}<br/>
-                    Duration: 10 sec<br/>
+                    Duration: {{(shot.end_frame-shot.start_frame)/25}} sec<br/>
                   </div>
                 </td>
               </tr>
@@ -39,14 +39,18 @@ export default {
   created: function() {
         this.$root.$refs.AnnotationListView = this;
     },
-    beforeMount(){
-      
+    mounted (){
     },
   data() {
         return {
             metadata:{title:"Title of teh video",
             duration: 120,
             fps:25,
+            shotSeqIdx:4,
+            shotStartFrameIdx:1,
+            shotEndFrameIdx:2,
+            shotStartTimeIdx:5,
+            shotEndTimeIdx:6,
             source_size:[1080,720],
             faceCounter:1
             },
@@ -322,6 +326,7 @@ export default {
     updateShotsList: function() {
       var thumbnail_frames = Array();
       this.vidShotData = this.$root.$refs.DataViewer.curVidShotData;
+      //this.vidShotData = this.$root.$refs.AnalysisViewerView.curVidShotData;
       for(var i=0;i<this.vidShotData.length;i++){
         var frames = [this.vidShotData[i]["start_frame"],parseInt(this.vidShotData[i]["start_frame"]+((this.vidShotData[i]["end_frame"]-this.vidShotData[i]["start_frame"])/2)), this.vidShotData[i]["end_frame"]]
         for(var j=0;j<frames.length;j++){
@@ -351,7 +356,7 @@ export default {
 
 <style>
 .annotation-list-font{
-  font-size: 15px !important;
+  font-size: 12px !important;
 }
 .annotation-list-pad-margin{
   padding: 0px;

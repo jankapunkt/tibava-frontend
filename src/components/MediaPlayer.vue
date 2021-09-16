@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div id="media_player_div"><video ref="media_player" v-on:timeupdate="onPlayTimeChange" class="no-outline" id="media_player"  width="450" height="350"  :src="vidFileSrc" controls></video></div>
+        <h2 class="text-color pd-player-tittle text-align-left">{{vidName}}</h2>
+        <div id="media_player_div" class="player-align"><video ref="media_player" v-on:timeupdate="onPlayTimeChange" class="no-outline player-padding" id="media_player"  width="565" height="330"  :src="vidFileSrc" controls></video></div>
     </div>
 </template>
 
@@ -34,4 +35,10 @@ export default {
 
 
 <style>
+.player-align{
+  vertical-align: top;
+}
+.player-padding{
+  padding-bottom: 10px;
+}
 </style>

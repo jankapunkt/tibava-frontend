@@ -149,7 +149,7 @@ svg.recharts-surface {
 /* ============ Zoom slider style ==========*/
 .zoom-slider {
   -webkit-appearance: none;
-  width: 250px;
+  width: 67%;
   height: 10px;
   border-radius: 5px;
   background: grey;
@@ -201,6 +201,13 @@ div.search button:hover {
   background: #8f1414;
 }
 
+button.tib-theme-red {
+  background: #af1414;
+}
+button.tib-theme:hover {
+  background: #8f1414;
+}
+
 div.search::after {
   content: "";
   clear: both;
@@ -246,10 +253,15 @@ div.search::after {
 }
 .pd-lg-txt {
   padding-top: 0px;
-  padding-left: 3px;
-  padding-bottom: 25px;
-  font-size: 20px;
+  padding-left: 5px;
+  padding-bottom: 0px;
+  margin-top: 32px;
+  /* font-size: 20px; */
   color: #4a4a4a;
+}
+
+.pd-fa-icon {
+  padding: 3px;
 }
 
 .pd-cb {
@@ -270,8 +282,8 @@ div.search::after {
   background-color: #ffffff;
 }
 .scene-timeline-a {
-  background-color: #bababa;
-  border: 1px solid #292929;
+  background-color: #f1f1f1;
+  border: 1px solid #4d4d4d;
   cursor: pointer;
 }
 .scene-timeline-a:hover {
@@ -289,7 +301,7 @@ div.search::after {
 }
 
 .tooltiptext {
-  visibility: hidden;
+  visibility: visible;
   width: 100px;
   background-color: grey;
   color: #fff;
@@ -297,7 +309,6 @@ div.search::after {
   border-radius: 6px;
   padding: 6px 0;
   position: absolute;
-  z-index: 1;
   bottom: 100%;
   left: 50%;
   margin-left: -100px;
@@ -473,7 +484,7 @@ li.annotation {
 }
 /* ============ Image padding and margin ==========*/
 .border-down {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid dimgray;
 }
 .text-color {
   color: #4b4b4b;
@@ -588,15 +599,15 @@ li.annotation {
 
 /* for annotations tags as buttons*/
 .annotation-tags-btn {
-  background-color: #a3c6ff; /* Green */
+  background-color: #c9d8f3; /* Green */
   border: none;
   color: #003fa6;
-  padding: 5px;
+  padding: 3px;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
-  font-size: 12px;
-  margin: 5px 2px;
+  display: relative;
+  font-size: 11px;
+  margin: 3px;
   cursor: pointer;
   border-radius: 30%;
 }

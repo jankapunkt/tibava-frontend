@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="topnav" id="myTopnav">
-            <a href="#" class="menu-icon">
+        <div class="topnav vertical-align-middle" id="myTopnav">
+            <a href="#" class="menu-icon pd-lg-txt">
                  <div class="text-align-left">
                     <div class="w3-sidebar w3-bar-block w3-border-right" style="display:none" id="mySidebar">
                         <a href="#"><img src="./../assets/userIcon.png" height="25px" width="25px"/><span>  junaid</span></a>
@@ -126,6 +126,9 @@ export default {
   text-align: center;
   text-decoration: none;
   font-size: 17px;
+}
+.vertical-align-middle{
+  vertical-align: middle !important;
 }
 .topnav a .menu-icon{
     margin-top: 50px !important;

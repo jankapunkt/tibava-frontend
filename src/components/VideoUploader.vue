@@ -9,7 +9,7 @@
                 </div>
             <br/> -->
             <div class="row">
-                <form id="upload_form" enctype="multipart/form-data">
+                <form id="upload_form" class="file-upload-form" enctype="multipart/form-data">
                     <div class="col-sm-12">
                         <input type="file" name="file1" id="file1" @change="uploadFile" accept="video/*"><br>
                         <progress id="progressBar" value="0" max="100" style="width:1100px; color: #af1414"></progress>
@@ -303,4 +303,8 @@ export default {
 
 <style>
 @import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+
+.file-upload-form{
+    margin-top: 25px;
+}
 </style>
