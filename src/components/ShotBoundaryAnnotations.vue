@@ -1,49 +1,9 @@
 <template>
   <div>
     
-    <table border="0px" width="100%">
-      <tr height="10px">
-        <th width="4%">
-          <a href="#"><i class="fa fa-play fa-lg text-color-grey" title="Add Timeline"></i></a>
-        </th>
-        <th width="4%">
-          <a href="#"
-            ><i class="fa fa-pause fa-lg text-color-grey" title="Remove Timeline"></i
-          ></a>
-        </th>
-        <th width="4%">
-          <a href="#"
-            ><i class="fa fa-step-backward fa-lg text-color-grey" title="Last Second"></i
-          ></a>
-        </th>
-        <th width="4%">
-          <a href="#"
-            ><i class="fa fa-backward fa-lg text-color-grey" title="Prev Frame"></i
-          ></a>
-        </th>
-        <th width="4%">
-          <a href="#"><i class="fa fa-forward fa-lg text-color-grey" title="Next Frame"></i></a>
-        </th>
-        <th width="4%">
-          <a href="#"
-            ><i class="fa fa-step-forward fa-lg text-color-grey" title="Next Second"></i
-          ></a>
-        </th>
-        <th width="4%">
-          <a href="#"
-            ><i class="fa fa-compress fa-lg text-color-grey" title="Merge Segments"></i
-          ></a>
-        </th>
-        <th width="4%">
-          <a href="#"><i class="fa fa-cut fa-lg text-color-grey" title="Split Segments"></i></a>
-        </th>
-        <th width="68%" class="text-align-right">
-          <a href="#" id="zoomOut" v-on:click="zoomOut()"><i class="fa fa-search-minus fa-lg text-color-grey" title="Zoom Out"></i></a>
-          <input type="range" min="1" max="100" value="100" class="zoom-slider text-color-grey" id="zoomRange" v-on:change="zoomChange()"/>
-          <a href="#" id="zoomIn" v-on:click="zoomIn()"><i class="fa fa-search-plus fa-lg text-color-grey" title="Zoom In"></i></a>
-        </th>
-      </tr>
-    </table>
+    <!-- removed player buttons table here -->
+
+
     <div class="global-timeline">
       <table border="0px" width="100%" id="globalTimeline">
         <tr height="15px"><th class="scene-timeline-a" colspan="100%"><canvas id='timelineGlobal' /></th></tr>
@@ -65,7 +25,7 @@
           <th scope="row" :width="timelineHeadWidth" class="table-th-annotation border-down">Timelines</th>
           <td :colspan="curVidShotData.length" scope="column" class="table-th-col-annotation">
             <canvas id='timeline' />
-            <div style="position: absolute; top: 25%; left: 100px; width: 16px; height: 750%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
+            <div style="position: absolute; top: 25%; left: 100px; width: 16px; height:5%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
               <canvas class="play-marker" id="playMarker" width="16" height="16"></canvas>
             </div> 
           </td>
@@ -98,6 +58,32 @@
             </div>
           </td>
         </tr>
+
+      <!-- added faceClustering -->
+        <tr v-for="(faceLine, idx) in faceClustering" :key="idx" height="40px">
+          <th scope="row" class="border-down table-th-annotation cursor-default" :width="timelineHeadWidth">
+            <div class="dropup z-20-i">
+                <i class="fa fa-bars cursor-pointer timeline-head-side-margin z-20-i" data-toggle="dropdown" title="delet timeline"></i>
+                <ul class="timeline-dropdown dropdown-menu z-20-i">
+                  <li class="z-20-i"><a href="#" class="timeline-dropdown-anchor z-20-i" v-on:click="duplicateTimeline(tmline[0],tmline[1])">Duplicate<i class="fa fa-files-o cursor-pointer timeline-head-side-margin" title="duplicate"></i></a></li>
+                  <li class="z-20-i"><a href="#" class="timeline-dropdown-anchor z-20-i" v-on:click="removeTiemline(tmline[0])">Remove<i class="fa fa-trash-o cursor-pointer timeline-head-side-margin" title="remove"></i></a></li>
+                  <li class="z-20-i"><a href="#" class="timeline-dropdown-anchor z-20-i" v-on:click="openTimelineEditModal(tmline[0])">Edit<i class="fa fa-edit cursor-pointer timeline-head-side-margin" title="edit"></i></a></li>
+                </ul>
+            </div>
+          {{faceLine.cluster_id}}</th>
+          <td :colspan="curVidShotData.length">
+            <div class="timeline-container">
+              <div class="cursor-pointer" v-for="item in curVidShotData" :key="item[shotStartFrameIdx]" :style="'width: '+getPercentage(item)+' !important;'" v-on:click="openModal(tmline[1],item[annotationIdColIdx])">
+                <button v-if="item[annotationNameColIdx] !=''" class="annotation-text-wrap annotation-tags-btn">
+                  {{ item[annotationNameColIdx] }}<i class="fa fa-times pd-fa-icon"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+
+
       </table>
     </div>
     <div>
@@ -273,6 +259,38 @@ export default {
           end: new Date(2020, 1,10),
       }],
      gSliderData:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+     faceClustering: [
+        {
+          cluster_id: 26,
+          face_ids: [
+            0, 10, 12, 14, 18, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525,
+            526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 591, 597, 618,
+            621,
+          ],
+          frame_ids: [
+            39, 157, 158, 159, 161, 762, 763, 764, 765, 766, 767, 768, 769, 770,
+            771, 772, 773, 774, 775, 776, 777, 777, 778, 779, 780, 982, 984,
+            994, 995,
+          ],
+          occurrences: 29,
+          color: [
+            Math.floor(Math.random() * 130 + 130),
+            Math.floor(Math.random() * 130 + 130),
+            Math.floor(Math.random() * 130 + 130),
+          ],
+        },
+        {
+          cluster_id: 9,
+          face_ids: [1],
+          frame_ids: [118],
+          occurrences: 1,
+          color: [
+            Math.floor(Math.random() * 130 + 130),
+            Math.floor(Math.random() * 130 + 130),
+            Math.floor(Math.random() * 130 + 130),
+          ],
+        },
+      ],
     };
   },
   methods: {

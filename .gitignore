@@ -26,4 +26,5 @@
 .env.test.local
 .env.production.local
 npm-debug.log*
+.eslintrc.js
 

@@ -2,7 +2,9 @@
     <div>
         <div class="container">
             <div class="row">
-                <div><DataViewer/></div>
+                <div>
+                    <DataViewer/>
+                </div>
                 <div class="col-lg-6">
                     <MediaPlayer />
                 </div>
@@ -11,7 +13,7 @@
                         <button class="tablinks_1 active" name="shotDetection_1" v-on:click="openTab">SHOT DETECTION</button>
                         <button class="tablinks_1" name="video_1" v-on:click="openTab">DETAILS</button>
                     </div>
-                    <div id="shotDetection_1" class="tabcontent_1">
+                    <div id="shotDetection_1" class="tabcontent_1"> <!-- This is the panel in the upper right -->
                         <AnnotationList :type="typeShots" :vidShotData="vid1ShotData" :vidFaceData="vid1FaceData" />
                     </div>
                     <div id="video_1" class="tabcontent_1 tabcontent">
@@ -21,9 +23,15 @@
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <div><ShotBoundaryAnnotations :vidMetadata="vid1Metadata"/></div>
+                    <div><TimelineComponent  /></div> <!-- Added this as new part component -->
                 </div>
             </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div><ShotBoundaryAnnotations :vidMetadata="vid1Metadata"/></div> <!-- This is the timeline. Includes the video control buttons -->
+                </div>
+            </div>
+
             <!-- <div class="row">
                 <div class="col-lg-12">
                     <div class="tab">
@@ -56,6 +64,7 @@ import ShotBoundaryAnnotations from "./ShotBoundaryAnnotations";
 
 //import Metadata from "./Metadata";
 import DataViewer from "./DataViewer";
+import TimelineComponent from "./TimelineComponent";
 //import tempData from './../assets/tempData.json'
 
 export default {
@@ -98,6 +107,7 @@ export default {
         ShotBoundaryAnnotations,
         //FaceAnalysisGraph,
         DataViewer,
+        TimelineComponent,
         VideoList
   },
   methods: {
