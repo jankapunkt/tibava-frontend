@@ -37,7 +37,7 @@
             <h6 class="table-th-fix-annotation">Shots</h6>
           </td>
         </tr> -->
-        <tr v-for="tmline in shotTimelines" :key="tmline[0]" height="40px">
+        <tr v-for="tmline in shotTimelines" :key="tmline.id" height="40px">
           <th scope="row" class="border-down table-th-annotation cursor-default" :width="timelineHeadWidth">
             <div class="dropup z-20-i">
                 <i class="fa fa-bars cursor-pointer timeline-head-side-margin z-20-i" data-toggle="dropdown" title="delet timeline"></i>
@@ -60,7 +60,7 @@
         </tr>
 
       <!-- added faceClustering -->
-        <tr v-for="(faceLine, idx) in faceClustering" :key="idx" height="40px">
+        <tr v-for="faceLine in faceClustering" :key="faceLine.id" height="40px">
           <th scope="row" class="border-down table-th-annotation cursor-default" :width="timelineHeadWidth">
             <div class="dropup z-20-i">
                 <i class="fa fa-bars cursor-pointer timeline-head-side-margin z-20-i" data-toggle="dropdown" title="delet timeline"></i>
@@ -591,70 +591,76 @@ export default {
                 console.log("getTimelineShots :(");
             }
         });
+    },
+    updateApplication: function () {
+      this.$root.$refs.ShotBoundaryView.durationMax = this.vidMetadata.duration;
+      console.log("duration in metadata is : ",this.vidMetadata.duration);
+      this.fps = this.vidMetadata.fps;
+      this.$root.$refs.AnnotationListView.updateShotsList();
+      var acc = document.getElementsByClassName("accordion");
+      var i;
+      for (i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function () {
+          this.classList.toggle("active");
+          var panel = this.nextElementSibling;
+          if (panel.style.maxHeight) {
+            panel.style.maxHeight = null;
+          } else {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+          }
+        });
+      }
+      var modal = document.getElementById("sidebarAnnotationItemsModal"); // old annotationTimelineModal
+      var span = document.getElementsByClassName(
+          "sidebarAnnotationItemsModalClose"
+      )[0];
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+      var modal2 = document.getElementById("timelineOptionsModal");
+      var span2 = document.getElementsByClassName(
+          "timelineOptionsModalClose"
+      )[0];
+      span2.onclick = function () {
+        document.getElementById("dd_annotation_category_button_in_annotation").disabled="";
+        modal2.style.display = "none";
+      };
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+          modal2.style.display = "none";
+        }
+      };
+      const config = {
+        el: "#timeline",
+        canvasWidth: 4000,
+        canvasHeight: 22,
+        minimumScale: 50,
+        minimumScaleTime: 1,
+      }
+      const videoEditingTimeline = new VideoEditingTimeline(config);
+      const configGlobal = {
+        el: "#timelineGlobal",
+        canvasWidth: 1110,
+        canvasHeight: 22,
+        minimumScale: 17,
+        minimumScaleTime: 1,
+      }
+      const videoEditingTimelineGlobal = new VideoEditingTimeline(configGlobal);
+      console.log("videoEditingTimeline",videoEditingTimeline);
+      console.log("videoEditingTimelineGlobal",videoEditingTimelineGlobal);
     }
   },
   mounted:function(){
+    console.log('mounted')
     this.getAllTimelines();
     this.createTimeMarkImage();
-    //this.createGlobaTimelineIndicator(); 
+    //this.createGlobaTimelineIndicator();
+    this.updateApplication()
   },
   updated: function () {
-    this.$root.$refs.ShotBoundaryView.durationMax = this.vidMetadata.duration;
-    console.log("duration in metadata is : ",this.vidMetadata.duration);
-    this.fps = this.vidMetadata.fps;
-    this.$root.$refs.AnnotationListView.updateShotsList();
-    var acc = document.getElementsByClassName("accordion");
-    var i;
-    for (i = 0; i < acc.length; i++) {
-      acc[i].addEventListener("click", function () {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.maxHeight) {
-          panel.style.maxHeight = null;
-        } else {
-          panel.style.maxHeight = panel.scrollHeight + "px";
-        }
-      });
-    }
-    var modal = document.getElementById("sidebarAnnotationItemsModal"); // old annotationTimelineModal
-    var span = document.getElementsByClassName(
-      "sidebarAnnotationItemsModalClose"
-    )[0]; 
-    span.onclick = function () {
-      modal.style.display = "none";
-    };
-    var modal2 = document.getElementById("timelineOptionsModal");
-    var span2 = document.getElementsByClassName(
-      "timelineOptionsModalClose"
-    )[0]; 
-    span2.onclick = function () {
-      document.getElementById("dd_annotation_category_button_in_annotation").disabled="";
-      modal2.style.display = "none";
-    };
-    window.onclick = function (event) {
-      if (event.target == modal) {
-        modal.style.display = "none";
-        modal2.style.display = "none";
-      }
-    };
-    const config = {
-    el: "#timeline",
-    canvasWidth: 4000,
-    canvasHeight: 22,
-    minimumScale: 50, 
-    minimumScaleTime: 1, 
-    }
-    const videoEditingTimeline = new VideoEditingTimeline(config);
-    const configGlobal = {
-    el: "#timelineGlobal",
-    canvasWidth: 1110,
-    canvasHeight: 22,
-    minimumScale: 17, 
-    minimumScaleTime: 1, 
-    }
-    const videoEditingTimelineGlobal = new VideoEditingTimeline(configGlobal);
-    console.log("videoEditingTimeline",videoEditingTimeline);
-    console.log("videoEditingTimelineGlobal",videoEditingTimelineGlobal);
+    console.log('updated')
+    this.updateApplication()
   },
 };
 </script>
