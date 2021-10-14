@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+
     <!-- removed player buttons table here -->
 
 
@@ -17,7 +17,7 @@
           </th>
         </tr>
       </table>
- 
+
     </div>
     <div class="panel-content timeline-font">
       <table style="width: 1000% !important" id="tableShotTimeLineScrolled" class="">
@@ -27,7 +27,7 @@
             <canvas id='timeline' />
             <div style="position: absolute; top: 25%; left: 100px; width: 16px; height:5%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
               <canvas class="play-marker" id="playMarker" width="16" height="16"></canvas>
-            </div> 
+            </div>
           </td>
         </tr>
         <!-- <tr height="10px" border="0px">
@@ -163,10 +163,10 @@
                   </button>
                 </div>
               </div>
-              
+
             </div>
           </div>
-          
+
           <div class="row">
             <h4 class="text-align-left">Annotations Items</h4>
             <table width="100%" class="text-color">
@@ -199,7 +199,7 @@
             </table>
           </div>
           <br />
-          
+
         </div>
       </div>
     </div>
@@ -445,19 +445,19 @@ export default {
               }
           });
       }
-      
+
     },
     onChangeAnnotationCategoryInTimeline(event,entry){
       document.getElementById("dd_annotation_category_value").value = event.target.id;
       document.getElementById("dd_annotation_category_button_in_timeline").innerText = entry[1];
       this.getAllAnnotationItems();
-      
+
     },
     onChangeAnnotationCategoryInAnnotation(event,entry){
       document.getElementById("dd_annotation_category_value").value = event.target.id;
       document.getElementById("dd_annotation_category_button_in_annotation").innerText = entry[1];
       this.getAllAnnotationItems();
-      
+
     },
     onChangeAnnotationItem(event,entry){
       document.getElementById("dd_annotation_item_value").value = event.target.id;
@@ -531,7 +531,7 @@ export default {
       this.currSegmentId = segmentId;
       this.getAllAnnotationCategories(CategoryName);
       //this.getAllAnnotationItems();
-      
+
     },
     updateSelectcategoryAnnotation:function(CategoryName){
       for(var k=0;k<this.category_names.length;k++){
@@ -544,7 +544,7 @@ export default {
       document.getElementById("dd_annotation_category_button_in_annotation").disabled=true;
     },
     openTimelineEditModal(timelineId) {
-      var modal = document.getElementById("timelineOptionsModal"); 
+      var modal = document.getElementById("timelineOptionsModal");
       modal.style.display = "block";
       document.getElementById("dd_timeline_id").value = timelineId;
       this.getAllAnnotationCategories();
@@ -573,9 +573,9 @@ export default {
           .getElementById("shot_anno_timeline_1_" + item[this.shotSeqIdx])
           .scrollIntoView({ behavior: "auto", block: "end", inline: "start" });
       }else{
-        document.getElementById("media_player").currentTime = document.getElementById("shot_anno_timeline_pointer").value; 
+        document.getElementById("media_player").currentTime = document.getElementById("shot_anno_timeline_pointer").value;
       }
-      
+
     },
     getTimelineShots:function(timelineId){
       var payload = {"obj":{"timeline_id":timelineId}};

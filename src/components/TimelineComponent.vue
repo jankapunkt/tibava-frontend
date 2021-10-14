@@ -1,14 +1,13 @@
 <template>
   <div>
-    
+
     <table border="0px" width="100%">
       <tr height="10px">
         <th width="4%">
-          <a href="#"><i class="fa fa-play fa-lg text-color-grey" title="Play"></i></a>
+          <a href="#" id="timeline_playbutton"><i class="fa fa-play fa-lg text-color-grey" title="Play"></i></a>
         </th>
         <th width="4%">
-          <a href="#"
-            ><i class="fa fa-pause fa-lg text-color-grey" title="Pause"></i
+          <a href="#" id="timeline_pausebutton"><i class="fa fa-pause fa-lg text-color-grey" title="Pause"></i
           ></a>
         </th>
         <th width="4%">
@@ -45,9 +44,9 @@
       </tr>
     </table>
 
- 
+
   </div>
-    
+
 </template>
 
 <script>
@@ -57,6 +56,9 @@ import VideoEditingTimeline from 'video-editing-timeline';
 // import VueDropdown from 'vue-dynamic-dropdown'
 
 export default {
+  mounted () {
+    this.initializeButtons()
+  },
   methods: {
     zoomIn:function ()  {
       document.getElementById("zoomRange").value *= 1.05;
@@ -75,6 +77,14 @@ export default {
       var stlVal = "width: "+percent+"% !important";
       document.getElementById("tableShotTimeLineScrolled").style = stlVal;
     },
+    initializeButtons () {
+      document.querySelector('#timeline_playbutton').addEventListener('click', function () {
+        document.querySelector('#media_player').play()
+      })
+      document.querySelector('#timeline_pausebutton').addEventListener('click', function () {
+        document.querySelector('#media_player').pause()
+      })
+    }
   },
 };
 
