@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <!-- removed player buttons table here -->
+    <!-- moved player buttons table here to TimelineComponent-->
 
 
     <div class="global-timeline">
@@ -25,7 +25,7 @@
           <th scope="row" :width="timelineHeadWidth" class="table-th-annotation border-down">Timelines</th>
           <td :colspan="curVidShotData.length" scope="column" class="table-th-col-annotation">
             <canvas id='timeline' />
-            <div style="position: absolute; top: 25%; left: 100px; width: 16px; height:5%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
+            <div id="shot_anno_timeline_pointer" style="position: absolute; top: 25%; left: 100px; width: 16px; height:5%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
               <canvas class="play-marker" id="playMarker" width="16" height="16"></canvas>
             </div>
           </td>
