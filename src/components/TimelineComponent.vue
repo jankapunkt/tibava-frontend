@@ -11,30 +11,32 @@
           ></a>
         </th>
         <th width="4%">
-          <a href="#"
-            ><i class="fa fa-step-backward fa-lg text-color-grey" title="Last Second"></i
+          <a href="#" id="timeline_backbutton">
+            <i class="fa fa-step-backward fa-lg text-color-grey" title="Previous Second"></i
           ></a>
         </th>
         <th width="4%">
-          <a href="#"
-            ><i class="fa fa-backward fa-lg text-color-grey" title="Prev Frame"></i
+          <a href="#" id="timeline_previousframebutton">
+            <i class="fa fa-backward fa-lg text-color-grey" title="Previous Frame"></i
           ></a>
         </th>
         <th width="4%">
-          <a href="#"><i class="fa fa-forward fa-lg text-color-grey" title="Next Frame"></i></a>
+          <a href="#" id="timeline_nextframebutton">
+            <i class="fa fa-forward fa-lg text-color-grey" title="Next Frame"></i></a>
         </th>
         <th width="4%">
-          <a href="#"
-            ><i class="fa fa-step-forward fa-lg text-color-grey" title="Next Second"></i
+          <a href="#" id="timeline_forwardbutton">
+            <i class="fa fa-step-forward fa-lg text-color-grey" title="Next Second"></i
           ></a>
         </th>
         <th width="4%">
-          <a href="#"
-            ><i class="fa fa-compress fa-lg text-color-grey" title="Merge Segments"></i
+          <a href="#" id="timeline_compressbutton">
+            <i class="fa fa-compress fa-lg text-color-grey" title="Merge Segments"></i
           ></a>
         </th>
         <th width="4%">
-          <a href="#"><i class="fa fa-cut fa-lg text-color-grey" title="Split Segments"></i></a>
+          <a href="#" id="timeline_cutbutton">
+            <i class="fa fa-cut fa-lg text-color-grey" title="Split Segments"></i></a>
         </th>
         <th width="68%" class="text-align-right">
           <a href="#" id="zoomOut" v-on:click="zoomOut()"><i class="fa fa-search-minus fa-lg text-color-grey" title="Zoom Out"></i></a>
@@ -83,6 +85,18 @@ export default {
       })
       document.querySelector('#timeline_pausebutton').addEventListener('click', function () {
         document.querySelector('#media_player').pause()
+      })
+      document.querySelector('#timeline_backbutton').addEventListener('click', function () {
+        document.querySelector('#media_player').currentTime +=1
+      })
+      document.querySelector('#timeline_previousframebutton').addEventListener('click', function () {
+        document.querySelector('#media_player').currentTime -=0.033366700033
+      })
+      document.querySelector('#timeline_nextframebutton').addEventListener('click', function () {
+        document.querySelector('#media_player').currentTime +=0.033366700033
+      })
+      document.querySelector('#timeline_forwardbutton').addEventListener('click', function () {
+        document.querySelector('#media_player').currentTime +=1
       })
     }
   },
