@@ -59,7 +59,7 @@
           </td>
         </tr>
 
-      <!-- added faceClustering -->
+      <!-- commented out: added faceClustering 
         <tr v-for="faceLine in faceClustering" :key="faceLine.id" height="40px">
           <th scope="row" class="border-down table-th-annotation cursor-default" :width="timelineHeadWidth">
             <div class="dropup z-20-i">
@@ -73,7 +73,7 @@
           {{faceLine.cluster_id}}</th>
           <td :colspan="curVidShotData.length">
             <div class="timeline-container">
-              <div class="cursor-pointer" v-for="item in curVidShotData" :key="item[shotStartFrameIdx]" :style="'width: '+getPercentage(item)+' !important;'" v-on:click="openModal(tmline[1],item[annotationIdColIdx])">
+              <div class="cursor-pointer" v-for="item in faceClustering.frame_ids" :key="item[shotStartFrameIdx]" :style="'width: '+getPercentage(item)+' !important;'" v-on:click="openModal(tmline[1],item[annotationIdColIdx])">
                 <button v-if="item[annotationNameColIdx] !=''" class="annotation-text-wrap annotation-tags-btn">
                   {{ item[annotationNameColIdx] }}<i class="fa fa-times pd-fa-icon"></i>
                 </button>
@@ -81,7 +81,7 @@
             </div>
           </td>
         </tr>
-
+-->
 
 
       </table>
