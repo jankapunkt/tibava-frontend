@@ -25,7 +25,7 @@
           <th scope="row" :width="timelineHeadWidth" class="table-th-annotation border-down">Timelines</th>
           <td :colspan="curVidShotData.length" scope="column" class="table-th-col-annotation">
             <canvas id='timeline' />
-            <div id="shot_anno_timeline_pointer" style="position: absolute; top: 25%; left: 100px; width: 16px; height:5%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
+            <div id="shot_anno_timeline_pointer" style="position: absolute; top: 25%; left: 100px; width: 16px; height:750%; background: linear-gradient(90deg, transparent 8px, rgb(255, 0, 0) 8px, rgb(255, 0, 0) 9px, transparent 9px) 0% 0% / 16px 16px repeat-y; pointer-events: none; margin-top: 16px;">
               <canvas class="play-marker" id="playMarker" width="16" height="16"></canvas>
             </div>
           </td>
@@ -40,7 +40,7 @@
         <tr v-for="tmline in shotTimelines" :key="tmline.id" height="40px">
           <th scope="row" class="border-down table-th-annotation cursor-default" :width="timelineHeadWidth">
             <div class="dropup z-20-i">
-                <i class="fa fa-bars cursor-pointer timeline-head-side-margin z-20-i" data-toggle="dropdown" title="delet timeline"></i>
+                <i class="fa fa-bars cursor-pointer timeline-head-side-margin z-20-i" data-toggle="dropdown" title="Timeline options"></i>
                 <ul class="timeline-dropdown dropdown-menu z-20-i">
                   <li class="z-20-i"><a href="#" class="timeline-dropdown-anchor z-20-i" v-on:click="duplicateTimeline(tmline[0],tmline[1])">Duplicate<i class="fa fa-files-o cursor-pointer timeline-head-side-margin" title="duplicate"></i></a></li>
                   <li class="z-20-i"><a href="#" class="timeline-dropdown-anchor z-20-i" v-on:click="removeTiemline(tmline[0])">Remove<i class="fa fa-trash-o cursor-pointer timeline-head-side-margin" title="remove"></i></a></li>
@@ -48,10 +48,10 @@
                 </ul>
             </div>
           {{tmline[1]}}</th>
-          <td :colspan="curVidShotData.length">
+          <td v-if="curVidShotDataList[tmline[0]]" :colspan="curVidShotDataList[tmline[0]].length">
             <div class="timeline-container">
-              <div class="cursor-pointer" v-for="item in curVidShotData" :key="item[shotStartFrameIdx]" :style="'width: '+getPercentage(item)+' !important;'" v-on:click="openModal(tmline[1],item[annotationIdColIdx])">
-                <button v-if="item[annotationNameColIdx] !=''" class="annotation-text-wrap annotation-tags-btn">
+              <div class="cursor-pointer" v-for="item in curVidShotDataList[tmline[0]]" :key="item[shotStartFrameIdx]" :style="'width: '+getPercentage(item)+' !important; height: 40px'" @click.self="openModal(tmline[1],item[annotationIdColIdx])">
+                <button v-if="item[annotationNameColIdx] !=''" class="annotation-text-wrap annotation-tags-btn" v-on:click="deleteAnnotationValue(tmline[1],item[annotationIdColIdx])">
                   {{ item[annotationNameColIdx] }}<i class="fa fa-times pd-fa-icon"></i>
                 </button>
               </div>
@@ -235,6 +235,7 @@ export default {
       annotationIdColIdx:0,
       currSegmentId:"",
       currAnnotationItemName:"",
+      masterTimelineName:"Shots",
       item_names : [["1","item1"],["2","item2"],["3","item3"]],
       category_names : [["1","category 1"],["2","category 2"],["3","category 3"]],
       durationIndexes:[0,1,2],
@@ -244,6 +245,7 @@ export default {
       timeLineZoomStyle :"width: 1000% !important",
       timeLineZoomStyleVal:1000,
       curVidShotData: [["",0,42,"",2,"",""] ],
+      curVidShotDataList:{},
       annotationcItems: [],
        events: [{
           name: "event 1",
@@ -412,6 +414,23 @@ export default {
     deleteAnnotationItem(id) {
       console.log("in deleteAnnotationItem: ", id);
     },
+    deleteAnnotationValue(timelineId, annotationId) {
+      debugger;
+      console.log("in deleteAnnotationValue annotationId: ", annotationId);
+      console.log("in deleteAnnotationValue timelineId: ", timelineId);
+      var payload = {"obj":{"annotationId":annotationId,"annotationItem":""}};
+        axios.post(this.$root.$refs.DataViewer.dbServerLink+"updateTimelineSegment", payload).then((res) => {
+              console.log("on: in deleteAnnotationValue ");
+              console.log(res);
+              if(res.data["status"] == 200){
+                  alert("Annotation Item Saved Successfully :)");
+                  document.getElementById("category_name_dd").value = "";
+                  this.getAllTimelines();
+              }else{
+                  alert("AnnotationItem Not Successfull :(");
+              }
+          });
+    },
     selectSaveAnnotationItem() {
       console.log("in selectSaveAnnotationItem: ");
       var payload = {"obj":{"annotationId":this.currSegmentId,"annotationItem":this.currAnnotationItemName}};
@@ -421,7 +440,10 @@ export default {
               if(res.data["status"] == 200){
                   alert("Annotation Item Saved Successfully :)");
                   this.getAllAnnotationCategories();
+                  this.getAllTimelines();
                   document.getElementById("category_name_dd").value = "";
+                  var modal = document.getElementById("sidebarAnnotationItemsModal");
+                    modal.style.display = "none";
               }else{
                   alert("AnnotationItem Not Successfull :(");
               }
@@ -519,7 +541,11 @@ export default {
             if(res.data["status"] == 200){
                 console.log("getAllTimelines Successfully :)");
                 this.shotTimelines = res.data.result;
-                this.getTimelineShots(this.shotTimelines[0][0]);
+                //this.getTimelineShots(this.shotTimelines[0][0]);
+                for(var k=0;k<res.data.result.length;k++){
+                  this.getTimelineShots(res.data.result[k][0],res.data.result[k]);
+                }
+                //this.getTimelineShots(res.data.result[k][0],res.data.result);
             }else{
                 console.log("getAllTimelines Successfull :(");
             }
@@ -528,6 +554,7 @@ export default {
     openModal(CategoryName,segmentId) {
       var modal = document.getElementById("sidebarAnnotationItemsModal"); // old annotationTimelineModal
       modal.style.display = "block";
+      debugger;
       this.currSegmentId = segmentId;
       this.getAllAnnotationCategories(CategoryName);
       //this.getAllAnnotationItems();
@@ -577,16 +604,39 @@ export default {
       }
 
     },
-    getTimelineShots:function(timelineId){
+    getTimelineShots:function(timelineId, timeline=[]){
       var payload = {"obj":{"timeline_id":timelineId}};
+      axios.post(this.$root.$refs.DataViewer.dbServerLink+"getTimelineSegmentsByTimelineId",payload).then((res) => {
+            console.log("on: getAllAnnotationItems: ");
+            console.log(res);
+            if(res.data["status"] == 200){
+                console.log("getTimelineShots Successfully :)");
+                if(timeline[1] === this.masterTimelineName){
+                  this.curVidShotData  = res.data.result;
+                  //this.$root.$refs.DataViewer.curVidShotData = this.curVidShotData;
+                }
+                //this.curVidShotData  = res.data.result;
+                this.curVidShotDataList[timelineId] = res.data.result;
+                //var curVidShotDataListVar = this.curVidShotDataList;
+                debugger;
+                //this.curVidShotData = this.vidShotData;
+                //this.$root.$refs.DataViewer.curVidShotData = this.curVidShotData;
+            }else{
+                console.log("getTimelineShots :(");
+            }
+        });
+    },
+    getTimelineShotsAll:function(timelines){
+      var payload = {"obj":{"timeline_id":""}};
       axios.post(this.$root.$refs.DataViewer.dbServerLink+"getAllTimelineSegments",payload).then((res) => {
             console.log("on: getAllAnnotationItems: ");
             console.log(res);
             if(res.data["status"] == 200){
                 console.log("getTimelineShots Successfully :)");
-                this.curVidShotData  = res.data.result;
-                //this.curVidShotData = this.vidShotData;
-                //this.$root.$refs.DataViewer.curVidShotData = this.curVidShotData;
+                //for(var k=0;k<timelines.length;k++){
+                  //this.curVidShotDataList[timelineId] =res.data.result;
+                //}
+                
             }else{
                 console.log("getTimelineShots :(");
             }
@@ -653,14 +703,14 @@ export default {
   },
   mounted:function(){
     console.log('mounted')
-    this.getAllTimelines();
     this.createTimeMarkImage();
     //this.createGlobaTimelineIndicator();
-    this.updateApplication()
+    this.getAllTimelines();
+    this.updateApplication();
   },
   updated: function () {
     console.log('updated')
-    this.updateApplication()
+    this.updateApplication();
   },
 };
 </script>
@@ -737,6 +787,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
+  max-height: 30px;
   max-width: 100%;
 }
 

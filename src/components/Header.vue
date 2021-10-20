@@ -71,6 +71,8 @@ export default {
       openModal(){
           var modal = document.getElementById("sidebarAnnotationItemsModal");
           modal.style.display = "block";
+          this.$root.$refs.ShotBoundaryView .getAllAnnotationCategories("");
+          document.getElementById("dd_annotation_category_button_in_annotation").disabled="";
       },
       w3_open() {
         document.getElementById("mySidebar").style.display = "block";
