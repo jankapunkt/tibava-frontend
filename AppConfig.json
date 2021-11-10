@@ -1,0 +1,4 @@
+{
+  "dbServerLink": "http://localhost:81/postgres/",
+  "backendServerLink": "http://localhost:81/backend/"
+}

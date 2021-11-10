@@ -6,7 +6,7 @@
 
 <script>
 //import axios from "axios";
-
+import AppConfig from "./../../AppConfig.json";
 export default {
   name: "DataViewer",
   data() {
@@ -45,7 +45,7 @@ export default {
       ],
       faceDetection: null,
       successStatus: 200,
-      dbServerLink: "http://localhost:5888/",
+      dbServerLink: AppConfig.dbServerLink,
       curVidShotData: [
         {
           end_frame: 71,
