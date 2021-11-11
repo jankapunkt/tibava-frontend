@@ -207,7 +207,6 @@
 
 <script>
 import axios from "axios";
-import uploadModal from "./UploadModal.vue";
 
 export default {
     name: "VideoUploaderView",
@@ -377,9 +376,6 @@ export default {
             ajax.open("POST", this.dbServerLink + "saveVideo");
             ajax.send(formdata);
         },
-    },
-    components: {
-        "example-modal": uploadModal,
     },
     mounted: function () {
         this.getAllVideos();
