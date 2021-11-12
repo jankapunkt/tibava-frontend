@@ -26,12 +26,12 @@
             </button>
             <div id="meanuAccordion0" class="w3-hide w3-white w3-card">
               <a href="#" class="w3-bar-item w3-button"
-                ><router-link to="/" class="">Video Analysis</router-link></a
+                ><router-link to="/analysis" class=""
+                  >Video Analysis</router-link
+                ></a
               >
               <a href="#" class="w3-bar-item w3-button"
-                ><router-link to="/upload" class=""
-                  >Upload New Video</router-link
-                ></a
+                ><router-link to="/" class="">Upload New Video</router-link></a
               >
               <a
                 href="#"

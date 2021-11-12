@@ -203,6 +203,7 @@ div.search button:hover {
 
 button.tib-theme-red {
   background: #af1414;
+  border-color: #af1414;
 }
 button.tib-theme:hover {
   background: #8f1414;

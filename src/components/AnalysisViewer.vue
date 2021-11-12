@@ -99,7 +99,7 @@ export default {
       typeShots: "typeShots",
       typeFaces: "typeFaces",
       firstTime: true,
-      jobRecallTime: 5000,
+      jobRecallTime: 8000,
       vid1Metadata: {
         codec: "",
         duration: 0,
@@ -160,7 +160,7 @@ export default {
           if (responceShots) {
             if (responceShots.data.status == "SUCCESS") {
               console.log("clearing checkVideoDetectShotsDone");
-              clearInterval(this.jobsInProcess[jobId]["intervalHandler"]);
+              //clearInterval(this.jobsInProcess[jobId]["intervalHandler"]);
               this.vid1ShotData = responceShots.data.shots;
               this.$root.$refs.ShotBoundaryView.curVidShotData =
                 this.vid1ShotData;
@@ -168,6 +168,11 @@ export default {
               if (this.firstTime) {
                 this.saveVideoTimelineSegments(this.vid1ShotData);
               }
+            } else {
+              setTimeout(
+                this.checkVideoDetectShotsDone(jobId, fps),
+                AppConfig.jobRecallTime
+              );
             }
           }
         });
@@ -215,17 +220,24 @@ export default {
               .then((responceShots) => {
                 if (responceShots) {
                   console.log("setting checkVideoDetectShotsDone");
-                  var intervalHandler = setInterval(
+                  /* var intervalHandler = setInterval(
                     this.checkVideoDetectShotsDone(
                       responceShots.data.job_id,
                       responce.metadata.fps
                     ),
-                    this.jobRecallTime
+                    AppConfig.jobRecallTime
                   );
                   this.jobsInProcess[responceShots.data.job_id] = {
                     type: "detect_shots",
                     intervalHandler: intervalHandler,
-                  };
+                  }; */
+                  setTimeout(
+                    this.checkVideoDetectShotsDone(
+                      responceShots.data.job_id,
+                      responce.metadata.fps
+                    ),
+                    AppConfig.jobRecallTime
+                  );
                   axios
                     .post(
                       this.$root.$refs.DataViewer.dbServerLink +
