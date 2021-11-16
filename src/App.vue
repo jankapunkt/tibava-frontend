@@ -3,8 +3,10 @@
     <div id="nav">
       <Header/>
     </div>
+    <div id="notifikation"></div>
     <router-view />
   </div>
+
 </template>
 
 <script>
@@ -13,10 +15,11 @@ import Header from "@/components/Header.vue";
 //import HeaderStandalone from "@/components/HeaderStandalone.vue";
 //import Sidebar from "@/components/Sidebar.vue";
 
+
 export default {
   name: "App",
   components: {
-    Header
+    Header,
   },
 };
 </script>

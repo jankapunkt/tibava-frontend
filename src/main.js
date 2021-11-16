@@ -8,12 +8,14 @@ import store from "./store";
 import "bootstrap";
 //import 'jquery'; 
 import "bootstrap/dist/css/bootstrap.min.css";
+import VueNotifikation from 'vue-notifikation';
 
 //import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
 import TrendChart from "vue-trend-chart";
 
 Vue.use(TrendChart);
+Vue.use(VueNotifikation);
 //Vue.use(BootstrapVue)
 //Vue.use(BootstrapVueIcons)
 

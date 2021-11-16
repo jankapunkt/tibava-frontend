@@ -388,7 +388,13 @@ export default {
       if (file) {
         allInputsArr["video_file_name"] = file.name;
       } else {
-        alert("video file not selected!!!");
+        this.$notifikation.info({
+        message: 'No video file selected.',
+        duration: 8000,
+        style : { 
+                  width: 100, top: 30, 
+                 },
+        });
       }
       allInputsArr["licence"] = document.getElementById("licence").value;
       let payload = { user_id: "junaid", videoFormalMetadata: allInputsArr };
@@ -398,11 +404,23 @@ export default {
         console.log("on: saveVideoRecord: ");
         console.log(res);
         if (res.data["status"] == 200) {
-          //alert("video saved Successfully :)");
-          this.onFormCancel();
+        this.onFormCancel();
+        this.$notifikation.success({
+        message: 'Video loaded successfully.',
+        duration: 8000,
+        style : { 
+                  width: 100, top: 30, 
+                 },
+        });
           this.getAllVideos();
         } else {
-          alert("Sorry, creating new video entry not successfull.");
+          this.$notifikation.error({
+          message: 'Video not loaded successfully.',
+          duration: 8000,
+          style : { 
+                  width: 100, top: 30, 
+          },
+        });
         }
       });
     },
@@ -450,6 +468,13 @@ export default {
     },
     errorHandler: function () {
       document.getElementById("status").innerHTML = "Upload Failed";
+        this.$notifikation.error({
+        message: 'Upload failed.',
+        duration: 8000,
+        style : { 
+                  width: 100, top: 30, 
+                 },
+        });
     },
     abortHandler: function () {
       document.getElementById("status").innerHTML = "Upload Aborted";

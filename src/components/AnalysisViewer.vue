@@ -82,6 +82,7 @@ import TimelineComponent from "./TimelineComponent";
 //import tempData from './../assets/tempData.json'
 import AppConfig from "./../../AppConfig.json";
 
+
 export default {
   name: "AnalysisViewerView",
   colLeft: "col-sm-7",
@@ -193,10 +194,22 @@ export default {
           console.log("on: getVideoMetaData: ");
           console.log(res);
           if (res.data["status"] == 200) {
-            alert("saveVideoTimelineSegments Successfully :)");
+                 this.$notifikation.success({
+                  message: 'VideoTimelineSegments saved.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
             this.firstTime = false;
           } else {
-            alert("saveVideoTimelineSegments Not Successfully :(");
+                this.$notifikation.error({
+                  message: 'VideoTimelineSegments not saved.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
           }
         });
     },
@@ -269,6 +282,8 @@ export default {
     var vidPath = this.$root.$refs.AnalysisViewerView.vidPath;
     var vidFileTitle = this.$root.$refs.AnalysisViewerView.vidFileTitle;
     this.getVideoMetaData(vidPath, vidFileTitle);
+    
+
   },
 };
 </script>
