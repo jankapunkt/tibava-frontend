@@ -161,7 +161,7 @@
               <th class="text-align-left">Title</th>
               <th class="text-align-left">User</th>
               <th class="text-align-left">Licence</th>
-              <th class="text-align-left">Identifier</th>
+              <th class="text-align-left col-wrap-text">Identifier</th>
               <th class="text-align-left">Process</th>
               <th class="text-align-left">Actions</th>
             </tr>
@@ -174,18 +174,14 @@
               <th class="text-align-left">{{ vid[1] }}</th>
               <th class="text-align-left">{{ vid[3] }}</th>
               <th class="text-align-left">{{ vid[5] }}</th>
-              <th class="text-align-left">{{ vid[6] }}</th>
+              <th class="text-align-left col-wrap-text">{{ vid[6] }}</th>
               <th class="text-align-left" id="status_icon">
                 <div v-for="process in processList" :key="process">
                   {{ process }} | <i class="fa fa-spinner fa-pulse red"></i>
                 </div>
               </th>
               <th class="text-align-left">
-                <a href="#" v-on:click="processVideo(vid[0], vid[10])"
-                  >Process</a
-                >
-                |
-                <a href="#" v-on:click="loadVideo(vid[0])">Load</a>
+                <a href="#" v-on:click="loadVideo(vid[0])">Load Analysis</a>
                 |
                 <a href="#" v-on:click="deleteVideo(vid[0])"
                   ><i class="fa fa-trash fa-lg red"></i
@@ -211,7 +207,10 @@ export default {
   data: function () {
     return {
       myFiles: "empty",
+      processCheckTime: 7500,
       dbServerLink: AppConfig.dbServerLink,
+      backendServerLink: AppConfig.backendServerLink,
+      videoPath: AppConfig.videoPath,
       processList: ["Shot Detection"],
       videos: [
         [
@@ -238,6 +237,11 @@ export default {
     handleFilePondInit: function () {
       console.log("FilePond has initialized");
     },
+    getRandomWaitingTime: function () {
+      return (
+        this.processCheckTime + Math.floor(Math.random() * processCheckTime)
+      );
+    },
     processVideo: function (id, fileName) {
       console.log("in processVideo id: " + id);
       console.log("in processVideo file name: " + fileName);
@@ -254,16 +258,19 @@ export default {
     deleteVideo: function (id) {
       console.log("in deleteVideo" + id);
       var payload = { id: id };
-      axios.post(this.dbServerLink + "deleteVideo", payload).then((res) => {
-        console.log("on: deleteVideo: ");
-        console.log(res);
-        if (res.data["status"] == 200) {
-          console.log("deleteVideo Successfully :)");
-          this.getAllVideos();
-        } else {
-          console.log("Not deleteVideo Successfull :(");
-        }
-      });
+      var rep = confirm("Are you sure to delete this video?");
+      if (rep) {
+        axios.post(this.dbServerLink + "deleteVideo", payload).then((res) => {
+          console.log("on: deleteVideo: ");
+          console.log(res);
+          if (res.data["status"] == 200) {
+            console.log("deleteVideo Successfully :)");
+            this.getAllVideos();
+          } else {
+            console.log("Not deleteVideo Successfull :(");
+          }
+        });
+      }
     },
     getAllVideos: function () {
       axios.post(this.dbServerLink + "getAllVideoRecord").then((res) => {
@@ -276,6 +283,89 @@ export default {
           console.log("Not Successfull :(");
         }
       });
+    },
+    getVideoMetaData: function (vidPath, vidFileTitle) {
+      axios
+        .get(this.backendServerLink + "read_meta", {
+          params: { title: vidFileTitle, path: vidPath },
+        })
+        .then((res) => {
+          if (res) {
+            var responce = eval("(function(){return " + res.data + ";})()");
+            var vidMetadata = responce.metadata;
+            var vidId = responce.video_id;
+            axios
+              .post(this.baseUrl1 + "detect_shots", {
+                video_id: vidId,
+                path: vidPath,
+              })
+              .then((responceShots) => {
+                if (responceShots) {
+                  console.log("setting checkVideoDetectShotsDone");
+                  /* var intervalHandler = setInterval(
+                    this.checkVideoDetectShotsDone(
+                      responceShots.data.job_id,
+                      responce.metadata.fps
+                    ),
+                    AppConfig.jobRecallTime
+                  );
+                  this.jobsInProcess[responceShots.data.job_id] = {
+                    type: "detect_shots",
+                    intervalHandler: intervalHandler,
+                  }; */
+                  setTimeout(
+                    this.checkVideoDetectShotsDone(
+                      responceShots.data.job_id,
+                      vidMetadata.fps
+                    ),
+                    this.getRandomWaitingTime()
+                  );
+                  axios
+                    .post(this.dbServerLink + "updateMetadata", {
+                      metadata: responce.metadata,
+                      jobId: responceShots.data.job_id,
+                      videoId: responce.video_id,
+                      videoFileName: vidFileTitle,
+                    })
+                    .then((responceUpdateMetadata) => {
+                      if (responceUpdateMetadata) {
+                        console.log(
+                          "setting responceUpdateMetadata",
+                          responceUpdateMetadata
+                        );
+                      }
+                    });
+                }
+              });
+          }
+        });
+    },
+    checkVideoDetectShotsDone: function (jobId, fps) {
+      console.log("repeating checkVideoDetectShotsDone");
+      axios
+        .get(this.baseUrl1 + "detect_shots", {
+          params: { job_id: jobId, fps: fps },
+        })
+        .then((responceShots) => {
+          if (responceShots) {
+            if (responceShots.data.status == "SUCCESS") {
+              console.log("clearing checkVideoDetectShotsDone");
+              //clearInterval(this.jobsInProcess[jobId]["intervalHandler"]);
+              this.vid1ShotData = responceShots.data.shots;
+              this.$root.$refs.ShotBoundaryView.curVidShotData =
+                this.vid1ShotData;
+              this.$root.$refs.DataViewer.curVidShotData = this.vid1ShotData;
+              if (this.firstTime) {
+                this.saveVideoTimelineSegments(this.vid1ShotData);
+              }
+            } else {
+              setTimeout(
+                this.checkVideoDetectShotsDone(jobId, fps),
+                AppConfig.jobRecallTime
+              );
+            }
+          }
+        });
     },
     onFormCancel: function () {
       var modal = document.getElementById("modalDiv");
@@ -308,10 +398,11 @@ export default {
         console.log("on: saveVideoRecord: ");
         console.log(res);
         if (res.data["status"] == 200) {
-          alert("video saved Successfully :)");
+          //alert("video saved Successfully :)");
+          this.onFormCancel();
           this.getAllVideos();
         } else {
-          alert("video Not Successfull :(");
+          alert("Sorry, creating new video entry not successfull.");
         }
       });
     },
@@ -373,6 +464,7 @@ export default {
       ajax.addEventListener("error", this.errorHandler, false);
       ajax.addEventListener("abort", this.abortHandler, false);
       ajax.open("POST", this.dbServerLink + "saveVideo");
+      //ajax.open("POST", "http://ava21.service.tib.eu/" + "saveVideo");
       ajax.send(formdata);
     },
   },
@@ -387,5 +479,19 @@ export default {
 
 .file-upload-form {
   margin-top: 25px;
+}
+.col-wrap-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 150px;
+}
+.col-wrap-text:hover {
+  background-color: #bde5f8;
+  overflow: visible;
+  white-space: normal;
+  height: auto;
+  max-width: 100%;
 }
 </style>
