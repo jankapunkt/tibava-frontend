@@ -216,9 +216,7 @@ export default {
   created: function () {
     this.$root.$refs.ShotBoundaryView = this;
   },
-/*   components: {
-    VueDropdown
-  }, */
+
   data() {
     return {
       durationMax: 0,
