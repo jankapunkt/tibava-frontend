@@ -85,8 +85,7 @@
 
 
       </table>
-    </div>
-    <div>
+<div id="notifikation"></div>
     </div>
     <div id="timelineOptionsModal" class="modal">
       <div class="modal-content">
@@ -357,12 +356,24 @@ export default {
               console.log("on: addNewTimeline: ");
               console.log(res);
               if(res.data["status"] == 200){
-                  alert("New Timeline Successfully :)");
+                this.$notifikation.success({
+                  message: 'New Timeline Created Successfully.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
                   document.getElementById("timelineOptionsModal").style.display = "none";
                   this.getAllTimelines();
                   document.getElementById("category_name_dd").value = "";
               }else{
-                  alert("New Timeline Not Successfully :(");
+                this.$notifikation.error({
+                  message: 'New Timeline Not Created.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
               }
           });
     },
@@ -372,10 +383,22 @@ export default {
               console.log("on: addNewTimeline: ");
               console.log(res);
               if(res.data["status"] == 200){
-                  alert("removed Successfully :)");
-                  this.getAllTimelines();
+                this.$notifikation.success({
+                  message: 'Timeline Removed.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
+                this.getAllTimelines();
               }else{
-                  alert("removed Not Successfully :(");
+                this.$notifikation.error({
+                  message: 'Removal of Timeline failed.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
               }
           });
     },
@@ -385,12 +408,24 @@ export default {
               console.log("on: addNewTimeline: ");
               console.log(res);
               if(res.data["status"] == 200){
-                  alert("Timeline Duplicate Successfully :)");
+                this.$notifikation.success({
+                  message: 'Timeline Duplicated.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
                   document.getElementById("timelineOptionsModal").style.display = "none";
                   this.getAllTimelines();
                   document.getElementById("category_name_dd").value = "";
               }else{
-                  alert("Timeline Duplicate Not Successfull :(");
+                this.$notifikation.error({
+                  message: 'Duplication of Timeline failed.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
               }
           });
     },
@@ -402,12 +437,24 @@ export default {
               console.log("on: addNewTimeline: ");
               console.log(res);
               if(res.data["status"] == 200){
-                  alert("Timeline Update Successfully :)");
+                this.$notifikation.success({
+                  message: 'Timeline Updated.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
                   document.getElementById("timelineOptionsModal").style.display = "none";
                   this.getAllTimelines();
                   document.getElementById("category_name_dd").value = "";
               }else{
-                  alert("Timeline Update Not Successfull :(");
+                this.$notifikation.error({
+                  message: 'Update of Timeline failed.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
               }
           });
     },
@@ -423,11 +470,23 @@ export default {
               console.log("on: in deleteAnnotationValue ");
               console.log(res);
               if(res.data["status"] == 200){
-                  alert("Annotation Item Saved Successfully :)");
+                this.$notifikation.success({
+                  message: 'AnnotationItem created.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
                   document.getElementById("category_name_dd").value = "";
                   this.getAllTimelines();
               }else{
-                  alert("AnnotationItem Not Successfull :(");
+                this.$notifikation.error({
+                  message: 'AnnotationItem not created.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
               }
           });
     },
@@ -438,14 +497,26 @@ export default {
               console.log("on: in selectSaveAnnotationItem ");
               console.log(res);
               if(res.data["status"] == 200){
-                  alert("Annotation Item Saved Successfully :)");
+                this.$notifikation.success({
+                  message: 'AnnotationItem saved.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
                   this.getAllAnnotationCategories();
                   this.getAllTimelines();
                   document.getElementById("category_name_dd").value = "";
                   var modal = document.getElementById("sidebarAnnotationItemsModal");
                     modal.style.display = "none";
               }else{
-                  alert("AnnotationItem Not Successfull :(");
+                this.$notifikation.error({
+                  message: 'AnnotationItem not saved.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
               }
           });
 
@@ -459,11 +530,23 @@ export default {
               console.log("on: saveAnnotationCategory: ");
               console.log(res);
               if(res.data["status"] == 200){
-                  alert("category saved Successfully :)");
+                this.$notifikation.success({
+                  message: 'Category saved.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
                   this.getAllAnnotationCategories();
                   document.getElementById("category_name_dd").value = "";
               }else{
-                  alert("category Not Successfully :(");
+                this.$notifikation.error({
+                  message: 'Category not saved.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
               }
           });
       }
@@ -496,11 +579,23 @@ export default {
             console.log("on: saveAnnotationItem: ");
             console.log(res);
             if(res.data["status"] == 200){
-                alert("item saved Successfully :)");
+                this.$notifikation.success({
+                  message: 'Item saved.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
                 this.getAllAnnotationItems();
                 document.getElementById("item_name_dd").value = "";
             }else{
-                alert("item Not Successfull :(");
+                this.$notifikation.error({
+                  message: 'Item not saved.',
+                  duration: 8000,
+                  style : { 
+                    width: 100, top: 30, 
+                  },
+                });
             }
         });
       }
@@ -723,6 +818,10 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
+}
+
+.test2{
+  line-height: 60px;
 }
 
 .timeline-container > div {
