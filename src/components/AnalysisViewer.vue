@@ -6,7 +6,7 @@
           <DataViewer />
         </div>
         <div class="col-lg-6">
-          <MediaPlayer />
+          <MediaPlayer :vidFileTitle="vidFileTitle" :vidName="vidName" />
         </div>
         <div class="col-lg-6">
           <div class="tab pd-player-tittle">
@@ -42,7 +42,12 @@
       </div>
       <div class="row">
         <div class="col-lg-12">
-          <div><ShotBoundaryAnnotations :vidMetadata="vid1Metadata" /></div>
+          <div>
+            <ShotBoundaryAnnotations
+              :vidMetadata="vid1Metadata"
+              :vidId="vidId"
+            />
+          </div>
           <!-- This is the timeline. Includes the video control buttons -->
         </div>
       </div>
@@ -82,7 +87,6 @@ import TimelineComponent from "./TimelineComponent";
 //import tempData from './../assets/tempData.json'
 import AppConfig from "./../../AppConfig.json";
 
-
 export default {
   name: "AnalysisViewerView",
   colLeft: "col-sm-7",
@@ -117,12 +121,14 @@ export default {
       jobsInProcess: {},
       jobsCompleted: [],
       vid1ShotData: [],
+      vid1FaceData: [],
       baseUrl1: AppConfig.backendServerLink,
       baseUrl2: "http://127.0.0.1:5111/",
       vidPath: "/srv/frontend/public/f9_scene1.mp4",
       vidFileTitle: "f9_scene1",
       vidName: "Fast & Furious 9 Trailer",
-      vidId: "cf13d553ca6aefda1ecefb343b30bd04b860e21a0554ae51aaf0a41c65b666f4",
+      vidId: "4db96bb8-1fe0-45c1-abb3-169991af047a",
+      vidHash: "4db96bb8-1fe0-45c1-abb3-169991af047a",
     };
   },
   components: {
@@ -136,6 +142,13 @@ export default {
     VideoList,
   },
   methods: {
+    loadVideoAnalysis: function () {
+      this.vidFileTitle = sessionStorage.getItem("videoFileName");
+      this.vidName = sessionStorage.getItem("videoTitle");
+      this.vidId = sessionStorage.getItem("videoId");
+      this.vidHash = sessionStorage.getItem("videoHash");
+      this.vidPath = AppConfig.videoPath + this.vidFileTitle;
+    },
     openTab: function (event) {
       var tokens = event.currentTarget.name.split("_");
       var tabIdx = tokens[tokens.length - 1];
@@ -163,12 +176,8 @@ export default {
               console.log("clearing checkVideoDetectShotsDone");
               //clearInterval(this.jobsInProcess[jobId]["intervalHandler"]);
               this.vid1ShotData = responceShots.data.shots;
-              this.$root.$refs.ShotBoundaryView.curVidShotData =
-                this.vid1ShotData;
+              //this.$root.$refs.ShotBoundaryView.curVidShotData =this.vid1ShotData;
               this.$root.$refs.DataViewer.curVidShotData = this.vid1ShotData;
-              if (this.firstTime) {
-                this.saveVideoTimelineSegments(this.vid1ShotData);
-              }
             } else {
               setTimeout(
                 this.checkVideoDetectShotsDone(jobId, fps),
@@ -194,22 +203,24 @@ export default {
           console.log("on: getVideoMetaData: ");
           console.log(res);
           if (res.data["status"] == 200) {
-                 this.$notifikation.success({
-                  message: 'VideoTimelineSegments saved.',
-                  duration: 8000,
-                  style : { 
-                    width: 100, top: 30, 
-                  },
-                });
+            this.$notifikation.success({
+              message: "VideoTimelineSegments saved.",
+              duration: 8000,
+              style: {
+                width: 100,
+                top: 30,
+              },
+            });
             this.firstTime = false;
           } else {
-                this.$notifikation.error({
-                  message: 'VideoTimelineSegments not saved.',
-                  duration: 8000,
-                  style : { 
-                    width: 100, top: 30, 
-                  },
-                });
+            this.$notifikation.error({
+              message: "VideoTimelineSegments not saved.",
+              duration: 8000,
+              style: {
+                width: 100,
+                top: 30,
+              },
+            });
           }
         });
     },
@@ -224,7 +235,7 @@ export default {
             this.$root.$refs.AnalysisViewerView.vid1Metadata =
               responce.metadata;
             //this.$root.$refs.MetadataView.curMetadata = responce.metadata;
-            this.$root.$refs.AnalysisViewerView.vidId = responce.video_id;
+            this.$root.$refs.AnalysisViewerView.vidHash = responce.video_id;
             axios
               .post(this.baseUrl1 + "detect_shots", {
                 video_id: responce.video_id,
@@ -233,17 +244,6 @@ export default {
               .then((responceShots) => {
                 if (responceShots) {
                   console.log("setting checkVideoDetectShotsDone");
-                  /* var intervalHandler = setInterval(
-                    this.checkVideoDetectShotsDone(
-                      responceShots.data.job_id,
-                      responce.metadata.fps
-                    ),
-                    AppConfig.jobRecallTime
-                  );
-                  this.jobsInProcess[responceShots.data.job_id] = {
-                    type: "detect_shots",
-                    intervalHandler: intervalHandler,
-                  }; */
                   setTimeout(
                     this.checkVideoDetectShotsDone(
                       responceShots.data.job_id,
@@ -276,14 +276,13 @@ export default {
         });
     },
   },
-  beforeMount() {
+  beforeMount: function () {
     //this.$root.$refs.AnalysisViewerView.vidPath = "media/Crash_Course_Engineering_Preview_-_English.mp4";
     //this.$root.$refs.AnalysisViewerView.vidFileTitle = "Crash_Course_Engineering_Preview_-_English";
+    this.loadVideoAnalysis();
     var vidPath = this.$root.$refs.AnalysisViewerView.vidPath;
     var vidFileTitle = this.$root.$refs.AnalysisViewerView.vidFileTitle;
     this.getVideoMetaData(vidPath, vidFileTitle);
-    
-
   },
 };
 </script>
