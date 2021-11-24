@@ -19,6 +19,7 @@
 
 # production
 /dist
+/dist/*.html
 /build
 
 # misc
