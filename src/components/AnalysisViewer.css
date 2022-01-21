@@ -497,7 +497,7 @@ li.annotation {
 }
 .img-shot-frame {
   padding: 3px;
-  width: 120px;
+  width: 100px;
   height: 70px;
 }
 .img-video-frame {
@@ -546,11 +546,6 @@ li.annotation {
   content: "";
 }
 
-.panel-content {
-  overflow: scroll;
-  max-height: 250px;
-  text-align: left;
-}
 .panel {
   padding: 0px;
   margin-bottom: 0px;
