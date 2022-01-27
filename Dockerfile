@@ -1,20 +1,9 @@
-# pull official base image
-FROM node:13.12.0-alpine
+FROM nginx:1.21.0-alpine
 
-# set working directory
-WORKDIR /app
+RUN apk add --update npm git
+RUN npm install -g npm@8.1.3
+COPY ./default.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+WORKDIR /frontend
 
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
-
-# install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm install --silent
-RUN npm install -g @vue/cli --silent
-
-# add app
-COPY . ./
-
-# start app
-CMD ["npm", "run serve"]
+CMD ["nginx", "-g", "daemon off;"]

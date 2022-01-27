@@ -57,37 +57,39 @@
           </v-col>
         </v-row>
 
-        <v-row>
-          <v-col v-for="item in items" :key="item.video_id">
-            <v-card
-              elevation="2"
-              width="400px"
-              v-bind:loading="item.loading"
-              v-bind:disabled="item.loading"
-              outlined
-              shaped
-            >
-              <v-card-title>{{ item.video_name }}</v-card-title>
-              <v-card-text>
-                <div>Video ID: {{ item.video_id }}</div>
-                <div>
-                  Length:
-                  {{ get_video_length(item.video_frames, item.video_fps) }}
-                </div>
-                <div>License: {{ item.video_license }}</div>
+        <v-container
+          class="d-flex flex-wrap video-gallery align-content-center"
+        >
+          <v-card
+            elevation="2"
+            min-width="400px"
+            v-bind:loading="item.loading"
+            v-bind:disabled="item.loading"
+            outlined
+            shaped
+            v-for="item in items"
+            :key="item.video_id"
+          >
+            <v-card-title>{{ item.video_name }}</v-card-title>
+            <v-card-text>
+              <div>Video ID: {{ item.video_id }}</div>
+              <div>
+                Length:
+                {{ get_video_length(item.video_frames, item.video_fps) }}
+              </div>
+              <div>License: {{ item.video_license }}</div>
 
-                <v-card-actions>
-                  <v-btn outlined @click="analyse_video(item.video_id)">
-                    <v-icon>{{ "mdi-movie-search-outline" }}</v-icon> Analyse
-                  </v-btn>
-                  <v-btn color="red" outlined @click="delete_video">
-                    <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
-                  </v-btn>
-                </v-card-actions>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+              <v-card-actions>
+                <v-btn outlined @click="analyse_video(item.video_id)">
+                  <v-icon>{{ "mdi-movie-search-outline" }}</v-icon> Analyse
+                </v-btn>
+                <v-btn color="red" outlined @click="delete_video">
+                  <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
+                </v-btn>
+              </v-card-actions>
+            </v-card-text>
+          </v-card>
+        </v-container>
       </v-container>
     </v-main>
   </v-app>
@@ -133,6 +135,123 @@ export default {
         loading: false,
       },
       {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
+        video_id: "23189907534",
+        video_name: "FF9 Trailer",
+        video_frames: 200,
+        video_fps: 30,
+        video_license: "CC-BY-0",
+        processing: "DONE!",
+        loading: false,
+      },
+      {
         video_id: "32131234415",
         video_name: "Halloween",
         video_frames: 3500,
@@ -147,3 +266,9 @@ export default {
   }),
 };
 </script>
+
+<style>
+.video-gallery > * {
+  margin: 8px;
+}
+</style>
