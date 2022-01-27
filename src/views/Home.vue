@@ -4,7 +4,7 @@
       <v-container class="py-8 px-6" fluid>
         <v-row justify="space-around">
           <v-col cols="auto">
-            <v-dialog transition="dialog-top-transition" max-width="1000">
+            <v-dialog max-width="1000">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn color="primary" v-bind="attrs" v-on="on"
                   >Upload new video</v-btn
