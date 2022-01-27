@@ -19,6 +19,7 @@ const api = {
   state: {
     video: {video_id: null},
     videos: [],
+    lang: "en" 
   },
   actions: {
     analyse_video({commit, state}, video_id) {

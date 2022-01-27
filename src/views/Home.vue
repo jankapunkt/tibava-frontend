@@ -1,9 +1,5 @@
 <template>
-  <v-app id="inspire">
-    <v-app-bar app>
-      <v-toolbar-title>Application</v-toolbar-title>
-    </v-app-bar>
-
+  <v-app>
     <v-main>
       <v-container class="py-8 px-6" fluid>
         <v-row justify="space-around">
@@ -62,10 +58,10 @@
         </v-row>
 
         <v-row>
-          <v-col v-for="item in items" :key="item.video_id" cols="12">
+          <v-col v-for="item in items" :key="item.video_id">
             <v-card
               elevation="2"
-              max-width="500"
+              width="400px"
               v-bind:loading="item.loading"
               v-bind:disabled="item.loading"
               outlined
