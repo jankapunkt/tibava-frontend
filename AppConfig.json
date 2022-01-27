@@ -1,6 +1,0 @@
-{
-  "dbServerLink": "http://ava21.service.tib.eu/postgres/",
-  "backendServerLink": "http://ava21.service.tib.eu/backend/",
-  "jobRecallTime": 5000,
-  "videoPath": "/srv/frontend/public/"
-}

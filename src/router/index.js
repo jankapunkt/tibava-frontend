@@ -1,30 +1,21 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import Analysis from "../views/Analysis.vue";
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Home from '@/views/Home.vue';
+// import Search from '@/views/Search.vue';
+// import Imprint from '@/views/Imprint.vue';
+// import Privacy from '@/views/Privacy.vue';
+// import NotFound from '@/views/NotFound.vue';
 
 Vue.use(VueRouter);
-
-const routes = [
-  {
-    path: "/analysis",
-    name: "Analysis",
-    component: Analysis,
-  },
-  {
-    path: "/",//"/upload"
-    name: "Upload",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Upload.vue"),
-  },
-];
-
 const router = new VueRouter({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
-  routes,
+  routes: [
+    { path: '/', name: 'Home', component: Home },
+    // { path: '/search', name: 'Search', component: Search },
+    // { path: '/imprint', name: 'Imprint', component: Imprint },
+    // { path: '/privacy', name: 'Privacy', component: Privacy },
+    // { path: '*', name: 'NotFound', component: NotFound },
+  ],
 });
-
 export default router;
