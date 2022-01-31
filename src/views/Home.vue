@@ -31,10 +31,10 @@
               <div>License: {{ item.meta.license }}</div>
 
               <v-card-actions>
-                <v-btn outlined @click="analyse_video(item.id)">
+                <v-btn outlined @click="show_video(item.hash_id)">
                   <v-icon>{{ "mdi-movie-search-outline" }}</v-icon> Analyse
                 </v-btn>
-                <v-btn color="red" outlined @click="delete_video">
+                <v-btn color="red" outlined @click="delete_video(item.hash_id)">
                   <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
                 </v-btn>
               </v-card-actions>
@@ -61,17 +61,13 @@ export default {
       var sDisplay = s > 0 ? s + (s == 1 ? " sec" : " sec") : "";
       return hDisplay + mDisplay + sDisplay;
     },
-
     delete_video() {
-      console.log("Delete item");
+      this.$store.dispatch("video/delete", video_hash_id);
     },
-
-    analyse_video(video_id) {
-      console.log("Analyse video with id " + video_id);
-      this.$store.dispatch("api/analyse_video", video_id);
+    show_video(video_hash_id) {
+      this.$store.dispatch("video/show", video_hash_id);
     },
   },
-
   computed: {
     videos() {
       return this.$store.state.video.videos;
@@ -81,6 +77,7 @@ export default {
     ModalVideoUpload,
   },
   mounted() {
+    // Ask backend about all videos
     this.$store.dispatch("video/list");
   },
 };

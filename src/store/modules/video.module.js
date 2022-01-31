@@ -17,18 +17,29 @@ function generateRandomStr(length) {
 const api = {
   namespaced: true,
   state: {
-    video: {video_id: null},
+    video: {},
     videos: [],
     lang: "en" 
   },
   actions: {
-    analyse_video({commit, state}, video_id) {
-      console.log(video_id);
-      console.log(commit);
-      console.log("###")
-      console.log(state)
-      router.push({path: "videoanalysis"});
-      commit("update_video_id", video_id);
+    show({commit, state}, video_hash_id) {
+      
+      const params = {
+        hash_id: video_hash_id
+      }
+      axios.get(`${config.API_LOCATION}/video_get`, {params})
+        .then((res) => {
+          if (res.data.status === 'ok') {
+              console.log(res.data.entry);
+              commit("show", res.data.entry);
+              router.push({path: "videoanalysis"});
+          }
+        })
+        .catch((error) => {
+          const info = { date: Date(), error, origin: 'collection' };
+          commit('error/update', info, { root: true });
+        });
+
     },
 
     upload({ commit }, params) {
@@ -77,6 +88,9 @@ const api = {
     },
     update(state, videos){
       state.videos=videos;
+    },
+    show(state, video){
+      state.video=video;
     }
 
   },
