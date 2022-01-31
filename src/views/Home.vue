@@ -57,7 +57,7 @@ export default {
       var s = Math.floor((seconds % 3600) % 60);
 
       var hDisplay = h > 0 ? h + (h == 1 ? " h " : " h ") : "";
-      var mDisplay = m > 0 ? m + (m == 1 ? " min, " : " min ") : "";
+      var mDisplay = m > 0 ? m + (m == 1 ? " min " : " min ") : "";
       var sDisplay = s > 0 ? s + (s == 1 ? " sec" : " sec") : "";
       return hDisplay + mDisplay + sDisplay;
     },
