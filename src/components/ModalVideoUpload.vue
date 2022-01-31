@@ -9,7 +9,6 @@
         <form>
           <v-text-field
             v-model="video.title"
-            :error-messages="videotitleErrors"
             :counter="120"
             label="Video title"
             required
@@ -17,7 +16,6 @@
           <v-select
             v-model="video.license"
             :items="licenses"
-            :error-messages="videolicenseErrors"
             label="Video license"
             required
           ></v-select>
@@ -27,9 +25,39 @@
             filled
             prepend-icon="mdi-movie-filter"
           ></v-file-input>
+
+          <v-list>
+            <v-subheader>Please select the analysis steps</v-subheader>
+
+            <v-list-item-group v-model="model" multiple>
+              <template v-for="item in analysers">
+                <v-list-item
+                  :key="item.model"
+                  :value="item.model"
+                  v-bind:disabled="item.disabled"
+                >
+                  <template v-slot:default="{ active }">
+                    <v-list-item-content>
+                      <v-list-item-title
+                        v-text="item.label"
+                      ></v-list-item-title>
+                    </v-list-item-content>
+
+                    <v-list-item-action>
+                      <v-checkbox
+                        v-bind:disabled="item.disabled"
+                        v-model="item.active"
+                        :input-value="active"
+                      ></v-checkbox>
+                    </v-list-item-action>
+                  </template>
+                </v-list-item>
+              </template>
+            </v-list-item-group>
+          </v-list>
+
           <v-checkbox
             v-model="checkbox"
-            :error-messages="checkboxErrors"
             label="Do you agree with the terms of services?"
             required
           >
@@ -50,6 +78,33 @@ export default {
   data() {
     return {
       video: {},
+      analysers: [
+        {
+          label: "Shot Detection",
+          active: true,
+          disabled: false,
+          model: "cb_shotdetection",
+        },
+        {
+          label: "Scene Recognition (coming soon)",
+          active: false,
+          disabled: true,
+          model: "cb_scenerecognition",
+        },
+        {
+          label: "Person Recognition (coming soon)",
+          active: false,
+          disabled: true,
+          model: "cb_personrecognition",
+        },
+        {
+          label: "Emotion Recognition (coming soon)",
+          active: false,
+          disabled: true,
+          model: "cb_emotionrecognition",
+        },
+      ],
+      model: ["Shot Detection"],
       licenses: ["CC-BY-0", "CC-BY-2"],
       checkbox: false,
       dialog: false,
@@ -65,7 +120,9 @@ export default {
   },
   methods: {
     upload_video() {
-      this.$store.dispatch("video/upload", this.video);
+      let video = this.video;
+      video["analysers"] = this.analysers;
+      this.$store.dispatch("video/upload", video);
       //   TODO wait until signal is fired
       //   this.dialog = false;
     },
