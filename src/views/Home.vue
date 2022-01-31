@@ -4,6 +4,7 @@
       <v-container class="py-8 px-6" fluid>
         <v-row justify="space-around">
           <v-col cols="auto">
+<<<<<<< Updated upstream
             <v-dialog max-width="1000">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn color="primary" v-bind="attrs" v-on="on"
@@ -54,6 +55,9 @@
                 </v-card>
               </template>
             </v-dialog>
+=======
+            <ModalVideoUpload />
+>>>>>>> Stashed changes
           </v-col>
         </v-row>
 
@@ -67,7 +71,7 @@
             v-bind:disabled="item.loading"
             outlined
             shaped
-            v-for="item in items"
+            v-for="item in videos"
             :key="item.video_id"
           >
             <v-card-title>{{ item.video_name }}</v-card-title>
@@ -96,6 +100,8 @@
 </template>
 
 <script>
+import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
+
 export default {
   methods: {
     get_video_length(video_frames, video_fps) {
@@ -119,151 +125,19 @@ export default {
       console.log("Analyse video with id " + video_id);
       this.$store.dispatch("api/analyse_video", video_id);
     },
-    upload_video() {
-      console.log("Upload Video");
+  },
+
+  computed: {
+    videos() {
+      return this.$store.state.video.videos;
     },
   },
-  data: () => ({
-    items: [
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "23189907534",
-        video_name: "FF9 Trailer",
-        video_frames: 200,
-        video_fps: 30,
-        video_license: "CC-BY-0",
-        processing: "DONE!",
-        loading: false,
-      },
-      {
-        video_id: "32131234415",
-        video_name: "Halloween",
-        video_frames: 3500,
-        video_fps: 25,
-        video_license: "CC-BY-0",
-        processing: "Shot Detection",
-        processing_progress: 0.4,
-        loading: true,
-      },
-    ],
-    videolicenses: ["CC-BY-0", "CC-BY-2"],
-  }),
+  components: {
+    ModalVideoUpload,
+  },
+  mounted() {
+    this.$store.dispatch("video/list");
+  },
 };
 </script>
 
