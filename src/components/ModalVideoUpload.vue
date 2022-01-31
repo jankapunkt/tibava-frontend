@@ -1,7 +1,9 @@
 <template>
   <v-dialog v-model="dialog" max-width="1000">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" v-bind="attrs" v-on="on">Upload new video</v-btn>
+      <v-btn color="primary" v-bind="attrs" v-on="on"
+        >Upload new video<v-icon right>{{ "mdi-plus-circle" }}</v-icon></v-btn
+      >
     </template>
     <v-card>
       <v-toolbar color="primary" dark>Upload new video</v-toolbar>
@@ -29,7 +31,7 @@
           <v-list>
             <v-subheader>Please select the analysis steps</v-subheader>
 
-            <v-list-item-group v-model="model" multiple>
+            <v-list-item-group v-model="selected_analysers" multiple>
               <template v-for="item in analysers">
                 <v-list-item
                   :key="item.model"
@@ -46,7 +48,6 @@
                     <v-list-item-action>
                       <v-checkbox
                         v-bind:disabled="item.disabled"
-                        v-model="item.active"
                         :input-value="active"
                       ></v-checkbox>
                     </v-list-item-action>
@@ -81,30 +82,26 @@ export default {
       analysers: [
         {
           label: "Shot Detection",
-          active: true,
           disabled: false,
           model: "shotdetection",
         },
         {
           label: "Scene Recognition (coming soon)",
-          active: false,
           disabled: true,
           model: "scenerecognition",
         },
         {
           label: "Person Recognition (coming soon)",
-          active: false,
           disabled: true,
           model: "personrecognition",
         },
         {
           label: "Emotion Recognition (coming soon)",
-          active: false,
           disabled: true,
           model: "emotionrecognition",
         },
       ],
-      model: ["Shot Detection"],
+      selected_analysers: ["shotdetection"],
       licenses: ["CC-BY-0", "CC-BY-2"],
       checkbox: false,
       dialog: false,
@@ -122,13 +119,7 @@ export default {
     upload_video() {
       const params = {
         video: this.video,
-        analyser: this.analysers
-          .filter(function (e) {
-            return e.active;
-          })
-          .map(function (e) {
-            return e.model;
-          }),
+        analyser: this.selected_analysers,
       };
       console.log(params);
 
