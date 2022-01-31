@@ -61,7 +61,7 @@ export default {
       var sDisplay = s > 0 ? s + (s == 1 ? " sec" : " sec") : "";
       return hDisplay + mDisplay + sDisplay;
     },
-    delete_video() {
+    delete_video(video_hash_id) {
       this.$store.dispatch("video/delete", video_hash_id);
     },
     show_video(video_hash_id) {

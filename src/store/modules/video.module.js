@@ -27,7 +27,7 @@ const api = {
       const params = {
         hash_id: video_hash_id
       }
-      axios.get(`${config.API_LOCATION}/video_get`, {params})
+      axios.get(`${config.API_LOCATION}/video_get`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
               console.log(res.data.entry);
@@ -78,16 +78,34 @@ const api = {
           commit('error/update', info, { root: true });
         });
     },
+    delete({commit, state}, video_hash_id) {
+      const params = {
+        hash_id: video_hash_id
+      }
+      console.log(params);
+      axios.post(`${config.API_LOCATION}/video_delete`, { hash_id: video_hash_id })
+        .then((res) => {
+          if (res.data.status === 'ok') {
+            commit("delete",video_hash_id);
+            //TODO
+          }
+        })
+        .catch((error) => {
+          const info = { date: Date(), error, origin: 'collection' };
+          commit('error/update', info, { root: true });
+        });
+
+    },
   },
   mutations: {
-    update_video_id(state, video_id) {
-      state.video.video_id = video_id;
-    },
     add(state, video){
       state.videos.push(video);
     },
     update(state, videos){
       state.videos=videos;
+    },
+    delete(state, video_hash_id){
+      state.videos.splice(state.videos.findIndex(e => e.hash_id === video_hash_id),1);
     },
     show(state, video){
       state.video=video;

@@ -1,19 +1,20 @@
 <template>
-  <v-app> <VideoPlayer :source="source" /> </v-app>
+  <v-app> <VideoPlayer :source="source" /> <Timeline /></v-app>
 </template>
 
 <script>
 import VideoPlayer from "@/components/VideoPlayer.vue";
+import Timeline from "@/components/Timeline.vue";
 
 export default {
   computed: {
     source() {
-      console.log(this.$store.state.video.video.url);
       return this.$store.state.video.video.url;
     },
   },
   components: {
     VideoPlayer,
+    Timeline,
   },
 };
 </script>
