@@ -44,10 +44,11 @@ const api = {
 
     upload({ commit }, params) {
       const formData = new FormData();
-      formData.append('file', params.file);
-      formData.append('title', params.title);
-      formData.append('license', params.license);
-
+      formData.append('file', params.video.file);
+      formData.append('title', params.video.title);
+      formData.append('license', params.video.license);
+      formData.append('analyser', params.analyser);
+      console.log(params.analyser);
       // commit('loading/update', true, { root: true });
       axios.post(`${config.API_LOCATION}/video_upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },

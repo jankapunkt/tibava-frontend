@@ -83,25 +83,25 @@ export default {
           label: "Shot Detection",
           active: true,
           disabled: false,
-          model: "cb_shotdetection",
+          model: "shotdetection",
         },
         {
           label: "Scene Recognition (coming soon)",
           active: false,
           disabled: true,
-          model: "cb_scenerecognition",
+          model: "scenerecognition",
         },
         {
           label: "Person Recognition (coming soon)",
           active: false,
           disabled: true,
-          model: "cb_personrecognition",
+          model: "personrecognition",
         },
         {
           label: "Emotion Recognition (coming soon)",
           active: false,
           disabled: true,
-          model: "cb_emotionrecognition",
+          model: "emotionrecognition",
         },
       ],
       model: ["Shot Detection"],
@@ -120,9 +120,19 @@ export default {
   },
   methods: {
     upload_video() {
-      let video = this.video;
-      video["analysers"] = this.analysers;
-      this.$store.dispatch("video/upload", video);
+      const params = {
+        video: this.video,
+        analyser: this.analysers
+          .filter(function (e) {
+            return e.active;
+          })
+          .map(function (e) {
+            return e.model;
+          }),
+      };
+      console.log(params);
+
+      this.$store.dispatch("video/upload", params);
       //   TODO wait until signal is fired
       //   this.dialog = false;
     },
