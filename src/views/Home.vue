@@ -21,14 +21,14 @@
             v-for="item in videos"
             :key="item.id"
           >
-            <v-card-title>{{ item.name }}</v-card-title>
+            <v-card-title>{{ item.meta.name }}</v-card-title>
             <v-card-text>
               <div>Video ID: {{ item.id }}</div>
               <div>
                 Length:
-                {{ get_video_length(item.duration) }}
+                {{ get_video_length(item.meta.duration) }}
               </div>
-              <div>License: {{ item.license }}</div>
+              <div>License: {{ item.meta.license }}</div>
 
               <v-card-actions>
                 <v-btn outlined @click="analyse_video(item.id)">
