@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-virtual-scroll :items="shots" height="500" item-height="160">
+    <v-virtual-scroll :items="shots" height="500" item-height="144">
       <template v-slot:default="{ item }">
         <v-list-item :key="item.id">
           <ShotCard :shot="item" />

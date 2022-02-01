@@ -1,5 +1,5 @@
 <template>
-  <v-card class="video-player d-flex flex-column">
+  <v-card class="video-player d-flex flex-column" elevation="8">
     <video
       ref="video"
       v-on:timeupdate="onTimeUpdate"

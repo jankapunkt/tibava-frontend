@@ -2,6 +2,7 @@
   <v-card
     class="d-flex flex-column"
     width="100%"
+    elevation="4"
     v-on:click="setVideoPlayerTime(shot.start)"
   >
     <v-card-title class="px-2 py-1">Shot {{ shot.id }}</v-card-title>

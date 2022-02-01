@@ -5,7 +5,7 @@
         <VideoPlayer :video="$store.state.video.current" />
       </v-col>
       <v-col>
-        <v-card class="overview">
+        <v-card class="overview" elevation="8">
           <v-tabs centered>
             <v-tabs-slider />
             <v-tab>Shots</v-tab>
