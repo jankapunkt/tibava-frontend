@@ -7,8 +7,9 @@
       v-on:click="toggle"
       v-on:play="onPlay"
       v-on:pause="onPause"
+      :src="video.url"
     >
-      <source :src="source" type="video/mp4" />
+      <!-- <source :src="video.url" type="video/mp4" /> -->
     </video>
     <v-flex class="video-control d-flex">
       <v-btn @click="toggle" small>
@@ -45,7 +46,7 @@
 
 <script>
 export default {
-  props: ["source"],
+  props: ["video"],
   data() {
     return {
       playing: false,

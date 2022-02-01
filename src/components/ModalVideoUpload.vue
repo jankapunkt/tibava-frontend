@@ -36,7 +36,7 @@
                 <v-list-item
                   :key="item.model"
                   :value="item.model"
-                  v-bind:disabled="item.disabled"
+                  :disabled="item.disabled"
                 >
                   <template v-slot:default="{ active }">
                     <v-list-item-content>
@@ -47,7 +47,7 @@
 
                     <v-list-item-action>
                       <v-checkbox
-                        v-bind:disabled="item.disabled"
+                        :disabled="item.disabled"
                         :input-value="active"
                       ></v-checkbox>
                     </v-list-item-action>
@@ -121,7 +121,6 @@ export default {
         video: this.video,
         analyser: this.selected_analysers,
       };
-      console.log(params);
 
       this.$store.dispatch("video/upload", params);
       //   TODO wait until signal is fired

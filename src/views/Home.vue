@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import router from "../router";
 import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
 
 export default {
@@ -65,7 +66,12 @@ export default {
       this.$store.dispatch("video/delete", video_hash_id);
     },
     show_video(video_hash_id) {
-      this.$store.dispatch("video/show", video_hash_id);
+      console.log(video_hash_id);
+      router.push({ path: `/videoanalysis/${video_hash_id}` });
+      // router.push({
+      //   name: "Videoanalysis",
+      //   params: { hash_id: video_hash_id },
+      // });
     },
   },
   computed: {

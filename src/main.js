@@ -9,19 +9,19 @@ import './styles/custom.css';
 
 var app = Vue.extend({
   created() {
-    this.$store.dispatch('user/getCSRFToken').then(() => {
-      this.$store.dispatch('user/getUserData');
-      setTimeout(
-        () => this.$store.dispatch('api/setState', this.$route.query),
-        500
-      );
-    });
+    // this.$store.dispatch('user/getCSRFToken').then(() => {
+    //   this.$store.dispatch('user/getUserData');
+    //   setTimeout(
+    //     () => this.$store.dispatch('api/setState', this.$route.query),
+    //     500
+    //   );
+    // });
   },
   watch: {
-    '$store.state.user.loggedIn': function () {
-      this.$store.dispatch('collection/list');
-      this.$store.dispatch('bookmark/list');
-    }
+    // '$store.state.user.loggedIn': function () {
+    //   this.$store.dispatch('collection/list');
+    //   this.$store.dispatch('bookmark/list');
+    // }
   }
 })
 

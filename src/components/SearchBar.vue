@@ -1,13 +1,15 @@
 <template>
   <div id="search-general">
-    <v-text-field 
-
+    <v-text-field
       v-model="query"
-      class="mx-1 sbar" label="Solo" placeholder="Placeholder" 
+      class="mx-1 sbar"
+      label="Solo"
+      placeholder="Placeholder"
       rounded
       solo
       flat
-      outlined>
+      outlined
+    >
       <v-btn :title="$t('button.search')" @click="submit" small icon>
         <v-icon> mdi-magnify </v-icon>
       </v-btn></v-text-field
@@ -42,9 +44,9 @@
 export default {
   data() {
     return {
-      lang: this.$store.state.api.lang.toUpperCase(),
+      // lang: this.$store.state.api.lang.toUpperCase(),
       langItems: ["EN"],
-      query: this.$store.state.api.query,
+      query: "",
     };
   },
   methods: {
