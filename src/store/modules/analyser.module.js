@@ -17,7 +17,7 @@ function generateRandomStr(length) {
 const api = {
   namespaced: true,
   state: {
-    analyser: {},
+    analyser: [],
   },
   actions: {
     list({ commit }, video_hash_id) {
