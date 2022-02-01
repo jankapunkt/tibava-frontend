@@ -1,27 +1,33 @@
 <template>
   <v-app>
-    <v-row justify="space-around">
-      <v-col>
+    <v-row justify="space-around" align="start">
+      <v-col md="6" justify="center">
         <VideoPlayer :video="$store.state.video.current" />
       </v-col>
-      <v-col>
-        <v-card class="overview" elevation="8">
-          <v-tabs centered>
-            <v-tabs-slider />
-            <v-tab>Shots</v-tab>
-            <v-tab disabled>Persons</v-tab>
-            <v-tab disabled>Scenes</v-tab>
 
-            <v-tab-item>
-              <ShotsOverview :shots="shots" />
-            </v-tab-item>
-            <v-tab-item> Foo </v-tab-item>
-            <v-tab-item> Bar </v-tab-item>
-          </v-tabs>
-        </v-card>
+      <v-col md="6" justify="center">
+        <v-container>
+          <v-card class="overview" elevation="8">
+            <v-tabs centered>
+              <v-tabs-slider />
+              <v-tab>Shots</v-tab>
+              <v-tab disabled>Persons</v-tab>
+              <v-tab disabled>Scenes</v-tab>
+
+              <v-tab-item>
+                <ShotsOverview :shots="shots" />
+              </v-tab-item>
+              <v-tab-item> Foo </v-tab-item>
+              <v-tab-item> Bar </v-tab-item>
+            </v-tabs>
+          </v-card>
+        </v-container>
       </v-col>
     </v-row>
-    <Timeline />
+
+    <v-row>
+      <Timeline />
+    </v-row>
   </v-app>
 </template>
 
@@ -161,7 +167,6 @@ export default {
 }
 
 .overview {
-  max-width: 768px;
   padding: 10px;
   margin: 10px;
 }
