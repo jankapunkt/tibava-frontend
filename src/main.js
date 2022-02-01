@@ -8,6 +8,7 @@ import router from '@/router';
 import './styles/custom.css';
 
 var app = Vue.extend({
+
   created() {
     // this.$store.dispatch('user/getCSRFToken').then(() => {
     //   this.$store.dispatch('user/getUserData');

@@ -41,21 +41,14 @@
 </template>
 
 <script>
-import { get_display_time as helper_get_display_time } from "@/plugins/helpers.js";
-import { get_timecode as helper_get_timecode } from "@/plugins/helpers.js";
+import TimeMixin from "../mixins/time";
+
 export default {
+  mixins: [TimeMixin],
   props: ["shot"],
   methods: {
-    get_timecode: helper_get_timecode,
-    get_display_time: helper_get_display_time,
     setVideoPlayerTime(time) {
       this.$emit("seek", time);
-    },
-  },
-  watch: {
-    shot() {
-      console.log(this.shot);
-      this.$store.state.analyser.analyser;
     },
   },
 };

@@ -49,9 +49,11 @@
 <script>
 import router from "../router";
 import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
-import { get_display_time as helper_get_display_time } from "@/plugins/helpers.js";
+
+import TimeMixin from "../mixins/time";
 
 export default {
+  mixins: [TimeMixin],
   methods: {
     delete_video(video_hash_id) {
       this.$store.dispatch("video/delete", video_hash_id);
@@ -64,7 +66,6 @@ export default {
       //   params: { hash_id: video_hash_id },
       // });
     },
-    get_display_time: helper_get_display_time,
   },
   computed: {
     videos() {

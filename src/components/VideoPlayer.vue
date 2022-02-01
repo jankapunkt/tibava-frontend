@@ -47,12 +47,19 @@
 </template>
 
 <script>
+import TimeMixin from "../mixins/time";
+
 export default {
-  props: ["video"],
+  mixins: [TimeMixin],
+  model: {
+    prob: "time",
+    event: "time_update",
+  },
+  props: ["video", "time"],
   data() {
     return {
       playing: false,
-      currentTime: 0,
+      currentTime: this.time,
       duration: 0,
       ended: false,
       currentSpeed: { title: "1.00", value: 1.0 },
@@ -91,6 +98,7 @@ export default {
       this.currentTime = event.srcElement.currentTime;
       this.duration = event.srcElement.duration;
       this.ended = event.srcElement.ended;
+      this.$emit("time_update", this.currentTime);
     },
     onSeek(percentage) {
       this.$refs.video.currentTime = (this.duration * percentage) / 100;
@@ -107,6 +115,11 @@ export default {
         return 0;
       }
       return this.currentTime / this.duration;
+    },
+  },
+  watch: {
+    time() {
+      this.$refs.currentTime = currentTime;
     },
   },
 };

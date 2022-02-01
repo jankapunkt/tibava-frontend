@@ -2,7 +2,7 @@
   <v-app>
     <v-row justify="space-around" align="start">
       <v-col md="6" justify="center">
-        <VideoPlayer :video="$store.state.video.current" />
+        <VideoPlayer :video="$store.state.video.current" v-model="video_time" />
       </v-col>
 
       <v-col md="6" justify="center">
@@ -26,7 +26,8 @@
     </v-row>
 
     <v-row>
-      <Timeline />
+      <!-- {{ video_time }} -->
+      <Timeline :video="$store.state.video.current" />
     </v-row>
   </v-app>
 </template>
@@ -39,7 +40,9 @@ import Timeline from "@/components/Timeline.vue";
 
 export default {
   data() {
-    return {};
+    return {
+      video_time: 0,
+    };
   },
   methods: {
     async fetch_data() {
@@ -105,8 +108,6 @@ export default {
       results = results.map((e) => {
         return {
           id: e.id,
-          // start: e.start_time,
-          // end: e.end_time,
           start: e.start,
           end: e.end,
           thumbnails: [
@@ -116,30 +117,7 @@ export default {
           ],
         };
       });
-      console.log(results);
       return results;
-      return [
-        {
-          id: 0,
-          start: 0,
-          end: 10,
-          thumbnails: [
-            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
-            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
-            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
-          ],
-        },
-        {
-          id: 1,
-          start: 11,
-          end: 72,
-          thumbnails: [
-            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
-            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
-            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
-          ],
-        },
-      ];
     },
   },
   created() {
