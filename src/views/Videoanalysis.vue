@@ -5,7 +5,7 @@
         <VideoPlayer :video="$store.state.video.current" />
       </v-col>
       <v-col>
-        <ShotsOverview />
+        <ShotsOverview :shots="shots" />
       </v-col>
     </v-row>
     <Timeline />
@@ -21,7 +21,28 @@ import Timeline from "@/components/Timeline.vue";
 export default {
   data() {
     return {
-      // video: {},
+      shots: [
+        {
+          id: 0,
+          start: 0,
+          end: 10,
+          thumbnails: [
+            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
+            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
+            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
+          ],
+        },
+        {
+          id: 1,
+          start: 11,
+          end: 72,
+          thumbnails: [
+            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
+            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
+            "https://cdn.vuetifyjs.com/images/cards/sunshine.jpg",
+          ],
+        },
+      ],
     };
   },
   methods: {
@@ -55,7 +76,6 @@ export default {
     VideoPlayer,
     ShotsOverview,
     Timeline,
-    ShotView,
   },
 };
 </script>

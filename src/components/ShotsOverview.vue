@@ -1,12 +1,7 @@
 <template>
   <div>
     <v-card class="shots d-flex flex-column">
-      <v-virtual-scroll
-        :bench="benched"
-        :items="shots"
-        height="400"
-        item-height="140"
-      >
+      <v-virtual-scroll :items="shots" height="460" item-height="220">
         <template v-slot:default="{ item }">
           <v-list-item :key="item.id">
             <ShotCard :shot="item" />
