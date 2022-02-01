@@ -1,9 +1,8 @@
 <template>
   <v-card
     class="d-flex flex-column"
-    height="140px"
     width="100%"
-    v-on:click="setVideoframe(shot.start)"
+    v-on:click="setVideoPlayerTime(shot.start)"
   >
     <v-card-title class="px-2 py-1">Shot {{ shot.id }}</v-card-title>
     <v-row align="center" justify="center" class="px-2 py-0">
@@ -48,8 +47,9 @@ export default {
   methods: {
     get_timecode: helper_get_timecode,
     get_display_time: helper_get_display_time,
-    setVideoframe(frame) {
-      console.log(frame);
+    setVideoPlayerTime(time) {
+      console.log(time);
+      this.$emit("seek", time);
     },
   },
   watch: {

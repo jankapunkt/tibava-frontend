@@ -5,7 +5,20 @@
         <VideoPlayer :video="$store.state.video.current" />
       </v-col>
       <v-col>
-        <ShotsOverview :shots="shots" />
+        <v-card class="overview">
+          <v-tabs centered>
+            <v-tabs-slider />
+            <v-tab>Shots</v-tab>
+            <v-tab disabled>Persons</v-tab>
+            <v-tab disabled>Scenes</v-tab>
+
+            <v-tab-item>
+              <ShotsOverview :shots="shots" />
+            </v-tab-item>
+            <v-tab-item> Foo </v-tab-item>
+            <v-tab-item> Bar </v-tab-item>
+          </v-tabs>
+        </v-card>
       </v-col>
     </v-row>
     <Timeline />
@@ -145,5 +158,11 @@ export default {
 <style scoped>
 .logo > img {
   max-height: 56px;
+}
+
+.overview {
+  max-width: 768px;
+  padding: 10px;
+  margin: 10px;
 }
 </style>
