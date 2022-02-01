@@ -49,7 +49,6 @@ export default {
     get_timecode: helper_get_timecode,
     get_display_time: helper_get_display_time,
     setVideoPlayerTime(time) {
-      console.log(time);
       this.$emit("seek", time);
     },
   },

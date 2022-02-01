@@ -15,7 +15,7 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
-                <ShotsOverview :shots="shots" />
+                <ShotsOverview :shots="shots" v-on:seek="setVideoPlayerTime" />
               </v-tab-item>
               <v-tab-item> Foo </v-tab-item>
               <v-tab-item> Bar </v-tab-item>
@@ -52,6 +52,9 @@ export default {
 
       await this.$store.dispatch("analyser/list", this.$route.params.hash_id);
       // console.log(res);
+    },
+    setVideoPlayerTime(time) {
+      // TODO
     },
   },
   computed: {
