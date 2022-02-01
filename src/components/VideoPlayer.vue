@@ -114,7 +114,6 @@ export default {
 .video-player {
   max-width: 900px;
   padding: 10px;
-
   margin: 10px;
 }
 .video-control {

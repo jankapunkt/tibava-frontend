@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <v-container>
     <v-card class="shots d-flex flex-column">
-      <v-virtual-scroll :items="shots" height="460" item-height="220">
+      <v-virtual-scroll :items="shots" height="500" item-height="160">
         <template v-slot:default="{ item }">
           <v-list-item :key="item.id">
             <ShotCard :shot="item" />
@@ -9,7 +9,7 @@
         </template>
       </v-virtual-scroll>
     </v-card>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -26,7 +26,7 @@ export default {
 
 <style>
 .shots {
-  max-width: 768px;
+  max-width: 900px;
   padding: 10px;
   margin: 10px;
 }

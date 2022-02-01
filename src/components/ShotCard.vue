@@ -1,10 +1,16 @@
 <template>
-  <v-card class="d-flex flex-column">
-    <v-row>
-      <v-col>
+  <v-card
+    class="d-flex flex-column"
+    height="140px"
+    width="100%"
+    v-on:click="setVideoframe(shot.start)"
+  >
+    <v-card-title class="px-2 py-1">Shot {{ shot.id }}</v-card-title>
+    <v-row align="center" justify="center" class="px-2 py-0">
+      <v-col cols="4">
         <v-list-item three-line>
-          <v-list-item-content>
-            <div class="text-overline mb-4">Shot {{ shot.id }}</div>
+          <v-list-item-content min-width>
+            <!-- <div class="text-overline mb-4">Shot {{ shot.id }}</div> -->
             <v-list-item-subtitle
               >Begin: {{ get_timecode(shot.start) }}</v-list-item-subtitle
             >
@@ -21,22 +27,11 @@
         </v-list-item>
       </v-col>
 
-      <v-col>
+      <v-col cols="8">
         <v-item-group>
           <v-row>
-            <v-col
-              v-for="(item, i) in shot.thumbnails"
-              :key="i"
-              cols="12"
-              md="4"
-            >
-              <v-img
-                :src="item"
-                max-width="120"
-                max-height="120"
-                class="text-right pa-2"
-              >
-              </v-img>
+            <v-col v-for="(item, i) in shot.thumbnails" :key="i" cols="4">
+              <v-img :src="item" max-height="100%"> </v-img>
             </v-col>
           </v-row>
         </v-item-group>
@@ -53,6 +48,15 @@ export default {
   methods: {
     get_timecode: helper_get_timecode,
     get_display_time: helper_get_display_time,
+    setVideoframe(frame) {
+      console.log(frame);
+    },
+  },
+  watch: {
+    shot() {
+      console.log(this.shot);
+      this.$store.state.analyser.analyser;
+    },
   },
 };
 </script>

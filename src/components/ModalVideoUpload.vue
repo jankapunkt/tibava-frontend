@@ -124,7 +124,7 @@ export default {
 
       this.$store.dispatch("video/upload", params);
       //   TODO wait until signal is fired
-      //   this.dialog = false;
+      this.dialog = false;
     },
   },
 };

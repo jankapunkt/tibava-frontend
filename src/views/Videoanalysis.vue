@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-row>
+    <v-row justify="space-around">
       <v-col>
         <VideoPlayer :video="$store.state.video.current" />
       </v-col>
@@ -94,8 +94,6 @@ export default {
           ],
         };
       });
-      console.log(thumbnail);
-      console.log(thumbnail_dict);
       console.log(results);
       return results;
       return [
