@@ -26,7 +26,7 @@
               <div>Video ID: {{ item.id }}</div>
               <div>
                 Length:
-                {{ get_video_length(item.meta.duration) }}
+                {{ get_display_time(item.meta.duration) }}
               </div>
               <div>License: {{ item.meta.license }}</div>
 
@@ -49,19 +49,10 @@
 <script>
 import router from "../router";
 import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
+import { get_display_time as helper_get_display_time } from "@/plugins/helpers.js";
 
 export default {
   methods: {
-    get_video_length(seconds) {
-      var h = Math.floor(seconds / 3600);
-      var m = Math.floor((seconds % 3600) / 60);
-      var s = Math.floor((seconds % 3600) % 60);
-
-      var hDisplay = h > 0 ? h + (h == 1 ? " h " : " h ") : "";
-      var mDisplay = m > 0 ? m + (m == 1 ? " min " : " min ") : "";
-      var sDisplay = s > 0 ? s + (s == 1 ? " sec" : " sec") : "";
-      return hDisplay + mDisplay + sDisplay;
-    },
     delete_video(video_hash_id) {
       this.$store.dispatch("video/delete", video_hash_id);
     },
@@ -73,6 +64,7 @@ export default {
       //   params: { hash_id: video_hash_id },
       // });
     },
+    get_display_time: helper_get_display_time,
   },
   computed: {
     videos() {

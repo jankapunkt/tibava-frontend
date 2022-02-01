@@ -1,13 +1,20 @@
 <template>
   <v-app>
-    <VideoPlayer :video="$store.state.video.current" />
-    <ShotView :video="$store.state.video.current" /> <Timeline
-  /></v-app>
+    <v-row>
+      <v-col>
+        <VideoPlayer :video="$store.state.video.current" />
+      </v-col>
+      <v-col>
+        <ShotsOverview />
+      </v-col>
+    </v-row>
+    <Timeline />
+  </v-app>
 </template>
 
 <script>
 import VideoPlayer from "@/components/VideoPlayer.vue";
-import ShotView from "@/components/ShotView.vue";
+import ShotsOverview from "@/components/ShotsOverview.vue";
 import Timeline from "@/components/Timeline.vue";
 // import store from "../store/index.js";
 
@@ -46,6 +53,7 @@ export default {
   },
   components: {
     VideoPlayer,
+    ShotsOverview,
     Timeline,
     ShotView,
   },
