@@ -20,18 +20,22 @@ const api = {
     analyser: {},
   },
   actions: {
-    list({ commit }, params) {
-      axios.get(`${config.API_LOCATION}/analyser_list`)
-        .then((res) => {
-          if (res.data.status === 'ok') {
-              commit('update', res.data.entries);
-              
-          }
-        })
-        .catch((error) => {
-          const info = { date: Date(), error, origin: 'collection' };
-          commit('error/update', info, { root: true });
-        });
+    list({ commit }, video_hash_id) {
+    const params={
+        hash_id: video_hash_id,
+        add_results: true,
+    }
+    axios.get(`${config.API_LOCATION}/analyser_list`, { params })
+    .then((res) => {
+        if (res.data.status === 'ok') {
+            commit('update', res.data.entries);
+            
+        }
+    })
+    .catch((error) => {
+        const info = { date: Date(), error, origin: 'collection' };
+        commit('error/update', info, { root: true });
+    });
     },
   },
   mutations: {
