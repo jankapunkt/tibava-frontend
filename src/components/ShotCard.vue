@@ -19,9 +19,7 @@
             >
             <v-list-item-subtitle
               >Duration:
-              {{
-                get_display_time(shot.end - shot.start)
-              }}</v-list-item-subtitle
+              {{ get_timecode(shot.end - shot.start) }}</v-list-item-subtitle
             >
           </v-list-item-content>
         </v-list-item>
