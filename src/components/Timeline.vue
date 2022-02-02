@@ -14,7 +14,28 @@
             v-for="item in timelines"
             :key="item.id"
           >
-            {{ item.name }}
+            <v-flex class="timeline-control d-flex">
+              <v-menu center :offset-x="true" rounded>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon v-bind="attrs" v-on="on"> mdi-menu </v-icon>
+                </template>
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-title>
+                      <v-icon left>{{ "mdi-content-copy" }}</v-icon>
+                      Duplicate
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-title>
+                      <v-icon left>{{ "mdi-delete" }}</v-icon>
+                      Delete
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+              <v-card-subtitle>{{ item.name }}</v-card-subtitle>
+            </v-flex>
           </v-card>
         </v-col>
         <v-col class="timeline-bar">
@@ -26,6 +47,7 @@
 </template>
 
 <script>
+import AnnotationForm from "@/components/AnnotationForm.vue";
 import TimeMixin from "../mixins/time";
 
 export default {
@@ -33,7 +55,16 @@ export default {
   props: ["video", "time"],
   data() {
     return {
+      dialog: false,
       //pixel per seconds
+      timeline_drawer: false,
+      annotation_dialog: false,
+      items: [
+        { title: "Click Me" },
+        { title: "Click Me" },
+        { title: "Click Me" },
+        { title: "Click Me 2" },
+      ],
       context: null,
       scale: 60,
       startTime: 10,
@@ -49,6 +80,10 @@ export default {
       gap: 5,
       timelines: [
         {
+          name: "shot",
+          segments: [],
+        },
+        {
           name: "face",
           segments: [
             {
@@ -58,26 +93,6 @@ export default {
               color: "red",
             },
           ],
-        },
-        {
-          name: "shot",
-          segments: [],
-        },
-        {
-          name: "shot",
-          segments: [],
-        },
-        {
-          name: "shot",
-          segments: [],
-        },
-        {
-          name: "shot",
-          segments: [],
-        },
-        {
-          name: "shot",
-          segments: [],
         },
       ],
     };
@@ -233,6 +248,9 @@ export default {
   mounted() {
     this.init();
   },
+  components: {
+    AnnotationForm,
+  },
 };
 </script>
 
@@ -257,5 +275,13 @@ export default {
   margin-top: 5px;
   margin-right: 00px;
   padding: 2px;
+}
+.timeline-control {
+  gap: 2px;
+}
+
+.timeline-control > * {
+  align-items: center;
+  justify-content: center;
 }
 </style>

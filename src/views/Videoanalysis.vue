@@ -20,6 +20,12 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
+                <!-- <ShotCard
+                  v-for="item in shots"
+                  v-bind:key="item.id"
+                  :shot="item"
+                  v-on:seek="setVideoPlayerTime"
+                /> -->
                 <ShotsOverview :shots="shots" v-on:seek="setVideoPlayerTime" />
               </v-tab-item>
               <v-tab-item> Foo </v-tab-item>
@@ -41,6 +47,7 @@
 <script>
 import VideoPlayer from "@/components/VideoPlayer.vue";
 import ShotsOverview from "@/components/ShotsOverview.vue";
+import ShotCard from "@/components/ShotCard.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 // import store from "../store/index.js";
@@ -173,6 +180,7 @@ export default {
   components: {
     VideoPlayer,
     ShotsOverview,
+    ShotCard,
     Timeline,
     TimeSelector,
   },
