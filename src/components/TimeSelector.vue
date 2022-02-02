@@ -34,7 +34,7 @@ export default {
       foregroundColor: "rgba(255,255, 255, 1)",
       selectionColor: "rgba(230, 57, 70, 0.5)",
       textColor: "rgba(230, 57, 70, 1)",
-      pad_y: 5,
+      pad_y: 15,
       pad_x: 20,
       gap: 5,
     };
@@ -76,7 +76,7 @@ export default {
     draw_scale() {
       this.ctx.save();
 
-      let shiftY = this.scaleHeight - 4 * this.pad_y;
+      let shiftY = this.scaleHeight - this.pad_y;
       let that = this;
       let timestemps = this.linspace(this.startTime, this.endTime, 15);
       timestemps.forEach(function (time, index) {
@@ -105,23 +105,6 @@ export default {
         that.ctx.stroke();
         that.ctx.closePath();
       });
-      // for (let i = this.startTime; i < this.endTime; i++) {
-      //   console.log(`a ${this.timeScale} ${this.timeToX(i)} ${i}`);
-      //   this.ctx.font = "16px serif";
-      //   this.ctx.textAlign = "left";
-      //   this.ctx.fillStyle = "black";
-      //   this.ctx.fillText(this.get_timecode(i), this.timeToX(i), shiftY);
-
-      //   this.ctx.beginPath();
-      //   this.ctx.lineWidth = 0.5;
-      //   this.ctx.strokeStyle = "black";
-      //   this.ctx.moveTo(this.timeToX(i + 0.5), shiftY + 15);
-      //   this.ctx.lineTo(this.timeToX(i + 0.5), shiftY + 20);
-      //   this.ctx.moveTo(this.timeToX(i), shiftY + 5);
-      //   this.ctx.lineTo(this.timeToX(i), shiftY + 20);
-      //   this.ctx.stroke();
-      //   this.ctx.closePath();
-      // }
       this.ctx.restore();
     },
 
