@@ -37,43 +37,54 @@ const api = {
         },
 
         duplicate({ commit }, timeline_hash_id) {
-            
-            axios.post(`${config.API_LOCATION}/timeline_duplicate`, { timeline_hash_id })
-              .then((res) => {
-                console.log(res);
-                if (res.data.status === 'ok') {
-                    commit('duplicate', timeline_hash_id, res.data.hash_id);
-                }
-              })
-              .catch((error) => {
-                const info = { date: Date(), error, origin: 'upload' };
-                commit('error/update', info, { root: true });
-              });
-          },
+
+            const params = {
+                hash_id: timeline_hash_id
+            }
+            axios.post(`${config.API_LOCATION}/timeline_duplicate`, params)
+                .then((res) => {
+                    console.log(res.data);
+                    if (res.data.status === 'ok') {
+                        commit('add', res.data.entry);
+                    }
+                })
+                .catch((error) => {
+                    const info = { date: Date(), error, origin: 'upload' };
+                    commit('error/update', info, { root: true });
+                });
+        },
 
         delete({ commit }, timeline_hash_id) {
-            axios.post(`${config.API_LOCATION}/timeline_delete`, { hash_id: timeline_hash_id })
-            .then((res) => {
-                if (res.data.status === 'ok') {
-                commit("delete",timeline_hash_id);
-                }
-            })
-            .catch((error) => {
-                const info = { date: Date(), error, origin: 'collection' };
-                commit('error/update', info, { root: true });
-            });
+
+            const params = {
+                hash_id: timeline_hash_id
+            }
+            axios.post(`${config.API_LOCATION}/timeline_delete`, params)
+                .then((res) => {
+                    if (res.data.status === 'ok') {
+                        commit("delete", timeline_hash_id);
+                    }
+                })
+                .catch((error) => {
+                    const info = { date: Date(), error, origin: 'collection' };
+                    commit('error/update', info, { root: true });
+                });
         },
     },
     mutations: {
-        duplicate(state, old_timeline_hash_id, new_timeline_hash_id) {
-            timeline_index = state.timelines.findIndex(e => e.hash_id === old_timeline_hash_id);
-            state.timelines.push(state.timelines[timeline_index]);
+        add(state, timeline) {
+            state.timelines.push(timeline);
         },
+        // duplicate(state, { old_hash_id, new_hash_id }) {
+        //     timeline_index = state.timelines.findIndex(e => e.hash_id === old_hash_id);
+
+        //     state.timelines.push(state.timelines[timeline_index]);
+        // },
         update(state, timelines) {
             state.timelines = timelines;
         },
-        delete(state, timeline_hash_id){
-            timeline_index = state.timelines.findIndex(e => e.hash_id === timeline_hash_id);
+        delete(state, timeline_hash_id) {
+            let timeline_index = state.timelines.findIndex(e => e.hash_id === timeline_hash_id);
             state.timelines.splice(timeline_index, 1);
         },
     },

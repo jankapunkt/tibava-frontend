@@ -15,6 +15,8 @@
           <v-col>
             <TimeSelector
               :video="$store.state.video.current"
+              :startTime="startTime"
+              :endTime="endTime"
               @endTimeChange="onEndTimeChange"
               @startTimeChange="onStartTimeChange"
             />
@@ -58,18 +60,23 @@
         :timelines="$store.state.timeline.timelines"
         :startTime="startTime"
         :endTime="endTime"
+        @copyTimeline="onCopyTimeline"
+        @renameTimeline="onRenameTimeline"
+        @deleteTimeline="onDeleteTimeline"
+        @segmentSelected="onSegmentSelected"
       >
         <template v-slot:context>
           <v-list class="pa-0">
+            <v-subheader> {{ $t("annotation.title") }}</v-subheader>
             <v-list-item class="px-0 h44">
-              <v-btn text block large>
-                {{ $t("search.new") }}
-              </v-btn>
+              <v-form class="ma-2" @submit="onAppendAnnotation">
+                <v-text-field v-model="addedAnnotation"></v-text-field>
+              </v-form>
             </v-list-item>
 
             <v-list-item class="px-0 h44">
               <v-btn text block large>
-                {{ $t("search.append") }}
+                {{ $t("annotation.cancel") }}
               </v-btn>
             </v-list-item>
           </v-list>
@@ -94,6 +101,8 @@ export default {
       currentTime: 0,
       startTime: 0,
       endTime: 0,
+      selectedSegment: null,
+      addedAnnotation: null,
     };
   },
   methods: {
@@ -104,6 +113,9 @@ export default {
       // console.log(
       //   `new state ${JSON.stringify(this.$store.state.video.current)}`
       // );
+      if (this.$store.state.video.current.meta) {
+        this.endTime = this.$store.state.video.current.meta.duration;
+      }
 
       await this.$store.dispatch("analyser/list", this.$route.params.hash_id);
       // console.log(res);
@@ -123,6 +135,25 @@ export default {
     },
     onStartTimeChange(time) {
       this.startTime = time;
+    },
+    onCopyTimeline(hash_id) {
+      this.$store.dispatch("timeline/duplicate", hash_id);
+    },
+    onRenameTimeline(hash_id) {
+      this.$store.dispatch("timeline/rename", hash_id);
+    },
+    onDeleteTimeline(hash_id) {
+      this.$store.dispatch("timeline/delete", hash_id);
+    },
+    onSegmentSelected(hash_id) {
+      this.selectedSegment = hash_id;
+      console.log(hash_id);
+      // this.$store.dispatch("timeline/delete", hash_id);
+    },
+    onAppendAnnotation(evt) {
+      evt.preventDefault();
+      console.log(this.selectedSegment);
+      console.log(this.addedAnnotation);
     },
   },
   computed: {

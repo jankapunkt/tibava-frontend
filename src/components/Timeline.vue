@@ -63,10 +63,11 @@
             :value="menu.show"
             :position-x="menu.x"
             :position-y="menu.y"
-            :close-on-click="false"
             transition="fade-transition"
             absolute
             offset-y
+            :close-on-click="false"
+            :close-on-content-click="false"
           >
             <slot name="context"></slot>
           </v-menu>
@@ -317,9 +318,11 @@ export default {
     // mouse operators
     clickOutside() {
       // this.mouse.down = false;
-      this.menu.show = false;
+      // this.menu.show = false;
     },
     showSegmentContext(hash_id, evt) {
+      // TODO maybe there is a better solution
+      this.$emit("segmentSelected", hash_id);
       this.menu = {
         show: false,
         x: evt.clientX,
@@ -406,12 +409,15 @@ export default {
       };
     },
     copyTimeline(hash_id) {
+      this.$emit("copyTimeline", hash_id);
       console.log("Copy timeline " + hash_id);
     },
     renameTimeline(hash_id) {
+      this.$emit("renameTimeline", hash_id);
       console.log("Rename timeline " + hash_id);
     },
     deleteTimeline(hash_id) {
+      this.$emit("deleteTimeline", hash_id);
       console.log("Delete timeline " + hash_id);
     },
   },
