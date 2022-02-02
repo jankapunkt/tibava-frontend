@@ -18,7 +18,9 @@
           <v-icon v-else-if="playing"> mdi-pause</v-icon>
           <v-icon v-else> mdi-play</v-icon>
         </v-btn>
-
+        <div class="time-code">
+          {{ get_timecode(currentTime) }}
+        </div>
         <v-slider
           class="pregress-bar"
           :value="100 * progress"
@@ -53,7 +55,7 @@ export default {
   mixins: [TimeMixin],
   model: {
     prob: "time",
-    event: "time_update",
+    event: "timeUpdate",
   },
   props: ["video", "time"],
   data() {
@@ -98,7 +100,7 @@ export default {
       this.currentTime = event.srcElement.currentTime;
       this.duration = event.srcElement.duration;
       this.ended = event.srcElement.ended;
-      this.$emit("time_update", this.currentTime);
+      this.$emit("timeUpdate", this.currentTime);
     },
     onSeek(percentage) {
       this.$refs.video.currentTime = (this.duration * percentage) / 100;
@@ -119,7 +121,7 @@ export default {
   },
   watch: {
     time() {
-      this.$refs.currentTime = currentTime;
+      this.$refs.video.currentTime = this.time;
     },
   },
 };
@@ -135,6 +137,10 @@ export default {
   margin-top: 5px;
 }
 .video-control > .pregress-bar {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.video-control > .time-code {
   margin-top: auto;
   margin-bottom: auto;
 }

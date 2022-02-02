@@ -103,7 +103,6 @@ const api = {
       state.videos.splice(state.videos.findIndex(e => e.hash_id === video_hash_id),1);
     },
     change_current(state, video){
-      console.log(`Mutate current video ${JSON.stringify(video)}`);
       state.current=video;
     }
 

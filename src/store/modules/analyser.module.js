@@ -40,7 +40,6 @@ const api = {
   },
   mutations: {
     update(state, analyser){
-      console.log(`Mutate current analyser ${JSON.stringify(analyser)}`);
       state.analyser=analyser;
     },
   },

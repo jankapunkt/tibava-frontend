@@ -2,7 +2,12 @@
   <v-app>
     <v-row justify="space-around" align="start">
       <v-col md="6" justify="center">
-        <VideoPlayer :video="$store.state.video.current" v-model="video_time" />
+        <VideoPlayer
+          :video="$store.state.video.current"
+          :time="videoTime"
+          @timeUpdate="onTimeUpdate"
+        />
+        <TimeSelector :video="$store.state.video.current" />
       </v-col>
 
       <v-col md="6" justify="center">
@@ -24,10 +29,11 @@
         </v-container>
       </v-col>
     </v-row>
-
+    <v-container>
+      {{ videoTime }}
+    </v-container>
     <v-row>
-      <!-- {{ video_time }} -->
-      <Timeline :video="$store.state.video.current" />
+      <Timeline :video="$store.state.video.current" :time="currentTime" />
     </v-row>
   </v-app>
 </template>
@@ -36,12 +42,14 @@
 import VideoPlayer from "@/components/VideoPlayer.vue";
 import ShotsOverview from "@/components/ShotsOverview.vue";
 import Timeline from "@/components/Timeline.vue";
+import TimeSelector from "@/components/TimeSelector.vue";
 // import store from "../store/index.js";
 
 export default {
   data() {
     return {
-      video_time: 0,
+      videoTime: 0,
+      currentTime: 0,
     };
   },
   methods: {
@@ -57,7 +65,11 @@ export default {
       // console.log(res);
     },
     setVideoPlayerTime(time) {
-      // TODO
+      console.log("set video time");
+      this.videoTime = time;
+    },
+    onTimeUpdate(time) {
+      this.currentTime = time;
     },
   },
   computed: {
@@ -162,6 +174,7 @@ export default {
     VideoPlayer,
     ShotsOverview,
     Timeline,
+    TimeSelector,
   },
 };
 </script>
