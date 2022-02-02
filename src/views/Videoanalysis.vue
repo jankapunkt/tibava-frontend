@@ -13,7 +13,11 @@
         </v-row>
         <v-row>
           <v-col>
-            <TimeSelector :video="$store.state.video.current" />
+            <TimeSelector
+              :video="$store.state.video.current"
+              @endTimeChange="onEndTimeChange"
+              @startTimeChange="onStartTimeChange"
+            />
           </v-col>
         </v-row>
       </v-col>
@@ -52,7 +56,25 @@
         :video="$store.state.video.current"
         :time="currentTime"
         :timelines="$store.state.timeline.timelines"
-      />
+        :startTime="startTime"
+        :endTime="endTime"
+      >
+        <template v-slot:context>
+          <v-list class="pa-0">
+            <v-list-item class="px-0 h44">
+              <v-btn text block large>
+                {{ $t("search.new") }}
+              </v-btn>
+            </v-list-item>
+
+            <v-list-item class="px-0 h44">
+              <v-btn text block large>
+                {{ $t("search.append") }}
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </template>
+      </Timeline>
     </v-row>
   </v-app>
 </template>
@@ -70,6 +92,8 @@ export default {
     return {
       videoTime: 0,
       currentTime: 0,
+      startTime: 0,
+      endTime: 0,
     };
   },
   methods: {
@@ -85,15 +109,20 @@ export default {
       // console.log(res);
 
       await this.$store.dispatch("timeline/list", this.$route.params.hash_id);
-      console.log(this.$store.state.timeline.timelines);
+
       // console.log(res);
     },
     setVideoPlayerTime(time) {
-      console.log("set video time");
       this.videoTime = time;
     },
     onTimeUpdate(time) {
       this.currentTime = time;
+    },
+    onEndTimeChange(time) {
+      this.endTime = time;
+    },
+    onStartTimeChange(time) {
+      this.startTime = time;
     },
   },
   computed: {

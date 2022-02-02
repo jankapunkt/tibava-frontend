@@ -9,7 +9,28 @@
     >
       <v-row>
         <v-col class="timeline-bar">
-          <canvas ref="canvas"> </canvas>
+          <canvas
+            ref="canvas"
+            @mousedown="onMouseDown"
+            @mouseup="onMouseUp"
+            @mousemove="onMouseMove"
+            @mouseleave="onMouseUp"
+            @click="onMouseClick"
+            v-click-outside="clickOutside"
+          >
+          </canvas>
+
+          <v-menu
+            :value="menu.show"
+            :position-x="menu.x"
+            :position-y="menu.y"
+            :close-on-click="false"
+            transition="fade-transition"
+            absolute
+            offset-y
+          >
+            <slot name="context"></slot>
+          </v-menu>
         </v-col>
       </v-row>
     </v-card>
@@ -37,10 +58,21 @@ export default {
       pad_y: 15,
       pad_x: 20,
       gap: 5,
+
+      mouse: {
+        start: null,
+        down: null,
+      },
+
+      menu: {
+        show: false,
+        x: null,
+        y: null,
+      },
     };
   },
   methods: {
-    init() {
+    draw() {
       this.canvas = this.$refs.canvas;
       this.ctx = this.canvas.getContext("2d");
       this.ctx.save();
@@ -75,15 +107,25 @@ export default {
 
     draw_scale() {
       this.ctx.save();
-
+      let numberOfTime = 15;
       let shiftY = this.scaleHeight - this.pad_y;
       let that = this;
-      let timestemps = this.linspace(this.startTime, this.endTime, 15);
+      let timestemps = this.linspace(
+        this.startTime,
+        this.endTime,
+        numberOfTime
+      );
+
+      timestemps.pop();
       timestemps.forEach(function (time, index) {
-        that.ctx.font = "16px serif";
+        that.ctx.font = "12px serif";
         that.ctx.textAlign = "left";
         that.ctx.fillStyle = "black";
-        that.ctx.fillText(that.get_timecode(time), that.timeToX(time), shiftY);
+        that.ctx.fillText(
+          that.get_timecode(time, 2),
+          that.timeToX(time),
+          shiftY
+        );
 
         that.ctx.beginPath();
         that.ctx.lineWidth = 0.5;
@@ -94,7 +136,11 @@ export default {
         that.ctx.closePath();
       });
 
-      let smalltimestemps = this.linspace(this.startTime, this.endTime, 149);
+      let smalltimestemps = this.linspace(
+        this.startTime,
+        this.endTime,
+        10 * numberOfTime - 1
+      );
       smalltimestemps.forEach(function (time, index) {
         that.ctx.beginPath();
         that.ctx.lineWidth = 0.5;
@@ -107,9 +153,6 @@ export default {
       this.ctx.restore();
     },
 
-    timeToX(time) {
-      return this.timeScale * (time - this.startTime) + this.pad_x;
-    },
     linspace(startValue, stopValue, cardinality) {
       var arr = [];
       var step = (stopValue - startValue) / (cardinality - 1);
@@ -118,7 +161,83 @@ export default {
       }
       return arr;
     },
-    mouse_pos({ clientX, clientY }) {
+    // map time to x and x to time
+    timeToX(time) {
+      return this.timeScale * (time - this.startTime) + this.pad_x;
+    },
+    xToTime(x) {
+      return (x - this.pad_x) / this.timeScale + this.startTime;
+      // return this.timeScale * (time - this.startTime) + this.pad;
+    },
+    contains(rect, pos) {
+      return (
+        rect.x <= pos.x &&
+        pos.x <= rect.x + rect.width &&
+        rect.y <= pos.y &&
+        pos.y <= rect.y + rect.height
+      );
+    },
+    // mouse operators
+    clickOutside() {},
+
+    onMouseClick(evt) {
+      evt.preventDefault();
+      let mouse_pos = this.mousePos(evt);
+      let time = this.xToTime(mouse_pos.x);
+      let diffStart = Math.abs(time - this.selectionStartTime);
+      let endStart = Math.abs(time - this.selectionEndTime);
+      if (diffStart < endStart) {
+        this.selectionStartTime = time;
+        this.$emit("startTimeChange", time);
+        this.draw();
+      } else {
+        this.selectionEndTime = time;
+        this.$emit("endTimeChange", time);
+        this.draw();
+      }
+    },
+    onMouseDown(evt) {
+      // evt.preventDefault();
+      // this.mouse.start = this.mousePos(evt);
+      // this.mouse.down = true;
+      // this.menu.show = false;
+      // if (this.ctx) {
+      //   this.$el.style.cursor = "crosshair";
+      //   this.drawDefaultRect();
+      // }
+    },
+    onMouseUp(evt) {
+      // if (this.ctx && this.mouse.down) {
+      //   this.mouse.down = false;
+      //   this.$el.style.cursor = "default";
+      //   const rect = this.computeRect(this.mouse.start, this.mousePos(evt));
+      //   // region of interest is too small
+      //   if (rect.width * rect.height < 20) {
+      //     this.ctx.clearRect(0, 0, this.image.width, this.image.height);
+      //     this.$emit("update", null);
+      //     return;
+      //   }
+      //   this.setROI(rect, false);
+      //   this.drawROI();
+      //   this.$emit("update", this.roi);
+      //   this.menu = {
+      //     show: false,
+      //     x: evt.clientX,
+      //     y: evt.clientY,
+      //   };
+      //   this.$nextTick(() => {
+      //     this.menu.show = true;
+      //   });
+      // }
+    },
+    onMouseMove(evt) {
+      // if (this.ctx && this.mouse.down) {
+      //   const rect = this.computeRect(this.mouse.start, this.mousePos(evt));
+      //   this.setROI(rect, false);
+      //   this.drawROI();
+      // }
+    },
+    mousePos({ clientX, clientY }) {
       const rect = this.canvas.getBoundingClientRect();
       const scaleX = this.canvas.width / rect.width;
       const scaleY = this.canvas.height / rect.height;
@@ -130,15 +249,16 @@ export default {
   },
   watch: {
     video() {
-      this.init();
+      this.endTime = this.video.meta.duration;
+      this.draw();
     },
     time() {
-      this.init();
+      this.draw();
     },
   },
   computed: {},
   mounted() {
-    this.init();
+    this.draw();
   },
 };
 </script>

@@ -18,18 +18,17 @@ const api = {
   state: {
     current: {},
     videos: [],
-    lang: "en" 
+    lang: "en"
   },
   actions: {
-    async get({commit, state}, video_hash_id) {
+    async get({ commit, state }, video_hash_id) {
       const params = {
         hash_id: video_hash_id
       }
       axios.get(`${config.API_LOCATION}/video_get`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
-              console.log("change_current");
-              commit("change_current", res.data.entry);
+            commit("change_current", res.data.entry);
           }
         })
         .catch((error) => {
@@ -51,9 +50,9 @@ const api = {
         .then((res) => {
           console.log(res);
           if (res.data.status === 'ok') {
-              res.data.entries.forEach((entry) => {
-                commit('add', entry);
-              });
+            res.data.entries.forEach((entry) => {
+              commit('add', entry);
+            });
           }
         })
         .catch((error) => {
@@ -65,8 +64,8 @@ const api = {
       axios.get(`${config.API_LOCATION}/video_list`)
         .then((res) => {
           if (res.data.status === 'ok') {
-              commit('update', res.data.entries);
-              
+            commit('update', res.data.entries);
+
           }
         })
         .catch((error) => {
@@ -74,14 +73,14 @@ const api = {
           commit('error/update', info, { root: true });
         });
     },
-    delete({commit, state}, video_hash_id) {
+    delete({ commit, state }, video_hash_id) {
       const params = {
         hash_id: video_hash_id
       }
       axios.post(`${config.API_LOCATION}/video_delete`, { hash_id: video_hash_id })
         .then((res) => {
           if (res.data.status === 'ok') {
-            commit("delete",video_hash_id);
+            commit("delete", video_hash_id);
             //TODO
           }
         })
@@ -93,17 +92,17 @@ const api = {
     },
   },
   mutations: {
-    add(state, video){
+    add(state, video) {
       state.videos.push(video);
     },
-    update(state, videos){
-      state.videos=videos;
+    update(state, videos) {
+      state.videos = videos;
     },
-    delete(state, video_hash_id){
-      state.videos.splice(state.videos.findIndex(e => e.hash_id === video_hash_id),1);
+    delete(state, video_hash_id) {
+      state.videos.splice(state.videos.findIndex(e => e.hash_id === video_hash_id), 1);
     },
-    change_current(state, video){
-      state.current=video;
+    change_current(state, video) {
+      state.current = video;
     }
 
   },
