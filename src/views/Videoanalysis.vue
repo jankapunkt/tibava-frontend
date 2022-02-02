@@ -47,11 +47,12 @@
         </v-container>
       </v-col>
     </v-row>
-    <v-container>
-      {{ videoTime }}
-    </v-container>
     <v-row>
-      <Timeline :video="$store.state.video.current" :time="currentTime" />
+      <Timeline
+        :video="$store.state.video.current"
+        :time="currentTime"
+        :timelines="$store.state.timeline.timelines"
+      />
     </v-row>
   </v-app>
 </template>
@@ -81,6 +82,10 @@ export default {
       // );
 
       await this.$store.dispatch("analyser/list", this.$route.params.hash_id);
+      // console.log(res);
+
+      await this.$store.dispatch("timeline/list", this.$route.params.hash_id);
+      console.log(this.$store.state.timeline.timelines);
       // console.log(res);
     },
     setVideoPlayerTime(time) {

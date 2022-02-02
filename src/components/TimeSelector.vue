@@ -80,7 +80,6 @@ export default {
       let that = this;
       let timestemps = this.linspace(this.startTime, this.endTime, 15);
       timestemps.forEach(function (time, index) {
-        console.log(`a ${that.timeScale} ${that.timeToX(time)} ${time}`);
         that.ctx.font = "16px serif";
         that.ctx.textAlign = "left";
         that.ctx.fillStyle = "black";
@@ -135,7 +134,6 @@ export default {
     },
     time() {
       this.init();
-      console.log(this.time);
     },
   },
   computed: {},

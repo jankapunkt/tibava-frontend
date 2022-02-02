@@ -61,7 +61,7 @@ import TimeMixin from "../mixins/time";
 
 export default {
   mixins: [TimeMixin],
-  props: ["video", "time"],
+  props: ["video", "time", "timelines"],
   data() {
     return {
       dialog: false,
@@ -81,29 +81,43 @@ export default {
       textColor: "rgba(230, 57, 70, 1)",
       pad: 5,
       gap: 5,
-      timelines: [
-        {
-          name: "shot",
-          hash_id: 0,
-          segments: [],
-        },
-        {
-          name: "face",
-          hash_id: 1,
-          segments: [
-            {
-              startTime: 0.2,
-              endTime: 14,
-              labels: ["foo", "bar"],
-              color: "red",
-            },
-          ],
-        },
-      ],
+      // timelines: [
+      //   {
+      //     name: "face",
+      //     segments: [
+      //       {
+      //         startTime: 0.2,
+      //         endTime: 14,
+      //         labels: ["foo", "bar"],
+      //         color: "red",
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     name: "shot",
+      //     segments: [],
+      //   },
+      //   {
+      //     name: "shot",
+      //     segments: [],
+      //   },
+      //   {
+      //     name: "shot",
+      //     segments: [],
+      //   },
+      //   {
+      //     name: "shot",
+      //     segments: [],
+      //   },
+      //   {
+      //     name: "shot",
+      //     segments: [],
+      //   },
+      // ],
     };
   },
   methods: {
-    init() {
+    draw() {
       this.canvas = this.$refs.canvas;
       this.ctx = this.canvas.getContext("2d");
 
@@ -114,15 +128,16 @@ export default {
         (this.width - 2 * this.pad) / (this.endTime - this.startTime);
       this.$refs.canvas.width = this.$refs.canvas.parentElement.clientWidth;
       this.$refs.canvas.height = this.$refs.canvas.parentElement.clientHeight;
-
+      console.log(this.timelines);
       this.draw_scale();
-      this.draw_timelines();
+      if (this.timelines) {
+        this.draw_timelines();
+      }
       this.drawCurrentTime();
     },
 
     draw_timelines() {
       this.ctx.save();
-      console.log(this.timelines.length);
       for (let i = 0; i < this.timelines.length; i++) {
         this.draw_timeline(
           this.pad,
@@ -150,7 +165,6 @@ export default {
           // Nothing to draw
           reutrn;
         }
-        console.log(e);
 
         that.ctx.fillStyle = "red";
         that.ctx.fillRect(
@@ -174,9 +188,6 @@ export default {
 
       let shiftY = this.scaleHeight - 4 * this.pad;
       for (let i = this.startTime; i < this.endTime; i++) {
-        console.log(
-          `Mutate current analyser ${this.timeScale} ${this.timeToX(i)} ${i}`
-        );
         this.ctx.font = "16px serif";
         this.ctx.textAlign = "left";
         this.ctx.fillText(this.get_timecode(i), this.timeToX(i), shiftY);
@@ -244,7 +255,10 @@ export default {
   },
   watch: {
     video() {
-      this.init();
+      this.draw();
+    },
+    timelines() {
+      this.draw();
     },
     time() {
       // if (this.time < this.startTime) {
@@ -254,13 +268,12 @@ export default {
       //   return;
       // }
 
-      this.init();
-      console.log(this.time);
+      this.draw();
     },
   },
   computed: {},
   mounted() {
-    this.init();
+    this.draw();
   },
   components: {
     AnnotationForm,
