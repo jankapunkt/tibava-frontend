@@ -20,10 +20,19 @@
                   <v-icon v-bind="attrs" v-on="on"> mdi-menu </v-icon>
                 </template>
                 <v-list>
+                  <v-list-item>
+                    <h2>{{ item.name }}</h2>
+                  </v-list-item>
                   <v-list-item link v-on:click="copyTimeline(item.hash_id)">
                     <v-list-item-title>
                       <v-icon left>{{ "mdi-content-copy" }}</v-icon>
                       Duplicate
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item link v-on:click="renameTimeline(item.hash_id)">
+                    <v-list-item-title>
+                      <v-icon left>{{ "mdi-pencil" }}</v-icon>
+                      Rename
                     </v-list-item-title>
                   </v-list-item>
                   <v-list-item link v-on:click="deleteTimeline(item.hash_id)">
@@ -225,6 +234,9 @@ export default {
     },
     copyTimeline(hash_id) {
       console.log("Copy timeline " + hash_id);
+    },
+    renameTimeline(hash_id) {
+      console.log("Rename timeline " + hash_id);
     },
     deleteTimeline(hash_id) {
       console.log("Delete timeline " + hash_id);
