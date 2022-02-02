@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-card
-      class="d-flex flex-column"
+      class="d-flex flex-column timelineSelector"
       height="80"
       width="100%"
       max-width="100%"
@@ -147,6 +147,10 @@ export default {
 
 
 <style>
+/* .timelineSelector {
+  padding: 10px;
+  margin: 10px;
+} */
 .timeline-bar {
   width: 100%;
   max-width: 100%;

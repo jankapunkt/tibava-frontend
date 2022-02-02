@@ -131,10 +131,12 @@ export default {
 .video-player {
   padding: 10px;
   margin: 10px;
+  /* max-height: 768px; */
 }
 .video-control {
   gap: 10px;
   margin-top: 5px;
+  max-width: 100%;
 }
 .video-control > .pregress-bar {
   margin-top: auto;

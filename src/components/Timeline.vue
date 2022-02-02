@@ -20,13 +20,13 @@
                   <v-icon v-bind="attrs" v-on="on"> mdi-menu </v-icon>
                 </template>
                 <v-list>
-                  <v-list-item>
+                  <v-list-item link v-on:click="copyTimeline(item.hash_id)">
                     <v-list-item-title>
                       <v-icon left>{{ "mdi-content-copy" }}</v-icon>
                       Duplicate
                     </v-list-item-title>
                   </v-list-item>
-                  <v-list-item>
+                  <v-list-item link v-on:click="deleteTimeline(item.hash_id)">
                     <v-list-item-title>
                       <v-icon left>{{ "mdi-delete" }}</v-icon>
                       Delete
@@ -59,12 +59,6 @@ export default {
       //pixel per seconds
       timeline_drawer: false,
       annotation_dialog: false,
-      items: [
-        { title: "Click Me" },
-        { title: "Click Me" },
-        { title: "Click Me" },
-        { title: "Click Me 2" },
-      ],
       context: null,
       scale: 60,
       startTime: 10,
@@ -81,10 +75,12 @@ export default {
       timelines: [
         {
           name: "shot",
+          hash_id: 0,
           segments: [],
         },
         {
           name: "face",
+          hash_id: 1,
           segments: [
             {
               startTime: 0.2,
@@ -226,6 +222,12 @@ export default {
         x: (clientX - rect.left) * scaleX,
         y: (clientY - rect.top) * scaleY,
       };
+    },
+    copyTimeline(hash_id) {
+      console.log("Copy timeline " + hash_id);
+    },
+    deleteTimeline(hash_id) {
+      console.log("Delete timeline " + hash_id);
     },
   },
   watch: {

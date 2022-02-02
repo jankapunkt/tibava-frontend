@@ -1,7 +1,7 @@
 <template>
   <v-card
-    class="d-flex flex-column py-2"
-    width="100%"
+    class="d-flex flex-column py-2 mx-2 my-4"
+    width="98%"
     elevation="4"
     v-on:click="setVideoPlayerTime(shot.start)"
   >
@@ -29,7 +29,7 @@
         <v-item-group>
           <v-row>
             <v-col v-for="(item, i) in shot.thumbnails" :key="i" cols="4">
-              <v-img :src="item" max-height="100%"> </v-img>
+              <v-img :src="item" max-height="100"> </v-img>
             </v-col>
           </v-row>
         </v-item-group>

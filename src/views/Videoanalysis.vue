@@ -2,17 +2,29 @@
   <v-app>
     <v-row justify="space-around" align="start">
       <v-col md="6" justify="center">
-        <VideoPlayer
-          :video="$store.state.video.current"
-          :time="videoTime"
-          @timeUpdate="onTimeUpdate"
-        />
-        <TimeSelector :video="$store.state.video.current" />
+        <v-row>
+          <v-col>
+            <VideoPlayer
+              :video="$store.state.video.current"
+              :time="videoTime"
+              @timeUpdate="onTimeUpdate"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <TimeSelector :video="$store.state.video.current" />
+          </v-col>
+        </v-row>
       </v-col>
 
       <v-col md="6" justify="center">
         <v-container>
-          <v-card class="overview" elevation="8">
+          <v-card
+            class="overview d-flex flex-column overflow-auto"
+            elevation="8"
+            max-height="768px"
+          >
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
@@ -20,16 +32,16 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
-                <!-- <ShotCard
+                <ShotCard
                   v-for="item in shots"
                   v-bind:key="item.id"
                   :shot="item"
                   v-on:seek="setVideoPlayerTime"
-                /> -->
-                <ShotsOverview :shots="shots" v-on:seek="setVideoPlayerTime" />
+                />
+                <!-- <ShotsOverview :shots="shots" v-on:seek="setVideoPlayerTime" /> -->
               </v-tab-item>
-              <v-tab-item> Foo </v-tab-item>
-              <v-tab-item> Bar </v-tab-item>
+              <v-tab-item> PERSONS </v-tab-item>
+              <v-tab-item> SCENES </v-tab-item>
             </v-tabs>
           </v-card>
         </v-container>
