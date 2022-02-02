@@ -70,8 +70,8 @@ export default {
       annotation_dialog: false,
       context: null,
       scale: 60,
-      startTime: 10,
-      endTime: 25,
+      startTime: 0,
+      endTime: 90,
       timelineHeight: 50,
       timelineWidth: 120,
       scaleHeight: 50,
@@ -159,14 +159,14 @@ export default {
       var that = this;
       segments.forEach(function (e) {
         that.ctx.save();
-        let start = Math.max(e.startTime, that.startTime);
-        let end = Math.min(e.endTime, that.endTime);
+        let start = Math.max(e.start, that.startTime);
+        let end = Math.min(e.end, that.endTime);
         if (end == start) {
           // Nothing to draw
           reutrn;
         }
 
-        that.ctx.fillStyle = "red";
+        that.ctx.fillStyle = e.color;
         that.ctx.fillRect(
           that.timeToX(start),
           y,
@@ -174,12 +174,18 @@ export default {
           height
         );
         // that.ctx.clip();
-        that.ctx.fillStyle = "black";
+        if (e.hasAttribute("labels")) {
+          that.ctx.fillStyle = "black";
+          that.ctx.font = "16px serif";
+          let text_mid =
+            (that.timeToX(end) - that.timeToX(start)) / 2 + that.timeToX(start);
 
-        that.ctx.font = "16px serif";
-        let text_mid =
-          (that.timeToX(end) - that.timeToX(start)) / 2 + that.timeToX(start);
-        that.ctx.fillText(e.labels[0], text_mid, y + (height + 16) / 2);
+          that.ctx.fillText(
+            e.labels.join(","),
+            text_mid,
+            y + (height + 16) / 2
+          );
+        }
         that.ctx.restore();
       });
     },
@@ -258,6 +264,8 @@ export default {
       this.draw();
     },
     timelines() {
+      console.log("AAAAA");
+      console.log(this.timelines);
       this.draw();
     },
     time() {
