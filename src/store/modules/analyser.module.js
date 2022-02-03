@@ -21,26 +21,26 @@ const api = {
   },
   actions: {
     list({ commit }, video_hash_id) {
-    const params={
+      const params = {
         hash_id: video_hash_id,
         add_results: true,
-    }
-    axios.get(`${config.API_LOCATION}/analyser_list`, { params })
-    .then((res) => {
-        if (res.data.status === 'ok') {
+      }
+      axios.get(`${config.API_LOCATION}/analyser_list`, { params })
+        .then((res) => {
+          if (res.data.status === 'ok') {
             commit('update', res.data.entries);
-            
-        }
-    })
-    .catch((error) => {
-        const info = { date: Date(), error, origin: 'collection' };
-        commit('error/update', info, { root: true });
-    });
+
+          }
+        })
+        .catch((error) => {
+          const info = { date: Date(), error, origin: 'collection' };
+          commit('error/update', info, { root: true });
+        });
     },
   },
   mutations: {
-    update(state, analyser){
-      state.analyser=analyser;
+    update(state, analyser) {
+      state.analyser = analyser;
     },
   },
 };

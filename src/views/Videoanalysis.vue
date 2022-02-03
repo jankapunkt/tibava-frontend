@@ -152,8 +152,10 @@ export default {
     },
     onAppendAnnotation(evt) {
       evt.preventDefault();
-      console.log(this.selectedSegment);
-      console.log(this.addedAnnotation);
+      this.$store.dispatch("timeline/annotate", {
+        segment_hash_id: this.selectedSegment,
+        annotation: this.addedAnnotation,
+      });
     },
   },
   computed: {
@@ -248,11 +250,6 @@ export default {
   watch: {
     // call again the method if the route changes
     $route: "fetch_data",
-
-    // "$store.state.video.current": function (val) {
-    //   console.log(`watch current ${JSON.stringify(val)}`);
-    //   this.video = val;
-    // },
   },
   components: {
     VideoPlayer,

@@ -80,10 +80,11 @@
 <script>
 import AnnotationForm from "@/components/AnnotationForm.vue";
 import TimeMixin from "../mixins/time";
+import DrawMixin from "../mixins/draw";
 import keyInObj from "../plugins/helpers";
 
 export default {
-  mixins: [TimeMixin],
+  mixins: [TimeMixin, DrawMixin],
   props: ["video", "time", "timelines", "startTime", "endTime"],
   data() {
     return {
@@ -122,7 +123,6 @@ export default {
   },
   methods: {
     draw() {
-      console.log(`${this.startTime} ${this.endTime}`);
       this.canvas = this.$refs.canvas;
       this.ctx = this.canvas.getContext("2d");
 
@@ -197,10 +197,12 @@ export default {
           that.timeToX(end) - that.timeToX(start) - 2 * that.gapSegment,
           height
         );
-        // that.ctx.clip();
-        if (typeof e === "object" && "label" in e) {
+        // that.ctx.clip();console
+        if (typeof e === "object" && "labels" in e) {
+          console.log(e.labels);
           that.ctx.fillStyle = "black";
           that.ctx.font = "16px serif";
+          that.ctx.textAlign = "center";
           let text_mid =
             (that.timeToX(end) - that.timeToX(start)) / 2 + that.timeToX(start);
 
@@ -220,9 +222,7 @@ export default {
       let that = this;
       let timestemps = this.linspace(this.startTime, this.endTime, 15);
       timestemps.pop();
-      console.log(timestemps);
       timestemps.forEach(function (time, index) {
-        console.log(time);
         that.ctx.font = "16px serif";
         that.ctx.textAlign = "left";
         that.ctx.fillText(that.get_timecode(time), that.timeToX(time), shiftY);
@@ -410,15 +410,12 @@ export default {
     },
     copyTimeline(hash_id) {
       this.$emit("copyTimeline", hash_id);
-      console.log("Copy timeline " + hash_id);
     },
     renameTimeline(hash_id) {
       this.$emit("renameTimeline", hash_id);
-      console.log("Rename timeline " + hash_id);
     },
     deleteTimeline(hash_id) {
       this.$emit("deleteTimeline", hash_id);
-      console.log("Delete timeline " + hash_id);
     },
   },
   watch: {
@@ -426,6 +423,7 @@ export default {
       this.draw();
     },
     timelines() {
+      console.log("TIMELINE UPDATE");
       this.draw();
     },
     time() {

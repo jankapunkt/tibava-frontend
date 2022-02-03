@@ -20,6 +20,24 @@ const api = {
         timelines: [],
     },
     actions: {
+
+        annotate({ commit }, { segment_hash_id, annotation }) {
+            const params = {
+                hash_id: segment_hash_id,
+                annotation: annotation
+            }
+            axios.post(`${config.API_LOCATION}/annotation_add`, params)
+                .then((res) => {
+                    if (res.data.status === 'ok') {
+                        commit('addAnnotation', params);
+                    }
+                })
+                .catch((error) => {
+                    const info = { date: Date(), error, origin: 'collection' };
+                    commit('error/update', info, { root: true });
+                });
+        },
+
         list({ commit }, video_hash_id) {
             const params = {
                 hash_id: video_hash_id
@@ -72,6 +90,23 @@ const api = {
         },
     },
     mutations: {
+        addAnnotation(state, { hash_id, annotation }) {
+            // TODO
+            // let timeline_id = null;
+            // let segment_id = null;
+            // state.timelines.forEach((e, i) => {
+            //     e.segments.forEach((f, j) => {
+            //         if (f.hash_id == hash_id) {
+            //             timeline_id = i
+            //             segment_id = j
+            //         }
+            //     })
+            // })
+            // let timelines = state.timelines;
+            // timelines[timeline_id].segments[segment_id].labels.push(annotation)
+            state.timelines = []
+            console.log(JSON.stringify(state.timelines))
+        },
         add(state, timeline) {
             state.timelines.push(timeline);
         },
