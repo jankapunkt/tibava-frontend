@@ -10,6 +10,7 @@ import './styles/custom.css';
 var app = Vue.extend({
 
   created() {
+    this.$store.dispatch('user/getCSRFToken')
     // this.$store.dispatch('user/getCSRFToken').then(() => {
     //   this.$store.dispatch('user/getUserData');
     //   setTimeout(
