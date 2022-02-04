@@ -7,7 +7,13 @@ import { isEqual, lsplit, keyInObj } from '../../plugins/helpers';
 const api = {
     namespaced: true,
     state: {
-        timelines: [],
+        timelines: {},
+        timelineList: [],
+    },
+    getters: {
+        forVideo: (state) => (video_hash_id) => {
+            return state.timelineList.map(hash_id => state.timelines[hash_id]).filter(e => e.video_hash_id === video_hash_id)
+        }
     },
     actions: {
 
@@ -28,7 +34,23 @@ const api = {
                 });
         },
 
-        list({ commit }, video_hash_id) {
+        listAdd({ commit }, video_hash_id) {
+            const params = {
+                hash_id: video_hash_id
+            }
+            axios.get(`${config.API_LOCATION}/timeline_list`, { params })
+                .then((res) => {
+                    if (res.data.status === 'ok') {
+                        commit('add', res.data.entries);
+                    }
+                })
+                .catch((error) => {
+                    const info = { date: Date(), error, origin: 'collection' };
+                    commit('error/update', info, { root: true });
+                });
+        },
+
+        listUpdate({ commit }, video_hash_id) {
             const params = {
                 hash_id: video_hash_id
             }
@@ -43,6 +65,7 @@ const api = {
                     commit('error/update', info, { root: true });
                 });
         },
+
 
         duplicate({ commit }, timeline_hash_id) {
 
@@ -106,7 +129,10 @@ const api = {
         //     state.timelines.push(state.timelines[timeline_index]);
         // },
         update(state, timelines) {
-            state.timelines = timelines;
+            timelines.forEach((e, i) => {
+                state.timelines[e.hash_id] = e
+                state.timelineList.push(e.hash_id)
+            });
         },
         delete(state, timeline_hash_id) {
             let timeline_index = state.timelines.findIndex(e => e.hash_id === timeline_hash_id);

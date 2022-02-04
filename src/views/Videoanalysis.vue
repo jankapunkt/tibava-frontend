@@ -57,7 +57,7 @@
       <Timeline
         :video="$store.state.video.current"
         :time="currentTime"
-        :timelines="$store.state.timeline.timelines"
+        :timelines="timelines"
         :startTime="startTime"
         :endTime="endTime"
         @copyTimeline="onCopyTimeline"
@@ -120,7 +120,10 @@ export default {
       await this.$store.dispatch("analyser/list", this.$route.params.hash_id);
       // console.log(res);
 
-      await this.$store.dispatch("timeline/list", this.$route.params.hash_id);
+      await this.$store.dispatch(
+        "timeline/listUpdate",
+        this.$route.params.hash_id
+      );
 
       // console.log(res);
     },
@@ -159,6 +162,13 @@ export default {
     },
   },
   computed: {
+    timelines() {
+      let timelines = this.$store.getters["timeline/forVideo"](
+        this.$route.params.hash_id
+      );
+      return timelines;
+    },
+
     shots() {
       let shotdetection = this.$store.state.analyser.analyser
         .filter((e) => {
