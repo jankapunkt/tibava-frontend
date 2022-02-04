@@ -1,7 +1,8 @@
 <template>
-  <v-container>
-    <v-card class="video-player d-flex flex-column" elevation="8">
+  <v-container class="d-flex flex-column">
+    <v-row class="video-container">
       <video
+        class="video-player"
         ref="video"
         v-on:timeupdate="onTimeUpdate"
         v-on:ended="onEnded"
@@ -12,39 +13,41 @@
       >
         <!-- <source :src="video.url" type="video/mp4" /> -->
       </video>
-      <v-flex class="video-control d-flex">
-        <v-btn @click="toggle" small>
-          <v-icon v-if="ended"> mdi-restart</v-icon>
-          <v-icon v-else-if="playing"> mdi-pause</v-icon>
-          <v-icon v-else> mdi-play</v-icon>
-        </v-btn>
-        <div class="time-code">
-          {{ get_timecode(currentTime) }}
-        </div>
-        <v-slider
-          class="pregress-bar"
-          :value="100 * progress"
-          v-on:change="onSeek"
-          hide-details
-        ></v-slider>
+    </v-row>
 
-        <v-menu top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" small>
-              {{ currentSpeed.title }}
-            </v-btn>
-          </template>
+    <v-row class="video-control mt-6">
+      <v-btn @click="toggle" small>
+        <v-icon v-if="ended"> mdi-restart</v-icon>
+        <v-icon v-else-if="playing"> mdi-pause</v-icon>
+        <v-icon v-else> mdi-play</v-icon>
+      </v-btn>
+      <div class="time-code">
+        {{ get_timecode(currentTime) }}
+      </div>
+      <v-menu top>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-bind="attrs" v-on="on" small>
+            {{ currentSpeed.title }}
+          </v-btn>
+        </template>
 
-          <v-list>
-            <v-list-item v-for="(item, index) in speeds" :key="index">
-              <v-list-item-title v-on:click="onSpeedChange(index)">{{
-                item.title
-              }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-flex>
-    </v-card>
+        <v-list>
+          <v-list-item v-for="(item, index) in speeds" :key="index">
+            <v-list-item-title v-on:click="onSpeedChange(index)">{{
+              item.title
+            }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-row>
+    <v-row>
+      <v-slider
+        class="progress-bar"
+        :value="100 * progress"
+        v-on:change="onSeek"
+        hide-details
+      ></v-slider>
+    </v-row>
   </v-container>
 </template>
 
@@ -129,16 +132,18 @@ export default {
 
 <style>
 .video-player {
-  padding: 10px;
-  margin: 10px;
-  /* max-height: 768px; */
+  max-width: 100%;
+  height: 100%;
+  max-height: 512px;
+  background-color: black;
 }
 .video-control {
   gap: 10px;
-  margin-top: 5px;
-  max-width: 100%;
+  /* margin-top: 5px;
+  margin-bottom: 0px; */
+  /* max-width: 100%; */
 }
-.video-control > .pregress-bar {
+.video-control > .progress-bar {
   margin-top: auto;
   margin-bottom: auto;
 }
@@ -146,7 +151,8 @@ export default {
   margin-top: auto;
   margin-bottom: auto;
 }
-.video-player > * {
-  width: 100%;
+.video-container {
+  background-color: black;
+  justify-content: center;
 }
 </style>

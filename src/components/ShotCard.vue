@@ -1,7 +1,6 @@
 <template>
   <v-card
-    class="d-flex flex-column py-2 mx-2 my-4"
-    width="98%"
+    class="d-flex flex-column pa-2 ma-4"
     elevation="4"
     v-on:click="setVideoPlayerTime(shot.start)"
   >
