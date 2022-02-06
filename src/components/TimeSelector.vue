@@ -1,40 +1,14 @@
 <template>
-  <v-container>
-    <v-card
-      class="d-flex flex-column timelineSelector"
-      height="80"
-      width="100%"
-      max-width="100%"
-      elevation="8"
-    >
-      <v-row>
-        <v-col class="timeline-bar">
-          <canvas
-            ref="canvas"
-            @mousedown="onMouseDown"
-            @mouseup="onMouseUp"
-            @mousemove="onMouseMove"
-            @mouseleave="onMouseUp"
-            @click="onMouseClick"
-            v-click-outside="clickOutside"
-          >
-          </canvas>
-
-          <v-menu
-            :value="menu.show"
-            :position-x="menu.x"
-            :position-y="menu.y"
-            :close-on-click="false"
-            transition="fade-transition"
-            absolute
-            offset-y
-          >
-            <slot name="context"></slot>
-          </v-menu>
-        </v-col>
-      </v-row>
-    </v-card>
-  </v-container>
+  <canvas
+    ref="canvas"
+    @mousedown="onMouseDown"
+    @mouseup="onMouseUp"
+    @mousemove="onMouseMove"
+    @mouseleave="onMouseUp"
+    @click="onMouseClick"
+    v-click-outside="clickOutside"
+  >
+  </canvas>
 </template>
 
 <script>
@@ -262,17 +236,3 @@ export default {
   },
 };
 </script>
-
-
-<style>
-/* .timelineSelector {
-  padding: 10px;
-  margin: 10px;
-} */
-.timeline-bar {
-  width: 100%;
-  max-width: 100%;
-  padding: 0;
-  margin: 10px;
-}
-</style>

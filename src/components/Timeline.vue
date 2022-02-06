@@ -1,80 +1,66 @@
 <template>
-  <v-container>
-    <v-card
-      class="d-flex flex-column"
-      height="500"
-      width="100%"
-      max-width="100%"
-      elevation="8"
-    >
-      <v-row>
-        <v-col class="timeline-header">
-          <v-card
-            class="timeline-head"
-            v-for="item in timelines"
-            :key="item.id"
-          >
-            <v-flex class="timeline-control d-flex">
-              <v-menu center :offset-x="true" rounded>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon v-bind="attrs" v-on="on"> mdi-menu </v-icon>
-                </template>
-                <v-list>
-                  <v-list-item>
-                    <h2>{{ item.name }}</h2>
-                  </v-list-item>
-                  <v-list-item link v-on:click="copyTimeline(item.hash_id)">
-                    <v-list-item-title>
-                      <v-icon left>{{ "mdi-content-copy" }}</v-icon>
-                      Duplicate
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item link v-on:click="renameTimeline(item.hash_id)">
-                    <v-list-item-title>
-                      <v-icon left>{{ "mdi-pencil" }}</v-icon>
-                      Rename
-                    </v-list-item-title>
-                  </v-list-item>
-                  <v-list-item link v-on:click="deleteTimeline(item.hash_id)">
-                    <v-list-item-title>
-                      <v-icon left>{{ "mdi-delete" }}</v-icon>
-                      Delete
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-              <v-card-subtitle>{{ item.name }}</v-card-subtitle>
-            </v-flex>
-          </v-card>
-        </v-col>
-        <v-col class="timeline-bar">
-          <canvas
-            ref="canvas"
-            @mousedown="onMouseDown"
-            @mouseup="onMouseUp"
-            @mousemove="onMouseMove"
-            @mouseleave="onMouseUp"
-            @click="onMouseClick"
-            v-click-outside="clickOutside"
-          >
-          </canvas>
-
-          <v-menu
-            :value="menu.show"
-            :position-x="menu.x"
-            :position-y="menu.y"
-            transition="fade-transition"
-            absolute
-            offset-y
-            :close-on-click="false"
-            :close-on-content-click="false"
-          >
-            <slot name="context"></slot>
+  <v-row>
+    <v-col class="timeline-header">
+      <v-card class="timeline-head" v-for="item in timelines" :key="item.id">
+        <v-flex class="timeline-control d-flex">
+          <v-menu center :offset-x="true" rounded>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon v-bind="attrs" v-on="on"> mdi-menu </v-icon>
+            </template>
+            <v-list>
+              <v-list-item>
+                <h2>{{ item.name }}</h2>
+              </v-list-item>
+              <v-list-item link v-on:click="copyTimeline(item.hash_id)">
+                <v-list-item-title>
+                  <v-icon left>{{ "mdi-content-copy" }}</v-icon>
+                  Duplicate
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item link v-on:click="renameTimeline(item.hash_id)">
+                <v-list-item-title>
+                  <v-icon left>{{ "mdi-pencil" }}</v-icon>
+                  Rename
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item link v-on:click="deleteTimeline(item.hash_id)">
+                <v-list-item-title>
+                  <v-icon left>{{ "mdi-delete" }}</v-icon>
+                  Delete
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
           </v-menu>
-        </v-col>
-      </v-row>
-    </v-card>
-  </v-container>
+          <v-card-subtitle>{{ item.name }}</v-card-subtitle>
+        </v-flex>
+      </v-card>
+    </v-col>
+    <v-col class="timeline-bar">
+      <canvas
+        ref="canvas"
+        @mousedown="onMouseDown"
+        @mouseup="onMouseUp"
+        @mousemove="onMouseMove"
+        @mouseleave="onMouseUp"
+        @click="onMouseClick"
+        v-click-outside="clickOutside"
+      >
+      </canvas>
+
+      <v-menu
+        :value="menu.show"
+        :position-x="menu.x"
+        :position-y="menu.y"
+        transition="fade-transition"
+        absolute
+        offset-y
+        :close-on-click="false"
+        :close-on-content-click="false"
+      >
+        <slot name="context"></slot>
+      </v-menu>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -84,14 +70,19 @@ import DrawMixin from "../mixins/draw";
 import keyInObj from "../plugins/helpers";
 
 export default {
-  mixins: [TimeMixin, DrawMixin],
-  props: ["video", "time", "timelines", "startTime", "endTime"],
+  mixins: [TimeMixin],
+  props: [
+    "video",
+    "time",
+    "timelines",
+    "startTime",
+    "endTime",
+    "annotation_dialog",
+  ],
   data() {
     return {
-      dialog: false,
       //pixel per seconds
       timeline_drawer: false,
-      annotation_dialog: false,
       context: null,
       scale: 60,
       // startTime: 0,
@@ -435,6 +426,9 @@ export default {
     endTime() {
       this.draw();
     },
+    annotation_dialog() {
+      this.menu.show = this.annotation_dialog;
+    },
   },
   computed: {},
   mounted() {
@@ -453,7 +447,7 @@ export default {
   width: 10%;
   max-width: 10%;
   padding: 0;
-  margin-left: 10px;
+  margin-left: 20px;
 }
 .timeline-bar {
   width: 90%;
