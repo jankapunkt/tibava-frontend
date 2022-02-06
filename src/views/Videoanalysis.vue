@@ -109,7 +109,7 @@ export default {
     async fetch_data() {
       // console.log(`fetch video ${JSON.stringify(this.$route.params)}`);
 
-      await this.$store.dispatch("video/get", this.$route.params.hash_id);
+      await this.$store.dispatch("video/get", this.$route.params.id);
       // console.log(
       //   `new state ${JSON.stringify(this.$store.state.video.current)}`
       // );
@@ -117,14 +117,15 @@ export default {
         this.endTime = this.$store.state.video.current.meta.duration;
       }
 
-      await this.$store.dispatch("analyser/list", this.$route.params.hash_id);
-      // console.log(res);
+      await this.$store.dispatch("analyser/list", this.$route.params.id);
 
-      await this.$store.dispatch(
-        "timeline/listUpdate",
-        this.$route.params.hash_id
-      );
-
+      await this.$store.dispatch("timeline/listUpdate", this.$route.params.id);
+      console.log("FOOBAR");
+      console.log(this.$store.state.timeline.timelineList);
+      this.$store.state.timeline.timelineList.forEach((e) => {
+        console.log(e);
+        this.$store.dispatch("segment/listUpdate", e);
+      });
       // console.log(res);
     },
     setVideoPlayerTime(time) {
@@ -139,24 +140,24 @@ export default {
     onStartTimeChange(time) {
       this.startTime = time;
     },
-    onCopyTimeline(hash_id) {
-      this.$store.dispatch("timeline/duplicate", hash_id);
+    onCopyTimeline(id) {
+      this.$store.dispatch("timeline/duplicate", id);
     },
-    onRenameTimeline(hash_id) {
-      this.$store.dispatch("timeline/rename", hash_id);
+    onRenameTimeline(id) {
+      this.$store.dispatch("timeline/rename", id);
     },
-    onDeleteTimeline(hash_id) {
-      this.$store.dispatch("timeline/delete", hash_id);
+    onDeleteTimeline(id) {
+      this.$store.dispatch("timeline/delete", id);
     },
-    onSegmentSelected(hash_id) {
-      this.selectedSegment = hash_id;
-      console.log(hash_id);
-      // this.$store.dispatch("timeline/delete", hash_id);
+    onSegmentSelected(id) {
+      this.selectedSegment = id;
+      console.log(id);
+      // this.$store.dispatch("timeline/delete", id);
     },
     onAppendAnnotation(evt) {
       evt.preventDefault();
       this.$store.dispatch("timeline/annotate", {
-        segment_hash_id: this.selectedSegment,
+        segment_id: this.selectedSegment,
         annotation: this.addedAnnotation,
       });
     },
@@ -164,8 +165,16 @@ export default {
   computed: {
     timelines() {
       let timelines = this.$store.getters["timeline/forVideo"](
-        this.$route.params.hash_id
+        this.$route.params.id
       );
+      timelines.forEach((e) => {
+        console.log(e);
+        let segments = this.$store.getters["segment/forTimeline"](e.id);
+
+        e.segments = segments;
+      });
+
+      console.log(JSON.stringify(timelines));
       return timelines;
     },
 

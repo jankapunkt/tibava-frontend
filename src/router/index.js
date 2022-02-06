@@ -9,7 +9,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes: [
     { path: '/', name: 'Home', component: Home },
-    { path: '/videoanalysis/:hash_id', name: 'Videoanalysis', component: Videoanalysis },
+    { path: '/videoanalysis/:id', name: 'Videoanalysis', component: Videoanalysis },
     // { path: '*', name: 'NotFound', component: NotFound },
   ],
 });

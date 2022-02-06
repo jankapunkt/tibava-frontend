@@ -11,34 +11,16 @@ const api = {
         timelineList: [],
     },
     getters: {
-        forVideo: (state) => (video_hash_id) => {
-            return state.timelineList.map(hash_id => state.timelines[hash_id]).filter(e => e.video_hash_id === video_hash_id)
+        forVideo: (state) => (video_id) => {
+            return state.timelineList.map(id => state.timelines[id]).filter(e => e.video_id === video_id)
         }
     },
     actions: {
-
-        annotate({ commit }, { segment_hash_id, annotation }) {
+        async listAdd({ commit }, video_id) {
             const params = {
-                hash_id: segment_hash_id,
-                annotation: annotation
+                id: video_id
             }
-            axios.post(`${config.API_LOCATION}/annotation_add`, params)
-                .then((res) => {
-                    if (res.data.status === 'ok') {
-                        commit('addAnnotation', params);
-                    }
-                })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
-        },
-
-        listAdd({ commit }, video_hash_id) {
-            const params = {
-                hash_id: video_hash_id
-            }
-            axios.get(`${config.API_LOCATION}/timeline_list`, { params })
+            return axios.get(`${config.API_LOCATION}/timeline_list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('add', res.data.entries);
@@ -50,11 +32,11 @@ const api = {
                 });
         },
 
-        listUpdate({ commit }, video_hash_id) {
+        async listUpdate({ commit }, video_id) {
             const params = {
-                hash_id: video_hash_id
+                id: video_id
             }
-            axios.get(`${config.API_LOCATION}/timeline_list`, { params })
+            return axios.get(`${config.API_LOCATION}/timeline_list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);
@@ -67,12 +49,12 @@ const api = {
         },
 
 
-        duplicate({ commit }, timeline_hash_id) {
+        async duplicate({ commit }, timeline_id) {
 
             const params = {
-                hash_id: timeline_hash_id
+                id: timeline_id
             }
-            axios.post(`${config.API_LOCATION}/timeline_duplicate`, params)
+            return axios.post(`${config.API_LOCATION}/timeline_duplicate`, params)
                 .then((res) => {
                     console.log(res.data);
                     if (res.data.status === 'ok') {
@@ -85,15 +67,15 @@ const api = {
                 });
         },
 
-        delete({ commit }, timeline_hash_id) {
+        async delete({ commit }, timeline_id) {
 
             const params = {
-                hash_id: timeline_hash_id
+                id: timeline_id
             }
-            axios.post(`${config.API_LOCATION}/timeline_delete`, params)
+            return axios.post(`${config.API_LOCATION}/timeline_delete`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        commit("delete", timeline_hash_id);
+                        commit("delete", timeline_id);
                     }
                 })
                 .catch((error) => {
@@ -103,39 +85,28 @@ const api = {
         },
     },
     mutations: {
-        addAnnotation(state, { hash_id, annotation }) {
-            // TODO
-            // let timeline_id = null;
-            // let segment_id = null;
-            // state.timelines.forEach((e, i) => {
-            //     e.segments.forEach((f, j) => {
-            //         if (f.hash_id == hash_id) {
-            //             timeline_id = i
-            //             segment_id = j
-            //         }
-            //     })
-            // })
-            // let timelines = state.timelines;
-            // timelines[timeline_id].segments[segment_id].labels.push(annotation)
-            state.timelines = []
-            console.log(JSON.stringify(state.timelines))
-        },
         add(state, timeline) {
-            state.timelines.push(timeline);
+            timelines.forEach((e, i) => {
+                state.timelines[e.id] = e
+                state.timelineList.push(e.id)
+            });
         },
-        // duplicate(state, { old_hash_id, new_hash_id }) {
-        //     timeline_index = state.timelines.findIndex(e => e.hash_id === old_hash_id);
+        // duplicate(state, { old_id, new_id }) {
+        //     timeline_index = state.timelines.findIndex(e => e.id === old_id);
 
         //     state.timelines.push(state.timelines[timeline_index]);
         // },
         update(state, timelines) {
+            state.timelines = {};
+            state.timelineList = [];
             timelines.forEach((e, i) => {
-                state.timelines[e.hash_id] = e
-                state.timelineList.push(e.hash_id)
+                state.timelines[e.id] = e
+                state.timelineList.push(e.id)
             });
+            console.log('Timeline update')
         },
-        delete(state, timeline_hash_id) {
-            let timeline_index = state.timelines.findIndex(e => e.hash_id === timeline_hash_id);
+        delete(state, timeline_id) {
+            let timeline_index = state.timelines.findIndex(e => e.id === timeline_id);
             state.timelines.splice(timeline_index, 1);
         },
     },
