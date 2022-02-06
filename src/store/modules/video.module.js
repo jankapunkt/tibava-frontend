@@ -21,9 +21,9 @@ const api = {
     lang: "en"
   },
   actions: {
-    async get({ commit, state }, video_hash_id) {
+    async get({ commit, state }, video_id) {
       const params = {
-        hash_id: video_hash_id
+        id: video_id
       }
       axios.get(`${config.API_LOCATION}/video_get`, { params })
         .then((res) => {
@@ -73,14 +73,14 @@ const api = {
           commit('error/update', info, { root: true });
         });
     },
-    delete({ commit, state }, video_hash_id) {
+    delete({ commit, state }, video_id) {
       const params = {
-        hash_id: video_hash_id
+        id: video_id
       }
-      axios.post(`${config.API_LOCATION}/video_delete`, { hash_id: video_hash_id })
+      axios.post(`${config.API_LOCATION}/video_delete`, { id: video_id })
         .then((res) => {
           if (res.data.status === 'ok') {
-            commit("delete", video_hash_id);
+            commit("delete", video_id);
             //TODO
           }
         })
@@ -98,8 +98,8 @@ const api = {
     update(state, videos) {
       state.videos = videos;
     },
-    delete(state, video_hash_id) {
-      state.videos.splice(state.videos.findIndex(e => e.hash_id === video_hash_id), 1);
+    delete(state, video_id) {
+      state.videos.splice(state.videos.findIndex(e => e.id === video_id), 1);
     },
     change_current(state, video) {
       state.current = video;

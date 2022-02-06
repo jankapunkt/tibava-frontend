@@ -1,14 +1,11 @@
 <template>
   <v-app>
     <v-row class="top-container pa-8" justify="space-around" align="start">
-      <v-col md="6" height="100%" class="full-height-row">
-        <v-card
-          class="video-player d-flex flex-column full-height-row"
-          elevation="8"
-        >
+      <v-col md="6" height="100%">
+        <v-card class="d-flex flex-column flex-nowrap px-2" elevation="8">
           <v-row>
             <v-card-title>
-              {{ $store.state.video.current.meta.name }}
+              {{ $store.state.video.current.name }}
             </v-card-title>
           </v-row>
 
@@ -21,9 +18,11 @@
               />
             </v-col>
           </v-row>
-          <v-row class="align-center timeline-bar">
+          <v-row height="80px" class="mb-2 px-4">
             <TimeSelector
-              :video="$store.state.video.current"
+              height="80px"
+              width="100%"
+              :duration="duration"
               :startTime="startTime"
               :endTime="endTime"
               @endTimeChange="onEndTimeChange"
@@ -130,6 +129,7 @@ export default {
       selectedSegment: null,
       addedAnnotation: null,
       labels: [],
+      selectedLabel: null,
     };
   },
   methods: {
@@ -137,9 +137,9 @@ export default {
       // console.log(`fetch video ${JSON.stringify(this.$route.params)}`);
 
       await this.$store.dispatch("video/get", this.$route.params.id);
-      // console.log(
-      //   `new state ${JSON.stringify(this.$store.state.video.current)}`
-      // );
+      console.log(
+        `new state ${JSON.stringify(this.$store.state.video.current)}`
+      );
       if (this.$store.state.video.current.meta) {
         this.endTime = this.$store.state.video.current.meta.duration;
       }
@@ -200,6 +200,11 @@ export default {
     },
   },
   computed: {
+    duration() {
+      let duration = this.$store.state.video.current.duration;
+      console.log(duration);
+      return duration;
+    },
     timelines() {
       let timelines = this.$store.getters["timeline/forVideo"](
         this.$route.params.id
@@ -332,8 +337,7 @@ export default {
   margin: auto;
 }
 .timeline-bar {
-  width: 100%;
-  height: 100%;
+  height: 80px;
 }
 
 .top-container {

@@ -1,130 +1,242 @@
 <template>
-  <canvas
-    ref="canvas"
-    @mousedown="onMouseDown"
-    @mouseup="onMouseUp"
-    @mousemove="onMouseMove"
-    @mouseleave="onMouseUp"
-    @click="onMouseClick"
-    v-click-outside="clickOutside"
-  >
+  <canvas :style="{ height: height, width: width }" ref="canvas" resize>
   </canvas>
 </template>
 
 <script>
 import TimeMixin from "../mixins/time";
-
+import paper from "paper";
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 export default {
   mixins: [TimeMixin],
-  props: ["video"],
+  props: ["duration", "height", "width"],
   data() {
     return {
-      scale: 60,
-      startTime: 0,
-      endTime: 30,
+      canvas: null,
+      scope: null,
+      tool: null,
+      redraw: false,
+
       selectionStartTime: 10,
       selectionEndTime: 29,
-      scaleHeight: 50,
-      width: 0,
-      foregroundColor: "rgba(255,255, 255, 1)",
-      selectionColor: "rgba(230, 57, 70, 0.5)",
-      textColor: "rgba(230, 57, 70, 1)",
-      pad_y: 15,
-      pad_x: 20,
-      gap: 5,
 
-      mouse: {
-        start: null,
-        down: null,
-      },
-
-      menu: {
-        show: false,
-        x: null,
-        y: null,
-      },
+      mainStrokes: null,
+      otherStrokes: null,
+      textGroup: null,
+      // scaleHeight: 50,
+      // foregroundColor: "rgba(255,255, 255, 1)",
+      // selectionColor: "rgba(230, 57, 70, 0.5)",
+      // textColor: "rgba(230, 57, 70, 1)",
     };
   },
   methods: {
     draw() {
-      this.canvas = this.$refs.canvas;
-      this.ctx = this.canvas.getContext("2d");
-      this.ctx.save();
+      this.canvasWidth = this.scope.view.size.width;
+      this.canvasHeight = this.scope.view.size.height;
 
-      this.width = this.$refs.canvas.parentElement.clientWidth;
-      this.height = this.$refs.canvas.parentElement.clientHeight;
-      this.timeScale =
-        (this.width - 2 * this.pad_x) / (this.endTime - this.startTime);
-      this.$refs.canvas.width = this.$refs.canvas.parentElement.clientWidth;
-      this.$refs.canvas.height = this.$refs.canvas.parentElement.clientHeight;
+      this.timeScale = this.scope.view.size.width / this.duration;
+      if (isNaN(this.timeScale)) {
+        return;
+      }
 
-      // this.clearRect(0, 0, this.width, this.height);
-      this.draw_scale();
-      this.draw_selection();
+      this.tool = new paper.Tool();
+
+      this.drawScale();
+      this.drawSelection();
+      // // Create a Paper.js Path to draw a line into it:
+      // var path = new paper.Path();
+      // // Give the stroke a color
+      // path.strokeColor = "black";
+      // var start = new paper.Point(100, 100);
+      // // Move to start and draw a line from there
+      // path.moveTo(start);
+      // // Note that the plus operator on Point objects does not work
+      // // in JavaScript. Instead, we need to call the add() function:
+      // path.lineTo(start.add([200, -50]));
+      // // Draw the view now:
+      // console.log(paper.view.size);
+      // paper.view.onFrame = function (event) {
+      //   // On each frame, rotate the path by 3 degrees:
+      //   path.rotate(1);
+      // };
+      this.scope.view.draw();
     },
+    // draw() {
+    //   this.canvas = this.$refs.canvas;
+    //   this.ctx = this.canvas.getContext("2d");
+    //   this.ctx.save();
 
-    draw_selection() {
-      this.ctx.save();
-      this.ctx.fillStyle = this.selectionColor;
-      this.ctx.strokeStyle = this.selectionColor;
-      this.ctx.fillRect(
-        this.timeToX(this.selectionStartTime),
-        this.pad_y,
-        this.timeToX(this.selectionEndTime) -
-          this.timeToX(this.selectionStartTime),
-        this.scaleHeight
-      );
-      this.ctx.stroke();
+    //   this.width = this.$refs.canvas.parentElement.clientWidth;
+    //   this.height = this.$refs.canvas.parentElement.clientHeight;
+    //   this.$refs.canvas.width = this.$refs.canvas.parentElement.clientWidth;
+    //   this.$refs.canvas.height = this.$refs.canvas.parentElement.clientHeight;
 
-      this.ctx.restore();
-    },
+    //   // this.clearRect(0, 0, this.width, this.height);
+    //   this.drawScale();
+    //   this.draw_selection();
+    // },
 
-    draw_scale() {
-      this.ctx.save();
-      let numberOfTime = 15;
-      let shiftY = this.scaleHeight - this.pad_y;
-      let that = this;
-      let timestemps = this.linspace(
-        this.startTime,
-        this.endTime,
-        numberOfTime
-      );
+    // draw_selection() {
+    //   this.ctx.save();
+    //   this.ctx.fillStyle = this.selectionColor;
+    //   this.ctx.strokeStyle = this.selectionColor;
+    //   this.ctx.fillRect(
+    //     this.timeToX(this.selectionStartTime),
+    //     this.pad_y,
+    //     this.timeToX(this.selectionEndTime) -
+    //       this.timeToX(this.selectionStartTime),
+    //     this.scaleHeight
+    //   );
+    //   this.ctx.stroke();
+
+    //   this.ctx.restore();
+    // },
+
+    drawScale() {
+      if (this.scaleLayer) {
+        this.scaleLayer.removeChildren();
+      }
+      this.scope.activate();
+      this.scaleLayer = new paper.Layer();
+      let numberOfMainTime = 9;
+      let numberOfOtherTime = 10 * (numberOfMainTime - 1) + 1;
+      let timestemps = this.linspace(0, this.duration, numberOfMainTime);
+      let mainStrokes = [];
+      timestemps.forEach((time, index) => {
+        let path = new paper.Path();
+
+        let x = this.timeToX(time);
+        path.add(new paper.Point(x, 10), new paper.Point(x, 35));
+        mainStrokes.push(path);
+      });
+      this.mainStrokes = new paper.Group(mainStrokes);
+      this.mainStrokes.strokeColor = "black";
 
       timestemps.pop();
-      timestemps.forEach(function (time, index) {
-        that.ctx.font = "12px serif";
-        that.ctx.textAlign = "left";
-        that.ctx.fillStyle = "black";
-        that.ctx.fillText(
-          that.get_timecode(time, 2),
-          that.timeToX(time),
-          shiftY
-        );
-
-        that.ctx.beginPath();
-        that.ctx.lineWidth = 0.5;
-        that.ctx.strokeStyle = "black";
-        that.ctx.moveTo(that.timeToX(time), shiftY + 5);
-        that.ctx.lineTo(that.timeToX(time), shiftY + 20);
-        that.ctx.stroke();
-        that.ctx.closePath();
+      let textList = [];
+      timestemps.forEach((time, index) => {
+        let x = this.timeToX(time);
+        let text = new paper.PointText(new paper.Point(x, 50));
+        text.content = this.get_timecode(time, 2);
+        textList.push(text);
       });
+      this.textGroup = new paper.Group(textList);
+      this.textGroup.style = {
+        fontFamily: "Courier New",
 
-      let smalltimestemps = this.linspace(
-        this.startTime,
-        this.endTime,
-        10 * numberOfTime - 1
+        fontSize: 10,
+        fillColor: "black",
+      };
+
+      let otherTimestemps = this.linspace(0, this.duration, numberOfOtherTime);
+      let otherStrokes = [];
+      otherTimestemps.forEach((time, index) => {
+        let path = new paper.Path();
+
+        let x = this.timeToX(time);
+        path.add(new paper.Point(x, 25), new paper.Point(x, 30));
+        otherStrokes.push(path);
+      });
+      this.otherStrokes = new paper.Group(otherStrokes);
+      this.otherStrokes.strokeColor = "black";
+    },
+
+    drawSelection() {
+      if (this.selectionLayer) {
+        this.selectionLayer.removeChildren();
+      }
+      this.scope.activate();
+      this.selectionLayer = new paper.Layer();
+      let rectangle = new paper.Rectangle(
+        new paper.Point(this.timeToX(this.selectionStartTime), 5),
+        new paper.Point(
+          this.timeToX(this.selectionEndTime),
+          this.canvasHeight - 5
+        )
       );
-      smalltimestemps.forEach(function (time, index) {
-        that.ctx.beginPath();
-        that.ctx.lineWidth = 0.5;
-        that.ctx.strokeStyle = "black";
-        that.ctx.moveTo(that.timeToX(time), shiftY + 15);
-        that.ctx.lineTo(that.timeToX(time), shiftY + 20);
-        that.ctx.stroke();
-        that.ctx.closePath();
-      });
-      this.ctx.restore();
+      let radius = new paper.Size(5, 5);
+      let path = new paper.Path.Rectangle(rectangle, radius);
+      path.fillColor = "#ae131377";
+
+      //handle
+      let handleRadius = new paper.Size(5, 5);
+      let handleLeftRect = new paper.Rectangle(
+        new paper.Point(this.timeToX(this.selectionStartTime) - 5, 10),
+        new paper.Point(
+          this.timeToX(this.selectionStartTime) + 5,
+          this.canvasHeight - 10
+        )
+      );
+      let handleLeft = new paper.Path.Rectangle(handleLeftRect, handleRadius);
+      handleLeft.fillColor = "#ae1313ff";
+
+      let handleRightRect = new paper.Rectangle(
+        new paper.Point(this.timeToX(this.selectionEndTime) - 5, 10),
+        new paper.Point(
+          this.timeToX(this.selectionEndTime) + 5,
+          this.canvasHeight - 10
+        )
+      );
+      let handleRight = new paper.Path.Rectangle(handleRightRect, handleRadius);
+      handleRight.fillColor = "#ae1313ff";
+
+      let self = this;
+      handleLeft.onMouseDrag = (event) => {
+        let deltaTime = self.xToTime(event.delta.x);
+
+        if (
+          self.selectionStartTime >= self.selectionEndTime - 1.0 &&
+          deltaTime > 0
+        ) {
+          self.selectionStartTime = self.selectionEndTime - 1.0;
+        } else if (self.selectionStartTime <= 0 && deltaTime < 0) {
+          self.selectionStartTime = 0;
+        } else {
+          self.selectionStartTime += deltaTime;
+          path.segments[0].point.x += event.delta.x;
+          path.segments[1].point.x += event.delta.x;
+          path.segments[2].point.x += event.delta.x;
+          path.segments[3].point.x += event.delta.x;
+          handleLeft.position.x += event.delta.x;
+        }
+      };
+
+      handleRight.onMouseDrag = (event) => {
+        let deltaTime = self.xToTime(event.delta.x);
+
+        if (
+          self.selectionEndTime <= self.selectionStartTime + 1.0 &&
+          deltaTime < 0
+        ) {
+          self.selectionEndTime = self.selectionStartTime + 1.0;
+        } else if (self.selectionEndTime >= self.duration && deltaTime > 0) {
+          self.selectionEndTime = self.duration;
+        } else {
+          self.selectionEndTime += deltaTime;
+          path.segments[4].point.x += event.delta.x;
+          path.segments[5].point.x += event.delta.x;
+          path.segments[6].point.x += event.delta.x;
+          path.segments[7].point.x += event.delta.x;
+          handleRight.position.x += event.delta.x;
+        }
+      };
+
+      path.onMouseDrag = (event) => {
+        let deltaTime = self.xToTime(event.delta.x);
+        if (self.selectionEndTime >= self.duration && deltaTime > 0) {
+          self.selectionEndTime = self.duration;
+        } else if (self.selectionStartTime <= 0 && deltaTime < 0) {
+          self.selectionStartTime = 0;
+        } else {
+          self.selectionEndTime += deltaTime;
+          self.selectionStartTime += deltaTime;
+          path.position.x += event.delta.x;
+          handleLeft.position.x += event.delta.x;
+          handleRight.position.x += event.delta.x;
+        }
+      };
     },
 
     linspace(startValue, stopValue, cardinality) {
@@ -135,96 +247,22 @@ export default {
       }
       return arr;
     },
-    // map time to x and x to time
+    // // map time to x and x to time
     timeToX(time) {
-      return this.timeScale * (time - this.startTime) + this.pad_x;
+      return this.timeScale * time;
     },
     xToTime(x) {
-      return (x - this.pad_x) / this.timeScale + this.startTime;
-      // return this.timeScale * (time - this.startTime) + this.pad;
+      return x / this.timeScale;
     },
-    contains(rect, pos) {
-      return (
-        rect.x <= pos.x &&
-        pos.x <= rect.x + rect.width &&
-        rect.y <= pos.y &&
-        pos.y <= rect.y + rect.height
-      );
-    },
-    // mouse operators
-    clickOutside() {},
-
-    onMouseClick(evt) {
-      evt.preventDefault();
-      let mouse_pos = this.mousePos(evt);
-      let time = this.xToTime(mouse_pos.x);
-      let diffStart = Math.abs(time - this.selectionStartTime);
-      let endStart = Math.abs(time - this.selectionEndTime);
-      if (diffStart < endStart) {
-        this.selectionStartTime = time;
-        this.$emit("startTimeChange", time);
-        this.draw();
-      } else {
-        this.selectionEndTime = time;
-        this.$emit("endTimeChange", time);
-        this.draw();
-      }
-    },
-    onMouseDown(evt) {
-      // evt.preventDefault();
-      // this.mouse.start = this.mousePos(evt);
-      // this.mouse.down = true;
-      // this.menu.show = false;
-      // if (this.ctx) {
-      //   this.$el.style.cursor = "crosshair";
-      //   this.drawDefaultRect();
-      // }
-    },
-    onMouseUp(evt) {
-      // if (this.ctx && this.mouse.down) {
-      //   this.mouse.down = false;
-      //   this.$el.style.cursor = "default";
-      //   const rect = this.computeRect(this.mouse.start, this.mousePos(evt));
-      //   // region of interest is too small
-      //   if (rect.width * rect.height < 20) {
-      //     this.ctx.clearRect(0, 0, this.image.width, this.image.height);
-      //     this.$emit("update", null);
-      //     return;
-      //   }
-      //   this.setROI(rect, false);
-      //   this.drawROI();
-      //   this.$emit("update", this.roi);
-      //   this.menu = {
-      //     show: false,
-      //     x: evt.clientX,
-      //     y: evt.clientY,
-      //   };
-      //   this.$nextTick(() => {
-      //     this.menu.show = true;
-      //   });
-      // }
-    },
-    onMouseMove(evt) {
-      // if (this.ctx && this.mouse.down) {
-      //   const rect = this.computeRect(this.mouse.start, this.mousePos(evt));
-      //   this.setROI(rect, false);
-      //   this.drawROI();
-      // }
-    },
-    mousePos({ clientX, clientY }) {
-      const rect = this.canvas.getBoundingClientRect();
-      const scaleX = this.canvas.width / rect.width;
-      const scaleY = this.canvas.height / rect.height;
-      return {
-        x: (clientX - rect.left) * scaleX,
-        y: (clientY - rect.top) * scaleY,
-      };
+    onResize() {
+      this.draw();
     },
   },
   watch: {
-    video() {
-      this.endTime = this.video.meta.duration;
+    duration() {
       this.draw();
+      // this.endTime = this.video.meta.duration;
+      // this.draw();
     },
     time() {
       this.draw();
@@ -232,6 +270,17 @@ export default {
   },
   computed: {},
   mounted() {
+    this.canvas = this.$refs.canvas;
+
+    this.scope = new paper.PaperScope();
+    this.scope.setup(this.canvas);
+
+    let self = this;
+    this.scope.view.onResize = (event) => {
+      clearTimeout(self.redraw);
+      self.doit = setTimeout(self.onResize(), 100);
+    };
+
     this.draw();
   },
 };
