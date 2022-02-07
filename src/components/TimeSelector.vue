@@ -11,7 +11,15 @@ function sleep(ms) {
 }
 export default {
   mixins: [TimeMixin],
-  props: ["duration", "height", "width"],
+  props: {
+    duration: {},
+    height: {},
+    width: {},
+    radius: {
+      type: Number,
+      default: 5,
+    },
+  },
   data() {
     return {
       canvas: null,
@@ -21,14 +29,16 @@ export default {
 
       selectionStartTime: 10,
       selectionEndTime: 29,
+      minTime: 1.0,
 
       mainStrokes: null,
       otherStrokes: null,
       textGroup: null,
-      // scaleHeight: 50,
-      // foregroundColor: "rgba(255,255, 255, 1)",
-      // selectionColor: "rgba(230, 57, 70, 0.5)",
-      // textColor: "rgba(230, 57, 70, 1)",
+
+      handleGroup: null,
+      handleLeft: null,
+      handleRight: null,
+      handleBar: null,
     };
   },
   methods: {
@@ -45,54 +55,8 @@ export default {
 
       this.drawScale();
       this.drawSelection();
-      // // Create a Paper.js Path to draw a line into it:
-      // var path = new paper.Path();
-      // // Give the stroke a color
-      // path.strokeColor = "black";
-      // var start = new paper.Point(100, 100);
-      // // Move to start and draw a line from there
-      // path.moveTo(start);
-      // // Note that the plus operator on Point objects does not work
-      // // in JavaScript. Instead, we need to call the add() function:
-      // path.lineTo(start.add([200, -50]));
-      // // Draw the view now:
-      // console.log(paper.view.size);
-      // paper.view.onFrame = function (event) {
-      //   // On each frame, rotate the path by 3 degrees:
-      //   path.rotate(1);
-      // };
       this.scope.view.draw();
     },
-    // draw() {
-    //   this.canvas = this.$refs.canvas;
-    //   this.ctx = this.canvas.getContext("2d");
-    //   this.ctx.save();
-
-    //   this.width = this.$refs.canvas.parentElement.clientWidth;
-    //   this.height = this.$refs.canvas.parentElement.clientHeight;
-    //   this.$refs.canvas.width = this.$refs.canvas.parentElement.clientWidth;
-    //   this.$refs.canvas.height = this.$refs.canvas.parentElement.clientHeight;
-
-    //   // this.clearRect(0, 0, this.width, this.height);
-    //   this.drawScale();
-    //   this.draw_selection();
-    // },
-
-    // draw_selection() {
-    //   this.ctx.save();
-    //   this.ctx.fillStyle = this.selectionColor;
-    //   this.ctx.strokeStyle = this.selectionColor;
-    //   this.ctx.fillRect(
-    //     this.timeToX(this.selectionStartTime),
-    //     this.pad_y,
-    //     this.timeToX(this.selectionEndTime) -
-    //       this.timeToX(this.selectionStartTime),
-    //     this.scaleHeight
-    //   );
-    //   this.ctx.stroke();
-
-    //   this.ctx.restore();
-    // },
 
     drawScale() {
       if (this.scaleLayer) {
@@ -156,12 +120,14 @@ export default {
           this.canvasHeight - 5
         )
       );
-      let radius = new paper.Size(5, 5);
+      let radius = new paper.Size(this.radius, this.radius);
       let path = new paper.Path.Rectangle(rectangle, radius);
       path.fillColor = "#ae131377";
 
+      this.handleBar = path;
+
       //handle
-      let handleRadius = new paper.Size(5, 5);
+      let handleRadius = new paper.Size(this.radius, this.radius);
       let handleLeftRect = new paper.Rectangle(
         new paper.Point(this.timeToX(this.selectionStartTime) - 5, 10),
         new paper.Point(
@@ -171,6 +137,8 @@ export default {
       );
       let handleLeft = new paper.Path.Rectangle(handleLeftRect, handleRadius);
       handleLeft.fillColor = "#ae1313ff";
+
+      this.handleLeft = handleLeft;
 
       let handleRightRect = new paper.Rectangle(
         new paper.Point(this.timeToX(this.selectionEndTime) - 5, 10),
@@ -182,60 +150,62 @@ export default {
       let handleRight = new paper.Path.Rectangle(handleRightRect, handleRadius);
       handleRight.fillColor = "#ae1313ff";
 
+      this.handleRight = handleRight;
+      this.handleGroup = new paper.Group([path, handleLeft, handleRight]);
+
       let self = this;
       handleLeft.onMouseDrag = (event) => {
         let deltaTime = self.xToTime(event.delta.x);
 
-        if (
-          self.selectionStartTime >= self.selectionEndTime - 1.0 &&
-          deltaTime > 0
-        ) {
-          self.selectionStartTime = self.selectionEndTime - 1.0;
-        } else if (self.selectionStartTime <= 0 && deltaTime < 0) {
-          self.selectionStartTime = 0;
+        if (deltaTime > 0) {
+          self.selectionStartTime = Math.min(
+            self.selectionStartTime + deltaTime,
+            self.selectionEndTime - self.minTime
+          );
         } else {
-          self.selectionStartTime += deltaTime;
-          path.segments[0].point.x += event.delta.x;
-          path.segments[1].point.x += event.delta.x;
-          path.segments[2].point.x += event.delta.x;
-          path.segments[3].point.x += event.delta.x;
-          handleLeft.position.x += event.delta.x;
+          self.selectionStartTime = Math.max(
+            self.selectionStartTime + deltaTime,
+            0
+          );
         }
+        self.onSelectionChange();
       };
 
       handleRight.onMouseDrag = (event) => {
         let deltaTime = self.xToTime(event.delta.x);
 
-        if (
-          self.selectionEndTime <= self.selectionStartTime + 1.0 &&
-          deltaTime < 0
-        ) {
-          self.selectionEndTime = self.selectionStartTime + 1.0;
-        } else if (self.selectionEndTime >= self.duration && deltaTime > 0) {
-          self.selectionEndTime = self.duration;
+        if (deltaTime < 0) {
+          self.selectionEndTime = Math.max(
+            self.selectionEndTime + deltaTime,
+            self.selectionStartTime + self.minTime
+          );
         } else {
-          self.selectionEndTime += deltaTime;
-          path.segments[4].point.x += event.delta.x;
-          path.segments[5].point.x += event.delta.x;
-          path.segments[6].point.x += event.delta.x;
-          path.segments[7].point.x += event.delta.x;
-          handleRight.position.x += event.delta.x;
+          self.selectionEndTime = Math.min(
+            self.selectionEndTime + deltaTime,
+            self.duration
+          );
         }
+        self.onSelectionChange();
       };
 
       path.onMouseDrag = (event) => {
+        //timespan should be const
+        const timeSpan = self.selectionEndTime - self.selectionStartTime;
         let deltaTime = self.xToTime(event.delta.x);
-        if (self.selectionEndTime >= self.duration && deltaTime > 0) {
-          self.selectionEndTime = self.duration;
-        } else if (self.selectionStartTime <= 0 && deltaTime < 0) {
-          self.selectionStartTime = 0;
+        if (deltaTime > 0) {
+          self.selectionEndTime = Math.min(
+            self.selectionEndTime + deltaTime,
+            self.duration
+          );
+          self.selectionStartTime = self.selectionEndTime - timeSpan;
         } else {
-          self.selectionEndTime += deltaTime;
-          self.selectionStartTime += deltaTime;
-          path.position.x += event.delta.x;
-          handleLeft.position.x += event.delta.x;
-          handleRight.position.x += event.delta.x;
+          self.selectionStartTime = Math.max(
+            self.selectionStartTime + deltaTime,
+            0
+          );
+          self.selectionEndTime = self.selectionStartTime + timeSpan;
         }
+        self.onSelectionChange();
       };
     },
 
@@ -247,15 +217,36 @@ export default {
       }
       return arr;
     },
-    // // map time to x and x to time
+    //  map time to x and x to time
     timeToX(time) {
       return this.timeScale * time;
     },
     xToTime(x) {
       return x / this.timeScale;
     },
+    // some event handler
     onResize() {
       this.draw();
+    },
+    onSelectionChange() {
+      let posStart = this.timeToX(this.selectionStartTime);
+      let posEnd = this.timeToX(this.selectionEndTime);
+      let timeSpan = posEnd - posStart;
+      // this.handleGroup.children[0].segments[0] = posStart;
+      // this.handleGroup.children[0].segments[1] = posStart;
+      // this.handleGroup.children[0].segments[2] = posStart;
+      // this.handleGroup.children[0].segments[3] = posStart;
+      this.handleLeft.position.x = posStart;
+      this.handleRight.position.x = posEnd;
+      this.handleBar.segments[0].point.x = posStart + this.radius;
+      this.handleBar.segments[1].point.x = posStart;
+      this.handleBar.segments[2].point.x = posStart;
+      this.handleBar.segments[3].point.x = posStart + this.radius;
+
+      this.handleBar.segments[4].point.x = posEnd - this.radius;
+      this.handleBar.segments[5].point.x = posEnd;
+      this.handleBar.segments[6].point.x = posEnd;
+      this.handleBar.segments[7].point.x = posEnd - this.radius;
     },
   },
   watch: {

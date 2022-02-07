@@ -21,20 +21,20 @@
             v-for="item in videos"
             :key="item.id"
           >
-            <v-card-title>{{ item.meta.name }}</v-card-title>
+            <v-card-title>{{ item.name }}</v-card-title>
             <v-card-text>
               <div>Video ID: {{ item.id }}</div>
               <div>
                 Length:
-                {{ get_display_time(item.meta.duration) }}
+                {{ get_display_time(item.duration) }}
               </div>
-              <div>License: {{ item.meta.license }}</div>
+              <div>License: {{ item.license }}</div>
 
               <v-card-actions>
-                <v-btn outlined @click="show_video(item.hash_id)">
+                <v-btn outlined @click="show_video(item.id)">
                   <v-icon>{{ "mdi-movie-search-outline" }}</v-icon> Analyse
                 </v-btn>
-                <v-btn color="red" outlined @click="delete_video(item.hash_id)">
+                <v-btn color="red" outlined @click="delete_video(item.id)">
                   <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
                 </v-btn>
               </v-card-actions>
@@ -55,15 +55,15 @@ import TimeMixin from "../mixins/time";
 export default {
   mixins: [TimeMixin],
   methods: {
-    delete_video(video_hash_id) {
-      this.$store.dispatch("video/delete", video_hash_id);
+    delete_video(video_id) {
+      this.$store.dispatch("video/delete", video_id);
     },
-    show_video(video_hash_id) {
-      console.log(video_hash_id);
-      router.push({ path: `/videoanalysis/${video_hash_id}` });
+    show_video(video_id) {
+      console.log(video_id);
+      router.push({ path: `/videoanalysis/${video_id}` });
       // router.push({
       //   name: "Videoanalysis",
-      //   params: { hash_id: video_hash_id },
+      //   params: { id: video_id },
       // });
     },
   },
