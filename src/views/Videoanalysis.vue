@@ -18,13 +18,10 @@
               />
             </v-col>
           </v-row>
-          <v-row height="80px" class="mb-2 px-4">
+          <v-row class="mb-2 px-4">
             <TimeSelector
-              height="80px"
               width="100%"
               :duration="duration"
-              :startTime="startTime"
-              :endTime="endTime"
               @endTimeChange="onEndTimeChange"
               @startTimeChange="onStartTimeChange"
             />
@@ -58,26 +55,27 @@
 
     <v-row justify="space-around" align="start" class="pa-8">
       <v-col justify="center">
-        <v-card class="annotation-card d-flex flex-column" elevation="8">
-          <v-row>
-            <v-col>
-              <v-card-title> Annotation Timeline </v-card-title>
-            </v-col>
-          </v-row>
-
-          <Timeline
-            :video="$store.state.video.current"
-            :time="currentTime"
-            :timelines="$store.state.timeline.timelines"
-            :startTime="startTime"
-            :endTime="endTime"
-            :annotation_dialog="anotation_dialog"
-            @copyTimeline="onCopyTimeline"
-            @renameTimeline="onRenameTimeline"
-            @deleteTimeline="onDeleteTimeline"
-            @segmentSelected="onSegmentSelected"
-          >
-            <template v-slot:context>
+        <v-card
+          class="annotation-card d-flex flex-column flex-nowrap overflow-auto"
+          elevation="8"
+        >
+          <v-card-title> Annotation Timeline </v-card-title>
+          <v-flex grow class="mb-2 px-4">
+            <Timeline
+              width="100%"
+              :duration="duration"
+              :time="currentTime"
+              :timelines="timelines"
+              :startTime="startTime"
+              :endTime="endTime"
+              @copyTimeline="onCopyTimeline"
+              @renameTimeline="onRenameTimeline"
+              @deleteTimeline="onDeleteTimeline"
+              @annotateSegment="onAnnotateSegment"
+              @coloringSegment="onColoringSegment"
+              @deleteSegment="onDeleteSegment"
+            >
+              <!-- <template v-slot:context>
               <v-list class="pa-0">
                 <v-subheader> {{ $t("annotation.title") }}</v-subheader>
                 <v-list-item class="px-0 h44">
@@ -103,8 +101,17 @@
                   </v-btn>
                 </v-list-item>
               </v-list>
-            </template>
-          </Timeline>
+            </template> -->
+            </Timeline>
+
+            <ModalTimelineSegmentAnnotate
+              :show.sync="annotationDialog.show"
+              :timelineSegment="annotationDialog.selectedTimelineSegment"
+              :annotations="annotations"
+              :annotationCategories="annotationCategories"
+            >
+            </ModalTimelineSegmentAnnotate>
+          </v-flex>
         </v-card>
       </v-col>
     </v-row>
@@ -116,6 +123,7 @@ import VideoPlayer from "@/components/VideoPlayer.vue";
 import ShotCard from "@/components/ShotCard.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
+import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 // import store from "../store/index.js";
 
 export default {
@@ -130,6 +138,13 @@ export default {
       addedAnnotation: null,
       labels: [],
       selectedLabel: null,
+      //
+      annotationDialog: {
+        show: false,
+        selectedTimelineSegment: null,
+      },
+      annotations: [],
+      annotationCategories: [],
     };
   },
   methods: {
@@ -137,9 +152,7 @@ export default {
       // console.log(`fetch video ${JSON.stringify(this.$route.params)}`);
 
       await this.$store.dispatch("video/get", this.$route.params.id);
-      console.log(
-        `new state ${JSON.stringify(this.$store.state.video.current)}`
-      );
+
       if (this.$store.state.video.current.meta) {
         this.endTime = this.$store.state.video.current.meta.duration;
       }
@@ -147,12 +160,9 @@ export default {
       await this.$store.dispatch("analyser/list", this.$route.params.id);
 
       await this.$store.dispatch("timeline/listUpdate", this.$route.params.id);
-      console.log("FOOBAR");
-      console.log(this.$store.state.timeline.timelineList);
-      this.$store.state.timeline.timelineList.forEach((e) => {
-        console.log(e);
-        this.$store.dispatch("segment/listUpdate", e);
-      });
+      // console.log("FOOBAR");
+      // console.log(this.$store.state.timeline.timelineList);
+
       // console.log(res);
     },
     setVideoPlayerTime(time) {
@@ -176,9 +186,19 @@ export default {
     onDeleteTimeline(id) {
       this.$store.dispatch("timeline/delete", id);
     },
+    onAnnotateSegment(id) {
+      this.selectedTimelineSegment =
+        this.$store.getters["timelineSegment/get"](id);
+      console.log(this.selectedTimelineSegment);
+      this.$nextTick(() => {
+        this.annotationDialog.show = true;
+      });
+    },
+    onColoringSegment(id) {},
+    onDeleteSegment(id) {},
+
     onSegmentSelected(id) {
       this.selectedSegment = id;
-      console.log(id);
       // this.$store.dispatch("timeline/delete", id);
     },
     onAppendAnnotation(evt) {
@@ -189,20 +209,15 @@ export default {
       });
       this.labels.push(this.addedAnnotation);
       this.addedAnnotation = null;
-      console.log(this.selectedSegment);
-      console.log(this.addedAnnotation);
       this.annotation_dialog = false;
     },
     submitAnnotation(evt) {
-      console.log(this.selectedSegment);
-      console.log(this.addedAnnotation);
       this.annotation_dialog = false;
     },
   },
   computed: {
     duration() {
       let duration = this.$store.state.video.current.duration;
-      console.log(duration);
       return duration;
     },
     timelines() {
@@ -210,13 +225,11 @@ export default {
         this.$route.params.id
       );
       timelines.forEach((e) => {
-        console.log(e);
-        let segments = this.$store.getters["segment/forTimeline"](e.id);
+        let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
 
         e.segments = segments;
       });
 
-      console.log(JSON.stringify(timelines));
       return timelines;
     },
 
@@ -317,6 +330,7 @@ export default {
     ShotCard,
     Timeline,
     TimeSelector,
+    ModalTimelineSegmentAnnotate,
   },
 };
 </script>

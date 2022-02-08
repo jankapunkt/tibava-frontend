@@ -11,7 +11,38 @@ const api = {
         annotationList: [],
     },
     actions: {
-
+        listAdd({ commit }, segment_hash_id) {
+            const params = {
+                hash_id: segment_hash_id,
+                annotation: annotation
+            }
+            axios.post(`${config.API_LOCATION}/annotation_list`, params)
+                .then((res) => {
+                    if (res.data.status === 'ok') {
+                        commit('addAnnotation', params);
+                    }
+                })
+                .catch((error) => {
+                    const info = { date: Date(), error, origin: 'collection' };
+                    commit('error/update', info, { root: true });
+                });
+        },
+        listUpdate({ commit }, segment_hash_id) {
+            const params = {
+                hash_id: segment_hash_id,
+                annotation: annotation
+            }
+            axios.post(`${config.API_LOCATION}/annotation_list`, params)
+                .then((res) => {
+                    if (res.data.status === 'ok') {
+                        commit('addAnnotation', params);
+                    }
+                })
+                .catch((error) => {
+                    const info = { date: Date(), error, origin: 'collection' };
+                    commit('error/update', info, { root: true });
+                });
+        },
         add({ commit }, { segment_hash_id, annotation }) {
             const params = {
                 hash_id: segment_hash_id,
@@ -33,22 +64,6 @@ const api = {
                 hash_id: annotation_hash_id,
             }
             axios.post(`${config.API_LOCATION}/annotation_delete`, params)
-                .then((res) => {
-                    if (res.data.status === 'ok') {
-                        commit('addAnnotation', params);
-                    }
-                })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
-        },
-        list({ commit }, segment_hash_id) {
-            const params = {
-                hash_id: segment_hash_id,
-                annotation: annotation
-            }
-            axios.post(`${config.API_LOCATION}/annotation_list`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('addAnnotation', params);

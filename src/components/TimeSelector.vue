@@ -6,14 +6,10 @@
 <script>
 import TimeMixin from "../mixins/time";
 import paper from "paper";
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 export default {
   mixins: [TimeMixin],
   props: {
     duration: {},
-    height: {},
     width: {},
     radius: {
       type: Number,
@@ -22,13 +18,14 @@ export default {
   },
   data() {
     return {
+      height: "60px",
       canvas: null,
       scope: null,
       tool: null,
       redraw: false,
 
-      selectionStartTime: 10,
-      selectionEndTime: 29,
+      selectionStartTime: 0,
+      selectionEndTime: this.duration,
       minTime: 1.0,
 
       mainStrokes: null,
@@ -77,6 +74,7 @@ export default {
       });
       this.mainStrokes = new paper.Group(mainStrokes);
       this.mainStrokes.strokeColor = "black";
+      this.mainStrokes.strokeWidth = 2;
 
       timestemps.pop();
       let textList = [];
@@ -89,7 +87,6 @@ export default {
       this.textGroup = new paper.Group(textList);
       this.textGroup.style = {
         fontFamily: "Courier New",
-
         fontSize: 10,
         fillColor: "black",
       };
@@ -232,10 +229,6 @@ export default {
       let posStart = this.timeToX(this.selectionStartTime);
       let posEnd = this.timeToX(this.selectionEndTime);
       let timeSpan = posEnd - posStart;
-      // this.handleGroup.children[0].segments[0] = posStart;
-      // this.handleGroup.children[0].segments[1] = posStart;
-      // this.handleGroup.children[0].segments[2] = posStart;
-      // this.handleGroup.children[0].segments[3] = posStart;
       this.handleLeft.position.x = posStart;
       this.handleRight.position.x = posEnd;
       this.handleBar.segments[0].point.x = posStart + this.radius;
@@ -251,12 +244,15 @@ export default {
   },
   watch: {
     duration() {
+      this.selectionStartTime = 0;
+      this.selectionEndTime = this.duration;
       this.draw();
-      // this.endTime = this.video.meta.duration;
-      // this.draw();
     },
-    time() {
-      this.draw();
+    selectionStartTime() {
+      this.$emit("startTimeChange", this.selectionStartTime);
+    },
+    selectionEndTime() {
+      this.$emit("endTimeChange", this.selectionEndTime);
     },
   },
   computed: {},

@@ -26,10 +26,10 @@ const api = {
                         commit('add', res.data.entries);
                     }
                 })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
         },
 
         async listUpdate({ commit }, video_id) {
@@ -42,10 +42,10 @@ const api = {
                         commit('update', res.data.entries);
                     }
                 })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
         },
 
 
@@ -56,15 +56,14 @@ const api = {
             }
             return axios.post(`${config.API_LOCATION}/timeline_duplicate`, params)
                 .then((res) => {
-                    console.log(res.data);
                     if (res.data.status === 'ok') {
-                        commit('add', res.data.entry);
+                        commit('add', [res.data.entry]);
                     }
                 })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'upload' };
-                    commit('error/update', info, { root: true });
-                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'upload' };
+            //     commit('error/update', info, { root: true });
+            // });
         },
 
         async delete({ commit }, timeline_id) {
@@ -78,36 +77,36 @@ const api = {
                         commit("delete", timeline_id);
                     }
                 })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
         },
     },
     mutations: {
-        add(state, timeline) {
+        add(state, timelines) {
             timelines.forEach((e, i) => {
                 state.timelines[e.id] = e
                 state.timelineList.push(e.id)
+                this.dispatch("timelineSegment/listAdd", e.id);
             });
         },
-        // duplicate(state, { old_id, new_id }) {
-        //     timeline_index = state.timelines.findIndex(e => e.id === old_id);
-
-        //     state.timelines.push(state.timelines[timeline_index]);
-        // },
         update(state, timelines) {
             state.timelines = {};
             state.timelineList = [];
+            this.commit("timelineSegment/clear");
             timelines.forEach((e, i) => {
                 state.timelines[e.id] = e
                 state.timelineList.push(e.id)
+                this.dispatch("timelineSegment/listAdd", e.id);
             });
-            console.log('Timeline update')
         },
         delete(state, timeline_id) {
-            let timeline_index = state.timelines.findIndex(e => e.id === timeline_id);
-            state.timelines.splice(timeline_index, 1);
+            let timeline_index = state.timelineList.findIndex(e => e === timeline_id);
+            state.timelineList.splice(timeline_index, 1);
+            delete state.timelines[timeline_id]
+            //TODO we don't need to send changes to the backend
+            this.commit("timelineSegment/deleteTimeline", timeline_id);
         },
     },
 };

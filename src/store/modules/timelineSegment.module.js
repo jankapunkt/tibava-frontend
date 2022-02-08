@@ -13,6 +13,9 @@ const api = {
     getters: {
         forTimeline: (state) => (timeline_id) => {
             return state.timelineSegmentList.map(id => state.timelineSegments[id]).filter(e => e.timeline_id === timeline_id)
+        },
+        get: (state) => (id) => {
+            return state.timelineSegments[id];
         }
     },
     actions: {
@@ -49,6 +52,7 @@ const api = {
                 });
         },
 
+
     },
     mutations: {
         add(state, timelineSegments) {
@@ -69,6 +73,20 @@ const api = {
         //     let timeline_index = state.timelines.findIndex(e => e.id === timeline_id);
         //     state.timelines.splice(timeline_index, 1);
         // },
+
+        clear(state) {
+            console.log("clear")
+            this.timelineSegmentList = [];
+            this.timelineSegments = {};
+        },
+        deleteTimeline(state, timeline_id) {
+            const timeline_indexes = state.timelineSegmentList.map(id => state.timelineSegments[id]).filter(e => e.timeline_id === timeline_id)
+            timeline_indexes.forEach(e => {
+                let segment_index = state.timelineSegmentList.findIndex(f => f === e.id);
+                state.timelineSegmentList.splice(segment_index, 1);
+                delete state.timelineSegments[e.id]
+            });
+        },
     },
 };
 export default api;
