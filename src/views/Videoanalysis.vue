@@ -144,7 +144,7 @@ export default {
         selectedTimelineSegment: null,
       },
       annotations: [],
-      annotationCategories: [],
+      // annotationCategories: [],
     };
   },
   methods: {
@@ -160,6 +160,7 @@ export default {
       await this.$store.dispatch("analyser/list", this.$route.params.id);
 
       await this.$store.dispatch("timeline/listUpdate", this.$route.params.id);
+      await this.$store.dispatch("annotationCategory/listUpdate");
       // console.log("FOOBAR");
       // console.log(this.$store.state.timeline.timelineList);
 
@@ -219,6 +220,9 @@ export default {
     duration() {
       let duration = this.$store.state.video.current.duration;
       return duration;
+    },
+    annotationCategories() {
+      return this.$store.getters["annotationCategory/all"];
     },
     timelines() {
       let timelines = this.$store.getters["timeline/forVideo"](

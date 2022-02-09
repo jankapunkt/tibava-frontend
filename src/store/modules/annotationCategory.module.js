@@ -10,6 +10,11 @@ const api = {
         annotationCategories: {},
         annotationCategoryList: [],
     },
+    getters: {
+        all: (state) => {
+            return state.annotationCategoryList.map(id => state.annotationCategories[id])
+        }
+    },
     actions: {
         async create({ commit }, { name, color }) {
             const params = {
@@ -31,7 +36,7 @@ const api = {
 
 
         async listUpdate({ commit }) {
-            return axios.post(`${config.API_LOCATION}/annotation_category_list`, params)
+            return axios.get(`${config.API_LOCATION}/annotation_category_list`)
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);
@@ -59,13 +64,6 @@ const api = {
                 state.annotationCategoryList.push(e.id)
             });
         },
-        // delete(state, hash_id) {
-        //     let timeline_index = state.timelines.findIndex(e => e.hash_id === timeline_hash_id);
-        //     state.timelines.splice(timeline_index, 1);
-        // },
-        // update(state, timelines) {
-        //     state.timelines = timelines;
-        // },
     },
 };
 export default api;

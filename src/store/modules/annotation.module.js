@@ -76,15 +76,24 @@ const api = {
         },
     },
     mutations: {
-        add(state, { hash_id, annotation }) {
+        add(state, annotations) {
+            annotations.forEach((e, i) => {
+                state.annotations[e.id] = e
+                state.annotationList.push(e.id)
+            });
         },
-        delete(state, hash_id) {
-            let timeline_index = state.timelines.findIndex(e => e.hash_id === timeline_hash_id);
-            state.timelines.splice(timeline_index, 1);
+        update(state, annotations) {
+            state.annotations = {}
+            state.annotationList = []
+            annotations.forEach((e, i) => {
+                state.annotations[e.id] = e
+                state.annotationList.push(e.id)
+            });
         },
-        update(state, timelines) {
-            state.timelines = timelines;
-        },
+        // delete(state, hash_id) {
+        //     let timeline_index = state.timelines.findIndex(e => e.hash_id === timeline_hash_id);
+        //     state.timelines.splice(timeline_index, 1);
+        // },
     },
 };
 export default api;

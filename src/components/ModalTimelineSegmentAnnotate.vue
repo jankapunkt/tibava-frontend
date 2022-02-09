@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="show" max-width="1000">
+  <v-dialog persistent v-model="show" max-width="1000">
     <v-card>
       <v-toolbar color="primary" dark>{{
         $t("timelineSegment.title")
@@ -80,7 +80,7 @@
                       icon
                       outlined
                       x-small
-                      :color="item.color"
+                      :color="item.category ? item.category.color : ''"
                       class="mr-1"
                       v-on="on"
                     >
@@ -142,6 +142,9 @@ function getRandomColor() {
   }
   return color;
 }
+function onlySpaces(str) {
+  return /^\s*$/.test(str);
+}
 
 export default {
   props: ["timelineSegment", "annotations", "annotationCategories", "show"],
@@ -171,35 +174,61 @@ export default {
         },
       ],
       inputs: [],
-      categories: [
-        { name: "person", color: "#339911", id: "a" },
-        { name: "emotion", color: "#882211", id: "b" },
-      ],
     };
   },
   computed: {
-    disabled() {
-      if (this.checkbox) {
-        return false;
-      }
-      return true;
+    categories() {
+      let newAnnotationCategories = this.inputs
+        .filter((e) => {
+          return e.category && !("id" in e.category);
+        })
+        .filter((e, i, s) => s.indexOf(e) === i)
+        .map((e) => {
+          return e.category;
+        });
+      console.log(newAnnotationCategories);
+      return this.annotationCategories.concat(newAnnotationCategories);
     },
   },
   methods: {
     onChange() {
       let inputs = [];
+      let self = this;
       this.inputs.forEach((e) => {
         if (typeof e === "string") {
+          //filter empty name and categories
+          if (onlySpaces(e)) {
+            return;
+          }
           let splits = e.split(":");
           if (splits.length > 1) {
             let category = splits.shift();
             let name = splits.join(":");
+            //filter empty name and categories
+            if (onlySpaces(category)) {
+              return;
+            }
+            if (onlySpaces(name)) {
+              return;
+            }
             let color = getRandomColor();
-            inputs.push({
-              name: name,
-              color: color,
-              category: { name: category, color: color },
-            });
+            // Filter existing categories and use the color of the category
+            let existingCategory = self.categories.filter(
+              (e) => e.name === category
+            );
+            if (existingCategory.length > 0) {
+              inputs.push({
+                name: name,
+                color: existingCategory[0].color,
+                category: existingCategory[0],
+              });
+            } else {
+              inputs.push({
+                name: name,
+                color: color,
+                category: { name: category, color: color },
+              });
+            }
           } else {
             inputs.push({
               name: e,
@@ -211,12 +240,49 @@ export default {
           inputs.push(e);
         }
       });
-      this.inputs = inputs;
+      //filter all duplicates
+      let existing = {};
+      inputs.forEach((e, i) => {
+        let name = "";
+        if (e.category) {
+          name = `${e.category.name}:${e.name}`;
+        } else {
+          name = `${e.name}`;
+        }
+        if (!(name in existing)) {
+          existing[name] = { element: e, index: i };
+        } else {
+          // if the existing element has already an id we will skipt that
+          if ("id" in existing[name]) {
+            return;
+          }
+          if ("id" in e) {
+            existing[name] = { element: e, index: i };
+            return;
+          }
+          if ("category" in existing && "category" in e) {
+            if ("id" in existing.category) {
+              return;
+            }
+
+            if ("id" in e.category) {
+              existing[name] = { element: e, index: i };
+              return;
+            }
+          }
+        }
+      });
+      console.log(JSON.stringify(existing));
+
+      this.inputs = Object.keys(existing).map((e) => {
+        return existing[e].element;
+      });
     },
     onCategoryChange(item) {
       console.log("foo");
       item.categoryMenu = false;
       if (typeof item.category === "string") {
+        categoryNames;
         item.category = {
           name: item.category,
           color: item.color,
@@ -225,6 +291,8 @@ export default {
       console.log(item);
     },
     async submit() {
+      console.log("SUBMIT");
+      console.log(JSON.stringify(this.inputs));
       let categoryLut = {};
       await Promise.all(
         this.inputs.map(async (e) => {
@@ -254,27 +322,5 @@ export default {
       this.$emit("update:show", false);
     },
   },
-  //   watch: {
-  //     inputs: {
-  //       handler(newValue, oldValue) {
-  //         let inputs = [];
-  //         newValue.forEach((e) => {
-  //           if (typeof e === "string") {
-  //             console.log("New annotation");
-
-  //             inputs.push({
-  //               name: e,
-  //               color: getRandomColor(),
-  //             });
-  //           } else if (typeof e === "object") {
-  //             console.log("Object");
-  //             inputs.push(e);
-  //           }
-  //         });
-  //         this.inputs = inputs;
-  //       },
-  //       deep: true,
-  //     },
-  //   },
 };
 </script>
