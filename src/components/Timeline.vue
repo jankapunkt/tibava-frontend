@@ -107,6 +107,17 @@ export default {
       },
     },
 
+    timeStyle: {
+      type: Object,
+      default: () => {
+        return {
+          shadowColor: "rgba(0, 0, 0, 0.25)",
+          shadowBlur: 6,
+          shadowOffset: { x: 0, y: 3 },
+          fillColor: "white",
+        };
+      },
+    },
     timelineStyle: {
       type: Object,
       default: () => {
@@ -187,6 +198,7 @@ export default {
       this.drawTimelineHeader();
       this.drawTimeline();
       this.drawSegment();
+      this.drawTime();
       //   this.drawSelection();
       this.scope.view.draw();
     },
@@ -249,6 +261,17 @@ export default {
       });
       this.otherStrokes = new paper.Group(otherStrokes);
       this.otherStrokes.strokeColor = "black";
+
+      let actionRectangle = new paper.Rectangle(
+        new paper.Point(this.timeToX(0), 0),
+        new paper.Point(this.timeToX(this.endTime), this.scaleHeight)
+      );
+      let actionPath = new paper.Path.Rectangle(actionRectangle);
+      // TODO
+      actionPath.fillColor = "#00000001";
+      actionPath.onClick = (event) => {
+        this.$emit("update:time", this.xToTime(event.point.x));
+      };
     },
 
     drawTimelineHeader() {
@@ -398,8 +421,99 @@ export default {
               self.showMenu = true;
             });
           };
+          let annotationTexts = [path.clone()];
+          let annotationBoxes = [path.clone()];
+          var annotationStart = start;
+          var annotationI = 0;
+          var annotationJ = 0;
+
+          s.annotations.forEach((a, k) => {
+            // create the text element
+            var text = new paper.PointText(
+              new paper.Point(
+                annotationStart + this.gap,
+                (this.gap + this.timelineHeight) * i +
+                  this.scaleHeight +
+                  20 * (annotationJ + 1) //todo move this
+              )
+            );
+
+            text.justification = "left";
+            text.fillColor = "black";
+            text.content = a.annotation.name;
+            // check if should make a break
+            let annoRectangle = text.strokeBounds;
+            annoRectangle.width + 2 * this.gap;
+            annoRectangle.height + 2 * this.gap;
+
+            annotationStart += annoRectangle.width + this.gap;
+            if (annotationI > 0 && annotationStart > end) {
+              annotationJ += 1;
+              annotationStart = start;
+              text.remove();
+              text = new paper.PointText(
+                new paper.Point(
+                  annotationStart + this.gap,
+                  (this.gap + this.timelineHeight) * i +
+                    this.scaleHeight +
+                    20 * (annotationJ + 1) //todo move this
+                )
+              );
+              text.justification = "left";
+              text.fillColor = "black";
+              text.content = a.annotation.name;
+
+              annoRectangle = text.strokeBounds;
+              annoRectangle.width + 2 * this.gap;
+              annoRectangle.height + 2 * this.gap;
+            } else {
+              annotationI += 1;
+            }
+
+            // draw badge
+            let textBoundingBox = new paper.Path.Rectangle(
+              annoRectangle,
+              new paper.Size(1, 1)
+            );
+            textBoundingBox.fillColor = a.annotation.color;
+            textBoundingBox.insertBelow(text);
+
+            annotationTexts.push(text);
+            annotationBoxes.push(textBoundingBox);
+          });
+          let annotationTextsGroup = new paper.Group(annotationTexts);
+          annotationTextsGroup.clipped = true;
+          let annotationBoxesGroup = new paper.Group(annotationBoxes);
+          annotationBoxesGroup.clipped = true;
+          annotationBoxesGroup.insertBelow(annotationTextsGroup);
         });
       });
+    },
+    drawTime() {
+      console.log("Change");
+      this.scope.activate();
+      if (this.timeLayer) {
+        this.timeLayer.removeChildren();
+      }
+
+      this.timeLayer = new paper.Layer();
+
+      this.timeLayer.activate();
+      let x = this.timeToX(this.time);
+
+      var path = new paper.Path();
+      path.strokeColor = "#ae1313ff";
+
+      let handlePad = 5;
+
+      path.fillColor = "#ae131377";
+      path.add(new paper.Point(x, this.canvasHeight));
+      path.add(new paper.Point(x, 20));
+      path.add(new paper.Point(x + handlePad, 20 - 2));
+      path.add(new paper.Point(x + handlePad, 5));
+      path.add(new paper.Point(x - handlePad, 5));
+      path.add(new paper.Point(x - handlePad, 20 - 2));
+      path.add(new paper.Point(x, 20));
     },
     linspace(startValue, stopValue, cardinality) {
       var arr = [];
@@ -464,6 +578,9 @@ export default {
     },
     timelines() {
       this.draw();
+    },
+    time() {
+      this.drawTime();
     },
   },
   computed: {},

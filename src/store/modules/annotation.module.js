@@ -50,12 +50,10 @@ const api = {
                 params["category_id"] = categoryId
             }
 
-            console.log(params)
             return axios.post(`${config.API_LOCATION}/annotation_change`, params)
                 .then((res) => {
                     console.log(res.data)
                     if (res.data.status === 'ok') {
-                        console.log('Update')
 
                         commit('change', [{ id: annotationId, color: color, name: name, category_id: categoryId }]);
                         // return res.data.entry.id;
@@ -128,9 +126,12 @@ const api = {
     },
     mutations: {
         change(state, annotations) {
+            const newAnnotations = { ...state.annotations };
+            console.log('Change')
             annotations.forEach((e, i) => {
-                state.annotations[e.id] = e
+                Vue.set(newAnnotations, e.id, e)
             });
+            state.annotations = newAnnotations;
         },
         add(state, annotations) {
             annotations.forEach((e, i) => {
@@ -139,7 +140,6 @@ const api = {
             });
         },
         update(state, annotations) {
-            console.log(annotations)
             state.annotations = {}
             state.annotationList = []
             annotations.forEach((e, i) => {

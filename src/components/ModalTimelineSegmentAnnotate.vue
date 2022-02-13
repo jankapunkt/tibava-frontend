@@ -156,6 +156,8 @@ export default {
     return {
       search: null,
       inputs: [],
+      hiddenAnnotationCategories: [],
+      hiddenAnnotations: [],
     };
   },
   computed: {
@@ -168,7 +170,7 @@ export default {
           return e.category;
         });
 
-      let categories = this.annotationCategories.concat(
+      let categories = this.hiddenAnnotationCategories.concat(
         newAnnotationCategories
       );
       categories = categories.filter(
@@ -178,7 +180,7 @@ export default {
       return categories;
     },
     items() {
-      return this.annotations;
+      return this.hiddenAnnotations;
     },
   },
   methods: {
@@ -282,8 +284,6 @@ export default {
       }
     },
     async submit() {
-      console.log(JSON.stringify(this.timelineSegment.annotations));
-      console.log(JSON.stringify(this.inputs));
       let categories = await Promise.all(
         this.categories.map(async (e) => {
           if (!("id" in e)) {
@@ -316,8 +316,6 @@ export default {
       let createdIds = submittedAnnotation.filter(
         (e) => !existingAnnotation.includes(e)
       );
-      // console.log(deletedIds);
-      // console.log(submittedAnnotation);
 
       // first create all new connections
       await Promise.all(
@@ -344,23 +342,18 @@ export default {
             this.inputs.map(async (f) => {
               if (e.annotation.id === f.id) {
                 if (e.annotation.color !== f.color) {
-                  console.log("Change color");
                   return await this.changeAnnotation(f);
                 } else if (("category" in e.annotation) ^ ("category" in f)) {
-                  console.log("one category is not exiting");
                   return await this.changeAnnotation(f);
                 } else if (
                   (e.annotation.category === null) ^
                   (f.category === null)
                 ) {
-                  console.log("one category is not defined");
                   return await this.changeAnnotation(f);
                 } else if (e.annotation.category && f.category) {
                   if (e.annotation.category.name !== f.category.name) {
-                    console.log("name change");
                     return await this.changeAnnotation(f);
                   } else {
-                    console.log("equal");
                   }
                 }
               }
@@ -400,7 +393,6 @@ export default {
       return annotationId;
     },
     async createTimelineSegmentAnnotation(annotation) {
-      console.log(JSON.stringify(this.timelineSegment));
       let timelineSegmentAnnotationId = null;
       timelineSegmentAnnotationId = await this.$store.dispatch(
         "timelineSegmentAnnotation/create",
@@ -448,6 +440,14 @@ export default {
         JSON.stringify(
           this.timelineSegment.annotations.map((e) => e.annotation)
         )
+      );
+    },
+    annotations() {
+      this.hiddenAnnotations = JSON.parse(JSON.stringify(this.annotations));
+    },
+    annotationCategories() {
+      this.hiddenAnnotationCategories = JSON.parse(
+        JSON.stringify(this.annotationCategories)
       );
     },
   },

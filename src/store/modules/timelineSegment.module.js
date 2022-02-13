@@ -64,11 +64,8 @@ const api = {
 
             timeline_segment_annotations.forEach((f) => {
                 state.timelineSegmentList.map(id => state.timelineSegments[id]).forEach((e) => {
-                    console.log(`Search ${JSON.stringify(e)}`);
-                    console.log(`Search ${JSON.stringify(f)}`);
                     let index = e.annotation_ids.findIndex((k) => k === f)
                     if (index >= 0) {
-                        console.log(`Found ${JSON.stringify(e)}`);
                         e.annotation_ids.splice(index, 1);
                     }
                 })

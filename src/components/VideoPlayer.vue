@@ -24,7 +24,7 @@
       <div class="time-code">
         {{ get_timecode(currentTime) }}
       </div>
-      <v-menu top>
+      <v-menu offset-y top>
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" small>
             {{ currentSpeed.title }}
@@ -39,7 +39,23 @@
           </v-list-item>
         </v-list>
       </v-menu>
+      <!-- <v-btn small>
+        <v-icon>mdi-repeat</v-icon>
+      </v-btn> -->
+      <v-btn @click="onToggleVolume" small>
+        <v-icon v-if="volume > 66"> mdi-volume-high </v-icon>
+        <v-icon v-else-if="volume > 33"> mdi-volume-medium </v-icon>
+        <v-icon v-else-if="volume > 0"> mdi-volume-low </v-icon>
+        <v-icon v-else-if="volume == 0"> mdi-volume-mute </v-icon>
+      </v-btn>
+      <v-slider
+        :value="volume"
+        @input="onVolumeChange"
+        max="100"
+        min="0"
+      ></v-slider>
     </v-row>
+
     <v-row>
       <v-slider
         class="progress-bar"
@@ -67,6 +83,8 @@ export default {
       currentTime: this.time,
       duration: 0,
       ended: false,
+      hiddenVolume: 1.0,
+      mute: false,
       currentSpeed: { title: "1.00", value: 1.0 },
       speeds: [
         { title: "0.25", value: 0.25 },
@@ -113,6 +131,22 @@ export default {
       this.currentSpeed = this.speeds[idx];
       this.$refs.video.playbackRate = this.currentSpeed.value;
     },
+    onToggleVolume() {
+      this.mute = !this.mute;
+      if (this.mute) {
+        this.$refs.video.volume = 0.0;
+      } else {
+        this.$refs.video.volume = this.hiddenVolume;
+      }
+    },
+    onVolumeChange(volume) {
+      console.log("changemekfme");
+      this.hiddenVolume = volume / 100;
+      if (this.hiddenVolume > 0) {
+        this.mute = false;
+      }
+      this.$refs.video.volume = this.hiddenVolume;
+    },
   },
   computed: {
     progress() {
@@ -120,6 +154,12 @@ export default {
         return 0;
       }
       return this.currentTime / this.duration;
+    },
+    volume() {
+      if (this.mute) {
+        return 0;
+      }
+      return Math.round(this.hiddenVolume * 100);
     },
   },
   watch: {

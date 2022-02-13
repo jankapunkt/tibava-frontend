@@ -13,7 +13,7 @@
             <v-col>
               <VideoPlayer
                 :video="$store.state.video.current"
-                :time="videoTime"
+                :time="targetTime"
                 @timeUpdate="onTimeUpdate"
               />
             </v-col>
@@ -42,9 +42,9 @@
                 v-for="item in shots"
                 v-bind:key="item.id"
                 :shot="item"
-                v-on:seek="setVideoPlayerTime"
+                v-on:seek="onTagetTimeChange"
               />
-              <!-- <ShotsOverview :shots="shots" v-on:seek="setVideoPlayerTime" /> -->
+              <!-- <ShotsOverview :shots="shots" v-on:seek="onTagetTimeChange" /> -->
             </v-tab-item>
             <v-tab-item> PERSONS </v-tab-item>
             <v-tab-item> SCENES </v-tab-item>
@@ -64,7 +64,7 @@
             <Timeline
               width="100%"
               :duration="duration"
-              :time="currentTime"
+              :time="videoTime"
               :timelines="timelines"
               :startTime="startTime"
               :endTime="endTime"
@@ -74,6 +74,7 @@
               @annotateSegment="onAnnotateSegment"
               @coloringSegment="onColoringSegment"
               @deleteSegment="onDeleteSegment"
+              @update:time="onTagetTimeChange"
             >
               <!-- <template v-slot:context>
               <v-list class="pa-0">
@@ -115,6 +116,7 @@
         </v-card>
       </v-col>
     </v-row>
+    {{ annotationsLut }}
   </v-app>
 </template>
 
@@ -131,7 +133,7 @@ export default {
     return {
       anotation_dialog: false,
       videoTime: 0,
-      currentTime: 0,
+      targetTime: 0,
       startTime: 0,
       endTime: 0,
       selectedSegment: null,
@@ -169,11 +171,11 @@ export default {
 
       //
     },
-    setVideoPlayerTime(time) {
+    onTimeUpdate(time) {
       this.videoTime = time;
     },
-    onTimeUpdate(time) {
-      this.currentTime = time;
+    onTagetTimeChange(time) {
+      this.targetTime = time;
     },
     onEndTimeChange(time) {
       this.endTime = time;
@@ -227,7 +229,12 @@ export default {
     annotationCategories() {
       return this.$store.getters["annotationCategory/all"];
     },
+    annotationsLut() {
+      console.log("foo");
+      return this.$store.state.annotation.annotations;
+    },
     annotations() {
+      console.log("annotations");
       let annotations = this.$store.getters["annotation/all"];
 
       annotations = annotations.map((e) => {
@@ -241,6 +248,7 @@ export default {
       return annotations;
     },
     timelines() {
+      console.log("timelines");
       let timelines = this.$store.getters["timeline/forVideo"](
         this.$route.params.id
       );
@@ -263,6 +271,9 @@ export default {
             );
           });
           s.annotations = annotations;
+          if (annotations.length > 0) {
+            console.log(JSON.stringify(annotations));
+          }
         });
         e.segments = segments;
       });
@@ -361,6 +372,12 @@ export default {
   watch: {
     // call again the method if the route changes
     $route: "fetch_data",
+    currentTime() {
+      this.videoTime = this.currentTime;
+    },
+    "$store.state.annotation.annotations": () => {
+      console.log("wtf");
+    },
   },
   components: {
     VideoPlayer,
