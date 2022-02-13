@@ -11,25 +11,29 @@
             multiple
             v-model="inputs"
             :items="items"
+            :search-input.sync="search"
             @change="onChange"
             item-text="name"
           >
+            <template v-slot:no-data>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    No results matching "<strong>{{ search }}</strong
+                    >". Press <kbd>enter</kbd> to create a new one
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
+
             <template v-slot:item="{ attrs, item }">
               <v-chip>
-                <v-btn
-                  disable
-                  icon
-                  outlined
-                  x-small
-                  :color="item.color"
-                  class="mr-1"
-                >
+                <v-btn disable icon x-small :color="item.color" class="mr-1">
                   <v-icon>{{ "mdi-palette" }}</v-icon>
                 </v-btn>
                 <v-btn
                   v-if="item.category"
                   disable
-                  outlined
                   x-small
                   :color="item.color"
                   class="mr-1"
@@ -39,7 +43,7 @@
               </v-chip>
             </template>
 
-            <template v-slot:selection="{ attrs, item }">
+            <template v-slot:selection="{ attrs, item, index }">
               <v-chip>
                 <v-menu
                   v-model="item.colorMenu"
@@ -52,7 +56,6 @@
                     <v-btn
                       disable
                       icon
-                      outlined
                       x-small
                       :color="item.color"
                       class="mr-1"
@@ -78,10 +81,9 @@
                       v-if="!item.category"
                       disable
                       icon
-                      outlined
                       x-small
                       :color="item.category ? item.category.color : ''"
-                      class="mr-1"
+                      class="mr-2"
                       v-on="on"
                     >
                       <v-icon>{{ "mdi-menu" }}</v-icon>
@@ -90,10 +92,9 @@
                     <v-btn
                       v-else
                       disable
-                      outlined
                       x-small
                       :color="item.color"
-                      class="mr-1"
+                      class="mr-2"
                       v-on="on"
                     >
                       {{ item.category.name }}
@@ -119,6 +120,9 @@
                   </v-card>
                 </v-menu>
                 <span>{{ item.name }}</span>
+                <v-btn icon class="ml-2" x-small @click="onDeleteItem(index)">
+                  <v-icon>{{ "mdi-close" }}</v-icon>
+                </v-btn>
               </v-chip>
             </template>
           </v-combobox>
@@ -150,29 +154,7 @@ export default {
   props: ["timelineSegment", "annotations", "annotationCategories", "show"],
   data() {
     return {
-      items: [
-        {
-          name: "foo",
-          color: "#339911",
-          category: { name: "person", color: "#339911" },
-          colorMenu: false,
-          categoryMenu: false,
-        },
-        {
-          name: "bar",
-          color: "#882211",
-          category: { name: "emotion", color: "#882211" },
-          colorMenu: false,
-          categoryMenu: false,
-        },
-        {
-          name: "car",
-          color: "#882211",
-          category: null,
-          colorMenu: false,
-          categoryMenu: false,
-        },
-      ],
+      search: null,
       inputs: [],
     };
   },
@@ -182,15 +164,27 @@ export default {
         .filter((e) => {
           return e.category && !("id" in e.category);
         })
-        .filter((e, i, s) => s.indexOf(e) === i)
         .map((e) => {
           return e.category;
         });
-      console.log(newAnnotationCategories);
-      return this.annotationCategories.concat(newAnnotationCategories);
+
+      let categories = this.annotationCategories.concat(
+        newAnnotationCategories
+      );
+      categories = categories.filter(
+        (e, index, self) => self.findIndex((t) => t.name === e.name) === index
+      );
+
+      return categories;
+    },
+    items() {
+      return this.annotations;
     },
   },
   methods: {
+    onDeleteItem(index) {
+      this.inputs.splice(index, 1);
+    },
     onChange() {
       let inputs = [];
       let self = this;
@@ -272,44 +266,115 @@ export default {
           }
         }
       });
-      console.log(JSON.stringify(existing));
 
       this.inputs = Object.keys(existing).map((e) => {
         return existing[e].element;
       });
     },
     onCategoryChange(item) {
-      console.log("foo");
       item.categoryMenu = false;
       if (typeof item.category === "string") {
-        categoryNames;
+        // categoryNames;
         item.category = {
           name: item.category,
           color: item.color,
         };
       }
-      console.log(item);
     },
     async submit() {
-      console.log("SUBMIT");
+      console.log(JSON.stringify(this.timelineSegment.annotations));
       console.log(JSON.stringify(this.inputs));
-      let categoryLut = {};
-      await Promise.all(
-        this.inputs.map(async (e) => {
-          if (!("id" in e.category)) {
-            if (e.category.name in categoryLut) {
-              e.category.id = categoryLut[e.category.name].id;
-            } else {
-              let categoryId = await this.createCategory(e.category);
-              e.category.id = categoryId;
-              categoryLut[e.category.name] = e.category;
-            }
-            console.log(categoryLut);
+      let categories = await Promise.all(
+        this.categories.map(async (e) => {
+          if (!("id" in e)) {
+            let categoryId = await this.createCategory(e);
+            e.id = categoryId;
           }
           return e;
         })
       );
-      console.log("SUBMIT");
+
+      let annotations = await Promise.all(
+        this.inputs.map(async (e) => {
+          if (!("id" in e)) {
+            let annotationId = await this.createAnnotation(e);
+            e.id = annotationId;
+          }
+          return e;
+        })
+      );
+
+      let existingAnnotation = this.timelineSegment.annotations.map(
+        (e) => e.annotation.id
+      );
+
+      let submittedAnnotation = this.inputs.map((e) => e.id);
+
+      let deletedIds = existingAnnotation.filter(
+        (e) => !submittedAnnotation.includes(e)
+      );
+      let createdIds = submittedAnnotation.filter(
+        (e) => !existingAnnotation.includes(e)
+      );
+      // console.log(deletedIds);
+      // console.log(submittedAnnotation);
+
+      // first create all new connections
+      await Promise.all(
+        annotations.map(async (e) => {
+          if (!createdIds.includes(e.id)) {
+            return;
+          }
+          return await this.createTimelineSegmentAnnotation(e);
+        })
+      );
+      // delete old connections
+      await Promise.all(
+        this.timelineSegment.annotations.map(async (e) => {
+          if (!deletedIds.includes(e.annotation.id)) {
+            return;
+          }
+          return await this.deleteTimelineSegmentAnnotation(e);
+        })
+      );
+      //update existing
+      await Promise.all(
+        this.timelineSegment.annotations.map(async (e) => {
+          await Promise.all(
+            this.inputs.map(async (f) => {
+              if (e.annotation.id === f.id) {
+                if (e.annotation.color !== f.color) {
+                  console.log("Change color");
+                  return await this.changeAnnotation(f);
+                } else if (("category" in e.annotation) ^ ("category" in f)) {
+                  console.log("one category is not exiting");
+                  return await this.changeAnnotation(f);
+                } else if (
+                  (e.annotation.category === null) ^
+                  (f.category === null)
+                ) {
+                  console.log("one category is not defined");
+                  return await this.changeAnnotation(f);
+                } else if (e.annotation.category && f.category) {
+                  if (e.annotation.category.name !== f.category.name) {
+                    console.log("name change");
+                    return await this.changeAnnotation(f);
+                  } else {
+                    console.log("equal");
+                  }
+                }
+              }
+            })
+          );
+          // if (deletedIds.includes(e.annotation.id)) {
+          //   return;
+          // }
+          // // if
+          // return await this.deleteTimelineSegmentAnnotation(e);
+        })
+      );
+
+      this.$emit("update:show", false);
     },
     async createCategory(category) {
       let categoryId = await this.$store.dispatch("annotationCategory/create", {
@@ -318,8 +383,72 @@ export default {
       });
       return categoryId;
     },
+    async createAnnotation(annotation) {
+      let annotationId = null;
+      if (annotation.category) {
+        annotationId = await this.$store.dispatch("annotation/create", {
+          name: annotation.name,
+          color: annotation.color,
+          categoryId: annotation.category.id,
+        });
+      } else {
+        annotationId = await this.$store.dispatch("annotation/create", {
+          name: annotation.name,
+          color: annotation.color,
+        });
+      }
+      return annotationId;
+    },
+    async createTimelineSegmentAnnotation(annotation) {
+      console.log(JSON.stringify(this.timelineSegment));
+      let timelineSegmentAnnotationId = null;
+      timelineSegmentAnnotationId = await this.$store.dispatch(
+        "timelineSegmentAnnotation/create",
+        {
+          timelineSegmentId: this.timelineSegment.id,
+          annotationId: annotation.id,
+        }
+      );
+      return timelineSegmentAnnotationId;
+    },
+    async deleteTimelineSegmentAnnotation(timelineSegmentAnnotation) {
+      return await this.$store.dispatch(
+        "timelineSegmentAnnotation/delete",
+        timelineSegmentAnnotation.id
+      );
+    },
+    async changeAnnotation(annotation) {
+      if (
+        "category" in annotation &&
+        annotation.category &&
+        "id" in annotation.category
+      ) {
+        return await this.$store.dispatch("annotation/change", {
+          annotationId: annotation.id,
+          name: annotation.name,
+          color: annotation.color,
+          categoryId: annotation.category.id,
+        });
+      } else {
+        return await this.$store.dispatch("annotation/change", {
+          annotationId: annotation.id,
+          name: annotation.name,
+          color: annotation.color,
+          categoryId: null,
+        });
+      }
+    },
     close() {
       this.$emit("update:show", false);
+    },
+  },
+  watch: {
+    timelineSegment() {
+      this.inputs = JSON.parse(
+        JSON.stringify(
+          this.timelineSegment.annotations.map((e) => e.annotation)
+        )
+      );
     },
   },
 };

@@ -143,13 +143,13 @@ export default {
         show: false,
         selectedTimelineSegment: null,
       },
-      annotations: [],
+      // annotations: [],
       // annotationCategories: [],
     };
   },
   methods: {
     async fetch_data() {
-      // console.log(`fetch video ${JSON.stringify(this.$route.params)}`);
+      //
 
       await this.$store.dispatch("video/get", this.$route.params.id);
 
@@ -159,12 +159,15 @@ export default {
 
       await this.$store.dispatch("analyser/list", this.$route.params.id);
 
-      await this.$store.dispatch("timeline/listUpdate", this.$route.params.id);
       await this.$store.dispatch("annotationCategory/listUpdate");
-      // console.log("FOOBAR");
-      // console.log(this.$store.state.timeline.timelineList);
+      await this.$store.dispatch("annotation/listUpdate");
+      await this.$store.dispatch("timelineSegmentAnnotation/listUpdate");
 
-      // console.log(res);
+      await this.$store.dispatch("timeline/listUpdate", this.$route.params.id);
+      //
+      //
+
+      //
     },
     setVideoPlayerTime(time) {
       this.videoTime = time;
@@ -188,9 +191,9 @@ export default {
       this.$store.dispatch("timeline/delete", id);
     },
     onAnnotateSegment(id) {
-      this.selectedTimelineSegment =
+      this.annotationDialog.selectedTimelineSegment =
         this.$store.getters["timelineSegment/get"](id);
-      console.log(this.selectedTimelineSegment);
+
       this.$nextTick(() => {
         this.annotationDialog.show = true;
       });
@@ -224,13 +227,43 @@ export default {
     annotationCategories() {
       return this.$store.getters["annotationCategory/all"];
     },
+    annotations() {
+      let annotations = this.$store.getters["annotation/all"];
+
+      annotations = annotations.map((e) => {
+        if ("category_id" in e) {
+          e["category"] = this.$store.getters["annotationCategory/get"](
+            e.category_id
+          );
+        }
+        return e;
+      });
+      return annotations;
+    },
     timelines() {
       let timelines = this.$store.getters["timeline/forVideo"](
         this.$route.params.id
       );
       timelines.forEach((e) => {
         let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
+        segments.forEach((s) => {
+          let annotations = this.$store.getters[
+            "timelineSegmentAnnotation/forTimelineSegment"
+          ](s.id);
 
+          annotations.forEach((a) => {
+            a.annotation = this.$store.getters["annotation/get"](
+              a.annotation_id
+            );
+          });
+
+          annotations.forEach((a) => {
+            a.category = this.$store.getters["annotationCategory/get"](
+              a.category_id
+            );
+          });
+          s.annotations = annotations;
+        });
         e.segments = segments;
       });
 

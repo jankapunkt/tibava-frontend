@@ -13,6 +13,9 @@ const api = {
     getters: {
         all: (state) => {
             return state.annotationCategoryList.map(id => state.annotationCategories[id])
+        },
+        get: (state) => (id) => {
+            return state.annotationCategories[id]
         }
     },
     actions: {
@@ -49,7 +52,6 @@ const api = {
         },
     },
     mutations: {
-
         add(state, categories) {
             categories.forEach((e, i) => {
                 state.annotationCategories[e.id] = e

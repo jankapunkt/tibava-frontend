@@ -55,6 +55,25 @@ const api = {
 
     },
     mutations: {
+        addAnnotation(state, annotations) {
+            annotations.forEach((e) => {
+                state.timelineSegments[e.timelineSegmentId].annotation_ids.push(e.entry.id)
+            });
+        },
+        deleteAnnotation(state, timeline_segment_annotations) {
+
+            timeline_segment_annotations.forEach((f) => {
+                state.timelineSegmentList.map(id => state.timelineSegments[id]).forEach((e) => {
+                    console.log(`Search ${JSON.stringify(e)}`);
+                    console.log(`Search ${JSON.stringify(f)}`);
+                    let index = e.annotation_ids.findIndex((k) => k === f)
+                    if (index >= 0) {
+                        console.log(`Found ${JSON.stringify(e)}`);
+                        e.annotation_ids.splice(index, 1);
+                    }
+                })
+            })
+        },
         add(state, timelineSegments) {
             timelineSegments.forEach((e, i) => {
                 state.timelineSegments[e.id] = e
@@ -75,7 +94,6 @@ const api = {
         // },
 
         clear(state) {
-            console.log("clear")
             this.timelineSegmentList = [];
             this.timelineSegments = {};
         },

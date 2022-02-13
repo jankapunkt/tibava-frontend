@@ -106,7 +106,7 @@ const api = {
             state.timelineList.splice(timeline_index, 1);
             delete state.timelines[timeline_id]
             //TODO we don't need to send changes to the backend
-            this.commit("timelineSegment/deleteTimeline", timeline_id);
+            this.commit("timelineSegment/deleteTimeline", timeline_id, { root: true });
         },
     },
 };

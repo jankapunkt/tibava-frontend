@@ -10,72 +10,128 @@ const api = {
         annotations: {},
         annotationList: [],
     },
+    getters: {
+        all: (state) => {
+            return state.annotationList.map(id => state.annotations[id])
+        },
+        get: (state) => (id) => {
+            return state.annotations[id]
+        }
+    },
     actions: {
-        listAdd({ commit }, segment_hash_id) {
+        async create({ commit }, { name, color, categoryId }) {
             const params = {
-                hash_id: segment_hash_id,
-                annotation: annotation
+                name: name,
+                color: color
             }
-            axios.post(`${config.API_LOCATION}/annotation_list`, params)
+            if (categoryId) {
+                params["category_id"] = categoryId
+            }
+
+            return axios.post(`${config.API_LOCATION}/annotation_create`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        commit('addAnnotation', params);
+                        commit('add', [res.data.entry]);
+                        return res.data.entry.id;
                     }
                 })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
         },
-        listUpdate({ commit }, segment_hash_id) {
+        async change({ commit }, { annotationId, name, color, categoryId }) {
             const params = {
-                hash_id: segment_hash_id,
-                annotation: annotation
+                annotation_id: annotationId,
+                color: color,
+                name: name
             }
-            axios.post(`${config.API_LOCATION}/annotation_list`, params)
+            if (categoryId) {
+                params["category_id"] = categoryId
+            }
+
+            console.log(params)
+            return axios.post(`${config.API_LOCATION}/annotation_change`, params)
+                .then((res) => {
+                    console.log(res.data)
+                    if (res.data.status === 'ok') {
+                        console.log('Update')
+
+                        commit('change', [{ id: annotationId, color: color, name: name, category_id: categoryId }]);
+                        // return res.data.entry.id;
+                    }
+                })
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
+        },
+        // listAdd({ commit }, segment_hash_id) {
+        //     const params = {
+        //         hash_id: segment_hash_id,
+        //         annotation: annotation
+        //     }
+        //     axios.post(`${config.API_LOCATION}/annotation_list`, params)
+        //         .then((res) => {
+        //             if (res.data.status === 'ok') {
+        //                 commit('add', params);
+        //             }
+        //         })
+        //         .catch((error) => {
+        //             const info = { date: Date(), error, origin: 'collection' };
+        //             commit('error/update', info, { root: true });
+        //         });
+        // },
+        listUpdate({ commit }) {
+            axios.get(`${config.API_LOCATION}/annotation_list`)
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        commit('addAnnotation', params);
+                        commit('update', res.data.entries);
                     }
                 })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
         },
-        add({ commit }, { segment_hash_id, annotation }) {
-            const params = {
-                hash_id: segment_hash_id,
-                annotation: annotation
-            }
-            axios.post(`${config.API_LOCATION}/annotation_add`, params)
-                .then((res) => {
-                    if (res.data.status === 'ok') {
-                        commit('addAnnotation', params);
-                    }
-                })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
-        },
-        delete({ commit }, annotation_hash_id) {
-            const params = {
-                hash_id: annotation_hash_id,
-            }
-            axios.post(`${config.API_LOCATION}/annotation_delete`, params)
-                .then((res) => {
-                    if (res.data.status === 'ok') {
-                        commit('addAnnotation', params);
-                    }
-                })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
-        },
+        // add({ commit }, { segment_hash_id, annotation }) {
+        //     const params = {
+        //         hash_id: segment_hash_id,
+        //         annotation: annotation
+        //     }
+        //     axios.post(`${config.API_LOCATION}/annotation_add`, params)
+        //         .then((res) => {
+        //             if (res.data.status === 'ok') {
+        //                 commit('addAnnotation', params);
+        //             }
+        //         })
+        //         .catch((error) => {
+        //             const info = { date: Date(), error, origin: 'collection' };
+        //             commit('error/update', info, { root: true });
+        //         });
+        // },
+        // delete({ commit }, annotation_hash_id) {
+        //     const params = {
+        //         hash_id: annotation_hash_id,
+        //     }
+        //     axios.post(`${config.API_LOCATION}/annotation_delete`, params)
+        //         .then((res) => {
+        //             if (res.data.status === 'ok') {
+        //                 commit('addAnnotation', params);
+        //             }
+        //         })
+        //         .catch((error) => {
+        //             const info = { date: Date(), error, origin: 'collection' };
+        //             commit('error/update', info, { root: true });
+        //         });
+        // },
     },
     mutations: {
+        change(state, annotations) {
+            annotations.forEach((e, i) => {
+                state.annotations[e.id] = e
+            });
+        },
         add(state, annotations) {
             annotations.forEach((e, i) => {
                 state.annotations[e.id] = e
@@ -83,6 +139,7 @@ const api = {
             });
         },
         update(state, annotations) {
+            console.log(annotations)
             state.annotations = {}
             state.annotationList = []
             annotations.forEach((e, i) => {
