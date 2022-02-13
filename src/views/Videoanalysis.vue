@@ -116,7 +116,6 @@
         </v-card>
       </v-col>
     </v-row>
-    {{ annotationsLut }}
   </v-app>
 </template>
 
