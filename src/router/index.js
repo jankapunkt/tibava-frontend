@@ -19,9 +19,9 @@ const router = new VueRouter({
 
 router.beforeEach(async (to,from, next)=>{
   const loggedIn = store.getters["user/loggedIn"];
+  console.log(loggedIn);
   if(!loggedIn && to.name !== "Login" ){
-    
-      return router.push({ path: `/login`,  query: { redirect: to.path }  });
+      return router.push({ path: `/login`,  query: { redirect: to.path }});
   }
   return next()
 })

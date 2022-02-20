@@ -490,7 +490,6 @@ export default {
       });
     },
     drawTime() {
-      console.log("Change");
       this.scope.activate();
       if (this.timeLayer) {
         this.timeLayer.removeChildren();
@@ -499,6 +498,9 @@ export default {
       this.timeLayer = new paper.Layer();
 
       this.timeLayer.activate();
+      if (this.time < this.startTime || this.time > this.endTime) {
+        return;
+      }
       let x = this.timeToX(this.time);
 
       var path = new paper.Path();
