@@ -26,14 +26,14 @@ const user = {
 
   getters: {
     loggedIn: (state) => {
-        return state.loggedIn;
+      return state.loggedIn;
     }
-},
+  },
   actions: {
     async getCSRFToken({ commit, state }, params) {
       return axios.get(`${config.API_LOCATION}/get_csrf_token`, {
-          params, withCredentials: true
-        })
+        params, withCredentials: true
+      })
         .then(() => {
           const csrftoken = getCookie('csrftoken');
           if (state.csrfToken !== csrftoken) {
@@ -75,9 +75,9 @@ const user = {
           return false;
           // commit('error/update', { ...info, error }, { root: true });
         })
-        // .finally(() => {
-        //   commit('loading/update', false, { root: true });
-        // });
+      // .finally(() => {
+      //   commit('loading/update', false, { root: true });
+      // });
     },
     async logout({ commit, state }) {
       const params = state.userData;
@@ -87,15 +87,17 @@ const user = {
           if (res.data.status === 'ok') {
             commit('updateUserData', {});
             commit('updateLoggedIn', false);
+            return true;
           }
         })
         .catch((error) => {
           const info = { date: Date(), error, origin: 'logout' };
           commit('error/update', info, { root: true });
+          return false;
         })
-        // .finally(() => {
-        //   commit('loading/update', false, { root: true });
-        // });
+      // .finally(() => {
+      //   commit('loading/update', false, { root: true });
+      // });
     },
     async register({ commit }, params) {
       // commit('loading/update', true, { root: true });
@@ -112,9 +114,9 @@ const user = {
         .catch((error) => {
           commit('error/update', { ...info, error }, { root: true });
         })
-        // .finally(() => {
-        //   commit('loading/update', false, { root: true });
-        // });
+      // .finally(() => {
+      //   commit('loading/update', false, { root: true });
+      // });
     },
   },
   mutations: {

@@ -31,8 +31,11 @@
 import { repPlace } from "../plugins/helpers";
 export default {
   methods: {
-    logout() {
-      this.$store.dispatch("user/logout");
+    async logout() {
+      const loggedOut = await this.$store.dispatch("user/logout");
+      if (loggedOut) {
+        this.$router.go("/");
+      }
     },
   },
   computed: {
