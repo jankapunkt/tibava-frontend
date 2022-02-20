@@ -9,8 +9,15 @@ import './styles/custom.css';
 
 var app = Vue.extend({
 
-  created() {
-    this.$store.dispatch('user/getCSRFToken')
+  async created() {
+    await this.$store.dispatch('user/getCSRFToken');
+    await this.$store.dispatch('user/getUserData');
+
+    
+    // if(!this.$store.getters["user/loggedIn"]){
+    //   router.push({ path: `/login` });
+    // }
+
     // this.$store.dispatch('user/getCSRFToken').then(() => {
     //   this.$store.dispatch('user/getUserData');
     //   setTimeout(

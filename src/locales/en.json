@@ -1,1 +1,29 @@
-{}
+{
+    "user": {
+        "name": "Username",
+        "password": "Password",
+        "email": "E-Mail",
+        "menu": {
+            "title": "Account",
+            "joined": "Joined {n_days} days ago"
+        },
+        "login": {
+            "title": "Login",
+            "text": "Don't have an account?",
+            "rules": {
+                "min": "Min. 5 characters.",
+                "max": "Max. 50 characters."
+            }
+        },
+        "logout": {
+            "title": "Logout"
+        },
+        "register": {
+            "title": "Register",
+            "rules": {
+                "min": "Min. 5 characters.",
+                "max": "Max. 50 characters."
+            }
+        }
+    }
+}
