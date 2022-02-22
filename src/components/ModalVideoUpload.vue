@@ -8,7 +8,7 @@
     <v-card>
       <v-toolbar color="primary" dark>Upload new video</v-toolbar>
       <v-card-text>
-        <form>
+        <v-form>
           <v-text-field
             v-model="video.title"
             :counter="120"
@@ -64,11 +64,17 @@
           >
           </v-checkbox>
 
+          <v-progress-linear
+            v-if="isUploading"
+            :value="uploadingProgress"
+            class="mb-2"
+          ></v-progress-linear>
+
           <v-btn class="mr-4" :disabled="disabled" @click="upload_video">
             Upload
           </v-btn>
           <v-btn @click="dialog = false">Close</v-btn>
-        </form>
+        </v-form>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -114,16 +120,23 @@ export default {
       }
       return true;
     },
+    isUploading() {
+      return this.$store.state.video.upload.isUploading;
+    },
+    uploadingProgress() {
+      return this.$store.state.video.upload.progress;
+    },
   },
   methods: {
-    upload_video() {
+    async upload_video() {
       const params = {
         video: this.video,
         analyser: this.selected_analysers,
       };
 
-      this.$store.dispatch("video/upload", params);
+      await this.$store.dispatch("video/upload", params);
       //   TODO wait until signal is fired
+
       this.dialog = false;
     },
   },

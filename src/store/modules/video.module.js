@@ -3,22 +3,16 @@ import axios from '../../plugins/axios';
 import config from '../../../app.config';
 import { isEqual, lsplit, keyInObj } from '../../plugins/helpers';
 
-function generateRandomStr(length) {
-  var result = [];
-  var characters = 'abcdef0123456789';
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result.push(characters.charAt(Math.floor(Math.random() *
-      charactersLength)));
-  }
-  return result.join('');
-}
 const api = {
   namespaced: true,
   state: {
     current: {},
     videos: [],
-    lang: "en"
+    lang: "en",
+    upload:{
+      isUploading:false,
+      progress:0.0,
+    }
   },
   actions: {
     async get({ commit, state }, video_id) {
@@ -37,15 +31,24 @@ const api = {
         });
     },
 
-    upload({ commit }, params) {
+    async upload({ commit }, params) {
       const formData = new FormData();
       formData.append('file', params.video.file);
       formData.append('title', params.video.title);
       formData.append('license', params.video.license);
       formData.append('analyser', params.analyser);
+      commit("startUploading");
       // commit('loading/update', true, { root: true });
-      axios.post(`${config.API_LOCATION}/video_upload`, formData, {
+      return axios.post(`${config.API_LOCATION}/video_upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (event) =>{console.log(JSON.stringify(event))
+          const totalLength = event.lengthComputable ? event.total : event.target.getResponseHeader('content-length') || event.target.getResponseHeader('x-decompressed-content-length');
+          console.log("onUploadProgress", totalLength);
+          if (totalLength !== null) {
+              const progress =Math.round( (event.loaded * 100) / totalLength );
+              commit("updateUploading",progress);
+          }
+        }
       })
         .then((res) => {
           console.log(res);
@@ -54,10 +57,13 @@ const api = {
               commit('add', entry);
             });
           }
+
+          commit("stopUploading");
         })
         .catch((error) => {
           const info = { date: Date(), error, origin: 'upload' };
           commit('error/update', info, { root: true });
+          commit("stopUploading");
         });
     },
     list({ commit }, params) {
@@ -103,8 +109,17 @@ const api = {
     },
     change_current(state, video) {
       state.current = video;
-    }
+    },
+    startUploading(state){
+      state.upload.isUploading = true;
+    },
+    updateUploading(state, progress){
+      state.upload.progress = progress;
+    },
+    stopUploading(state){
+      state.upload.isUploading = false;
 
+    },
   },
 };
 export default api;
