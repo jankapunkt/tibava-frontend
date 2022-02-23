@@ -7,11 +7,20 @@ const api = {
   namespaced: true,
   state: {
     current: {},
-    videos: [],
+    videos: {},
+    videoList: [],
     lang: "en",
     upload:{
       isUploading:false,
       progress:0.0,
+    }
+  },
+  getters: {
+    all: (state) => {
+      return state.videoList.map(id => state.videos[id])
+    },
+    get: (state) => (id) => {
+        return state.videos[id]
     }
   },
   actions: {
@@ -66,8 +75,8 @@ const api = {
           commit("stopUploading");
         });
     },
-    list({ commit }, params) {
-      axios.get(`${config.API_LOCATION}/video_list`)
+    async listUpdate({ commit }, params) {
+      return axios.get(`${config.API_LOCATION}/video_list`)
         .then((res) => {
           if (res.data.status === 'ok') {
             commit('update', res.data.entries);
@@ -79,11 +88,11 @@ const api = {
           commit('error/update', info, { root: true });
         });
     },
-    delete({ commit, state }, video_id) {
+    async delete({ commit, state }, video_id) {
       const params = {
         id: video_id
       }
-      axios.post(`${config.API_LOCATION}/video_delete`, { id: video_id })
+      return axios.post(`${config.API_LOCATION}/video_delete`, { id: video_id })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit("delete", video_id);
@@ -98,11 +107,20 @@ const api = {
     },
   },
   mutations: {
-    add(state, video) {
-      state.videos.push(video);
+
+    add(state, videos) {
+      videos.forEach((e, i) => {
+          state.videos[e.id] = e
+          state.videoList.push(e.id)
+      });
     },
     update(state, videos) {
-      state.videos = videos;
+        state.videos = {}
+        state.videoList = []
+        videos.forEach((e, i) => {
+            state.videos[e.id] = e
+            state.videoList.push(e.id)
+        });
     },
     delete(state, video_id) {
       state.videos.splice(state.videos.findIndex(e => e.id === video_id), 1);

@@ -158,7 +158,10 @@ export default {
         this.endTime = this.$store.state.video.current.meta.duration;
       }
 
-      await this.$store.dispatch("analyser/list", this.$route.params.id);
+      await this.$store.dispatch("analyser/listUpdate", {
+        videoId: this.$route.params.id,
+        addResults: true,
+      });
 
       await this.$store.dispatch("annotationCategory/listUpdate");
       await this.$store.dispatch("annotation/listUpdate");
@@ -229,11 +232,9 @@ export default {
       return this.$store.getters["annotationCategory/all"];
     },
     annotationsLut() {
-      console.log("foo");
       return this.$store.state.annotation.annotations;
     },
     annotations() {
-      console.log("annotations");
       let annotations = this.$store.getters["annotation/all"];
 
       annotations = annotations.map((e) => {
@@ -247,7 +248,6 @@ export default {
       return annotations;
     },
     timelines() {
-      console.log("timelines");
       let timelines = this.$store.getters["timeline/forVideo"](
         this.$route.params.id
       );
@@ -271,7 +271,6 @@ export default {
           });
           s.annotations = annotations;
           if (annotations.length > 0) {
-            console.log(JSON.stringify(annotations));
           }
         });
         e.segments = segments;
@@ -281,14 +280,15 @@ export default {
     },
 
     shots() {
-      let shotdetection = this.$store.state.analyser.analyser
+      let shotdetection = this.$store.getters["analyser/forVideo"](
+        this.$route.params.id
+      )
         .filter((e) => {
           return e.type == "shotdetection";
         })
         .sort((a, b) => {
           return new Date(b.date) - new Date(a.date);
         });
-
       if (!shotdetection.length) {
         return [];
       }
@@ -305,7 +305,9 @@ export default {
         };
       });
 
-      let thumbnail = this.$store.state.analyser.analyser
+      let thumbnail = this.$store.getters["analyser/forVideo"](
+        this.$route.params.id
+      )
         .filter((e) => {
           return e.type == "thumbnail";
         })
@@ -373,9 +375,6 @@ export default {
     $route: "fetch_data",
     currentTime() {
       this.videoTime = this.currentTime;
-    },
-    "$store.state.annotation.annotations": () => {
-      console.log("wtf");
     },
   },
   components: {

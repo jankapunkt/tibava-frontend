@@ -1,4 +1,15 @@
 {
+    "timelineSegment": {
+        "title": "Title",
+        "close": "Close",
+        "update": "Update",
+        "delete": "Delete",
+        "annotate": "Annotate",
+        "color": "Color"
+    },
+    "button": {
+        "search": "Search"
+    },
     "user": {
         "name": "Username",
         "password": "Password",

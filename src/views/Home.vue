@@ -59,25 +59,44 @@ export default {
       this.$store.dispatch("video/delete", video_id);
     },
     show_video(video_id) {
-      console.log(video_id);
       router.push({ path: `/videoanalysis/${video_id}` });
-      // router.push({
-      //   name: "Videoanalysis",
-      //   params: { id: video_id },
-      // });
+    },
+    async fetchData() {
+      console.log("fetch");
+      // Ask backend about all videos
+      await this.$store.dispatch("video/listUpdate");
+
+      await this.$store.dispatch("analyser/listUpdate", {
+        addResults: false,
+      });
     },
   },
   computed: {
     videos() {
-      return this.$store.state.video.videos;
+      let videos = this.$store.getters["video/all"];
+
+      videos.forEach((v) => {
+        v.analysers = this.$store.getters["analyser/forVideo"](v.id);
+      });
+      console.log(videos);
+      videos.forEach((v) => {
+        v.loading = !v.analysers.reduce((a, b) => a && b.status === "D", true);
+      });
+      return videos;
     },
   },
   components: {
     ModalVideoUpload,
   },
   mounted() {
-    // Ask backend about all videos
-    this.$store.dispatch("video/list");
+    this.fetchData();
+
+    setInterval(
+      function () {
+        this.fetchData();
+      }.bind(this),
+      1000
+    );
   },
 };
 </script>
