@@ -16,12 +16,25 @@
     </v-row>
 
     <v-row class="video-control mt-6">
+      <v-btn @click="deltaSeek(-1)" small>
+        <v-icon> mdi-skip-backward</v-icon>
+      </v-btn>
+      <v-btn @click="deltaSeek(-0.01)" small>
+        <v-icon> mdi-skip-previous</v-icon>
+      </v-btn>
       <v-btn @click="toggle" small>
         <v-icon v-if="ended"> mdi-restart</v-icon>
         <v-icon v-else-if="playing"> mdi-pause</v-icon>
         <v-icon v-else> mdi-play</v-icon>
       </v-btn>
-      <div class="time-code">
+
+      <v-btn @click="deltaSeek(0.01)" small>
+        <v-icon> mdi-skip-next</v-icon>
+      </v-btn>
+      <v-btn @click="deltaSeek(1)" small>
+        <v-icon> mdi-skip-forward</v-icon>
+      </v-btn>
+      <div class="time-code flex-grow-1 flex-shrink-0">
         {{ get_timecode(currentTime) }}
       </div>
       <v-menu offset-y top>
@@ -53,6 +66,7 @@
         @input="onVolumeChange"
         max="100"
         min="0"
+        hide-details
       ></v-slider>
     </v-row>
 
@@ -105,6 +119,9 @@ export default {
       } else {
         this.$refs.video.play();
       }
+    },
+    deltaSeek(delta) {
+      this.$refs.video.currentTime += delta;
     },
     onEnded() {
       this.ended = true;
@@ -178,7 +195,7 @@ export default {
   background-color: black;
 }
 .video-control {
-  gap: 10px;
+  gap: 5px;
   /* margin-top: 5px;
   margin-bottom: 0px; */
   /* max-width: 100%; */
