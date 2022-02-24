@@ -142,7 +142,6 @@ export default {
     },
     onSeek(percentage) {
       this.$refs.video.currentTime = (this.duration * percentage) / 100;
-      console.log(percentage);
     },
     onSpeedChange(idx) {
       this.currentSpeed = this.speeds[idx];
@@ -157,7 +156,6 @@ export default {
       }
     },
     onVolumeChange(volume) {
-      console.log("changemekfme");
       this.hiddenVolume = volume / 100;
       if (this.hiddenVolume > 0) {
         this.mute = false;
