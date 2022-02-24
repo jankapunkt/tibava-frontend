@@ -173,6 +173,8 @@ export default {
         y: null,
         selected: null,
       },
+      // seek
+      targetTime: 0,
     };
   },
   methods: {
@@ -516,6 +518,20 @@ export default {
       path.add(new paper.Point(x - handlePad, 5));
       path.add(new paper.Point(x - handlePad, 20 - 2));
       path.add(new paper.Point(x, 20));
+      let self = this;
+      path.onMouseDrag = (event) => {
+        const deltaTime = self.deltaXToTime(event.delta.x);
+        let nextTime = self.targetTime + deltaTime;
+        if (deltaTime > 0) {
+          nextTime = Math.min(self.targetTime + deltaTime, self.endTime);
+        } else {
+          nextTime = Math.max(self.targetTime + deltaTime, self.startTime);
+        }
+
+        path.position.x = self.timeToX(nextTime);
+        this.targetTime = nextTime;
+        this.$emit("update:time", this.targetTime);
+      };
     },
     linspace(startValue, stopValue, cardinality) {
       var arr = [];
@@ -537,6 +553,9 @@ export default {
       return (
         (x - this.headerWidth - 3 * this.gap) / this.timeScale + this.startTime
       );
+    },
+    deltaXToTime(x) {
+      return x / this.timeScale;
     },
     // some event handler
     onResize() {
@@ -583,6 +602,7 @@ export default {
     },
     time() {
       this.drawTime();
+      this.targetTime = this.time;
     },
   },
   computed: {},
