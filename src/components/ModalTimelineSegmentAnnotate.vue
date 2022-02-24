@@ -13,6 +13,7 @@
             :items="items"
             :search-input.sync="search"
             @change="onChange"
+            @keydown="onKeydown"
             item-text="name"
           >
             <template v-slot:no-data>
@@ -158,6 +159,7 @@ export default {
       inputs: [],
       hiddenAnnotationCategories: [],
       hiddenAnnotations: [],
+      lastKey: null,
     };
   },
   computed: {
@@ -187,7 +189,14 @@ export default {
     onDeleteItem(index) {
       this.inputs.splice(index, 1);
     },
+    onKeydown(event) {
+      if (event.code === "Enter" && this.lastKey === "Enter") {
+        this.submit();
+      }
+      this.lastKey = event.code;
+    },
     onChange() {
+      console.log("foo");
       let inputs = [];
       let self = this;
       this.inputs.forEach((e) => {
