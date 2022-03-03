@@ -57,11 +57,23 @@ const api = {
             //     commit('error/update', info, { root: true });
             // });
         },
-        listUpdate({ commit }) {
-            axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`)
+        async listUpdate({ commit }) {
+            return axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`)
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);
+                    }
+                })
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
+        },
+        async listAdd({ commit }, timeline_segment_id) {
+            return axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`)
+                .then((res) => {
+                    if (res.data.status === 'ok') {
+                        commit('add', res.data.entries);
                     }
                 })
             // .catch((error) => {

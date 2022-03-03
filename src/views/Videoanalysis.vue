@@ -1,8 +1,13 @@
 <template>
-  <v-app>
-    <v-row class="top-container pa-8" justify="space-around" align="start">
-      <v-col md="6" height="100%">
-        <v-card class="d-flex flex-column flex-nowrap px-2" elevation="8">
+  <v-app class="d-flex flex-column justify-start align-start">
+    <v-row class="ma-2">
+      <v-col cols="6">
+        <v-card
+          class="d-flex flex-column flex-nowrap px-2"
+          elevation="8"
+          v-resize="onVideoResize"
+          ref="videoCard"
+        >
           <v-row>
             <v-card-title>
               {{ $store.state.video.current.name }}
@@ -14,6 +19,7 @@
               <VideoPlayer
                 :video="$store.state.video.current"
                 :time="targetTime"
+                @resize="onVideoResize"
                 @timeUpdate="onTimeUpdate"
               />
             </v-col>
@@ -29,8 +35,13 @@
         </v-card>
       </v-col>
 
-      <v-col md="6" justify="center" class="full-height-row">
-        <v-card class="overflow-auto full-height-row" elevation="8">
+      <v-col cols="6">
+        <v-card
+          class="overflow-auto"
+          elevation="8"
+          ref="resultCard"
+          :height="resultCardHeight"
+        >
           <v-tabs centered>
             <v-tabs-slider />
             <v-tab>Shots</v-tab>
@@ -42,9 +53,8 @@
                 v-for="item in shots"
                 v-bind:key="item.id"
                 :shot="item"
-                v-on:seek="onTagetTimeChange"
+                @seek="onTagetTimeChange"
               />
-              <!-- <ShotsOverview :shots="shots" v-on:seek="onTagetTimeChange" /> -->
             </v-tab-item>
             <v-tab-item> PERSONS </v-tab-item>
             <v-tab-item> SCENES </v-tab-item>
@@ -53,10 +63,11 @@
       </v-col>
     </v-row>
 
-    <v-row justify="space-around" align="start" class="pa-8">
-      <v-col justify="center">
+    <v-row class="fill-height ma-2">
+      <v-col>
         <v-card
-          class="annotation-card d-flex flex-column flex-nowrap overflow-auto"
+          class="d-flex flex-column flex-nowrap overflow-auto"
+          max-width="100%"
           elevation="8"
         >
           <v-card-title> Annotation Timeline </v-card-title>
@@ -75,6 +86,7 @@
               @coloringSegment="onColoringSegment"
               @deleteSegment="onDeleteSegment"
               @update:time="onTagetTimeChange"
+              @enterSegment="onAnnotateSegment"
             >
               <!-- <template v-slot:context>
               <v-list class="pa-0">
@@ -146,6 +158,7 @@ export default {
       },
       // annotations: [],
       // annotationCategories: [],
+      resultCardHeight: 69,
     };
   },
   methods: {
@@ -173,6 +186,15 @@ export default {
 
       //
     },
+    onVideoResize() {
+      this.$nextTick(() => {
+        this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
+      });
+    },
+    onLoaded() {
+      console.log("FOO");
+      this.onVideoResize();
+    },
     onTimeUpdate(time) {
       this.videoTime = time;
     },
@@ -195,6 +217,7 @@ export default {
       this.$store.dispatch("timeline/delete", id);
     },
     onAnnotateSegment(id) {
+      console.log(id);
       this.annotationDialog.selectedTimelineSegment =
         this.$store.getters["timelineSegment/get"](id);
 
@@ -370,6 +393,9 @@ export default {
     // already being observed
     this.fetch_data();
   },
+  mounted() {
+    this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
+  },
   watch: {
     // call again the method if the route changes
     $route: "fetch_data",
@@ -396,27 +422,7 @@ export default {
   font-size: 64;
 }
 
-.video-player > * {
-  width: 100%;
-  max-width: 100%;
-  padding: auto;
-  margin: auto;
-}
 .timeline-bar {
   height: 80px;
-}
-
-.top-container {
-  height: 820px;
-}
-
-.annotation-card {
-  height: 500px;
-  width: 100%;
-  max-width: 100%;
-}
-
-.full-height-row {
-  height: 100%;
 }
 </style>

@@ -7,8 +7,10 @@
       <v-card-text>
         <v-form @submit="submit">
           <v-combobox
+            v-if="show"
             clearable
             multiple
+            autofocus
             v-model="inputs"
             :items="items"
             :search-input.sync="search"
@@ -128,7 +130,7 @@
             </template>
           </v-combobox>
 
-          <v-btn class="mr-4" @click="submit">
+          <v-btn class="mr-4" @click="submit" :disable="isSubmitting">
             {{ $t("timelineSegment.update") }}
           </v-btn>
           <v-btn @click="close">{{ $t("timelineSegment.close") }}</v-btn>
@@ -160,6 +162,7 @@ export default {
       hiddenAnnotationCategories: [],
       hiddenAnnotations: [],
       lastKey: null,
+      isSubmitting: false,
     };
   },
   computed: {
@@ -293,6 +296,10 @@ export default {
       }
     },
     async submit() {
+      if (this.isSubmitting) {
+        return;
+      }
+      this.isSubmitting = true;
       let categories = await Promise.all(
         this.categories.map(async (e) => {
           if (!("id" in e)) {
@@ -376,6 +383,7 @@ export default {
         })
       );
 
+      this.isSubmitting = false;
       this.$emit("update:show", false);
     },
     async createCategory(category) {
@@ -459,6 +467,20 @@ export default {
         JSON.stringify(this.annotationCategories)
       );
     },
+    // show() {
+    //   // we force the focus to the combobox
+    //   console.log(this.show);
+    //   if (this.show) {
+    //     console.log("FOCUS");
+    //     console.log(this.$refs);
+    //     this.$refs.foo.focus();
+    //   }
+    // },
   },
+  // mounted() {
+  //   console.log("MOUNTED");
+  //   console.log(this.$refs);
+  //   this.$refs.foo.focus();
+  // },
 };
 </script>

@@ -9,6 +9,9 @@
         v-on:click="toggle"
         v-on:play="onPlay"
         v-on:pause="onPause"
+        v-on:loadeddata="onLoadedData"
+        v-on:canplay="onCanPlay"
+        v-on:resize="onResize"
         :src="video.url"
       >
         <!-- <source :src="video.url" type="video/mp4" /> -->
@@ -162,6 +165,16 @@ export default {
       }
       this.$refs.video.volume = this.hiddenVolume;
     },
+    onLoadedData() {
+      this.$emit("loadedData");
+    },
+    onCanPlay() {
+      this.$emit("canPlay");
+    },
+    onResize() {
+      console.log("resize");
+      this.$emit("resize");
+    },
   },
   computed: {
     progress() {
@@ -189,7 +202,7 @@ export default {
 .video-player {
   max-width: 100%;
   height: 100%;
-  max-height: 512px;
+  max-height: 100%;
   background-color: black;
 }
 .video-control {

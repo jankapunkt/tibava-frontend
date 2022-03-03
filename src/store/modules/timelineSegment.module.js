@@ -75,6 +75,7 @@ const api = {
             timelineSegments.forEach((e, i) => {
                 state.timelineSegments[e.id] = e
                 state.timelineSegmentList.push(e.id)
+                // this.dispatch("timelineSegmentAnnotation/listAdd", e.id);
             });
         },
         update(state, timelineSegments) {
@@ -83,6 +84,7 @@ const api = {
             timelineSegments.forEach((e, i) => {
                 state.timelineSegments[e.id] = e
                 state.timelineSegmentList.push(e.id)
+                // this.dispatch("timelineSegmentAnnotation/listAdd", e.id);
             });
         },
         // delete(state, timeline_id) {

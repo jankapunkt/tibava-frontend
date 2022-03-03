@@ -175,6 +175,13 @@ export default {
       },
       // seek
       targetTime: 0,
+      //selection
+      selected: {
+        segment: 0,
+        timeline: 0,
+      },
+      //segment_list
+      timelineSegments: [],
     };
   },
   methods: {
@@ -202,9 +209,8 @@ export default {
       this.drawSegment();
       this.drawTime();
       //   this.drawSelection();
-      this.scope.view.draw();
+      // this.scope.view.draw();
     },
-
     drawScale() {
       this.scope.activate();
       if (this.scaleLayer) {
@@ -275,7 +281,6 @@ export default {
         this.$emit("update:time", this.xToTime(event.point.x));
       };
     },
-
     drawTimelineHeader() {
       this.scope.activate();
       if (this.headerLayer) {
@@ -328,7 +333,6 @@ export default {
         };
       });
     },
-
     drawTimeline() {
       this.scope.activate();
       if (this.timelineLayer) {
@@ -380,8 +384,11 @@ export default {
 
       this.segmentLayer.activate();
 
+      this.timelineSegments = [];
+
       let self = this;
       this.timelines.forEach((e, i) => {
+        var segmentList = [];
         let timeline = e;
         timeline.segments.forEach((s, j) => {
           //box
@@ -412,8 +419,29 @@ export default {
           let path = new paper.Path.Rectangle(rectangle, radius);
           path.style = self.segmentStyle;
           path.fillColor = s.color;
+          segmentList.push({
+            path: path,
+            id: s.id,
+            start: s.start,
+            end: s.end,
+          });
 
           path.onClick = (event) => {
+            let oldSelectedSegment =
+              this.timelineSegments[this.selected.timeline][
+                this.selected.segment
+              ];
+
+            // delete color of old segment
+            oldSelectedSegment.path.strokeColor = null;
+            // color new segment
+            event.target.strokeColor = "#ae1313ff";
+
+            this.selected = {
+              timeline: i,
+              segment: j,
+              id: s.id,
+            };
             let canvasRect = self.canvas.getBoundingClientRect();
             self.segmentMenu.show = true;
             self.segmentMenu.x = event.point.x + canvasRect.x;
@@ -489,6 +517,7 @@ export default {
           annotationBoxesGroup.clipped = true;
           annotationBoxesGroup.insertBelow(annotationTextsGroup);
         });
+        this.timelineSegments.push(segmentList);
       });
     },
     drawTime() {
@@ -561,7 +590,6 @@ export default {
     onResize() {
       this.draw();
     },
-
     onCopyTimeline() {
       let id = this.timelineMenu.selected;
       this.$emit("copyTimeline", id);
@@ -604,6 +632,28 @@ export default {
       this.drawTime();
       this.targetTime = this.time;
     },
+    // timelineMenu: {
+    //   handler: function (vakue) {
+    //     console.log(this);
+    //     if (this.timelineMenu.show) {
+    //       this.tool.remove();
+    //     } else {
+    //       this.tool.activate();
+    //     }
+    //   },
+    //   deep: true,
+    // },
+    // segmentMenu: {
+    //   handler: function (value) {
+    //     console.log(this);
+    //     if (this.segmentMenu.show) {
+    //       this.tool.remove();
+    //     } else {
+    //       this.tool.activate();
+    //     }
+    //   },
+    //   deep: true,
+    // },
   },
   computed: {},
   mounted() {
@@ -611,6 +661,55 @@ export default {
 
     this.scope = new paper.PaperScope();
     this.scope.setup(this.canvas);
+
+    this.tool = new paper.Tool();
+    this.tool.onKeyDown = (event) => {
+      let oldSelectedSegment =
+        this.timelineSegments[this.selected.timeline][this.selected.segment];
+      console.log(oldSelectedSegment);
+      let newSelected = {
+        timeline: this.selected.timeline,
+        segment: this.selected.segment,
+      };
+      if (event.key == "down") {
+        newSelected.timeline += 1;
+      } else if (event.key == "up") {
+        newSelected.timeline -= 1;
+      } else if (event.key == "left") {
+        newSelected.segment -= 1;
+      } else if (event.key == "right") {
+        newSelected.segment += 1;
+      } else if (event.key == "enter") {
+        this.$emit("enterSegment", oldSelectedSegment.id);
+      }
+      newSelected.timeline = Math.max(
+        Math.min(newSelected.timeline, this.timelines.length - 1),
+        0
+      );
+
+      newSelected.segment = Math.max(
+        Math.min(
+          newSelected.segment,
+          this.timelines[newSelected.timeline].segments.length - 1
+        ),
+        0
+      );
+
+      // delete color of old segment
+      oldSelectedSegment.path.strokeColor = null;
+      // color new segment
+      let selectedSegment =
+        this.timelineSegments[newSelected.timeline][newSelected.segment];
+      selectedSegment.path.strokeColor = "#ae1313ff";
+
+      this.selected = newSelected;
+
+      // console.log(this.timelineSegments);
+      // this.timelineSegments[this.selectedTimelineIndex][
+      //   this.selectedSegmentIndex
+      // ].path.strokeColor = "red";
+      event.preventDefault();
+    };
 
     let self = this;
     this.scope.view.onResize = (event) => {
