@@ -69,7 +69,6 @@ export default {
 
       this.canvasWidth = this.scope.view.size.width;
       this.canvasHeight = this.scope.view.size.height;
-      console.log(`${this.height} ${this.canvasWidth} ${this.canvasHeight}`);
       this.timeScale = this.scope.view.size.width / this.duration;
       if (isNaN(this.timeScale)) {
         return;
@@ -251,7 +250,6 @@ export default {
     // some event handler
     onResize(event) {
       this.$nextTick(() => {
-        console.log("FOOBAR");
         this.draw();
       });
     },
@@ -299,9 +297,6 @@ export default {
         self.$refs.container.clientWidth !== self.containerWidth ||
         self.$refs.container.clientHeight !== self.containerHeight
       ) {
-        console.log(
-          `${self.$refs.container.clientWidth} ${self.containerWidth} ${self.$refs.container.clientHeight} ${self.containerHeight}`
-        );
         clearTimeout(self.redraw);
         self.doit = setTimeout(self.onResize(), 100);
       }

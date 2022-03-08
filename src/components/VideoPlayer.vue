@@ -172,7 +172,6 @@ export default {
       this.$emit("canPlay");
     },
     onResize() {
-      console.log("resize");
       this.$emit("resize");
     },
   },

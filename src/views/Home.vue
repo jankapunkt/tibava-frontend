@@ -54,6 +54,11 @@ import TimeMixin from "../mixins/time";
 
 export default {
   mixins: [TimeMixin],
+  data() {
+    return {
+      fetchTimer: null,
+    };
+  },
   methods: {
     delete_video(video_id) {
       this.$store.dispatch("video/delete", video_id);
@@ -62,7 +67,6 @@ export default {
       router.push({ path: `/videoanalysis/${video_id}` });
     },
     async fetchData() {
-      console.log("fetch");
       // Ask backend about all videos
       await this.$store.dispatch("video/listUpdate");
 
@@ -91,12 +95,17 @@ export default {
   mounted() {
     this.fetchData();
 
-    setInterval(
+    this.fetchTimer = setInterval(
       function () {
         this.fetchData();
       }.bind(this),
       1000
     );
+  },
+
+  beforeRouteLeave(to, from, next) {
+    clearInterval(this.fetchTimer);
+    next(true);
   },
 };
 </script>
