@@ -1,5 +1,5 @@
 <template>
-  <v-dialog persistent v-model="show" max-width="1000">
+  <v-dialog persistent v-model="show" max-width="1000" @keydown.esc="close">
     <v-card>
       <v-toolbar color="primary" dark>{{
         $t("timelineSegment.title")

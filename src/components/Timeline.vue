@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="container" style="width: 100%">
     <canvas :style="canvasStyle" ref="canvas" resize> </canvas>
     <v-menu
       v-model="timelineMenu.show"
@@ -63,6 +63,7 @@
 <script>
 import TimeMixin from "../mixins/time";
 import paper from "paper";
+
 export default {
   mixins: [TimeMixin],
   props: {
@@ -147,6 +148,11 @@ export default {
         width: this.width,
       },
 
+      canvasWidth: null,
+      canvasHeight: null,
+      containerWidth: null,
+      containerHeight: null,
+
       canvas: null,
       scope: null,
 
@@ -194,9 +200,21 @@ export default {
         this.canvas.height = 80;
       }
 
+      var desiredWidth = this.$refs.container.clientWidth; // For instance: $(window).width();
+      // var desiredHeight = h; // For instance $('#canvasContainer').height();
+
+      this.containerWidth = this.$refs.container.clientWidth;
+      this.containerHeight = this.$refs.container.clientHeight;
+      this.canvas.width = desiredWidth;
+
+      this.scope.view.viewSize = new paper.Size(
+        this.canvas.width,
+        this.canvas.height
+      );
+      this.scope.view.draw();
+
       this.canvasWidth = this.scope.view.size.width;
       this.canvasHeight = this.scope.view.size.height;
-
       this.timeScale =
         (this.scope.view.size.width - this.headerWidth - 5 * this.gap) /
         (this.endTime - this.startTime);
@@ -208,8 +226,8 @@ export default {
       this.drawTimeline();
       this.drawSegment();
       this.drawTime();
-      //   this.drawSelection();
-      // this.scope.view.draw();
+
+      this.scope.view.draw();
     },
     drawScale() {
       this.scope.activate();
@@ -586,10 +604,6 @@ export default {
     deltaXToTime(x) {
       return x / this.timeScale;
     },
-    // some event handler
-    onResize() {
-      this.draw();
-    },
     onCopyTimeline() {
       let id = this.timelineMenu.selected;
       this.$emit("copyTimeline", id);
@@ -614,6 +628,11 @@ export default {
       let id = this.segmentMenu.selected;
       this.$emit("deleteSegment", id);
     },
+    onResize(event) {
+      this.$nextTick(() => {
+        this.draw();
+      });
+    },
   },
   watch: {
     duration() {
@@ -632,28 +651,6 @@ export default {
       this.drawTime();
       this.targetTime = this.time;
     },
-    // timelineMenu: {
-    //   handler: function (vakue) {
-    //     console.log(this);
-    //     if (this.timelineMenu.show) {
-    //       this.tool.remove();
-    //     } else {
-    //       this.tool.activate();
-    //     }
-    //   },
-    //   deep: true,
-    // },
-    // segmentMenu: {
-    //   handler: function (value) {
-    //     console.log(this);
-    //     if (this.segmentMenu.show) {
-    //       this.tool.remove();
-    //     } else {
-    //       this.tool.activate();
-    //     }
-    //   },
-    //   deep: true,
-    // },
   },
   computed: {},
   mounted() {
@@ -666,7 +663,6 @@ export default {
     this.tool.onKeyDown = (event) => {
       let oldSelectedSegment =
         this.timelineSegments[this.selected.timeline][this.selected.segment];
-      console.log(oldSelectedSegment);
       let newSelected = {
         timeline: this.selected.timeline,
         segment: this.selected.segment,
@@ -712,6 +708,16 @@ export default {
     };
 
     let self = this;
+    this.scope.view.onFrame = (event) => {
+      if (
+        self.$refs.container.clientWidth !== self.containerWidth ||
+        self.$refs.container.clientHeight !== self.containerHeight
+      ) {
+        clearTimeout(self.redraw);
+        self.doit = setTimeout(self.onResize(), 100);
+      }
+    };
+
     this.scope.view.onResize = (event) => {
       clearTimeout(self.redraw);
       self.doit = setTimeout(self.onResize(), 100);

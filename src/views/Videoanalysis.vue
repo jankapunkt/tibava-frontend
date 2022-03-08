@@ -1,10 +1,13 @@
 <template>
-  <v-app class="d-flex flex-column justify-start align-start">
+  <v-app
+    class="d-flex flex-column justify-start align-start"
+    @keydown="onKeyDown"
+  >
     <v-row class="ma-2">
       <v-col cols="6">
         <v-card
           class="d-flex flex-column flex-nowrap px-2"
-          elevation="8"
+          elevation="2"
           v-resize="onVideoResize"
           ref="videoCard"
         >
@@ -38,7 +41,7 @@
       <v-col cols="6">
         <v-card
           class="overflow-auto"
-          elevation="8"
+          elevation="2"
           ref="resultCard"
           :height="resultCardHeight"
         >
@@ -68,11 +71,12 @@
         <v-card
           class="d-flex flex-column flex-nowrap overflow-auto"
           max-width="100%"
-          elevation="8"
+          elevation="2"
         >
           <v-card-title> Annotation Timeline </v-card-title>
           <v-flex grow class="mb-2 px-4">
             <Timeline
+              ref="timeline"
               width="100%"
               :duration="duration"
               :time="videoTime"
@@ -88,33 +92,6 @@
               @update:time="onTagetTimeChange"
               @enterSegment="onAnnotateSegment"
             >
-              <!-- <template v-slot:context>
-              <v-list class="pa-0">
-                <v-subheader> {{ $t("annotation.title") }}</v-subheader>
-                <v-list-item class="px-0 h44">
-                  <v-form class="ma-2" @submit="onAppendAnnotation">
-                    <v-text-field v-model="addedAnnotation"></v-text-field>
-                  </v-form>
-                </v-list-item>
-
-                <v-list>
-                  <v-subheader>Labels</v-subheader>
-                  <v-list-item-group v-model="selectedLabel">
-                    <v-list-item v-for="(item, i) in labels" :key="i">
-                      <v-list-item-content v-on:click="submitAnnotation">
-                        <v-list-item-title v-text="item"></v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-list>
-
-                <v-list-item class="px-0 h44">
-                  <v-btn text block large @click="submitAnnotation">
-                    {{ $t("annotation.ok") }}
-                  </v-btn>
-                </v-list-item>
-              </v-list>
-            </template> -->
             </Timeline>
 
             <ModalTimelineSegmentAnnotate
@@ -159,6 +136,13 @@ export default {
       // annotations: [],
       // annotationCategories: [],
       resultCardHeight: 69,
+
+      cursor: {
+        segment: 0,
+        timeline: 0,
+      },
+      selectedTimelineSegment: [],
+      selectedTimeline: [],
     };
   },
   methods: {
@@ -187,13 +171,12 @@ export default {
       //
     },
     onVideoResize() {
-      this.$nextTick(() => {
-        this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
-      });
+      // this.$nextTick(() => {
+      this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
+      // });
     },
-    onLoaded() {
-      console.log("FOO");
-      this.onVideoResize();
+    onKeyDown(event) {
+      console.log(event);
     },
     onTimeUpdate(time) {
       this.videoTime = time;
@@ -395,6 +378,54 @@ export default {
   },
   mounted() {
     this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
+
+    window.addEventListener("keydown", (e) => {
+      console.log(e);
+      let oldSelectedSegment =
+        this.timelineSegments[this.selected.timeline][this.selected.segment];
+      let newSelected = {
+        timeline: this.selected.timeline,
+        segment: this.selected.segment,
+      };
+      if (event.key == "down") {
+        newSelected.timeline += 1;
+      } else if (event.key == "up") {
+        newSelected.timeline -= 1;
+      } else if (event.key == "left") {
+        newSelected.segment -= 1;
+      } else if (event.key == "right") {
+        newSelected.segment += 1;
+      } else if (event.key == "enter") {
+        this.$emit("enterSegment", oldSelectedSegment.id);
+      }
+      newSelected.timeline = Math.max(
+        Math.min(newSelected.timeline, this.timelines.length - 1),
+        0
+      );
+
+      newSelected.segment = Math.max(
+        Math.min(
+          newSelected.segment,
+          this.timelines[newSelected.timeline].segments.length - 1
+        ),
+        0
+      );
+
+      // delete color of old segment
+      oldSelectedSegment.path.strokeColor = null;
+      // color new segment
+      let selectedSegment =
+        this.timelineSegments[newSelected.timeline][newSelected.segment];
+      selectedSegment.path.strokeColor = "#ae1313ff";
+
+      this.selected = newSelected;
+
+      // console.log(this.timelineSegments);
+      // this.timelineSegments[this.selectedTimelineIndex][
+      //   this.selectedSegmentIndex
+      // ].path.strokeColor = "red";
+      event.preventDefault();
+    });
   },
   watch: {
     // call again the method if the route changes

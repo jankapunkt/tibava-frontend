@@ -1,6 +1,7 @@
 <template>
-  <canvas :style="{ height: height, width: width }" ref="canvas" resize>
-  </canvas>
+  <div ref="container" style="width: 100%">
+    <canvas :style="canvasStyle" ref="canvas" resize> </canvas>
+  </div>
 </template>
 
 <script>
@@ -10,7 +11,12 @@ export default {
   mixins: [TimeMixin],
   props: {
     duration: {},
-    width: {},
+    width: {
+      default: "100%",
+    },
+    height: {
+      default: "60",
+    },
     radius: {
       type: Number,
       default: 5,
@@ -18,7 +24,15 @@ export default {
   },
   data() {
     return {
-      height: "60px",
+      canvasStyle: {
+        height: this.height,
+        width: this.width,
+      },
+      canvasWidth: null,
+      canvasHeight: null,
+      containerWidth: null,
+      containerHeight: null,
+
       canvas: null,
       scope: null,
       tool: null,
@@ -40,9 +54,22 @@ export default {
   },
   methods: {
     draw() {
+      this.canvas.height = this.height;
+      var desiredWidth = this.$refs.container.clientWidth; // For instance: $(window).width();
+
+      this.containerWidth = this.$refs.container.clientWidth;
+      this.containerHeight = this.$refs.container.clientHeight;
+      this.canvas.width = desiredWidth;
+
+      this.scope.view.viewSize = new paper.Size(
+        this.canvas.width,
+        this.canvas.height
+      );
+      this.scope.view.draw();
+
       this.canvasWidth = this.scope.view.size.width;
       this.canvasHeight = this.scope.view.size.height;
-
+      console.log(`${this.height} ${this.canvasWidth} ${this.canvasHeight}`);
       this.timeScale = this.scope.view.size.width / this.duration;
       if (isNaN(this.timeScale)) {
         return;
@@ -222,8 +249,11 @@ export default {
       return x / this.timeScale;
     },
     // some event handler
-    onResize() {
-      this.draw();
+    onResize(event) {
+      this.$nextTick(() => {
+        console.log("FOOBAR");
+        this.draw();
+      });
     },
     onSelectionChange() {
       let posStart = this.timeToX(this.selectionStartTime);
@@ -263,6 +293,20 @@ export default {
     this.scope.setup(this.canvas);
 
     let self = this;
+
+    this.scope.view.onFrame = (event) => {
+      if (
+        self.$refs.container.clientWidth !== self.containerWidth ||
+        self.$refs.container.clientHeight !== self.containerHeight
+      ) {
+        console.log(
+          `${self.$refs.container.clientWidth} ${self.containerWidth} ${self.$refs.container.clientHeight} ${self.containerHeight}`
+        );
+        clearTimeout(self.redraw);
+        self.doit = setTimeout(self.onResize(), 100);
+      }
+    };
+
     this.scope.view.onResize = (event) => {
       clearTimeout(self.redraw);
       self.doit = setTimeout(self.onResize(), 100);
