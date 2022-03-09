@@ -2,13 +2,15 @@
   <div id="search-general">
     <v-text-field
       v-model="query"
-      class="mx-1 sbar"
-      label="Solo"
+      class="mx-2 sbar"
+      label="Search"
       placeholder="Placeholder"
       rounded
       solo
       flat
       outlined
+      single-line
+      hide-details
     >
       <v-btn :title="$t('button.search')" @click="submit" small icon>
         <v-icon> mdi-magnify </v-icon>
@@ -37,8 +39,6 @@
     </v-combobox> -->
   </div>
 </template>
-
-
 
 <script>
 export default {
@@ -128,10 +128,6 @@ export default {
   display: flex;
   flex: 1 1 auto;
   max-width: 100%;
-}
-
-header #search-general {
-  max-width: calc(100% - 327px);
 }
 
 .v-autocomplete:not(.v-input--is-focused).v-select--chips input {

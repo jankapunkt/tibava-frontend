@@ -1,14 +1,14 @@
 <template>
   <v-app id="tibava">
-    <v-app-bar dense height="100px">
-      <v-layout row>
+    <v-app-bar app>
+      <v-row>
         <div class="logo ml-3 mr-5">
-          <img :title="appName" src="./assets/logo.png" height="50" />
+          <img :title="appName" src="./assets/logo.png" height="40" />
         </div>
 
         <SearchBar />
         <UserMenu />
-      </v-layout>
+      </v-row>
     </v-app-bar>
     <router-view />
   </v-app>
@@ -41,4 +41,3 @@ export default {
   /* margin-top: 0px; */
 }
 </style>
-
