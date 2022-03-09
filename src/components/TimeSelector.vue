@@ -249,6 +249,7 @@ export default {
     },
     // some event handler
     onResize(event) {
+      console.log("resize");
       this.$nextTick(() => {
         this.draw();
       });
@@ -298,13 +299,13 @@ export default {
         self.$refs.container.clientHeight !== self.containerHeight
       ) {
         clearTimeout(self.redraw);
-        self.doit = setTimeout(self.onResize(), 100);
+        self.redraw = setTimeout(self.onResize(), 100);
       }
     };
 
     this.scope.view.onResize = (event) => {
       clearTimeout(self.redraw);
-      self.doit = setTimeout(self.onResize(), 100);
+      self.redraw = setTimeout(self.onResize(), 100);
     };
 
     this.draw();

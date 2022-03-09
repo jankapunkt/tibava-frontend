@@ -77,6 +77,14 @@ export default {
     endTime: {
       type: Number,
     },
+    selectedTimelineSegment: {
+      default: [],
+      type: Array,
+    },
+    selectedTimeline: {
+      default: [],
+      type: Array,
+    },
     headerWidth: {
       type: Number,
       default: 200,
@@ -181,11 +189,6 @@ export default {
       },
       // seek
       targetTime: 0,
-      //selection
-      selected: {
-        segment: 0,
-        timeline: 0,
-      },
       //segment_list
       timelineSegments: [],
     };
@@ -445,21 +448,6 @@ export default {
           });
 
           path.onClick = (event) => {
-            let oldSelectedSegment =
-              this.timelineSegments[this.selected.timeline][
-                this.selected.segment
-              ];
-
-            // delete color of old segment
-            oldSelectedSegment.path.strokeColor = null;
-            // color new segment
-            event.target.strokeColor = "#ae1313ff";
-
-            this.selected = {
-              timeline: i,
-              segment: j,
-              id: s.id,
-            };
             let canvasRect = self.canvas.getBoundingClientRect();
             self.segmentMenu.show = true;
             self.segmentMenu.x = event.point.x + canvasRect.x;
@@ -631,6 +619,7 @@ export default {
     onResize(event) {
       this.$nextTick(() => {
         this.draw();
+        this.$emit("resize");
       });
     },
   },
@@ -651,6 +640,18 @@ export default {
       this.drawTime();
       this.targetTime = this.time;
     },
+    selectedTimelineSegment(newSelection, oldSelection) {
+      oldSelection.forEach((e) => {
+        let segment = this.timelineSegments[e.timeline][e.segment];
+        console.log(segment);
+        segment.path.strokeColor = null;
+      });
+      newSelection.forEach((e) => {
+        let segment = this.timelineSegments[e.timeline][e.segment];
+        console.log(segment);
+        segment.path.strokeColor = "#ae1313ff";
+      });
+    },
   },
   computed: {},
   mounted() {
@@ -659,54 +660,6 @@ export default {
     this.scope = new paper.PaperScope();
     this.scope.setup(this.canvas);
 
-    this.tool = new paper.Tool();
-    this.tool.onKeyDown = (event) => {
-      let oldSelectedSegment =
-        this.timelineSegments[this.selected.timeline][this.selected.segment];
-      let newSelected = {
-        timeline: this.selected.timeline,
-        segment: this.selected.segment,
-      };
-      if (event.key == "down") {
-        newSelected.timeline += 1;
-      } else if (event.key == "up") {
-        newSelected.timeline -= 1;
-      } else if (event.key == "left") {
-        newSelected.segment -= 1;
-      } else if (event.key == "right") {
-        newSelected.segment += 1;
-      } else if (event.key == "enter") {
-        this.$emit("enterSegment", oldSelectedSegment.id);
-      }
-      newSelected.timeline = Math.max(
-        Math.min(newSelected.timeline, this.timelines.length - 1),
-        0
-      );
-
-      newSelected.segment = Math.max(
-        Math.min(
-          newSelected.segment,
-          this.timelines[newSelected.timeline].segments.length - 1
-        ),
-        0
-      );
-
-      // delete color of old segment
-      oldSelectedSegment.path.strokeColor = null;
-      // color new segment
-      let selectedSegment =
-        this.timelineSegments[newSelected.timeline][newSelected.segment];
-      selectedSegment.path.strokeColor = "#ae1313ff";
-
-      this.selected = newSelected;
-
-      // console.log(this.timelineSegments);
-      // this.timelineSegments[this.selectedTimelineIndex][
-      //   this.selectedSegmentIndex
-      // ].path.strokeColor = "red";
-      event.preventDefault();
-    };
-
     let self = this;
     this.scope.view.onFrame = (event) => {
       if (
@@ -714,13 +667,13 @@ export default {
         self.$refs.container.clientHeight !== self.containerHeight
       ) {
         clearTimeout(self.redraw);
-        self.doit = setTimeout(self.onResize(), 100);
+        self.redraw = setTimeout(self.onResize(), 100);
       }
     };
 
     this.scope.view.onResize = (event) => {
       clearTimeout(self.redraw);
-      self.doit = setTimeout(self.onResize(), 100);
+      self.redraw = setTimeout(self.onResize(), 100);
     };
 
     this.draw();

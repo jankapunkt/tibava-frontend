@@ -1,111 +1,116 @@
 <template>
-  <v-app
-    class="d-flex flex-column justify-start align-start"
-    @keydown="onKeyDown"
+  <v-main
+    class="d-flex flex-column justify-start align-start main"
+    @keydown.native="onKeyDown"
+    tabindex="0"
   >
-    <v-row class="ma-2">
-      <v-col cols="6">
-        <v-card
-          class="d-flex flex-column flex-nowrap px-2"
-          elevation="2"
-          v-resize="onVideoResize"
-          ref="videoCard"
-        >
-          <v-row>
-            <v-card-title>
-              {{ $store.state.video.current.name }}
-            </v-card-title>
-          </v-row>
+    <v-container fluid>
+      <v-row class="ma-2">
+        <v-col cols="6">
+          <v-card
+            class="d-flex flex-column flex-nowrap px-2"
+            elevation="2"
+            v-resize="onVideoResize"
+            ref="videoCard"
+          >
+            <v-row>
+              <v-card-title>
+                {{ $store.state.video.current.name }}
+              </v-card-title>
+            </v-row>
 
-          <v-row class="flex-grow-1">
-            <v-col>
-              <VideoPlayer
-                :video="$store.state.video.current"
-                :time="targetTime"
+            <v-row class="flex-grow-1">
+              <v-col>
+                <VideoPlayer
+                  :video="$store.state.video.current"
+                  :time="targetTime"
+                  @resize="onVideoResize"
+                  @timeUpdate="onTimeUpdate"
+                />
+              </v-col>
+            </v-row>
+            <v-row class="mb-2 px-4">
+              <TimeSelector
+                width="100%"
+                :duration="duration"
                 @resize="onVideoResize"
-                @timeUpdate="onTimeUpdate"
+                @endTimeChange="onEndTimeChange"
+                @startTimeChange="onStartTimeChange"
               />
-            </v-col>
-          </v-row>
-          <v-row class="mb-2 px-4">
-            <TimeSelector
-              width="100%"
-              :duration="duration"
-              @endTimeChange="onEndTimeChange"
-              @startTimeChange="onStartTimeChange"
-            />
-          </v-row>
-        </v-card>
-      </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
 
-      <v-col cols="6">
-        <v-card
-          class="overflow-auto"
-          elevation="2"
-          ref="resultCard"
-          :height="resultCardHeight"
-        >
-          <v-tabs centered>
-            <v-tabs-slider />
-            <v-tab>Shots</v-tab>
-            <v-tab disabled>Persons</v-tab>
-            <v-tab disabled>Scenes</v-tab>
+        <v-col cols="6">
+          <v-card
+            class="overflow-auto"
+            elevation="2"
+            ref="resultCard"
+            :height="resultCardHeight"
+          >
+            <v-tabs centered>
+              <v-tabs-slider />
+              <v-tab>Shots</v-tab>
+              <v-tab disabled>Persons</v-tab>
+              <v-tab disabled>Scenes</v-tab>
 
-            <v-tab-item>
-              <ShotCard
-                v-for="item in shots"
-                v-bind:key="item.id"
-                :shot="item"
-                @seek="onTagetTimeChange"
-              />
-            </v-tab-item>
-            <v-tab-item> PERSONS </v-tab-item>
-            <v-tab-item> SCENES </v-tab-item>
-          </v-tabs>
-        </v-card>
-      </v-col>
-    </v-row>
+              <v-tab-item>
+                <ShotCard
+                  v-for="item in shots"
+                  v-bind:key="item.id"
+                  :shot="item"
+                  @seek="onTagetTimeChange"
+                />
+              </v-tab-item>
+              <v-tab-item> PERSONS </v-tab-item>
+              <v-tab-item> SCENES </v-tab-item>
+            </v-tabs>
+          </v-card>
+        </v-col>
+      </v-row>
 
-    <v-row class="fill-height ma-2">
-      <v-col>
-        <v-card
-          class="d-flex flex-column flex-nowrap overflow-auto"
-          max-width="100%"
-          elevation="2"
-        >
-          <v-card-title> Annotation Timeline </v-card-title>
-          <v-flex grow class="mb-2 px-4">
-            <Timeline
-              ref="timeline"
-              width="100%"
-              :duration="duration"
-              :time="videoTime"
-              :timelines="timelines"
-              :startTime="startTime"
-              :endTime="endTime"
-              @copyTimeline="onCopyTimeline"
-              @renameTimeline="onRenameTimeline"
-              @deleteTimeline="onDeleteTimeline"
-              @annotateSegment="onAnnotateSegment"
-              @coloringSegment="onColoringSegment"
-              @deleteSegment="onDeleteSegment"
-              @update:time="onTagetTimeChange"
-              @enterSegment="onAnnotateSegment"
-            >
-            </Timeline>
+      <v-row class="fill-height ma-2">
+        <v-col>
+          <v-card
+            class="d-flex flex-column flex-nowrap overflow-auto"
+            max-width="100%"
+            elevation="2"
+          >
+            <v-card-title> Annotation Timeline </v-card-title>
+            <v-flex grow class="mb-2 px-4">
+              <Timeline
+                ref="timeline"
+                width="100%"
+                :duration="duration"
+                :time="videoTime"
+                :timelines="timelines"
+                :startTime="startTime"
+                :endTime="endTime"
+                :selectedTimelineSegment="selectedTimelineSegment"
+                :selectedTimeline="selectedTimeline"
+                @copyTimeline="onCopyTimeline"
+                @renameTimeline="onRenameTimeline"
+                @deleteTimeline="onDeleteTimeline"
+                @annotateSegment="onAnnotateSegment"
+                @coloringSegment="onColoringSegment"
+                @deleteSegment="onDeleteSegment"
+                @update:time="onTagetTimeChange"
+              >
+              </Timeline>
 
-            <ModalTimelineSegmentAnnotate
-              :show.sync="annotationDialog.show"
-              :timelineSegment="annotationDialog.selectedTimelineSegment"
-              :annotations="annotations"
-              :annotationCategories="annotationCategories"
-            >
-            </ModalTimelineSegmentAnnotate>
-          </v-flex>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-app>
+              <ModalTimelineSegmentAnnotate
+                :show.sync="annotationDialog.show"
+                :timelineSegment="annotationDialog.selectedTimelineSegment"
+                :annotations="annotations"
+                :annotationCategories="annotationCategories"
+              >
+              </ModalTimelineSegmentAnnotate>
+            </v-flex>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-main>
 </template>
 
 <script>
@@ -138,6 +143,7 @@ export default {
       resultCardHeight: 69,
 
       cursor: {
+        type: "segment",
         segment: 0,
         timeline: 0,
       },
@@ -177,6 +183,58 @@ export default {
     },
     onKeyDown(event) {
       console.log(event);
+      let newCursor = {
+        type: this.cursor.type,
+        timeline: this.cursor.timeline,
+        segment: this.cursor.segment,
+      };
+      if (event.key == "ArrowDown") {
+        newCursor.timeline += 1;
+        event.preventDefault();
+      } else if (event.key == "ArrowUp") {
+        newCursor.timeline -= 1;
+        event.preventDefault();
+      } else if (event.key == "ArrowLeft") {
+        newCursor.segment -= 1;
+        event.preventDefault();
+      } else if (event.key == "ArrowRight") {
+        newCursor.segment += 1;
+        event.preventDefault();
+      } else if (event.key == "Enter") {
+        if (this.cursor.type === "segment") {
+          this.onAnnotateSegment(this.cursor.id);
+        }
+      }
+
+      newCursor.timeline = Math.max(
+        Math.min(newCursor.timeline, this.timelines.length - 1),
+        0
+      );
+
+      newCursor.segment = Math.max(
+        Math.min(
+          newCursor.segment,
+          this.timelines[newCursor.timeline].segments.length - 1
+        ),
+        0
+      );
+
+      const newSegment =
+        this.timelines[newCursor.timeline].segments[newCursor.segment];
+
+      newCursor.id = newSegment.id;
+      if (
+        newCursor.timeline !== this.cursor.timeline ||
+        newCursor.segment !== this.cursor.segment
+      ) {
+        if (event.ctrlKey && newCursor.timeline === this.cursor.timeline) {
+          this.selectedTimelineSegment.push(newCursor);
+        } else {
+          this.selectedTimelineSegment = [newCursor];
+        }
+      }
+      this.cursor = newCursor;
+      console.log(JSON.stringify(this.selectedTimelineSegment));
     },
     onTimeUpdate(time) {
       this.videoTime = time;
@@ -212,13 +270,13 @@ export default {
     onDeleteSegment(id) {},
 
     onSegmentSelected(id) {
-      this.selectedSegment = id;
+      this.cursorSegment = id;
       // this.$store.dispatch("timeline/delete", id);
     },
     onAppendAnnotation(evt) {
       evt.preventDefault();
       this.$store.dispatch("timeline/annotate", {
-        segment_id: this.selectedSegment,
+        segment_id: this.cursorSegment,
         annotation: this.addedAnnotation,
       });
       this.labels.push(this.addedAnnotation);
@@ -379,53 +437,9 @@ export default {
   mounted() {
     this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
 
-    window.addEventListener("keydown", (e) => {
-      console.log(e);
-      let oldSelectedSegment =
-        this.timelineSegments[this.selected.timeline][this.selected.segment];
-      let newSelected = {
-        timeline: this.selected.timeline,
-        segment: this.selected.segment,
-      };
-      if (event.key == "down") {
-        newSelected.timeline += 1;
-      } else if (event.key == "up") {
-        newSelected.timeline -= 1;
-      } else if (event.key == "left") {
-        newSelected.segment -= 1;
-      } else if (event.key == "right") {
-        newSelected.segment += 1;
-      } else if (event.key == "enter") {
-        this.$emit("enterSegment", oldSelectedSegment.id);
-      }
-      newSelected.timeline = Math.max(
-        Math.min(newSelected.timeline, this.timelines.length - 1),
-        0
-      );
+    // document.addEventListener("keydown", (e) => {
 
-      newSelected.segment = Math.max(
-        Math.min(
-          newSelected.segment,
-          this.timelines[newSelected.timeline].segments.length - 1
-        ),
-        0
-      );
-
-      // delete color of old segment
-      oldSelectedSegment.path.strokeColor = null;
-      // color new segment
-      let selectedSegment =
-        this.timelineSegments[newSelected.timeline][newSelected.segment];
-      selectedSegment.path.strokeColor = "#ae1313ff";
-
-      this.selected = newSelected;
-
-      // console.log(this.timelineSegments);
-      // this.timelineSegments[this.selectedTimelineIndex][
-      //   this.selectedSegmentIndex
-      // ].path.strokeColor = "red";
-      event.preventDefault();
-    });
+    // });
   },
   watch: {
     // call again the method if the route changes
@@ -455,5 +469,8 @@ export default {
 
 .timeline-bar {
   height: 80px;
+}
+.main:focus {
+  outline: none;
 }
 </style>
