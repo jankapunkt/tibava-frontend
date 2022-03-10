@@ -24,6 +24,8 @@ const api = {
                 name: name,
                 color: color
             }
+
+            console.log(`ANNOTATION_CATEGORY_CREATE ${JSON.stringify(params)}`);
             return axios.post(`${config.API_LOCATION}/annotation_category_create`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {

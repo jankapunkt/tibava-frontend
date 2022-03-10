@@ -249,7 +249,6 @@ export default {
     },
     // some event handler
     onResize(event) {
-      console.log("resize");
       this.$nextTick(() => {
         this.draw();
       });

@@ -25,6 +25,7 @@ const api = {
                 annotation_id: annotationId
             }
 
+            console.log(`TIMELINE_SEGMENT_ANNOTATION_CREATE ${JSON.stringify(params)}`);
             return axios.post(`${config.API_LOCATION}/timeline_segment_annotation_create`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {

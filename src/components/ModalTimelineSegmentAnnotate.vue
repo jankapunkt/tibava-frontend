@@ -192,20 +192,23 @@ export default {
     onDeleteItem(index) {
       this.inputs.splice(index, 1);
     },
-    onKeydown(event) {
+    async onKeydown(event) {
       if (event.code === "Enter" && this.lastKey === "Enter") {
-        this.submit();
+        await this.submit();
+      }
+      if (event.code === "Enter") {
+        event.preventDefault();
       }
       this.lastKey = event.code;
     },
     onChange() {
+      if (this.isSubmitting) {
+        return;
+      }
       let inputs = [];
       let self = this;
       // split string annotations
-      console.log("++++++++++++++++");
       this.inputs.forEach((e) => {
-        console.log(JSON.stringify(e));
-        console.log(typeof e);
         if (typeof e === "string") {
           //filter empty name and categories
           if (onlySpaces(e)) {
@@ -253,7 +256,6 @@ export default {
       });
       //check if the name already exists
 
-      console.log("################");
       inputs = inputs.map((e) => {
         let existing = this.items.find((i) => {
           if (e.category === i.category && e.name === i.name) {
@@ -302,9 +304,14 @@ export default {
         }
       });
 
-      this.inputs = Object.keys(existing).map((e) => {
+      if (this.isSubmitting) {
+        return;
+      }
+
+      inputs = Object.keys(existing).map((e) => {
         return existing[e].element;
       });
+      this.inputs = inputs;
     },
     onCategoryChange(item) {
       item.categoryMenu = false;
@@ -317,8 +324,7 @@ export default {
       }
     },
     async submit() {
-      console.log("SUBMIT");
-      console.log(this.inputs);
+      let inputs = JSON.parse(JSON.stringify(this.inputs));
       if (this.isSubmitting) {
         return;
       }
@@ -334,7 +340,7 @@ export default {
       );
 
       let annotations = await Promise.all(
-        this.inputs.map(async (e) => {
+        inputs.map(async (e) => {
           if (!("id" in e)) {
             let annotationId = await this.createAnnotation(e);
             e.id = annotationId;
@@ -347,7 +353,7 @@ export default {
         (e) => e.annotation.id
       );
 
-      let submittedAnnotation = this.inputs.map((e) => e.id);
+      let submittedAnnotation = inputs.map((e) => e.id);
 
       let deletedIds = existingAnnotation.filter(
         (e) => !submittedAnnotation.includes(e)
@@ -378,7 +384,7 @@ export default {
       await Promise.all(
         this.timelineSegment.annotations.map(async (e) => {
           await Promise.all(
-            this.inputs.map(async (f) => {
+            inputs.map(async (f) => {
               if (e.annotation.id === f.id) {
                 if (e.annotation.color !== f.color) {
                   return await this.changeAnnotation(f);
@@ -406,9 +412,8 @@ export default {
         })
       );
 
-      console.log("SUBMIT_END");
       this.isSubmitting = false;
-      // this.$emit("update:show", false);
+      this.$emit("update:show", false);
     },
     async createCategory(category) {
       let categoryId = await this.$store.dispatch("annotationCategory/create", {
@@ -418,8 +423,6 @@ export default {
       return categoryId;
     },
     async createAnnotation(annotation) {
-      console.log("CREATE_ANNOTATION");
-      console.log(annotation);
       let annotationId = null;
       if (annotation.category) {
         annotationId = await this.$store.dispatch("annotation/create", {
@@ -433,11 +436,9 @@ export default {
           color: annotation.color,
         });
       }
-      console.log("CREATE_ANNOTATION_END");
       return annotationId;
     },
     async createTimelineSegmentAnnotation(annotation) {
-      console.log("createTimelineSegmentAnnotation");
       let timelineSegmentAnnotationId = null;
       timelineSegmentAnnotationId = await this.$store.dispatch(
         "timelineSegmentAnnotation/create",
@@ -446,7 +447,6 @@ export default {
           annotationId: annotation.id,
         }
       );
-      console.log("createTimelineSegmentAnnotation_end");
       return timelineSegmentAnnotationId;
     },
     async deleteTimelineSegmentAnnotation(timelineSegmentAnnotation) {
@@ -481,20 +481,21 @@ export default {
     },
   },
   watch: {
-    timelineSegment() {
-      this.inputs = JSON.parse(
-        JSON.stringify(
-          this.timelineSegment.annotations.map((e) => e.annotation)
-        )
-      );
-    },
-    annotations() {
-      this.hiddenAnnotations = JSON.parse(JSON.stringify(this.annotations));
-    },
-    annotationCategories() {
-      this.hiddenAnnotationCategories = JSON.parse(
-        JSON.stringify(this.annotationCategories)
-      );
+    show(newValue, oldValue) {
+      if (newValue) {
+        console.log("UPDATE");
+        this.inputs = JSON.parse(
+          JSON.stringify(
+            this.timelineSegment.annotations.map((e) => e.annotation)
+          )
+        );
+
+        this.hiddenAnnotations = JSON.parse(JSON.stringify(this.annotations));
+
+        this.hiddenAnnotationCategories = JSON.parse(
+          JSON.stringify(this.annotationCategories)
+        );
+      }
     },
   },
 };

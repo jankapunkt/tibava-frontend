@@ -229,6 +229,7 @@ export default {
       this.drawTimeline();
       this.drawSegment();
       this.drawTime();
+      this.drawSelection(this.selectedTimelineSegment);
 
       this.scope.view.draw();
     },
@@ -463,28 +464,28 @@ export default {
           var annotationI = 0;
           var annotationJ = 0;
 
+          // create the text element
+          var annotationsRect = [];
           s.annotations.forEach((a, k) => {
-            // create the text element
-            var text = new paper.PointText(
-              new paper.Point(
-                annotationStart + this.gap,
-                (this.gap + this.timelineHeight) * i +
-                  this.scaleHeight +
-                  20 * (annotationJ + 1) //todo move this
-              )
+            let targetPoint = new paper.Point(
+              annotationStart + this.gap,
+              (this.gap + this.timelineHeight) * i +
+                this.scaleHeight +
+                20 * (annotationJ + 1) //todo move this
             );
+            var text = new paper.PointText(targetPoint);
 
             text.justification = "left";
             text.fillColor = "black";
             text.content = a.annotation.name;
+
             // check if should make a break
             let annoRectangle = text.strokeBounds;
-            annoRectangle.width + 2 * this.gap;
-            annoRectangle.height + 2 * this.gap;
-
-            annotationStart += annoRectangle.width + this.gap;
+            // 3 is a buffer to prevent some render issues
+            annotationStart += annoRectangle.width + 2 * this.gap;
             if (annotationI > 0 && annotationStart > end) {
               annotationJ += 1;
+
               annotationStart = start;
               text.remove();
               text = new paper.PointText(
@@ -500,8 +501,9 @@ export default {
               text.content = a.annotation.name;
 
               annoRectangle = text.strokeBounds;
-              annoRectangle.width + 2 * this.gap;
-              annoRectangle.height + 2 * this.gap;
+
+              annotationStart += annoRectangle.width + 2 * this.gap;
+              annotationI = 1;
             } else {
               annotationI += 1;
             }
@@ -567,6 +569,46 @@ export default {
         this.targetTime = nextTime;
         this.$emit("update:time", this.targetTime);
       };
+    },
+    drawSelection(selectedTimelineSegment) {
+      if (
+        selectedTimelineSegment &&
+        selectedTimelineSegment.length > 0 &&
+        this.timelineSegments &&
+        this.timelineSegments.length > 0
+      ) {
+        selectedTimelineSegment.forEach((e) => {
+          if (
+            this.timelineSegments[e.timeline] &&
+            this.timelineSegments[e.timeline].length > 0
+          ) {
+            let segment = this.timelineSegments[e.timeline][e.segment];
+            if (segment) {
+              segment.path.strokeColor = "#ae1313ff";
+            }
+          }
+        });
+      }
+    },
+    removeSelection(selectedTimelineSegment) {
+      if (
+        selectedTimelineSegment &&
+        selectedTimelineSegment.length > 0 &&
+        this.timelineSegments &&
+        this.timelineSegments.length > 0
+      ) {
+        selectedTimelineSegment.forEach((e) => {
+          if (
+            this.timelineSegments[e.timeline] &&
+            this.timelineSegments[e.timeline].length > 0
+          ) {
+            let segment = this.timelineSegments[e.timeline][e.segment];
+            if (segment) {
+              segment.path.strokeColor = null;
+            }
+          }
+        });
+      }
     },
     linspace(startValue, stopValue, cardinality) {
       var arr = [];
@@ -641,16 +683,8 @@ export default {
       this.targetTime = this.time;
     },
     selectedTimelineSegment(newSelection, oldSelection) {
-      oldSelection.forEach((e) => {
-        let segment = this.timelineSegments[e.timeline][e.segment];
-        console.log(segment);
-        segment.path.strokeColor = null;
-      });
-      newSelection.forEach((e) => {
-        let segment = this.timelineSegments[e.timeline][e.segment];
-        console.log(segment);
-        segment.path.strokeColor = "#ae1313ff";
-      });
+      this.removeSelection(oldSelection);
+      this.drawSelection(newSelection);
     },
   },
   computed: {},

@@ -3,6 +3,7 @@
     class="d-flex flex-column justify-start align-start main"
     @keydown.native="onKeyDown"
     tabindex="0"
+    ref="main"
   >
     <v-container fluid>
       <v-row class="ma-2">
@@ -147,7 +148,13 @@ export default {
         segment: 0,
         timeline: 0,
       },
-      selectedTimelineSegment: [],
+      selectedTimelineSegment: [
+        {
+          type: "segment",
+          segment: 0,
+          timeline: 0,
+        },
+      ],
       selectedTimeline: [],
     };
   },
@@ -182,7 +189,6 @@ export default {
       // });
     },
     onKeyDown(event) {
-      console.log(event);
       let newCursor = {
         type: this.cursor.type,
         timeline: this.cursor.timeline,
@@ -235,7 +241,6 @@ export default {
         }
       }
       this.cursor = newCursor;
-      console.log(JSON.stringify(this.selectedTimelineSegment));
     },
     onTimeUpdate(time) {
       this.videoTime = time;
@@ -259,7 +264,6 @@ export default {
       this.$store.dispatch("timeline/delete", id);
     },
     onAnnotateSegment(id) {
-      console.log(id);
       this.annotationDialog.selectedTimelineSegment =
         this.$store.getters["timelineSegment/get"](id);
 
@@ -437,7 +441,7 @@ export default {
   },
   mounted() {
     this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
-
+    this.$refs.main.$el.focus();
     // document.addEventListener("keydown", (e) => {
 
     // });
