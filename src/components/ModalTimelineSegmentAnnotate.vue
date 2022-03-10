@@ -199,10 +199,13 @@ export default {
       this.lastKey = event.code;
     },
     onChange() {
-      console.log("foo");
       let inputs = [];
       let self = this;
+      // split string annotations
+      console.log("++++++++++++++++");
       this.inputs.forEach((e) => {
+        console.log(JSON.stringify(e));
+        console.log(typeof e);
         if (typeof e === "string") {
           //filter empty name and categories
           if (onlySpaces(e)) {
@@ -246,6 +249,24 @@ export default {
           }
         } else if (typeof e === "object") {
           inputs.push(e);
+        }
+      });
+      //check if the name already exists
+
+      console.log("################");
+      inputs = inputs.map((e) => {
+        let existing = this.items.find((i) => {
+          if (e.category === i.category && e.name === i.name) {
+            return true;
+          } else if (!e.category && !i.category && e.name === i.name) {
+            return true;
+          }
+          return false;
+        });
+        if (existing) {
+          return existing;
+        } else {
+          return e;
         }
       });
       //filter all duplicates
@@ -296,6 +317,8 @@ export default {
       }
     },
     async submit() {
+      console.log("SUBMIT");
+      console.log(this.inputs);
       if (this.isSubmitting) {
         return;
       }
@@ -383,8 +406,9 @@ export default {
         })
       );
 
+      console.log("SUBMIT_END");
       this.isSubmitting = false;
-      this.$emit("update:show", false);
+      // this.$emit("update:show", false);
     },
     async createCategory(category) {
       let categoryId = await this.$store.dispatch("annotationCategory/create", {
@@ -394,6 +418,8 @@ export default {
       return categoryId;
     },
     async createAnnotation(annotation) {
+      console.log("CREATE_ANNOTATION");
+      console.log(annotation);
       let annotationId = null;
       if (annotation.category) {
         annotationId = await this.$store.dispatch("annotation/create", {
@@ -407,9 +433,11 @@ export default {
           color: annotation.color,
         });
       }
+      console.log("CREATE_ANNOTATION_END");
       return annotationId;
     },
     async createTimelineSegmentAnnotation(annotation) {
+      console.log("createTimelineSegmentAnnotation");
       let timelineSegmentAnnotationId = null;
       timelineSegmentAnnotationId = await this.$store.dispatch(
         "timelineSegmentAnnotation/create",
@@ -418,6 +446,7 @@ export default {
           annotationId: annotation.id,
         }
       );
+      console.log("createTimelineSegmentAnnotation_end");
       return timelineSegmentAnnotationId;
     },
     async deleteTimelineSegmentAnnotation(timelineSegmentAnnotation) {
@@ -467,20 +496,6 @@ export default {
         JSON.stringify(this.annotationCategories)
       );
     },
-    // show() {
-    //   // we force the focus to the combobox
-    //   console.log(this.show);
-    //   if (this.show) {
-    //     console.log("FOCUS");
-    //     console.log(this.$refs);
-    //     this.$refs.foo.focus();
-    //   }
-    // },
   },
-  // mounted() {
-  //   console.log("MOUNTED");
-  //   console.log(this.$refs);
-  //   this.$refs.foo.focus();
-  // },
 };
 </script>
