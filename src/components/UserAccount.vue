@@ -72,4 +72,8 @@ export default {
   background-color: rgba(69, 123, 157, 0.54) !important;
   border-color: rgba(69, 123, 157, 0.54) !important;
 }
+
+.account {
+  background-color: rgb(255, 255, 255) !important;
+}
 </style>

@@ -203,6 +203,7 @@ export default {
       } else if (event.key == "Enter") {
         if (this.cursor.type === "segment") {
           this.onAnnotateSegment(this.cursor.id);
+          event.preventDefault();
         }
       }
 
