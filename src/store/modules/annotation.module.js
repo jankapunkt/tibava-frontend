@@ -20,7 +20,7 @@ const api = {
     },
     actions: {
         async create({ commit }, { name, color, categoryId }) {
-            const params = {
+            let params = {
                 name: name,
                 color: color
             }
@@ -28,6 +28,10 @@ const api = {
                 params["category_id"] = categoryId
             }
 
+            const video = this.getters["video/current"];
+            if(video){
+                params.video_id = video.id
+            }
 
             console.log(`ANNOTATION_CREATE ${JSON.stringify(params)}`);
             return axios.post(`${config.API_LOCATION}/annotation_create`, params)
@@ -43,7 +47,7 @@ const api = {
             // });
         },
         async change({ commit }, { annotationId, name, color, categoryId }) {
-            const params = {
+            let params = {
                 annotation_id: annotationId,
                 color: color,
                 name: name
@@ -82,8 +86,15 @@ const api = {
         //             commit('error/update', info, { root: true });
         //         });
         // },
-        listUpdate({ commit }) {
-            axios.get(`${config.API_LOCATION}/annotation_list`)
+        async listUpdate({ commit }) {
+            let params = {}
+            const video = this.getters["video/current"];
+            if(video){
+                params.video_id = video.id
+            }
+
+            console.log(`Annotation::listUpdate ${JSON.stringify(params)}`)
+            return axios.get(`${config.API_LOCATION}/annotation_list`, {params})
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);

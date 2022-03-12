@@ -329,7 +329,7 @@ export default {
         return;
       }
       this.isSubmitting = true;
-      let categories = await Promise.all(
+      const categories = await Promise.all(
         this.categories.map(async (e) => {
           if (!("id" in e)) {
             let categoryId = await this.createCategory(e);
@@ -338,6 +338,15 @@ export default {
           return e;
         })
       );
+
+      // map new category id to inputs
+      inputs = inputs.map((e) => {
+        if (e.category && e.category.name) {
+          const category = categories.find((f) => e.category.name == f.name);
+          e.category.id = category.id;
+        }
+        return e;
+      });
 
       let annotations = await Promise.all(
         inputs.map(async (e) => {
@@ -420,10 +429,12 @@ export default {
         name: category.name,
         color: category.color,
       });
+      console.log(`CategoryId ${categoryId}`);
       return categoryId;
     },
     async createAnnotation(annotation) {
       let annotationId = null;
+      console.log(`Annotation ${JSON.stringify(annotation)}`);
       if (annotation.category) {
         annotationId = await this.$store.dispatch("annotation/create", {
           name: annotation.name,

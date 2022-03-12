@@ -14,12 +14,12 @@ const api = {
   }
   },
   actions: {
-    listUpdate({ commit }, {videoId, addResults}) {
+    async listUpdate({ commit }, {videoId, addResults}) {
       const params = {
         video_id: videoId,
         add_results: addResults,
       }
-      axios.get(`${config.API_LOCATION}/analyser_list`, { params })
+      return axios.get(`${config.API_LOCATION}/analyser_list`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit('update', res.data.entries);

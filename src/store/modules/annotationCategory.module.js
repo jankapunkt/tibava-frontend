@@ -25,6 +25,11 @@ const api = {
                 color: color
             }
 
+            const video = this.getters["video/current"];
+            if(video){
+                params.video_id = video.id
+            }
+
             console.log(`ANNOTATION_CATEGORY_CREATE ${JSON.stringify(params)}`);
             return axios.post(`${config.API_LOCATION}/annotation_category_create`, params)
                 .then((res) => {
@@ -41,7 +46,13 @@ const api = {
 
 
         async listUpdate({ commit }) {
-            return axios.get(`${config.API_LOCATION}/annotation_category_list`)
+            let params = {}
+            const video = this.getters["video/current"];
+            if(video){
+                params.video_id = video.id
+            }
+            console.log(`AnnotationCategory::listUpdate ${JSON.stringify(params)}`)
+            return axios.get(`${config.API_LOCATION}/annotation_category_list`, {params})
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);

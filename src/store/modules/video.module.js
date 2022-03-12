@@ -21,6 +21,9 @@ const api = {
     },
     get: (state) => (id) => {
         return state.videos[id]
+    },
+    current: (state) => {
+        return state.current
     }
   },
   actions: {
@@ -31,13 +34,13 @@ const api = {
       axios.get(`${config.API_LOCATION}/video_get`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
-            commit("change_current", res.data.entry);
+            commit("updateCurrent", res.data.entry);
           }
         })
-        .catch((error) => {
-          const info = { date: Date(), error, origin: 'collection' };
-          commit('error/update', info, { root: true });
-        });
+        // .catch((error) => {
+        //   const info = { date: Date(), error, origin: 'collection' };
+        //   commit('error/update', info, { root: true });
+        // });
     },
 
     async upload({ commit }, params) {
@@ -125,7 +128,7 @@ const api = {
     delete(state, video_id) {
       state.videos.splice(state.videos.findIndex(e => e.id === video_id), 1);
     },
-    change_current(state, video) {
+    updateCurrent(state, video) {
       state.current = video;
     },
     startUploading(state){

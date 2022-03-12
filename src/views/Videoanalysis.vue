@@ -268,7 +268,9 @@ export default {
     onAnnotateSegment(id) {
       this.annotationDialog.selectedTimelineSegment =
         this.$store.getters["timelineSegment/get"](id);
-
+      console.log(
+        `${JSON.stringify(this.annotationDialog.selectedTimelineSegment)}`
+      );
       this.$nextTick(() => {
         this.annotationDialog.show = true;
       });
