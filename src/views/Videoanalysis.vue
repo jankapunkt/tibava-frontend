@@ -278,9 +278,19 @@ export default {
 
     onAddSelection(selection) {
       this.selectedTimelineSegment.push(selection);
+      this.cursor = {
+        type: "segment",
+        timeline: selection.timeline,
+        segment: selection.segment,
+      };
     },
     onSelect(selection) {
       this.selectedTimelineSegment = [selection];
+      this.cursor = {
+        type: "segment",
+        timeline: selection.timeline,
+        segment: selection.segment,
+      };
     },
 
     onSegmentSelected(id) {
