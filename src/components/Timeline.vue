@@ -383,17 +383,6 @@ export default {
         let radius = new paper.Size(this.radius, this.radius);
         let path = new paper.Path.Rectangle(rectangle, radius);
         path.style = self.timelineStyle;
-
-        // path.onClick = (event) => {
-        //   let canvasRect = self.canvas.getBoundingClientRect();
-        //   self.timelineMenu.show = true;
-        //   self.timelineMenu.x = event.point.x + canvasRect.x;
-        //   self.timelineMenu.y = event.point.y + canvasRect.y;
-        //   self.timelineMenu.selected = e.id;
-        //   self.$nextTick(() => {
-        //     self.showMenu = true;
-        //   });
-        // };
       });
     },
     drawSegment() {
@@ -421,6 +410,7 @@ export default {
           let end = Math.min(self.timeToX(s.end), self.timeToX(self.endTime));
 
           if (end < start) {
+            segmentList.push(null);
             return;
           }
 
