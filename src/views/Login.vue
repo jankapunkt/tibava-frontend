@@ -48,6 +48,7 @@
 
             <div class="grey--text px-6 pb-6" style="text-align: center">
               {{ $t("user.login.text") }}
+              <UserRegister @close="dialog = false" />.
             </div>
           </v-card>
         </v-row>
@@ -58,6 +59,7 @@
 
 <script>
 import router from "../router";
+import UserRegister from "@/components/UserRegister.vue";
 
 export default {
   data() {
@@ -115,6 +117,9 @@ export default {
         this.$emit("close");
       }
     },
+  },
+  components: {
+    UserRegister,
   },
 };
 </script>
