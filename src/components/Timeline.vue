@@ -439,6 +439,12 @@ export default {
           });
 
           path.onClick = (event) => {
+            console.log(event);
+            if (event.event.ctrlKey) {
+              self.$emit("addSelection", { timeline: i, segment: j });
+            } else {
+              self.$emit("select", { timeline: i, segment: j });
+            }
             let canvasRect = self.canvas.getBoundingClientRect();
             self.segmentMenu.show = true;
             self.segmentMenu.x = event.point.x + canvasRect.x;

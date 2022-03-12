@@ -96,6 +96,8 @@
                 @coloringSegment="onColoringSegment"
                 @deleteSegment="onDeleteSegment"
                 @update:time="onTagetTimeChange"
+                @addSelection="onAddSelection"
+                @select="onSelect"
               >
               </Timeline>
 
@@ -273,6 +275,13 @@ export default {
     },
     onColoringSegment(id) {},
     onDeleteSegment(id) {},
+
+    onAddSelection(selection) {
+      this.selectedTimelineSegment.push(selection);
+    },
+    onSelect(selection) {
+      this.selectedTimelineSegment = [selection];
+    },
 
     onSegmentSelected(id) {
       this.cursorSegment = id;
