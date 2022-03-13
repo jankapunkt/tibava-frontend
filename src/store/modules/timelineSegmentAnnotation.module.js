@@ -58,8 +58,18 @@ const api = {
             //     commit('error/update', info, { root: true });
             // });
         },
-        async listUpdate({ commit }) {
-            return axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`)
+        async listUpdate({ commit }, {videoId}) {
+            let params = {}
+            if(videoId){
+                params.video_id = videoId;
+            }
+            else{
+                const video = this.getters["video/current"];
+                if(video){
+                    params.video_id = video.id
+                }
+            }
+            return axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`, {params})
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);
@@ -70,8 +80,18 @@ const api = {
             //     commit('error/update', info, { root: true });
             // });
         },
-        async listAdd({ commit }, timeline_segment_id) {
-            return axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`)
+        async listAdd({ commit }, {videoId}) {
+            let params = {}
+            if(videoId){
+                params.video_id = videoId;
+            }
+            else{
+                const video = this.getters["video/current"];
+                if(video){
+                    params.video_id = video.id
+                }
+            }
+            return axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`, {params})
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('add', res.data.entries);

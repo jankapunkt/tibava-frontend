@@ -35,8 +35,8 @@
                 width="100%"
                 :duration="duration"
                 @resize="onVideoResize"
-                @endTimeChange="onEndTimeChange"
-                @startTimeChange="onStartTimeChange"
+                :endTime.sync="endTime"
+                :startTime.sync="startTime"
               />
             </v-row>
           </v-card>
@@ -161,34 +161,24 @@ export default {
     };
   },
   methods: {
-    // async fetch_data() {
-    //   //
-
-    //   await this.$store.dispatch("video/get", this.$route.params.id);
-
-    //   if (this.$store.state.video.current.meta) {
-    //     this.endTime = this.$store.state.video.current.meta.duration;
-    //   }
-
-    //   await this.$store.dispatch("analyser/listUpdate", {
-    //     videoId: this.$route.params.id,
-    //     addResults: true,
-    //   });
-
-    //   await this.$store.dispatch("annotationCategory/listUpdate");
-    //   await this.$store.dispatch("annotation/listUpdate");
-    //   await this.$store.dispatch("timelineSegmentAnnotation/listUpdate");
-
-    //   await this.$store.dispatch("timeline/listUpdate", this.$route.params.id);
-    //   //
-    //   //
-
-    //   //
-    // },
     onVideoResize() {
-      // this.$nextTick(() => {
       this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
-      // });
+    },
+    setCursor(cursor) {
+      const shownDuration = this.endTime - this.startTime;
+      const selectedSegment =
+        this.timelines[cursor.timeline].segments[cursor.segment];
+      console.log(JSON.stringify(selectedSegment));
+      let newStartTime = Math.min(this.startTime, selectedSegment.start);
+      let newEndTime = Math.max(this.endTime, selectedSegment.end);
+      this.$nextTick(() => {
+        this.startTime = newStartTime;
+        this.endTime = newEndTime;
+      });
+      console.log(JSON.stringify(cursor));
+      this.videoTime = selectedSegment.start;
+      this.targetTime = selectedSegment.start;
+      this.cursor = cursor;
     },
     onKeyDown(event) {
       let newCursor = {
@@ -242,7 +232,7 @@ export default {
           this.selectedTimelineSegment = [newCursor];
         }
       }
-      this.cursor = newCursor;
+      this.setCursor(newCursor);
     },
     onTimeUpdate(time) {
       this.videoTime = time;
@@ -280,19 +270,19 @@ export default {
 
     onAddSelection(selection) {
       this.selectedTimelineSegment.push(selection);
-      this.cursor = {
+      this.setCursor({
         type: "segment",
         timeline: selection.timeline,
         segment: selection.segment,
-      };
+      });
     },
     onSelect(selection) {
       this.selectedTimelineSegment = [selection];
-      this.cursor = {
+      this.setCursor({
         type: "segment",
         timeline: selection.timeline,
         segment: selection.segment,
-      };
+      });
     },
 
     onSegmentSelected(id) {
@@ -479,6 +469,13 @@ export default {
     $route: "fetch",
     currentTime() {
       this.videoTime = this.currentTime;
+    },
+    duration: {
+      handler: function (newValue) {
+        console.log(newValue);
+        this.endTime = newValue;
+      },
+      deep: true,
     },
   },
   components: {

@@ -10,7 +10,10 @@ import paper from "paper";
 export default {
   mixins: [TimeMixin],
   props: {
-    duration: {},
+    duration: {
+      type: Number,
+      default: 10,
+    },
     width: {
       default: "100%",
     },
@@ -20,6 +23,14 @@ export default {
     radius: {
       type: Number,
       default: 5,
+    },
+    endTime: {
+      type: Number,
+      default: 5,
+    },
+    startTime: {
+      type: Number,
+      default: 0,
     },
   },
   data() {
@@ -38,8 +49,8 @@ export default {
       tool: null,
       redraw: false,
 
-      selectionStartTime: 0,
-      selectionEndTime: this.duration,
+      hiddenStartTime: this.startTime,
+      hiddenEndTime: this.endTime,
       minTime: 1.0,
 
       mainStrokes: null,
@@ -137,11 +148,8 @@ export default {
       this.scope.activate();
       this.selectionLayer = new paper.Layer();
       let rectangle = new paper.Rectangle(
-        new paper.Point(this.timeToX(this.selectionStartTime), 5),
-        new paper.Point(
-          this.timeToX(this.selectionEndTime),
-          this.canvasHeight - 5
-        )
+        new paper.Point(this.timeToX(this.hiddenStartTime), 5),
+        new paper.Point(this.timeToX(this.hiddenEndTime), this.canvasHeight - 5)
       );
       let radius = new paper.Size(this.radius, this.radius);
       let path = new paper.Path.Rectangle(rectangle, radius);
@@ -152,9 +160,9 @@ export default {
       //handle
       let handleRadius = new paper.Size(this.radius, this.radius);
       let handleLeftRect = new paper.Rectangle(
-        new paper.Point(this.timeToX(this.selectionStartTime) - 5, 10),
+        new paper.Point(this.timeToX(this.hiddenStartTime) - 5, 10),
         new paper.Point(
-          this.timeToX(this.selectionStartTime) + 5,
+          this.timeToX(this.hiddenStartTime) + 5,
           this.canvasHeight - 10
         )
       );
@@ -164,9 +172,9 @@ export default {
       this.handleLeft = handleLeft;
 
       let handleRightRect = new paper.Rectangle(
-        new paper.Point(this.timeToX(this.selectionEndTime) - 5, 10),
+        new paper.Point(this.timeToX(this.hiddenEndTime) - 5, 10),
         new paper.Point(
-          this.timeToX(this.selectionEndTime) + 5,
+          this.timeToX(this.hiddenEndTime) + 5,
           this.canvasHeight - 10
         )
       );
@@ -181,15 +189,12 @@ export default {
         let deltaTime = self.xToTime(event.delta.x);
 
         if (deltaTime > 0) {
-          self.selectionStartTime = Math.min(
-            self.selectionStartTime + deltaTime,
-            self.selectionEndTime - self.minTime
+          self.hiddenStartTime = Math.min(
+            self.hiddenStartTime + deltaTime,
+            self.hiddenEndTime - self.minTime
           );
         } else {
-          self.selectionStartTime = Math.max(
-            self.selectionStartTime + deltaTime,
-            0
-          );
+          self.hiddenStartTime = Math.max(self.hiddenStartTime + deltaTime, 0);
         }
         self.onSelectionChange();
       };
@@ -198,13 +203,13 @@ export default {
         let deltaTime = self.xToTime(event.delta.x);
 
         if (deltaTime < 0) {
-          self.selectionEndTime = Math.max(
-            self.selectionEndTime + deltaTime,
-            self.selectionStartTime + self.minTime
+          self.hiddenEndTime = Math.max(
+            self.hiddenEndTime + deltaTime,
+            self.hiddenStartTime + self.minTime
           );
         } else {
-          self.selectionEndTime = Math.min(
-            self.selectionEndTime + deltaTime,
+          self.hiddenEndTime = Math.min(
+            self.hiddenEndTime + deltaTime,
             self.duration
           );
         }
@@ -213,20 +218,17 @@ export default {
 
       path.onMouseDrag = (event) => {
         //timespan should be const
-        const timeSpan = self.selectionEndTime - self.selectionStartTime;
+        const timeSpan = self.hiddenEndTime - self.hiddenStartTime;
         let deltaTime = self.xToTime(event.delta.x);
         if (deltaTime > 0) {
-          self.selectionEndTime = Math.min(
-            self.selectionEndTime + deltaTime,
+          self.hiddenEndTime = Math.min(
+            self.hiddenEndTime + deltaTime,
             self.duration
           );
-          self.selectionStartTime = self.selectionEndTime - timeSpan;
+          self.hiddenStartTime = self.hiddenEndTime - timeSpan;
         } else {
-          self.selectionStartTime = Math.max(
-            self.selectionStartTime + deltaTime,
-            0
-          );
-          self.selectionEndTime = self.selectionStartTime + timeSpan;
+          self.hiddenStartTime = Math.max(self.hiddenStartTime + deltaTime, 0);
+          self.hiddenEndTime = self.hiddenStartTime + timeSpan;
         }
         self.onSelectionChange();
       };
@@ -254,8 +256,8 @@ export default {
       });
     },
     onSelectionChange() {
-      let posStart = this.timeToX(this.selectionStartTime);
-      let posEnd = this.timeToX(this.selectionEndTime);
+      let posStart = this.timeToX(this.hiddenStartTime);
+      let posEnd = this.timeToX(this.hiddenEndTime);
       let timeSpan = posEnd - posStart;
       this.handleLeft.position.x = posStart;
       this.handleRight.position.x = posEnd;
@@ -271,16 +273,25 @@ export default {
     },
   },
   watch: {
-    duration() {
-      this.selectionStartTime = 0;
-      this.selectionEndTime = this.duration;
+    startTime(newValue) {
+      console.log(`TimeSelector::startTime::watch ${newValue}`);
+      this.hiddenStartTime = newValue;
       this.draw();
     },
-    selectionStartTime() {
-      this.$emit("startTimeChange", this.selectionStartTime);
+    endTime(newValue) {
+      console.log(`TimeSelector::endTime::watch ${newValue}`);
+      this.hiddenEndTime = newValue;
+      this.draw();
     },
-    selectionEndTime() {
-      this.$emit("endTimeChange", this.selectionEndTime);
+    hiddenStartTime() {
+      this.$nextTick(() => {
+        this.$emit("update:startTime", this.hiddenStartTime);
+      });
+    },
+    hiddenEndTime() {
+      this.$nextTick(() => {
+        this.$emit("update:endTime", this.hiddenEndTime);
+      });
     },
   },
   computed: {},
