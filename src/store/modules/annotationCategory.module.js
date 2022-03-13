@@ -19,15 +19,20 @@ const api = {
         }
     },
     actions: {
-        async create({ commit }, { name, color }) {
+        async create({ commit }, { name, color, videoId=null }) {
             const params = {
                 name: name,
                 color: color
             }
+            if(videoId){
+                params.video_id = videoId;
+            }
+            else{
 
-            const video = this.getters["video/current"];
-            if(video){
-                params.video_id = video.id
+                const video = this.getters["video/current"];
+                if(video){
+                    params.video_id = video.id
+                }
             }
 
             console.log(`ANNOTATION_CATEGORY_CREATE ${JSON.stringify(params)}`);
@@ -43,13 +48,19 @@ const api = {
             //     commit('error/update', info, { root: true });
             // });
         },
-
-
-        async listUpdate({ commit }) {
+        async listUpdate({ commit }, {videoId = null}) {
             let params = {}
-            const video = this.getters["video/current"];
-            if(video){
-                params.video_id = video.id
+
+            //use video id or take it from the current video
+            if(videoId){
+                params.video_id = videoId;
+            }
+            else{
+
+                const video = this.getters["video/current"];
+                if(video){
+                    params.video_id = video.id
+                }
             }
             console.log(`AnnotationCategory::listUpdate ${JSON.stringify(params)}`)
             return axios.get(`${config.API_LOCATION}/annotation_category_list`, {params})

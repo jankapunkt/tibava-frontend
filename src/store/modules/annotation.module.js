@@ -19,7 +19,7 @@ const api = {
         }
     },
     actions: {
-        async create({ commit }, { name, color, categoryId }) {
+        async create({ commit }, { name, color, categoryId, videoId=null }) {
             let params = {
                 name: name,
                 color: color
@@ -27,10 +27,17 @@ const api = {
             if (categoryId) {
                 params["category_id"] = categoryId
             }
+            
+            //use video id or take it from the current video
+            if(videoId){
+                params.video_id = videoId;
+            }
+            else{
 
-            const video = this.getters["video/current"];
-            if(video){
-                params.video_id = video.id
+                const video = this.getters["video/current"];
+                if(video){
+                    params.video_id = video.id
+                }
             }
 
             console.log(`ANNOTATION_CREATE ${JSON.stringify(params)}`);
@@ -86,11 +93,19 @@ const api = {
         //             commit('error/update', info, { root: true });
         //         });
         // },
-        async listUpdate({ commit }) {
+        async listUpdate({ commit }, {videoId = null}) {
             let params = {}
-            const video = this.getters["video/current"];
-            if(video){
-                params.video_id = video.id
+
+            //use video id or take it from the current video
+            if(videoId){
+                params.video_id = videoId;
+            }
+            else{
+
+                const video = this.getters["video/current"];
+                if(video){
+                    params.video_id = video.id
+                }
             }
 
             console.log(`Annotation::listUpdate ${JSON.stringify(params)}`)

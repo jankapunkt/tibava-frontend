@@ -161,30 +161,30 @@ export default {
     };
   },
   methods: {
-    async fetch_data() {
-      //
+    // async fetch_data() {
+    //   //
 
-      await this.$store.dispatch("video/get", this.$route.params.id);
+    //   await this.$store.dispatch("video/get", this.$route.params.id);
 
-      if (this.$store.state.video.current.meta) {
-        this.endTime = this.$store.state.video.current.meta.duration;
-      }
+    //   if (this.$store.state.video.current.meta) {
+    //     this.endTime = this.$store.state.video.current.meta.duration;
+    //   }
 
-      await this.$store.dispatch("analyser/listUpdate", {
-        videoId: this.$route.params.id,
-        addResults: true,
-      });
+    //   await this.$store.dispatch("analyser/listUpdate", {
+    //     videoId: this.$route.params.id,
+    //     addResults: true,
+    //   });
 
-      await this.$store.dispatch("annotationCategory/listUpdate");
-      await this.$store.dispatch("annotation/listUpdate");
-      await this.$store.dispatch("timelineSegmentAnnotation/listUpdate");
+    //   await this.$store.dispatch("annotationCategory/listUpdate");
+    //   await this.$store.dispatch("annotation/listUpdate");
+    //   await this.$store.dispatch("timelineSegmentAnnotation/listUpdate");
 
-      await this.$store.dispatch("timeline/listUpdate", this.$route.params.id);
-      //
-      //
+    //   await this.$store.dispatch("timeline/listUpdate", this.$route.params.id);
+    //   //
+    //   //
 
-      //
-    },
+    //   //
+    // },
     onVideoResize() {
       // this.$nextTick(() => {
       this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
@@ -311,6 +311,11 @@ export default {
     },
     submitAnnotation(evt) {
       this.annotation_dialog = false;
+    },
+    async fetch() {
+      await this.$store.dispatch("video/fetch", {
+        videoId: this.$route.params.id,
+      });
     },
   },
   computed: {
@@ -458,7 +463,9 @@ export default {
   created() {
     // fetch the data when the view is created and the data is
     // already being observed
-    this.fetch_data();
+    // this.fetch_data();
+    // this.$store.dispatch('')
+    this.fetch();
   },
   mounted() {
     this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
@@ -469,7 +476,7 @@ export default {
   },
   watch: {
     // call again the method if the route changes
-    $route: "fetch_data",
+    $route: "fetch",
     currentTime() {
       this.videoTime = this.currentTime;
     },

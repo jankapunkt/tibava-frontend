@@ -27,11 +27,11 @@ const api = {
     }
   },
   actions: {
-    async get({ commit, state }, video_id) {
+    async get({ commit, state }, {videoId}) {
       const params = {
-        id: video_id
+        id: videoId
       }
-      axios.get(`${config.API_LOCATION}/video_get`, { params })
+      return axios.get(`${config.API_LOCATION}/video_get`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit("updateCurrent", res.data.entry);
@@ -41,6 +41,28 @@ const api = {
         //   const info = { date: Date(), error, origin: 'collection' };
         //   commit('error/update', info, { root: true });
         // });
+    },
+    async fetch({commit}, {videoId, includeTimeline=true, includeAnnotation=true, includeAnalyser=true}){
+
+      let promises = []
+
+      promises.push(this.dispatch("video/get", {videoId}))
+      if(includeAnnotation){
+        promises.push(this.dispatch("annotationCategory/listUpdate", {videoId}))
+        promises.push(this.dispatch("annotation/listUpdate", {videoId}))
+      }
+      if(includeTimeline){
+        promises.push(this.dispatch("timeline/listUpdate", {videoId}))
+        promises.push(this.dispatch("timelineSegment/listUpdate", {videoId}))
+        promises.push(this.dispatch("timelineSegmentAnnotation/listUpdate", {videoId}))
+      }
+      if(includeAnalyser){
+        promises.push(this.dispatch("analyser/listUpdate", {
+          videoId: videoId,
+          addResults: true,
+        }));
+      }
+      return Promise.all(promises)
     },
 
     async upload({ commit }, params) {

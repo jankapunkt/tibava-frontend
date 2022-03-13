@@ -17,7 +17,7 @@ const api = {
     },
     actions: {
         async listAdd({ commit }, video_id) {
-            const params = {
+            let params = {
                 id: video_id
             }
             return axios.get(`${config.API_LOCATION}/timeline_list`, { params })
@@ -32,9 +32,17 @@ const api = {
             // });
         },
 
-        async listUpdate({ commit }, video_id) {
-            const params = {
-                id: video_id
+        async listUpdate({ commit }, { videoId=null }) {
+            //use video id or take it from the current video
+            let params = {};
+            if(videoId){
+                params.video_id = videoId;
+            }
+            else{
+                const video = this.getters["video/current"];
+                if(video){
+                    params.video_id = video.id
+                }
             }
             return axios.get(`${config.API_LOCATION}/timeline_list`, { params })
                 .then((res) => {
@@ -51,7 +59,7 @@ const api = {
 
         async duplicate({ commit }, timeline_id) {
 
-            const params = {
+            let params = {
                 id: timeline_id
             }
             return axios.post(`${config.API_LOCATION}/timeline_duplicate`, params)
@@ -68,7 +76,7 @@ const api = {
 
         async delete({ commit }, timeline_id) {
 
-            const params = {
+            let params = {
                 id: timeline_id
             }
             return axios.post(`${config.API_LOCATION}/timeline_delete`, params)
@@ -88,17 +96,14 @@ const api = {
             timelines.forEach((e, i) => {
                 state.timelines[e.id] = e
                 state.timelineList.push(e.id)
-                this.dispatch("timelineSegment/listAdd", e.id);
             });
         },
         update(state, timelines) {
             state.timelines = {};
             state.timelineList = [];
-            this.commit("timelineSegment/clear");
             timelines.forEach((e, i) => {
                 state.timelines[e.id] = e
                 state.timelineList.push(e.id)
-                this.dispatch("timelineSegment/listAdd", e.id);
             });
         },
         delete(state, timeline_id) {

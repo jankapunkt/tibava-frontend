@@ -36,9 +36,19 @@ const api = {
                 });
         },
 
-        listUpdate({ commit }, timeline_id) {
-            const params = {
-                timeline_id: timeline_id
+        listUpdate({ commit }, {timelineId, videoId}) {
+            let params = {}
+            if(timelineId){
+                params.timeline_id = timelineId
+            }
+            if(videoId){
+                params.video_id = videoId;
+            }
+            else{
+                const video = this.getters["video/current"];
+                if(video){
+                    params.video_id = video.id
+                }
             }
             axios.get(`${config.API_LOCATION}/timeline_segment_list`, { params })
                 .then((res) => {
