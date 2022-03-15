@@ -1,10 +1,5 @@
 <template>
-  <v-main
-    class="d-flex flex-column justify-start align-start main"
-    @keydown.native="onKeyDown"
-    tabindex="0"
-    ref="main"
-  >
+  <v-main class="main" @keydown.native="onKeyDown" tabindex="0" ref="main">
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
