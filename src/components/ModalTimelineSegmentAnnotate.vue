@@ -325,9 +325,9 @@ export default {
     },
     async submit() {
       let inputs = JSON.parse(JSON.stringify(this.inputs));
-      // if (this.isSubmitting) {
-      //   return;
-      // }
+      if (this.isSubmitting) {
+        return;
+      }
       this.isSubmitting = true;
       await this.$store.dispatch("timelineSegment/annotate", {
         timelineSegmentId: this.timelineSegment.id,
@@ -335,7 +335,7 @@ export default {
       });
 
       this.isSubmitting = false;
-      // this.$emit("update:show", false);
+      this.$emit("update:show", false);
     },
     close() {
       this.$emit("update:show", false);
