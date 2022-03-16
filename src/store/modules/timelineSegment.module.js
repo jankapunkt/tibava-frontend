@@ -20,23 +20,54 @@ const api = {
     },
     actions: {
 
-        listAdd({ commit }, timeline_id) {
+        async annotate({ commit }, { timelineSegmentId, annotations }) {
+            const params = {
+                timeline_segment_id: timelineSegmentId,
+                annotations: annotations
+            }
+
+            const videoId = this.getters["video/current"].id;
+
+
+            console.log(`TIMELINE_SEGMENT_ANNOTATE ${JSON.stringify(params)} ${videoId}`);
+            return axios.post(`${config.API_LOCATION}/timeline/segment/annotate`, params)
+                .then((res) => {
+                    if (res.data.status === 'ok') {
+                        this.dispatch("annotationCategory/listUpdate", {videoId})
+                        this.dispatch("annotation/listUpdate", {videoId})
+                        
+                        this.dispatch("timeline/listUpdate", {videoId})
+                        this.dispatch("timelineSegment/listUpdate", {videoId})
+                        this.dispatch("timelineSegmentAnnotation/listUpdate", {videoId})
+                          
+                        // commit('add', [res.data.entry]);
+
+                        // commit('timelineSegment/addAnnotation', [{ timelineSegmentId, entry: res.data.entry }], { root: true });
+                        // return res.data.entry.id;
+                    }
+                })
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
+        },
+        async listAdd({ commit }, timeline_id) {
             const params = {
                 timeline_id: timeline_id
             }
-            axios.get(`${config.API_LOCATION}/timeline_segment_list`, { params })
+            return axios.get(`${config.API_LOCATION}/timeline/segment/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('add', res.data.entries);
                     }
                 })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
+                // .catch((error) => {
+                //     const info = { date: Date(), error, origin: 'collection' };
+                //     commit('error/update', info, { root: true });
+                // });
         },
 
-        listUpdate({ commit }, {timelineId, videoId}) {
+        async listUpdate({ commit }, {timelineId, videoId}) {
             let params = {}
             if(timelineId){
                 params.timeline_id = timelineId
@@ -50,16 +81,16 @@ const api = {
                     params.video_id = video.id
                 }
             }
-            axios.get(`${config.API_LOCATION}/timeline_segment_list`, { params })
+            return axios.get(`${config.API_LOCATION}/timeline/segment/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);
                     }
                 })
-                .catch((error) => {
-                    const info = { date: Date(), error, origin: 'collection' };
-                    commit('error/update', info, { root: true });
-                });
+                // .catch((error) => {
+                //     const info = { date: Date(), error, origin: 'collection' };
+                //     commit('error/update', info, { root: true });
+                // });
         },
 
 

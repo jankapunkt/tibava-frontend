@@ -26,7 +26,7 @@ const api = {
             }
 
             console.log(`TIMELINE_SEGMENT_ANNOTATION_CREATE ${JSON.stringify(params)}`);
-            return axios.post(`${config.API_LOCATION}/timeline_segment_annotation_create`, params)
+            return axios.post(`${config.API_LOCATION}/timeline/segment/annotation/create`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
 
@@ -46,7 +46,7 @@ const api = {
                 timeline_segment_annotation_id: id,
             }
 
-            return axios.post(`${config.API_LOCATION}/timeline_segment_annotation_delete`, params)
+            return axios.post(`${config.API_LOCATION}/timeline/segment/annotation/delete`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('delete', [res.data.entry]);
@@ -69,7 +69,7 @@ const api = {
                     params.video_id = video.id
                 }
             }
-            return axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`, {params})
+            return axios.get(`${config.API_LOCATION}/timeline/segment/annotation/list`, {params})
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);
@@ -91,7 +91,7 @@ const api = {
                     params.video_id = video.id
                 }
             }
-            return axios.get(`${config.API_LOCATION}/timeline_segment_annotation_list`, {params})
+            return axios.get(`${config.API_LOCATION}/timeline/segment/annotation/list`, {params})
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('add', res.data.entries);

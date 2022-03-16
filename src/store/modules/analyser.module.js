@@ -19,7 +19,7 @@ const api = {
         video_id: videoId,
         add_results: addResults,
       }
-      return axios.get(`${config.API_LOCATION}/analyser_list`, { params })
+      return axios.get(`${config.API_LOCATION}/analyser/list`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit('update', res.data.entries);
