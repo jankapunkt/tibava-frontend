@@ -31,7 +31,7 @@ const api = {
       const params = {
         id: videoId
       }
-      return axios.get(`${config.API_LOCATION}/video_get`, { params })
+      return axios.get(`${config.API_LOCATION}/video/get`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit("updateCurrent", res.data.entry);
@@ -73,7 +73,7 @@ const api = {
       formData.append('analyser', params.analyser);
       commit("startUploading");
       // commit('loading/update', true, { root: true });
-      return axios.post(`${config.API_LOCATION}/video_upload`, formData, {
+      return axios.post(`${config.API_LOCATION}/video/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (event) =>{console.log(JSON.stringify(event))
           const totalLength = event.lengthComputable ? event.total : event.target.getResponseHeader('content-length') || event.target.getResponseHeader('x-decompressed-content-length');
@@ -101,7 +101,7 @@ const api = {
         });
     },
     async listUpdate({ commit }, params) {
-      return axios.get(`${config.API_LOCATION}/video_list`)
+      return axios.get(`${config.API_LOCATION}/video/list`)
         .then((res) => {
           if (res.data.status === 'ok') {
             commit('update', res.data.entries);
@@ -117,7 +117,7 @@ const api = {
       const params = {
         id: video_id
       }
-      return axios.post(`${config.API_LOCATION}/video_delete`, { id: video_id })
+      return axios.post(`${config.API_LOCATION}/video/delete`, { id: video_id })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit("delete", video_id);

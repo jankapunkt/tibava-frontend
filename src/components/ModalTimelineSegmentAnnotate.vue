@@ -325,167 +325,17 @@ export default {
     },
     async submit() {
       let inputs = JSON.parse(JSON.stringify(this.inputs));
-      if (this.isSubmitting) {
-        return;
-      }
+      // if (this.isSubmitting) {
+      //   return;
+      // }
       this.isSubmitting = true;
-      const categories = await Promise.all(
-        this.categories.map(async (e) => {
-          if (!("id" in e)) {
-            let categoryId = await this.createCategory(e);
-            e.id = categoryId;
-          }
-          return e;
-        })
-      );
-
-      // map new category id to inputs
-      inputs = inputs.map((e) => {
-        if (e.category && e.category.name) {
-          const category = categories.find((f) => e.category.name == f.name);
-          e.category.id = category.id;
-        }
-        return e;
+      await this.$store.dispatch("timelineSegment/annotate", {
+        timelineSegmentId: this.timelineSegment.id,
+        annotations: inputs,
       });
-
-      let annotations = await Promise.all(
-        inputs.map(async (e) => {
-          if (!("id" in e)) {
-            let annotationId = await this.createAnnotation(e);
-            e.id = annotationId;
-          }
-          return e;
-        })
-      );
-
-      let existingAnnotation = this.timelineSegment.annotations.map(
-        (e) => e.annotation.id
-      );
-
-      let submittedAnnotation = inputs.map((e) => e.id);
-
-      let deletedIds = existingAnnotation.filter(
-        (e) => !submittedAnnotation.includes(e)
-      );
-      let createdIds = submittedAnnotation.filter(
-        (e) => !existingAnnotation.includes(e)
-      );
-
-      // first create all new connections
-      await Promise.all(
-        annotations.map(async (e) => {
-          if (!createdIds.includes(e.id)) {
-            return;
-          }
-          return await this.createTimelineSegmentAnnotation(e);
-        })
-      );
-      // delete old connections
-      await Promise.all(
-        this.timelineSegment.annotations.map(async (e) => {
-          if (!deletedIds.includes(e.annotation.id)) {
-            return;
-          }
-          return await this.deleteTimelineSegmentAnnotation(e);
-        })
-      );
-      //update existing
-      await Promise.all(
-        this.timelineSegment.annotations.map(async (e) => {
-          await Promise.all(
-            inputs.map(async (f) => {
-              if (e.annotation.id === f.id) {
-                if (e.annotation.color !== f.color) {
-                  return await this.changeAnnotation(f);
-                } else if (("category" in e.annotation) ^ ("category" in f)) {
-                  return await this.changeAnnotation(f);
-                } else if (
-                  (e.annotation.category === null) ^
-                  (f.category === null)
-                ) {
-                  return await this.changeAnnotation(f);
-                } else if (e.annotation.category && f.category) {
-                  if (e.annotation.category.name !== f.category.name) {
-                    return await this.changeAnnotation(f);
-                  } else {
-                  }
-                }
-              }
-            })
-          );
-          // if (deletedIds.includes(e.annotation.id)) {
-          //   return;
-          // }
-          // // if
-          // return await this.deleteTimelineSegmentAnnotation(e);
-        })
-      );
 
       this.isSubmitting = false;
-      this.$emit("update:show", false);
-    },
-    async createCategory(category) {
-      let categoryId = await this.$store.dispatch("annotationCategory/create", {
-        name: category.name,
-        color: category.color,
-      });
-      console.log(`CategoryId ${categoryId}`);
-      return categoryId;
-    },
-    async createAnnotation(annotation) {
-      let annotationId = null;
-      console.log(`Annotation ${JSON.stringify(annotation)}`);
-      if (annotation.category) {
-        annotationId = await this.$store.dispatch("annotation/create", {
-          name: annotation.name,
-          color: annotation.color,
-          categoryId: annotation.category.id,
-        });
-      } else {
-        annotationId = await this.$store.dispatch("annotation/create", {
-          name: annotation.name,
-          color: annotation.color,
-        });
-      }
-      return annotationId;
-    },
-    async createTimelineSegmentAnnotation(annotation) {
-      let timelineSegmentAnnotationId = null;
-      timelineSegmentAnnotationId = await this.$store.dispatch(
-        "timelineSegmentAnnotation/create",
-        {
-          timelineSegmentId: this.timelineSegment.id,
-          annotationId: annotation.id,
-        }
-      );
-      return timelineSegmentAnnotationId;
-    },
-    async deleteTimelineSegmentAnnotation(timelineSegmentAnnotation) {
-      return await this.$store.dispatch(
-        "timelineSegmentAnnotation/delete",
-        timelineSegmentAnnotation.id
-      );
-    },
-    async changeAnnotation(annotation) {
-      if (
-        "category" in annotation &&
-        annotation.category &&
-        "id" in annotation.category
-      ) {
-        return await this.$store.dispatch("annotation/change", {
-          annotationId: annotation.id,
-          name: annotation.name,
-          color: annotation.color,
-          categoryId: annotation.category.id,
-        });
-      } else {
-        return await this.$store.dispatch("annotation/change", {
-          annotationId: annotation.id,
-          name: annotation.name,
-          color: annotation.color,
-          categoryId: null,
-        });
-      }
+      // this.$emit("update:show", false);
     },
     close() {
       this.$emit("update:show", false);

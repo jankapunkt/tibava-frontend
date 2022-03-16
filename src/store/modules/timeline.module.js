@@ -20,7 +20,7 @@ const api = {
             let params = {
                 id: video_id
             }
-            return axios.get(`${config.API_LOCATION}/timeline_list`, { params })
+            return axios.get(`${config.API_LOCATION}/timeline/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('add', res.data.entries);
@@ -44,7 +44,7 @@ const api = {
                     params.video_id = video.id
                 }
             }
-            return axios.get(`${config.API_LOCATION}/timeline_list`, { params })
+            return axios.get(`${config.API_LOCATION}/timeline/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);
@@ -62,7 +62,7 @@ const api = {
             let params = {
                 id: timeline_id
             }
-            return axios.post(`${config.API_LOCATION}/timeline_duplicate`, params)
+            return axios.post(`${config.API_LOCATION}/timeline/duplicate`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('add', [res.data.entry]);
@@ -79,7 +79,7 @@ const api = {
             let params = {
                 id: timeline_id
             }
-            return axios.post(`${config.API_LOCATION}/timeline_delete`, params)
+            return axios.post(`${config.API_LOCATION}/timeline/delete`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit("delete", timeline_id);

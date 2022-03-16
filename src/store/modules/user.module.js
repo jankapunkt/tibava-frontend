@@ -31,7 +31,7 @@ const user = {
   },
   actions: {
     async getCSRFToken({ commit, state }, params) {
-      return axios.get(`${config.API_LOCATION}/get_csrf_token`, {
+      return axios.get(`${config.API_LOCATION}/user/csrf`, {
         params, withCredentials: true
       })
         .then(() => {
@@ -45,7 +45,7 @@ const user = {
         });
     },
     async getUserData({ commit }, params) {
-      return axios.post(`${config.API_LOCATION}/get_user`, { params })
+      return axios.post(`${config.API_LOCATION}/user/get`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit('updateUserData', res.data.data);

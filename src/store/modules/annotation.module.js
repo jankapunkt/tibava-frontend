@@ -41,7 +41,7 @@ const api = {
             }
 
             console.log(`ANNOTATION_CREATE ${JSON.stringify(params)}`);
-            return axios.post(`${config.API_LOCATION}/annotation_create`, params)
+            return axios.post(`${config.API_LOCATION}/annotation/create`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('add', [res.data.entry]);
@@ -63,7 +63,7 @@ const api = {
                 params["category_id"] = categoryId
             }
 
-            return axios.post(`${config.API_LOCATION}/annotation_change`, params)
+            return axios.post(`${config.API_LOCATION}/annotation/update`, params)
                 .then((res) => {
                     console.log(res.data)
                     if (res.data.status === 'ok') {
@@ -109,7 +109,7 @@ const api = {
             }
 
             console.log(`Annotation::listUpdate ${JSON.stringify(params)}`)
-            return axios.get(`${config.API_LOCATION}/annotation_list`, {params})
+            return axios.get(`${config.API_LOCATION}/annotation/list`, {params})
                 .then((res) => {
                     if (res.data.status === 'ok') {
                         commit('update', res.data.entries);
