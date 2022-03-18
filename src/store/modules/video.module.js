@@ -130,6 +130,60 @@ const api = {
         });
 
     },
+    async exportCSV({commit}, {videoId}){
+      let params = {};
+      //use video id or take it from the current video
+      if(videoId){
+          params.video_id = videoId;
+      }
+      else{
+          const video = this.getters["video/current"];
+          if(video){
+              params.video_id = video.id
+          }
+      }
+      return axios.get(`${config.API_LOCATION}/video/export/csv`, { params })
+        .then((res) => {
+          if (res.data.status === 'ok') {
+            let blob = new Blob([res.data.file], {type:'text/csv'});
+            let link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = `${params.video_id}.csv`;
+            link.click();
+          }
+        })
+        // .catch((error) => {
+        //   const info = { date: Date(), error, origin: 'collection' };
+        //   commit('error/update', info, { root: true });
+        // });
+    },    
+    async exportJson({commit}, {videoId}){
+      let params = {};
+      //use video id or take it from the current video
+      if(videoId){
+          params.video_id = videoId;
+      }
+      else{
+          const video = this.getters["video/current"];
+          if(video){
+              params.video_id = video.id
+          }
+      }
+      return axios.get(`${config.API_LOCATION}/video/export/json`, { params })
+        .then((res) => {
+          if (res.data.status === 'ok') {
+            let blob = new Blob([res.data.file], {type:'text/json'});
+            let link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = `${params.video_id}.json`;
+            link.click();
+          }
+        })
+        // .catch((error) => {
+        //   const info = { date: Date(), error, origin: 'collection' };
+        //   commit('error/update', info, { root: true });
+        // });
+    },
   },
   mutations: {
 

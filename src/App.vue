@@ -8,6 +8,7 @@
 
         <SearchBar />
         <UserMenu />
+        <VideoMenu />
       </v-row>
     </v-app-bar>
     <router-view />
@@ -17,6 +18,7 @@
 <script>
 import UserMenu from "@/components/UserMenu.vue";
 import SearchBar from "@/components/SearchBar.vue";
+import VideoMenu from "@/components/VideoMenu.vue";
 
 export default {
   data() {
@@ -27,6 +29,7 @@ export default {
   components: {
     UserMenu,
     SearchBar,
+    VideoMenu,
   },
 };
 </script>
