@@ -14,7 +14,7 @@
 
     <v-list class="pa-0">
       <v-list-item-group>
-        <v-list-item class="px-0">
+        <v-list-item v-if="video.id" class="px-0">
           <ModalExport @close="menu = false" />
         </v-list-item>
       </v-list-item-group>
@@ -32,6 +32,11 @@ export default {
     };
   },
   computed: {
+    video() {
+      let video = this.$store.getters["video/current"];
+      console.log(video);
+      return video;
+    },
     loggedIn() {
       return this.$store.state.user.loggedIn;
     },

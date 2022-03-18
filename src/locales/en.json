@@ -10,6 +10,13 @@
     "button": {
         "search": "Search"
     },
+    "modal": {
+        "export": {
+            "title": "Export",
+            "csv": "Export as CSV",
+            "json": "Export as JSON"
+        }
+    },
     "user": {
         "name": "Username",
         "password": "Password",
