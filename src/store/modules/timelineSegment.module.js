@@ -33,12 +33,17 @@ const api = {
             return axios.post(`${config.API_LOCATION}/timeline/segment/annotate`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        this.dispatch("annotationCategory/listUpdate", {videoId})
-                        this.dispatch("annotation/listUpdate", {videoId})
+                        this.commit('timelineSegmentAnnotation/delete',res.data.timeline_segment_annotation_deleted)
+                        this.commit('timelineSegmentAnnotation/add',res.data.timeline_segment_annotation_added)
+
+                        this.commit('annotationCategory/add',res.data.annotation_category_added)
+                        this.commit('annotation/add',res.data.annotation_added)
+                        // this.dispatch("annotationCategory/listUpdate", {videoId})
+                        // this.dispatch("annotation/listUpdate", {videoId})
                         
-                        this.dispatch("timeline/listUpdate", {videoId})
-                        this.dispatch("timelineSegment/listUpdate", {videoId})
-                        this.dispatch("timelineSegmentAnnotation/listUpdate", {videoId})
+                        // this.dispatch("timeline/listUpdate", {videoId})
+                        // this.dispatch("timelineSegment/listUpdate", {videoId})
+                        // this.dispatch("timelineSegmentAnnotation/listUpdate", {videoId})
                           
                         // commit('add', [res.data.entry]);
 
