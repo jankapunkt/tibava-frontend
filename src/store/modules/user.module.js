@@ -59,7 +59,7 @@ const user = {
     async login({ commit }, params) {
       // commit('loading/update', true, { root: true });
       let info = { date: Date(), origin: 'login' };
-      return axios.post(`${config.API_LOCATION}/login`, { params })
+      return axios.post(`${config.API_LOCATION}/user/login`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit('updateUserData', res.data.data);
@@ -82,7 +82,7 @@ const user = {
     async logout({ commit, state }) {
       const params = state.userData;
       // commit('loading/update', true, { root: true });
-      return axios.post(`${config.API_LOCATION}/logout`, { params })
+      return axios.post(`${config.API_LOCATION}/user/logout`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit('updateUserData', {});
@@ -102,7 +102,7 @@ const user = {
     async register({ commit }, params) {
       // commit('loading/update', true, { root: true });
       let info = { date: Date(), origin: 'register' };
-      return axios.post(`${config.API_LOCATION}/register`, { params })
+      return axios.post(`${config.API_LOCATION}/user/register`, { params })
         .then((res) => {
           if (res.data.status === 'ok') {
             commit('updateUserData', res.data);
