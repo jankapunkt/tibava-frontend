@@ -47,7 +47,7 @@ export default {
   props: [],
   data() {
     return {
-      show: true,
+      show: false,
     };
   },
   computed: {},
