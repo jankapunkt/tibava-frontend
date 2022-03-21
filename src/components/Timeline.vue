@@ -64,6 +64,103 @@
 import TimeMixin from "../mixins/time";
 import paper from "paper";
 
+import * as PIXI from "pixi.js";
+import { DropShadowFilter } from "pixi-filters";
+
+class AnnotationTimeline {
+  constructor({
+    timeline,
+    x,
+    y,
+    width,
+    height,
+    fill = 0xffffff,
+    startTime = 0,
+    endTime = 10,
+  }) {
+    this._timeline = timeline;
+    this._x = x;
+    this._y = y;
+    this._width = width;
+    this._height = height;
+    this._startTime = startTime;
+    this._endTime = endTime;
+    this._container = new PIXI.Container();
+
+    this._rect = new PIXI.Graphics();
+    this._rect.beginFill(fill);
+    this._rect.drawRoundedRect(0, 0, width, height, 5);
+    this._rect.x = x;
+    this._rect.y = y;
+
+    this._mask = new PIXI.Graphics();
+    this._mask.beginFill(0xffffff);
+    this._mask.drawRoundedRect(0, 0, width, height, 5);
+    this._rect.mask = this._mask;
+    this._rect.addChild(this._mask);
+
+    let shadow = new DropShadowFilter();
+    shadow.color = 0x0000;
+    shadow.distance = 2;
+    shadow.alpha = 0.4;
+    shadow.rotation = 90;
+    shadow.blur = 1;
+    this._rect.filters = [shadow];
+
+    this._container.addChild(this._rect);
+
+    this._segments = new PIXI.Container();
+    if (this._timeline.segments) {
+      this._timeline.segments.forEach((s, i) => {
+        const x = this.timeToX(s.start);
+        const y = this._y;
+        const width = this.timeToX(s.end) - this.timeToX(s.start);
+        const height = this._height;
+
+        let segmentE = new PIXI.Graphics();
+        segmentE.beginFill(0xff00ff);
+        segmentE.drawRoundedRect(0, 0, width, height, 5);
+        segmentE.x = x;
+        segmentE.y = y;
+
+        segmentE.mask = this._mask;
+        console.log(segmentE.x);
+        // segmentE.mask = this._mask;
+        this._segments.addChild(segmentE);
+      });
+      this._container.addChild(this._segments);
+    }
+  }
+  get element() {
+    return this._container;
+  }
+  get scale() {
+    return this._width / (this._endTime - this._startTime);
+  }
+  timeToX(time) {
+    return this._x + this.scale * (time - this._startTime);
+  }
+  scaleSegment() {
+    if (this._timeline.segments) {
+      this._timeline.segments.forEach((s, i) => {
+        const width = this.timeToX(s.end) - this.timeToX(s.start);
+        const x = this.timeToX(s.start);
+        console.log(`${this._segments.getChildAt(i).x} ${x}`);
+        this._segments.getChildAt(i).x = x;
+        this._segments.getChildAt(i).width = width;
+      });
+    }
+  }
+  set startTime(time) {
+    this._startTime = time;
+    this.scaleSegment();
+  }
+  set endTime(time) {
+    this._endTime = time;
+    this.scaleSegment();
+  }
+}
+
 export default {
   mixins: [TimeMixin],
   props: {
@@ -73,9 +170,11 @@ export default {
     timelines: {},
     startTime: {
       type: Number,
+      default: 0,
     },
     endTime: {
       type: Number,
+      default: 10,
     },
     selectedTimelineSegment: {
       default: [],
@@ -151,6 +250,10 @@ export default {
   },
   data() {
     return {
+      app: null,
+      timelinesContainer: null,
+      timelineObjects: [],
+
       canvasStyle: {
         height: this.scaleHeight,
         width: this.width,
@@ -195,44 +298,50 @@ export default {
   },
   methods: {
     draw() {
-      if (this.timelines) {
-        this.canvas.height =
-          this.scaleHeight +
-          this.timelines.length * (this.timelineHeight + this.gap);
-      } else {
-        this.canvas.height = 80;
-      }
-
-      var desiredWidth = this.$refs.container.clientWidth; // For instance: $(window).width();
-      // var desiredHeight = h; // For instance $('#canvasContainer').height();
-
-      this.containerWidth = this.$refs.container.clientWidth;
-      this.containerHeight = this.$refs.container.clientHeight;
-      this.canvas.width = desiredWidth;
-
-      this.scope.view.viewSize = new paper.Size(
-        this.canvas.width,
-        this.canvas.height
-      );
-      this.scope.view.draw();
-
-      this.canvasWidth = this.scope.view.size.width;
-      this.canvasHeight = this.scope.view.size.height;
       this.timeScale =
-        (this.scope.view.size.width - this.headerWidth - 5 * this.gap) /
+        (window.innerWidth - this.headerWidth - 5 * this.gap) /
         (this.endTime - this.startTime);
-      if (isNaN(this.timeScale)) {
-        return;
-      }
-      this.drawScale();
-      this.drawTimelineHeader();
       this.drawTimeline();
-      this.drawSegment();
-      this.drawTime();
-      this.drawSelection(this.selectedTimelineSegment);
-
-      this.scope.view.draw();
     },
+    // draw() {
+    //   if (this.timelines) {
+    //     this.canvas.height =
+    //       this.scaleHeight +
+    //       this.timelines.length * (this.timelineHeight + this.gap);
+    //   } else {
+    //     this.canvas.height = 80;
+    //   }
+
+    //   var desiredWidth = this.$refs.container.clientWidth; // For instance: $(window).width();
+    //   // var desiredHeight = h; // For instance $('#canvasContainer').height();
+
+    //   this.containerWidth = this.$refs.container.clientWidth;
+    //   this.containerHeight = this.$refs.container.clientHeight;
+    //   this.canvas.width = desiredWidth;
+
+    //   this.scope.view.viewSize = new paper.Size(
+    //     this.canvas.width,
+    //     this.canvas.height
+    //   );
+    //   this.scope.view.draw();
+
+    //   this.canvasWidth = this.scope.view.size.width;
+    //   this.canvasHeight = this.scope.view.size.height;
+    //   this.timeScale =
+    //     (this.scope.view.size.width - this.headerWidth - 5 * this.gap) /
+    //     (this.endTime - this.startTime);
+    //   if (isNaN(this.timeScale)) {
+    //     return;
+    //   }
+    //   this.drawScale();
+    //   this.drawTimelineHeader();
+    // this.drawTimeline();
+    //   this.drawSegment();
+    //   this.drawTime();
+    //   this.drawSelection(this.selectedTimelineSegment);
+
+    //   this.scope.view.draw();
+    // },
     drawScale() {
       this.scope.activate();
       if (this.scaleLayer) {
@@ -356,34 +465,58 @@ export default {
       });
     },
     drawTimeline() {
-      this.scope.activate();
-      if (this.timelineLayer) {
-        this.timelineLayer.removeChildren();
+      let startTime = 0;
+      if (this.startTime) {
+        startTime = this.startTime;
+      }
+      // this.app.stage.children.forEach((e,i) => {
+      //   if(e === this.timelineGroup){
+      //     this.add.stage.removeChildren
+      //   }
+      // })
+
+      if (this.timelinesContainer) {
+        this.app.stage.removeChild(this.timelinesContainer);
       }
 
-      this.timelineLayer = new paper.Layer();
-
-      this.timelineLayer.activate();
-
-      let self = this;
+      this.timelinesContainer = new PIXI.Container();
+      this.timelineObjects = [];
       this.timelines.forEach((e, i) => {
-        //box
-        let rectangle = new paper.Rectangle(
-          new paper.Point(
-            self.timeToX(self.startTime),
-            (this.gap + this.timelineHeight) * i + this.scaleHeight
-          ),
-          new paper.Point(
-            self.timeToX(self.endTime),
-            (this.gap + this.timelineHeight) * i +
-              this.scaleHeight +
-              this.timelineHeight
-          )
-        );
-        let radius = new paper.Size(this.radius, this.radius);
-        let path = new paper.Path.Rectangle(rectangle, radius);
-        path.style = self.timelineStyle;
+        const x = this.timeToX(startTime);
+        const y = (this.gap + this.timelineHeight) * i + this.scaleHeight;
+        const width = this.timeToX(this.endTime) - x;
+        const height = this.timelineHeight;
+
+        // console.log(`${i} ${x}  ${y} ${width}`);
+        let timeline = new AnnotationTimeline({
+          timeline: e,
+          x: x,
+          y: y,
+          width: width,
+          height: height,
+          startTime: this.startTime,
+          endTime: this.endTime,
+        });
+        this.timelinesContainer.addChild(timeline.element);
+        this.timelineObjects.push(timeline);
+        // //box
+        // let rectangle = new paper.Rectangle(
+        //   new paper.Point(
+        //     this.timeToX(this.startTime),
+        //     (this.gap + this.timelineHeight) * i + this.scaleHeight
+        //   ),
+        //   new paper.Point(
+        //     this.timeToX(this.endTime),
+        //     (this.gap + this.timelineHeight) * i +
+        //       this.scaleHeight +
+        //       this.timelineHeight
+        //   )
+        // );
+        // let radius = new paper.Size(this.radius, this.radius);
+        // let path = new paper.Path.Rectangle(rectangle, radius);
+        // path.style = self.timelineStyle;
       });
+      this.app.stage.addChild(this.timelinesContainer);
     },
     drawSegment() {
       this.scope.activate();
@@ -665,48 +798,37 @@ export default {
     duration() {
       this.draw();
     },
-    startTime() {
-      this.draw();
+    startTime(value) {
+      this.timelineObjects.forEach((e) => {
+        e.startTime = value;
+      });
     },
-    endTime() {
-      this.draw();
+    endTime(value) {
+      this.timelineObjects.forEach((e) => {
+        e.endTime = value;
+      });
     },
     timelines() {
       this.draw();
     },
-    time() {
-      this.drawTime();
-      this.targetTime = this.time;
-    },
-    selectedTimelineSegment(newSelection, oldSelection) {
-      this.removeSelection(oldSelection);
-      this.drawSelection(newSelection);
-    },
+    // time() {
+    //   this.drawTime();
+    //   this.targetTime = this.time;
+    // },
+    // selectedTimelineSegment(newSelection, oldSelection) {
+    //   this.removeSelection(oldSelection);
+    //   this.drawSelection(newSelection);
+    // },
   },
   computed: {},
   mounted() {
-    this.canvas = this.$refs.canvas;
-
-    this.scope = new paper.PaperScope();
-    this.scope.setup(this.canvas);
-
-    let self = this;
-    this.scope.view.onFrame = (event) => {
-      if (
-        self.$refs.container.clientWidth !== self.containerWidth ||
-        self.$refs.container.clientHeight !== self.containerHeight
-      ) {
-        clearTimeout(self.redraw);
-        self.redraw = setTimeout(self.onResize(), 100);
-      }
-    };
-
-    this.scope.view.onResize = (event) => {
-      clearTimeout(self.redraw);
-      self.redraw = setTimeout(self.onResize(), 100);
-    };
-
-    this.draw();
+    this.app = new PIXI.Application({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      antialias: true,
+      transparent: true,
+      view: this.$refs.canvas,
+    });
   },
 };
 </script>
