@@ -395,16 +395,34 @@ export default {
         const height = this.timelineHeight;
 
         // console.log(`${i} ${x}  ${y} ${width}`);
-        let timeline = new AnnotationTimeline({
-          timeline: e,
-          x: x,
-          y: y,
-          width: width,
-          height: height,
-          startTime: this.startTime,
-          endTime: this.endTime,
+        let timeline = new AnnotationTimeline(
+          e,
+          x,
+          y,
+          width,
+          height,
+          this.startTime,
+          this.endTime
+        );
+
+        timeline.on("segmentRightDown", (ev) => {
+          const point = this.mapToGlobal(ev.event.data.global);
+          console.log(ev.event);
+          console.log(this.app.screen);
+          const x = ev.event.data.global.x;
+          const y = ev.event.data.global.y;
+          const canvasRect = this.$refs.canvas.getBoundingClientRect();
+          console.log(canvasRect);
+          console.log(`${x} ${y} ${canvasRect}`);
+          this.segmentMenu.show = true;
+          this.segmentMenu.x = point.x;
+          this.segmentMenu.y = point.y;
+          // this.segmentMenu.selected = s.id;
+          this.$nextTick(() => {
+            this.showMenu = true;
+          });
         });
-        this.timelinesContainer.addChild(timeline.element);
+        this.timelinesContainer.addChild(timeline);
         this.timelineObjects.push(timeline);
         // //box
         // let rectangle = new paper.Rectangle(
@@ -670,6 +688,17 @@ export default {
     deltaXToTime(x) {
       return x / this.timeScale;
     },
+    mapToGlobal(point) {
+      const screenRect = this.app.screen;
+      const canvasRect = this.$refs.canvas.getBoundingClientRect();
+
+      const windowsX =
+        (point.x / screenRect.width) * canvasRect.width + canvasRect.x;
+      const windowsY =
+        (point.y / screenRect.height) * canvasRect.height + canvasRect.y;
+
+      return { x: windowsX, y: windowsY };
+    },
     onCopyTimeline() {
       let id = this.timelineMenu.selected;
       this.$emit("copyTimeline", id);
@@ -735,6 +764,10 @@ export default {
       antialias: true,
       transparent: true,
       view: this.$refs.canvas,
+    });
+
+    this.$refs.canvas.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
     });
   },
 };
