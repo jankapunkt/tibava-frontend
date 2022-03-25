@@ -12,19 +12,19 @@
         <v-list-item link v-on:click="onCopyTimeline">
           <v-list-item-title>
             <v-icon left>{{ "mdi-content-copy" }}</v-icon>
-            Duplicate
+            {{ $t("timline.duplicate") }}
           </v-list-item-title>
         </v-list-item>
         <v-list-item link v-on:click="onRenameTimeline">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            Rename
+            {{ $t("timline.rename") }}
           </v-list-item-title>
         </v-list-item>
         <v-list-item link v-on:click="onDeleteTimeline">
           <v-list-item-title>
             <v-icon left>{{ "mdi-delete" }}</v-icon>
-            Delete
+            {{ $t("timline.delete") }}
           </v-list-item-title>
         </v-list-item>
       </v-list>
@@ -417,7 +417,7 @@ export default {
           this.segmentMenu.show = true;
           this.segmentMenu.x = point.x;
           this.segmentMenu.y = point.y;
-          // this.segmentMenu.selected = s.id;
+          this.segmentMenu.selected = ev.segment.segment.id;
           this.$nextTick(() => {
             this.showMenu = true;
           });
@@ -713,6 +713,7 @@ export default {
     },
     onAnnotateSegment() {
       let id = this.segmentMenu.selected;
+      console.log(id);
       this.$emit("annotateSegment", id);
     },
     onColoringSegment() {

@@ -71,7 +71,6 @@ class AnnotationSegment extends PIXI.Container {
 
 
     this.addChild(this._i_rect);
-    // console.log(JSON.stringify(this._i_segment))
     this.badges = []
     if (this._i_segment.annotations) {
 
@@ -80,10 +79,8 @@ class AnnotationSegment extends PIXI.Container {
       var badgeXIndex = 0;
       this._i_segment.annotations.forEach((a) => {
         const text = new AnnotationBadge(badgeX, badgeY, a.annotation.name, padding, PIXI.utils.string2hex(a.annotation.color))
-        console.log(`${a.annotation.name} ${badgeX} ${badgeY}`)
         badgeX += text.width + gap;
         if (badgeX > this._i_rect.width && badgeXIndex > 0) {
-          console.log(`Not fit`)
           badgeY += text.height + gap
           badgeX = text.width + 2 * gap
           text.x = gap;
@@ -111,7 +108,6 @@ class AnnotationSegment extends PIXI.Container {
       e.y = badgeY
       badgeX += e.width + gap;
       if (badgeX > this._i_rect.width && badgeXIndex > 0) {
-        console.log(`Not fit`)
         badgeY += e.height + gap
         badgeX = e.width + 2 * gap
         e.x = gap;
@@ -121,6 +117,9 @@ class AnnotationSegment extends PIXI.Container {
         badgeXIndex += 1;
       }
     })
+  }
+  get segment() {
+    return this._i_segment
   }
 }
 
