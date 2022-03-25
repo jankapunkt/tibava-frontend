@@ -62,7 +62,7 @@
 
 <script>
 import TimeMixin from "../mixins/time";
-import { AnnotationTimeline } from "../plugins/draw";
+import { AnnotationTimeline, TimelineHeader } from "../plugins/draw";
 import paper from "paper";
 
 import * as PIXI from "pixi.js";
@@ -209,6 +209,7 @@ export default {
         (window.innerWidth - this.headerWidth - 5 * this.gap) /
         (this.endTime - this.startTime);
       this.drawTimeline();
+      this.drawTimelineHeader();
     },
     // draw() {
     //   if (this.timelines) {
@@ -320,67 +321,40 @@ export default {
       };
     },
     drawTimelineHeader() {
-      this.scope.activate();
-      if (this.headerLayer) {
-        this.headerLayer.removeChildren();
+      if (this.timelineHeadersContainer) {
+        this.app.stage.removeChild(this.timelineHeadersContainer);
       }
 
-      this.headerLayer = new paper.Layer();
-
-      this.headerLayer.activate();
-
-      let self = this;
+      this.timelineHeadersContainer = new PIXI.Container();
+      this.timelineHeaderObjects = [];
       this.timelines.forEach((e, i) => {
-        //box
-        let rectangle = new paper.Rectangle(
-          new paper.Point(
-            this.gap,
-            (this.gap + this.timelineHeight) * i + this.scaleHeight
-          ),
-          new paper.Point(
-            this.gap + this.headerWidth,
-            (this.gap + this.timelineHeight) * i +
-              this.scaleHeight +
-              this.timelineHeight
-          )
-        );
-        let radius = new paper.Size(this.radius, this.radius);
-        let path = new paper.Path.Rectangle(rectangle, radius);
-        path.style = self.headerStyle;
+        const x = this.gap;
+        const y = (this.gap + this.timelineHeight) * i + this.scaleHeight;
+        const width = this.headerWidth;
+        const height = this.timelineHeight;
 
-        //text
-        var text = new paper.PointText(
-          new paper.Point(
-            3 * this.gap,
-            (this.gap + this.timelineHeight) * i + this.scaleHeight + 20 //todo move this
-          )
-        );
+        let timeline = new TimelineHeader(e, x, y, width, height);
 
-        text.justification = "left";
-        text.fillColor = "black";
-        text.content = e.name;
-        path.onClick = (event) => {
-          let canvasRect = self.canvas.getBoundingClientRect();
-          self.timelineMenu.show = true;
-          self.timelineMenu.x = event.point.x + canvasRect.x;
-          self.timelineMenu.y = event.point.y + canvasRect.y;
-          self.timelineMenu.selected = e.id;
-          self.$nextTick(() => {
-            self.showMenu = true;
-          });
-        };
+        timeline.on("segmentRightDown", (ev) => {
+          // const point = this.mapToGlobal(ev.event.data.global);
+          // this.segmentMenu.show = true;
+          // this.segmentMenu.x = point.x;
+          // this.segmentMenu.y = point.y;
+          // this.segmentMenu.selected = ev.segment.segment.id;
+          // this.$nextTick(() => {
+          //   this.showMenu = true;
+          // });
+        });
+        this.timelineHeadersContainer.addChild(timeline);
+        this.timelineHeaderObjects.push(timeline);
       });
+      this.app.stage.addChild(this.timelineHeadersContainer);
     },
     drawTimeline() {
       let startTime = 0;
       if (this.startTime) {
         startTime = this.startTime;
       }
-      // this.app.stage.children.forEach((e,i) => {
-      //   if(e === this.timelineGroup){
-      //     this.add.stage.removeChildren
-      //   }
-      // })
 
       if (this.timelinesContainer) {
         this.app.stage.removeChild(this.timelinesContainer);
@@ -394,7 +368,6 @@ export default {
         const width = this.timeToX(this.endTime) - x;
         const height = this.timelineHeight;
 
-        // console.log(`${i} ${x}  ${y} ${width}`);
         let timeline = new AnnotationTimeline(
           e,
           x,
@@ -407,13 +380,6 @@ export default {
 
         timeline.on("segmentRightDown", (ev) => {
           const point = this.mapToGlobal(ev.event.data.global);
-          console.log(ev.event);
-          console.log(this.app.screen);
-          const x = ev.event.data.global.x;
-          const y = ev.event.data.global.y;
-          const canvasRect = this.$refs.canvas.getBoundingClientRect();
-          console.log(canvasRect);
-          console.log(`${x} ${y} ${canvasRect}`);
           this.segmentMenu.show = true;
           this.segmentMenu.x = point.x;
           this.segmentMenu.y = point.y;
@@ -424,22 +390,6 @@ export default {
         });
         this.timelinesContainer.addChild(timeline);
         this.timelineObjects.push(timeline);
-        // //box
-        // let rectangle = new paper.Rectangle(
-        //   new paper.Point(
-        //     this.timeToX(this.startTime),
-        //     (this.gap + this.timelineHeight) * i + this.scaleHeight
-        //   ),
-        //   new paper.Point(
-        //     this.timeToX(this.endTime),
-        //     (this.gap + this.timelineHeight) * i +
-        //       this.scaleHeight +
-        //       this.timelineHeight
-        //   )
-        // );
-        // let radius = new paper.Size(this.radius, this.radius);
-        // let path = new paper.Path.Rectangle(rectangle, radius);
-        // path.style = self.timelineStyle;
       });
       this.app.stage.addChild(this.timelinesContainer);
     },

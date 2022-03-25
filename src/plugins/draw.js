@@ -222,6 +222,82 @@ class AnnotationTimeline extends PIXI.Container {
   }
 }
 
+
+class TimelineHeader extends PIXI.Container {
+  constructor(
+    timeline,
+    x,
+    y,
+    width,
+    height,
+    fill = 0xffffff,
+  ) {
+    super();
+    this._i_timeline = timeline;
+    this._i_x = x;
+    this._i_y = y;
+    this._i_width = width;
+    this._i_height = height;
+
+    const padding = 2;
+    const gap = 4;
+
+    this._i_rect = new PIXI.Graphics();
+    this._i_rect.beginFill(fill);
+    this._i_rect.drawRoundedRect(0, 0, width, height, 5);
+    this._i_rect.x = x;
+    this._i_rect.y = y;
+
+    this._i_mask = new PIXI.Graphics();
+    this._i_mask.beginFill(0xffffff);
+    this._i_mask.drawRoundedRect(0, 0, width, height, 5);
+    this._i_rect.mask = this._i_mask;
+    this._i_rect.addChild(this._i_mask);
+
+    let shadow = new DropShadowFilter();
+    shadow.color = 0x0000;
+    shadow.distance = 2;
+    shadow.alpha = 0.4;
+    shadow.rotation = 90;
+    shadow.blur = 1;
+    this._i_rect.filters = [shadow];
+
+    this.addChild(this._i_rect);
+    console.log(timeline.name)
+    this._i_text = new PIXI.Text(timeline.name, {
+      fill: 0x000000,
+      fontSize: 16,
+      // fontWeight: 'bold',
+    });
+    this._i_text.x = gap;
+    this._i_text.y = gap;
+    this._i_text.mask = this._i_mask;
+
+
+    this._i_rect.addChild(this._i_text);
+
+
+    this.interactive = true;
+    this.buttonMode = true;
+    this.on('rightdown', (ev) => {
+      this.emit('timelineRightDown', {
+        event: ev,
+        timeline: this
+      })
+      ev.stopPropagation();
+    });
+
+  }
+
+  set width(value) {
+    this._i_rect.width = value
+  }
+  get timeline() {
+    return this._i_timeline;
+  }
+}
+
 export {
-  AnnotationTimeline
+  AnnotationTimeline,
+  TimelineHeader
 };
