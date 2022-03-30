@@ -62,7 +62,7 @@
 
 <script>
 import TimeMixin from "../mixins/time";
-import { AnnotationTimeline, TimelineHeader } from "../plugins/draw";
+import { AnnotationTimeline, TimelineHeader, TimeScale } from "../plugins/draw";
 import paper from "paper";
 
 import * as PIXI from "pixi.js";
@@ -160,6 +160,7 @@ export default {
       app: null,
       timelinesContainer: null,
       timelineObjects: [],
+      timeScaleObjects: [],
 
       canvasStyle: {
         height: this.scaleHeight,
@@ -210,6 +211,7 @@ export default {
         (this.endTime - this.startTime);
       this.drawTimeline();
       this.drawTimelineHeader();
+      this.drawScale();
     },
     // draw() {
     //   if (this.timelines) {
@@ -251,74 +253,99 @@ export default {
     //   this.scope.view.draw();
     // },
     drawScale() {
-      this.scope.activate();
-      if (this.scaleLayer) {
-        this.scaleLayer.removeChildren();
+      if (this.timeScalesContainer) {
+        this.app.stage.removeChild(this.timeScalesContainer);
       }
-      this.scaleLayer = new paper.Layer();
-      this.scaleLayer.activate();
-      let numberOfMainTime = 9;
-      let numberOfOtherTime = 10 * (numberOfMainTime - 1) + 1;
 
-      let timestemps = this.linspace(
+      this.timeScalesContainer = new PIXI.Container();
+      this.timeScaleObjects = [];
+
+      const x = this.timeToX(this.startTime);
+      const y = this.gap;
+      const width = this.timeToX(this.endTime) - x;
+      const height = this.scaleHeight;
+
+      let timeline = new TimeScale(
+        x,
+        y,
+        width,
+        height,
         this.startTime,
-        this.endTime,
-        numberOfMainTime
+        this.endTime
       );
-      let mainStrokes = [];
-      timestemps.forEach((time, index) => {
-        let path = new paper.Path();
 
-        let x = this.timeToX(time);
-        path.add(new paper.Point(x, 10), new paper.Point(x, 35));
-        mainStrokes.push(path);
-      });
-      this.mainStrokes = new paper.Group(mainStrokes);
-      this.mainStrokes.strokeColor = "black";
-      this.mainStrokes.strokeWidth = 2;
+      this.timeScalesContainer.addChild(timeline);
+      this.timeScaleObjects.push(timeline);
+      this.app.stage.addChild(this.timeScalesContainer);
 
-      timestemps.pop();
-      let textList = [];
-      timestemps.forEach((time, index) => {
-        let x = this.timeToX(time);
-        let text = new paper.PointText(new paper.Point(x, 50));
-        text.content = this.get_timecode(time, 2);
-        textList.push(text);
-      });
-      this.textGroup = new paper.Group(textList);
-      this.textGroup.style = {
-        fontFamily: "Courier New",
+      // this.scope.activate();
+      // if (this.scaleLayer) {
+      //   this.scaleLayer.removeChildren();
+      // }
+      // this.scaleLayer = new paper.Layer();
+      // this.scaleLayer.activate();
+      // let numberOfMainTime = 9;
+      // let numberOfOtherTime = 10 * (numberOfMainTime - 1) + 1;
 
-        fontSize: 10,
-        fillColor: "black",
-      };
+      // let timestemps = this.linspace(
+      //   this.startTime,
+      //   this.endTime,
+      //   numberOfMainTime
+      // );
+      // let mainStrokes = [];
+      // timestemps.forEach((time, index) => {
+      //   let path = new paper.Path();
 
-      let otherTimestemps = this.linspace(
-        this.startTime,
-        this.endTime,
-        numberOfOtherTime
-      );
-      let otherStrokes = [];
-      otherTimestemps.forEach((time, index) => {
-        let path = new paper.Path();
+      //   let x = this.timeToX(time);
+      //   path.add(new paper.Point(x, 10), new paper.Point(x, 35));
+      //   mainStrokes.push(path);
+      // });
+      // this.mainStrokes = new paper.Group(mainStrokes);
+      // this.mainStrokes.strokeColor = "black";
+      // this.mainStrokes.strokeWidth = 2;
 
-        let x = this.timeToX(time);
-        path.add(new paper.Point(x, 25), new paper.Point(x, 30));
-        otherStrokes.push(path);
-      });
-      this.otherStrokes = new paper.Group(otherStrokes);
-      this.otherStrokes.strokeColor = "black";
+      // timestemps.pop();
+      // let textList = [];
+      // timestemps.forEach((time, index) => {
+      //   let x = this.timeToX(time);
+      //   let text = new paper.PointText(new paper.Point(x, 50));
+      //   text.content = this.get_timecode(time, 2);
+      //   textList.push(text);
+      // });
+      // this.textGroup = new paper.Group(textList);
+      // this.textGroup.style = {
+      //   fontFamily: "Courier New",
 
-      let actionRectangle = new paper.Rectangle(
-        new paper.Point(this.timeToX(0), 0),
-        new paper.Point(this.timeToX(this.endTime), this.scaleHeight)
-      );
-      let actionPath = new paper.Path.Rectangle(actionRectangle);
-      // TODO
-      actionPath.fillColor = "#00000001";
-      actionPath.onClick = (event) => {
-        this.$emit("update:time", this.xToTime(event.point.x));
-      };
+      //   fontSize: 10,
+      //   fillColor: "black",
+      // };
+
+      // let otherTimestemps = this.linspace(
+      //   this.startTime,
+      //   this.endTime,
+      //   numberOfOtherTime
+      // );
+      // let otherStrokes = [];
+      // otherTimestemps.forEach((time, index) => {
+      //   let path = new paper.Path();
+
+      //   let x = this.timeToX(time);
+      //   path.add(new paper.Point(x, 25), new paper.Point(x, 30));
+      //   otherStrokes.push(path);
+      // });
+      // this.otherStrokes = new paper.Group(otherStrokes);
+      // this.otherStrokes.strokeColor = "black";
+
+      // let actionRectangle = new paper.Rectangle(
+      //   new paper.Point(this.timeToX(0), 0),
+      //   new paper.Point(this.timeToX(this.endTime), this.scaleHeight)
+      // );
+      // let actionPath = new paper.Path.Rectangle(actionRectangle);
+      // // TODO
+      // actionPath.fillColor = "#00000001";
+      // actionPath.onClick = (event) => {
+      //   this.$emit("update:time", this.xToTime(event.point.x));
+      // };
     },
     drawTimelineHeader() {
       if (this.timelineHeadersContainer) {
@@ -329,21 +356,24 @@ export default {
       this.timelineHeaderObjects = [];
       this.timelines.forEach((e, i) => {
         const x = this.gap;
-        const y = (this.gap + this.timelineHeight) * i + this.scaleHeight;
+        const y =
+          (this.gap + this.timelineHeight) * i +
+          this.scaleHeight +
+          2 * this.gap;
         const width = this.headerWidth;
         const height = this.timelineHeight;
 
         let timeline = new TimelineHeader(e, x, y, width, height);
 
-        timeline.on("segmentRightDown", (ev) => {
-          // const point = this.mapToGlobal(ev.event.data.global);
-          // this.segmentMenu.show = true;
-          // this.segmentMenu.x = point.x;
-          // this.segmentMenu.y = point.y;
-          // this.segmentMenu.selected = ev.segment.segment.id;
-          // this.$nextTick(() => {
-          //   this.showMenu = true;
-          // });
+        timeline.on("timelineRightDown", (ev) => {
+          const point = this.mapToGlobal(ev.event.data.global);
+          this.timelineMenu.show = true;
+          this.timelineMenu.x = point.x;
+          this.timelineMenu.y = point.y;
+          this.timelineMenu.selected = ev.timeline.timeline.id;
+          this.$nextTick(() => {
+            this.showMenu = true;
+          });
         });
         this.timelineHeadersContainer.addChild(timeline);
         this.timelineHeaderObjects.push(timeline);
@@ -364,7 +394,10 @@ export default {
       this.timelineObjects = [];
       this.timelines.forEach((e, i) => {
         const x = this.timeToX(startTime);
-        const y = (this.gap + this.timelineHeight) * i + this.scaleHeight;
+        const y =
+          (this.gap + this.timelineHeight) * i +
+          this.scaleHeight +
+          2 * this.gap;
         const width = this.timeToX(this.endTime) - x;
         const height = this.timelineHeight;
 
@@ -614,14 +647,7 @@ export default {
         });
       }
     },
-    linspace(startValue, stopValue, cardinality) {
-      var arr = [];
-      var step = (stopValue - startValue) / (cardinality - 1);
-      for (var i = 0; i < cardinality; i++) {
-        arr.push(startValue + step * i);
-      }
-      return arr;
-    },
+
     //  map time to x and x to time
     timeToX(time) {
       return (
@@ -689,9 +715,15 @@ export default {
       this.timelineObjects.forEach((e) => {
         e.startTime = value;
       });
+      this.timeScaleObjects.forEach((e) => {
+        e.startTime = value;
+      });
     },
     endTime(value) {
       this.timelineObjects.forEach((e) => {
+        e.endTime = value;
+      });
+      this.timeScaleObjects.forEach((e) => {
         e.endTime = value;
       });
     },

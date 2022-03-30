@@ -8,6 +8,14 @@ function hex2luminance(string) {
   return Math.sqrt(0.299 * Math.pow(rgb[0], 2) + 0.587 * Math.pow(rgb[1], 2) + 0.114 * Math.pow(rgb[2], 2))
 }
 
+function linspace(startValue, stopValue, cardinality) {
+  var arr = [];
+  var step = (stopValue - startValue) / (cardinality - 1);
+  for (var i = 0; i < cardinality; i++) {
+    arr.push(startValue + step * i);
+  }
+  return arr;
+}
 
 
 class AnnotationBadge extends PIXI.Container {
@@ -28,13 +36,13 @@ class AnnotationBadge extends PIXI.Container {
     textRect.beginFill(color);
     textRect.drawRoundedRect(0, 0, this._i_text.width + 2 * padding, this._i_text.height + 2 * padding, 2);
 
-    let shadow = new DropShadowFilter();
-    shadow.color = 0x0000;
-    shadow.distance = 2;
-    shadow.alpha = 0.4;
-    shadow.rotation = 90;
-    shadow.blur = 1;
-    textRect.filters = [shadow];
+    // let shadow = new DropShadowFilter();
+    // shadow.color = 0x0000;
+    // shadow.distance = 2;
+    // shadow.alpha = 0.4;
+    // shadow.rotation = 90;
+    // shadow.blur = 1;
+    // textRect.filters = [shadow];
 
     this.addChild(textRect)
     textRect.addChild(this._i_text)
@@ -187,6 +195,15 @@ class AnnotationTimeline extends PIXI.Container {
           ev.stopPropagation();
         });
 
+        segmentE.on('click', (ev) => {
+          this.emit('segmentClick', {
+            event: ev,
+            segment: segmentE
+          })
+          ev.stopPropagation();
+        });
+
+
 
 
         segmentE.mask = this._i_mask;
@@ -287,6 +304,15 @@ class TimelineHeader extends PIXI.Container {
       ev.stopPropagation();
     });
 
+    this.on('click', (ev) => {
+      this.emit('timelineClick', {
+        event: ev,
+        timeline: this
+      })
+      ev.stopPropagation();
+    });
+
+
   }
 
   set width(value) {
@@ -297,7 +323,109 @@ class TimelineHeader extends PIXI.Container {
   }
 }
 
+
+class TimeScale extends PIXI.Container {
+  constructor(
+    x,
+    y,
+    width,
+    height,
+    startTime = 0,
+    endTime = 10,
+  ) {
+    super();
+    this._i_x = x;
+    this._i_y = y;
+    this._i_width = width;
+    this._i_height = height;
+    this._i_startTime = startTime;
+    this._i_endTime = endTime;
+
+    this._i_rect = new PIXI.Graphics();
+    this._i_rect.beginFill(0xffffff);
+    this._i_rect.drawRoundedRect(0, 0, width, height, 5);
+    this._i_rect.x = x;
+    this._i_rect.y = y;
+
+    this._i_mask = new PIXI.Graphics();
+    this._i_mask.beginFill(0xffffff);
+    this._i_mask.drawRoundedRect(0, 0, width, height, 5);
+    this._i_rect.mask = this._i_mask;
+    this._i_rect.addChild(this._i_mask);
+
+    let shadow = new DropShadowFilter();
+    shadow.color = 0x0000;
+    shadow.distance = 2;
+    shadow.alpha = 0.4;
+    shadow.rotation = 90;
+    shadow.blur = 1;
+    this._i_rect.filters = [shadow];
+
+    this.addChild(this._i_rect);
+
+    this._i_bars_graphics = new PIXI.Container();
+    this._i_bars = [];
+    const timestemps = Array(Math.ceil(this._i_endTime)).fill(0).map((_, i) => i);
+    timestemps.forEach((time, index) => {
+      console.log(time)
+      let x = this._timeToX(time);
+      console.log(x)
+      const path = new PIXI.Graphics().lineStyle(1, 0x00ff00, 1).moveTo(0, 10).lineTo(0, 20).closePath();
+      path.x = x
+
+      this._i_bars_graphics.addChild(path);
+      this._i_bars.push({ time: time, e: path })
+    });
+
+    this.addChild(this._i_bars_graphics)
+
+  }
+  get timeScale() {
+    return this._i_width / (this._i_endTime - this._i_startTime);
+  }
+  _timeToX(time) {
+    return this._i_x + this.timeScale * (time - this._i_startTime);
+  }
+  scaleSegment() {
+    const visibleDuration = this._i_endTime - this._i_startTime;
+    if (visibleDuration > 100) {
+
+    }
+    else if (visibleDuration > 10) {
+
+    }
+    this._i_bars.forEach((e, i) => {
+      const x = this._timeToX(e.time);
+      console.log(x)
+      e.e.x = x;
+    });
+
+    console.log(visibleDuration);
+    // if(this._i_endTime - this._i_startTime)
+    // if (this._i_timeline.segments) {
+    //   this._i_timeline.segments.forEach((s, i) => {
+    //     const width = this._timeToX(s.end) - this._timeToX(s.start);
+    //     const x = this._timeToX(s.start);
+    //     this._i_segments.getChildAt(i).x = x;
+    //     this._i_segments.getChildAt(i).width = width;
+    //   });
+    // }
+  }
+  set startTime(time) {
+    this._i_startTime = time;
+    this.scaleSegment();
+  }
+  set endTime(time) {
+    this._i_endTime = time;
+    this.scaleSegment();
+  }
+}
+
+
 export {
   AnnotationTimeline,
-  TimelineHeader
+  TimelineHeader,
+  TimeScale,
+  hex2luminance,
+  linspace
 };
