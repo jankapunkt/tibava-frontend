@@ -37,6 +37,10 @@
       <v-btn @click="deltaSeek(1)" small>
         <v-icon> mdi-skip-forward</v-icon>
       </v-btn>
+      <v-btn @click="toggleSyncTime()" small>
+        <v-icon v-if="syncTime"> mdi-link</v-icon>
+        <v-icon v-else> mdi-link-off</v-icon>
+      </v-btn>
       <div class="time-code flex-grow-1 flex-shrink-0">
         {{ get_timecode(currentTime) }}
       </div>
@@ -102,6 +106,7 @@ export default {
       ended: false,
       hiddenVolume: 1.0,
       mute: false,
+      syncTime: true,
       currentSpeed: { title: "1.00", value: 1.0 },
       speeds: [
         { title: "0.25", value: 0.25 },
@@ -122,6 +127,9 @@ export default {
       } else {
         this.$refs.video.play();
       }
+    },
+    toggleSyncTime() {
+      this.syncTime = !this.syncTime;
     },
     deltaSeek(delta) {
       this.$refs.video.currentTime += delta;
@@ -191,7 +199,9 @@ export default {
   },
   watch: {
     time() {
-      this.$refs.video.currentTime = this.time;
+      if (this.syncTime) {
+        this.$refs.video.currentTime = this.time;
+      }
     },
   },
 };
