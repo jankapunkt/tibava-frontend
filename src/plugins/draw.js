@@ -2,6 +2,7 @@ import * as PIXI from "pixi.js";
 import {
   DropShadowFilter
 } from "pixi-filters";
+import * as Time from "./time.js";
 
 function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb()
@@ -280,7 +281,6 @@ class TimelineHeader extends PIXI.Container {
     this._i_rect.filters = [shadow];
 
     this.addChild(this._i_rect);
-    console.log(timeline.name)
     this._i_text = new PIXI.Text(timeline.name, {
       fill: 0x000000,
       fontSize: 16,
@@ -365,16 +365,55 @@ class TimeScale extends PIXI.Container {
 
     this._i_bars_graphics = new PIXI.Container();
     this._i_bars = [];
-    const timestemps = Array(Math.ceil(this._i_endTime)).fill(0).map((_, i) => i);
-    timestemps.forEach((time, index) => {
-      console.log(time)
-      let x = this._timeToX(time);
-      console.log(x)
-      const path = new PIXI.Graphics().lineStyle(1, 0x00ff00, 1).moveTo(0, 10).lineTo(0, 20).closePath();
-      path.x = x
 
+    const visibleDuration = Math.round(1000 * (this._i_endTime - this._i_startTime));
+    const visibleDurationDigits = Math.floor(Math.log(visibleDuration) * Math.LOG10E);
+
+    const majorStroke = Math.pow(10, visibleDurationDigits)
+    const minorStroke = Math.pow(10, visibleDurationDigits - 1)
+
+
+    const timestemps = Array(Math.ceil(this._i_endTime * 10)).fill(0).map((_, i) => i);
+    timestemps.forEach((time100, index) => {
+      const timeFraction = Math.round(time100);
+      const time = timeFraction / 10;
+
+      let x = this._timeToX(time);
+      const path = new PIXI.Graphics().lineStyle(1, 0x000000, 1).lineTo(0, 10).closePath();
+      path.x = x
+      path.y = 10
+
+      const timeCode = Time.get_timecode(time);
+      const text = new PIXI.Text(timeCode, {
+        fill: 0x000000,
+        fontSize: 14,
+        // fontWeight: 'bold',
+      });
+      text.x = x
+      text.y = 20
+      path.mask = this._i_mask;
+      text.mask = this._i_mask;
       this._i_bars_graphics.addChild(path);
-      this._i_bars.push({ time: time, e: path })
+      this._i_bars_graphics.addChild(text);
+      this._i_bars.push({
+        time: time,
+        stroke: path,
+        text: text
+      })
+
+      if (time * 1000 % majorStroke == 0) {
+        path.visible = true;
+        text.visible = true;
+        path.height = 10;
+      } else if (time * 1000 % minorStroke == 0) {
+        path.visible = true;
+        text.visible = false;
+        path.height = 5;
+      } else {
+        path.visible = false;
+        text.visible = false;
+      }
+
     });
 
     this.addChild(this._i_bars_graphics)
@@ -387,29 +426,36 @@ class TimeScale extends PIXI.Container {
     return this._i_x + this.timeScale * (time - this._i_startTime);
   }
   scaleSegment() {
-    const visibleDuration = this._i_endTime - this._i_startTime;
-    if (visibleDuration > 100) {
+    const visibleDuration = Math.round(1000 * (this._i_endTime - this._i_startTime));
 
-    }
-    else if (visibleDuration > 10) {
+    const visibleDurationDigits = Math.floor(Math.log(visibleDuration) * Math.LOG10E);
 
-    }
+    const majorStroke = Math.pow(10, visibleDurationDigits)
+    const minorStroke = Math.pow(10, visibleDurationDigits - 1)
+
     this._i_bars.forEach((e, i) => {
-      const x = this._timeToX(e.time);
-      console.log(x)
-      e.e.x = x;
-    });
+      const time = e.time;
+      const x = this._timeToX(time);
 
-    console.log(visibleDuration);
-    // if(this._i_endTime - this._i_startTime)
-    // if (this._i_timeline.segments) {
-    //   this._i_timeline.segments.forEach((s, i) => {
-    //     const width = this._timeToX(s.end) - this._timeToX(s.start);
-    //     const x = this._timeToX(s.start);
-    //     this._i_segments.getChildAt(i).x = x;
-    //     this._i_segments.getChildAt(i).width = width;
-    //   });
-    // }
+      console.log(`${time} ${time % majorStroke} ${time % minorStroke} major:${majorStroke} minor:${minorStroke}`)
+      if (time * 1000 % majorStroke == 0) {
+        e.stroke.visible = true;
+
+        e.text.visible = true;
+        e.stroke.height = 10;
+        console.log(`Major`)
+      } else if (time * 1000 % minorStroke == 0) {
+        e.stroke.visible = true;
+        e.text.visible = false;
+        e.stroke.height = 5;
+        console.log(`Minor`)
+      } else {
+        e.stroke.visible = false;
+        e.text.visible = false;
+      }
+      e.stroke.x = x;
+      e.text.x = x;
+    });
   }
   set startTime(time) {
     this._i_startTime = time;
