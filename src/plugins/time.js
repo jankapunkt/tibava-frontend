@@ -1,4 +1,4 @@
-function get_display_time(seconds) {
+export function get_display_time(seconds) {
     var h = Math.floor(seconds / 3600);
     var m = Math.floor((seconds % 3600) / 60);
     var s = Math.floor((seconds % 3600) % 60);
@@ -9,7 +9,7 @@ function get_display_time(seconds) {
     return hDisplay + mDisplay + sDisplay;
 }
 
-function get_timecode(seconds, num_digits_ms = 3) {
+export function get_timecode(seconds, num_digits_ms = 3) {
 
     var h = Math.floor(seconds / 3600);
     var m = Math.floor((seconds % 3600) / 60);
@@ -20,9 +20,4 @@ function get_timecode(seconds, num_digits_ms = 3) {
     const zeroPad = (num, places) => String(num).padStart(places, '0')
     // return zeroPad(h, 2) + ":" + zeroPad(m, 2) + ":" + zeroPad(s, 2) 
     return zeroPad(h, 2) + ":" + zeroPad(m, 2) + ":" + zeroPad(s, 2) + "." + zeroPad(ms, num_digits_ms);
-}
-
-export {
-    get_display_time,
-    get_timecode
 }

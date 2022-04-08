@@ -5,7 +5,7 @@ import {
 import * as Time from "./time.js";
 
 function hex2luminance(string) {
-  const rgb = PIXI.utils.hex2rgb()
+  const rgb = PIXI.utils.hex2rgb(string)
   return Math.sqrt(0.299 * Math.pow(rgb[0], 2) + 0.587 * Math.pow(rgb[1], 2) + 0.114 * Math.pow(rgb[2], 2))
 }
 
@@ -22,7 +22,7 @@ function linspace(startValue, stopValue, cardinality) {
 class AnnotationBadge extends PIXI.Container {
   constructor(x, y, text, padding = 2, color = 0xffffff) {
     super()
-
+    console.log( hex2luminance(color))
 
     const textColor = hex2luminance(color) > 0.5 ? 0x000000 : 0xFFFFFF
 
@@ -379,7 +379,7 @@ class TimeScale extends PIXI.Container {
       const time = timeFraction / 10;
 
       let x = this._timeToX(time);
-      const path = new PIXI.Graphics().lineStyle(1, 0x000000, 1).lineTo(0, 10).closePath();
+      const path = new PIXI.Graphics().lineStyle(1, 0x000000, 1).lineTo(0, 25).closePath();
       path.x = x
       path.y = 10
 
@@ -390,7 +390,8 @@ class TimeScale extends PIXI.Container {
         // fontWeight: 'bold',
       });
       text.x = x
-      text.y = 20
+      text.y = 35
+      text.resolution = 2
       path.mask = this._i_mask;
       text.mask = this._i_mask;
       this._i_bars_graphics.addChild(path);
@@ -432,29 +433,36 @@ class TimeScale extends PIXI.Container {
 
     const majorStroke = Math.pow(10, visibleDurationDigits)
     const minorStroke = Math.pow(10, visibleDurationDigits - 1)
-
+    
+    var largestX = 0;
     this._i_bars.forEach((e, i) => {
       const time = e.time;
       const x = this._timeToX(time);
 
-      console.log(`${time} ${time % majorStroke} ${time % minorStroke} major:${majorStroke} minor:${minorStroke}`)
+
       if (time * 1000 % majorStroke == 0) {
         e.stroke.visible = true;
-
         e.text.visible = true;
         e.stroke.height = 10;
-        console.log(`Major`)
+        
       } else if (time * 1000 % minorStroke == 0) {
         e.stroke.visible = true;
         e.text.visible = false;
         e.stroke.height = 5;
-        console.log(`Minor`)
+        
       } else {
         e.stroke.visible = false;
         e.text.visible = false;
       }
       e.stroke.x = x;
       e.text.x = x;
+      if (e.text.x <= largestX){
+        e.text.visible = false;
+      }
+
+      if(e.text.visible){
+        largestX = e.text.x + e.text.width;
+      }
     });
   }
   set startTime(time) {

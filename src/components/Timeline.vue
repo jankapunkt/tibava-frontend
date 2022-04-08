@@ -480,7 +480,6 @@ export default {
           });
 
           path.onClick = (event) => {
-            console.log(event);
             if (event.event.ctrlKey) {
               self.$emit("addSelection", { timeline: i, segment: j });
             } else {
@@ -689,7 +688,6 @@ export default {
     },
     onAnnotateSegment() {
       let id = this.segmentMenu.selected;
-      console.log(id);
       this.$emit("annotateSegment", id);
     },
     onColoringSegment() {

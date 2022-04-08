@@ -274,12 +274,10 @@ export default {
   },
   watch: {
     startTime(newValue) {
-      console.log(`TimeSelector::startTime::watch ${newValue}`);
       this.hiddenStartTime = newValue;
       this.draw();
     },
     endTime(newValue) {
-      console.log(`TimeSelector::endTime::watch ${newValue}`);
       this.hiddenEndTime = newValue;
       this.draw();
     },
