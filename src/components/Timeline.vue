@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" style="width: 100%" @resize="onResize">
+  <div ref="container" style="width: 100%">
     <canvas :style="canvasStyle" ref="canvas" resize> </canvas>
     <v-menu
       v-model="timelineMenu.show"
@@ -207,7 +207,7 @@ export default {
   methods: {
     draw() {
       this.timeScale =
-        (window.innerWidth - this.headerWidth - 5 * this.gap) /
+        (this.containerWidth - this.headerWidth - 5 * this.gap) /
         (this.endTime - this.startTime);
       this.drawTimeline();
       this.drawTimelineHeader();
@@ -521,8 +521,9 @@ export default {
   },
   computed: {},
   mounted() {
+    this.containerWidth = this.$refs.container.clientWidth;
     this.app = new PIXI.Application({
-      width: window.innerWidth,
+      width: this.containerWidth,
       height: window.innerHeight,
       antialias: true,
       transparent: true,
@@ -532,6 +533,13 @@ export default {
 
     this.$refs.canvas.addEventListener("contextmenu", (e) => {
       e.preventDefault();
+    });
+
+    this.app.ticker.add(() => {
+      if (this.$refs.container.clientWidth != this.containerWidth) {
+        this.containerWidth = this.$refs.container.clientWidth;
+        this.draw();
+      }
     });
   },
 };
