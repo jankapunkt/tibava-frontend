@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" style="width: 100%">
+  <div ref="container" style="width: 100%" @resize="onResize">
     <canvas :style="canvasStyle" ref="canvas" resize> </canvas>
     <v-menu
       v-model="timelineMenu.show"
@@ -213,45 +213,6 @@ export default {
       this.drawTimelineHeader();
       this.drawScale();
     },
-    // draw() {
-    //   if (this.timelines) {
-    //     this.canvas.height =
-    //       this.scaleHeight +
-    //       this.timelines.length * (this.timelineHeight + this.gap);
-    //   } else {
-    //     this.canvas.height = 80;
-    //   }
-
-    //   var desiredWidth = this.$refs.container.clientWidth; // For instance: $(window).width();
-    //   // var desiredHeight = h; // For instance $('#canvasContainer').height();
-
-    //   this.containerWidth = this.$refs.container.clientWidth;
-    //   this.containerHeight = this.$refs.container.clientHeight;
-    //   this.canvas.width = desiredWidth;
-
-    //   this.scope.view.viewSize = new paper.Size(
-    //     this.canvas.width,
-    //     this.canvas.height
-    //   );
-    //   this.scope.view.draw();
-
-    //   this.canvasWidth = this.scope.view.size.width;
-    //   this.canvasHeight = this.scope.view.size.height;
-    //   this.timeScale =
-    //     (this.scope.view.size.width - this.headerWidth - 5 * this.gap) /
-    //     (this.endTime - this.startTime);
-    //   if (isNaN(this.timeScale)) {
-    //     return;
-    //   }
-    //   this.drawScale();
-    //   this.drawTimelineHeader();
-    // this.drawTimeline();
-    //   this.drawSegment();
-    //   this.drawTime();
-    //   this.drawSelection(this.selectedTimelineSegment);
-
-    //   this.scope.view.draw();
-    // },
     drawScale() {
       if (this.timeScalesContainer) {
         this.app.stage.removeChild(this.timeScalesContainer);
@@ -426,201 +387,21 @@ export default {
       });
       this.app.stage.addChild(this.timelinesContainer);
     },
-    drawSegment() {
-      this.scope.activate();
-      if (this.segmentLayer) {
-        this.segmentLayer.removeChildren();
-      }
-
-      this.segmentLayer = new paper.Layer();
-
-      this.segmentLayer.activate();
-
-      this.timelineSegments = [];
-
-      let self = this;
-      this.timelines.forEach((e, i) => {
-        var segmentList = [];
-        let timeline = e;
-        timeline.segments.forEach((s, j) => {
-          //box
-          let start = Math.max(
-            self.timeToX(s.start),
-            self.timeToX(self.startTime)
-          );
-          let end = Math.min(self.timeToX(s.end), self.timeToX(self.endTime));
-
-          if (end < start) {
-            segmentList.push(null);
-            return;
-          }
-
-          let rectangle = new paper.Rectangle(
-            new paper.Point(
-              start,
-              (this.gap + this.timelineHeight) * i + this.scaleHeight + 1
-            ),
-            new paper.Point(
-              end,
-              (this.gap + this.timelineHeight) * i +
-                this.scaleHeight +
-                this.timelineHeight -
-                1
-            )
-          );
-          let radius = new paper.Size(this.radius, this.radius);
-          let path = new paper.Path.Rectangle(rectangle, radius);
-          path.style = self.segmentStyle;
-          path.fillColor = s.color;
-          segmentList.push({
-            path: path,
-            id: s.id,
-            start: s.start,
-            end: s.end,
-          });
-
-          path.onClick = (event) => {
-            if (event.event.ctrlKey) {
-              self.$emit("addSelection", { timeline: i, segment: j });
-            } else {
-              self.$emit("select", { timeline: i, segment: j });
-            }
-            let canvasRect = self.canvas.getBoundingClientRect();
-            self.segmentMenu.show = true;
-            self.segmentMenu.x = event.point.x + canvasRect.x;
-            self.segmentMenu.y = event.point.y + canvasRect.y;
-            self.segmentMenu.selected = s.id;
-            self.$nextTick(() => {
-              self.showMenu = true;
-            });
-          };
-          let annotationTexts = [path.clone()];
-          let annotationBoxes = [path.clone()];
-          var annotationStart = start;
-          var annotationI = 0;
-          var annotationJ = 0;
-
-          // create the text element
-          var annotationsRect = [];
-          s.annotations.forEach((a, k) => {
-            let targetPoint = new paper.Point(
-              annotationStart + this.gap,
-              (this.gap + this.timelineHeight) * i +
-                this.scaleHeight +
-                20 * (annotationJ + 1) //todo move this
-            );
-            var text = new paper.PointText(targetPoint);
-
-            text.justification = "left";
-            text.fillColor = "black";
-            text.content = a.annotation.name;
-
-            // check if should make a break
-            let annoRectangle = text.strokeBounds;
-            // 3 is a buffer to prevent some render issues
-            annotationStart += annoRectangle.width + 2 * this.gap;
-            if (annotationI > 0 && annotationStart > end) {
-              annotationJ += 1;
-
-              annotationStart = start;
-              text.remove();
-              text = new paper.PointText(
-                new paper.Point(
-                  annotationStart + this.gap,
-                  (this.gap + this.timelineHeight) * i +
-                    this.scaleHeight +
-                    20 * (annotationJ + 1) //todo move this
-                )
-              );
-              text.justification = "left";
-              text.fillColor = "black";
-              text.content = a.annotation.name;
-
-              annoRectangle = text.strokeBounds;
-
-              annotationStart += annoRectangle.width + 2 * this.gap;
-              annotationI = 1;
-            } else {
-              annotationI += 1;
-            }
-
-            // draw badge
-            let textBoundingBox = new paper.Path.Rectangle(
-              annoRectangle,
-              new paper.Size(1, 1)
-            );
-            textBoundingBox.fillColor = a.annotation.color;
-            textBoundingBox.insertBelow(text);
-
-            annotationTexts.push(text);
-            annotationBoxes.push(textBoundingBox);
-          });
-          let annotationTextsGroup = new paper.Group(annotationTexts);
-          annotationTextsGroup.clipped = true;
-          let annotationBoxesGroup = new paper.Group(annotationBoxes);
-          annotationBoxesGroup.clipped = true;
-          annotationBoxesGroup.insertBelow(annotationTextsGroup);
-        });
-        this.timelineSegments.push(segmentList);
-      });
-    },
-    drawTime() {
-      this.scope.activate();
-      if (this.timeLayer) {
-        this.timeLayer.removeChildren();
-      }
-
-      this.timeLayer = new paper.Layer();
-
-      this.timeLayer.activate();
-      if (this.time < this.startTime || this.time > this.endTime) {
-        return;
-      }
-      let x = this.timeToX(this.time);
-
-      var path = new paper.Path();
-      path.strokeColor = "#ae1313ff";
-
-      let handlePad = 5;
-
-      path.fillColor = "#ae131377";
-      path.add(new paper.Point(x, this.canvasHeight));
-      path.add(new paper.Point(x, 20));
-      path.add(new paper.Point(x + handlePad, 20 - 2));
-      path.add(new paper.Point(x + handlePad, 5));
-      path.add(new paper.Point(x - handlePad, 5));
-      path.add(new paper.Point(x - handlePad, 20 - 2));
-      path.add(new paper.Point(x, 20));
-      let self = this;
-      path.onMouseDrag = (event) => {
-        const deltaTime = self.deltaXToTime(event.delta.x);
-        let nextTime = self.targetTime + deltaTime;
-        if (deltaTime > 0) {
-          nextTime = Math.min(self.targetTime + deltaTime, self.endTime);
-        } else {
-          nextTime = Math.max(self.targetTime + deltaTime, self.startTime);
-        }
-
-        path.position.x = self.timeToX(nextTime);
-        this.targetTime = nextTime;
-        this.$emit("update:time", this.targetTime);
-      };
-    },
     drawSelection(selectedTimelineSegment) {
       if (
         selectedTimelineSegment &&
         selectedTimelineSegment.length > 0 &&
-        this.timelineSegments &&
-        this.timelineSegments.length > 0
+        this.timelineObjects &&
+        this.timelineObjects.length > 0
       ) {
         selectedTimelineSegment.forEach((e) => {
           if (
-            this.timelineSegments[e.timeline] &&
-            this.timelineSegments[e.timeline].length > 0
+            this.timelineObjects[e.timeline] &&
+            this.timelineObjects[e.timeline].segments.length > 0
           ) {
-            let segment = this.timelineSegments[e.timeline][e.segment];
+            let segment = this.timelineObjects[e.timeline].segments[e.segment];
             if (segment) {
-              segment.path.strokeColor = "#ae1313ff";
+              segment.selected = true;
             }
           }
         });
@@ -630,17 +411,17 @@ export default {
       if (
         selectedTimelineSegment &&
         selectedTimelineSegment.length > 0 &&
-        this.timelineSegments &&
-        this.timelineSegments.length > 0
+        this.timelineObjects &&
+        this.timelineObjects.length > 0
       ) {
         selectedTimelineSegment.forEach((e) => {
           if (
-            this.timelineSegments[e.timeline] &&
-            this.timelineSegments[e.timeline].length > 0
+            this.timelineObjects[e.timeline] &&
+            this.timelineObjects[e.timeline].segments.length > 0
           ) {
-            let segment = this.timelineSegments[e.timeline][e.segment];
+            let segment = this.timelineObjects[e.timeline].segments[e.segment];
             if (segment) {
-              segment.path.strokeColor = null;
+              segment.selected = false;
             }
           }
         });
@@ -700,6 +481,7 @@ export default {
     },
     onResize(event) {
       this.$nextTick(() => {
+        console.log("resize");
         this.draw();
         this.$emit("resize");
       });
@@ -732,10 +514,10 @@ export default {
     //   this.drawTime();
     //   this.targetTime = this.time;
     // },
-    // selectedTimelineSegment(newSelection, oldSelection) {
-    //   this.removeSelection(oldSelection);
-    //   this.drawSelection(newSelection);
-    // },
+    selectedTimelineSegment(newSelection, oldSelection) {
+      this.removeSelection(oldSelection);
+      this.drawSelection(newSelection);
+    },
   },
   computed: {},
   mounted() {
@@ -745,6 +527,7 @@ export default {
       antialias: true,
       transparent: true,
       view: this.$refs.canvas,
+      resizeTo: this.$refs.canvas,
     });
 
     this.$refs.canvas.addEventListener("contextmenu", (e) => {

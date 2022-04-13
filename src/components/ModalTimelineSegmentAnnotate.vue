@@ -325,17 +325,17 @@ export default {
     },
     async submit() {
       let inputs = JSON.parse(JSON.stringify(this.inputs));
-      // if (this.isSubmitting) {
-      //   return;
-      // }
-      // this.isSubmitting = true;
+      if (this.isSubmitting) {
+        return;
+      }
+      this.isSubmitting = true;
       await this.$store.dispatch("timelineSegment/annotate", {
         timelineSegmentId: this.timelineSegment.id,
         annotations: inputs,
       });
 
-      // this.isSubmitting = false;
-      // this.$emit("update:show", false);
+      this.isSubmitting = false;
+      this.$emit("update:show", false);
     },
     close() {
       this.$emit("update:show", false);
