@@ -263,7 +263,15 @@ export default {
     onColoringSegment(id) {},
     onDeleteSegment(id) {},
 
-    onAddSelection(selection) {
+    onAddSelection(segmentId) {
+      const segmentPos =
+        this.$store.getters["timeline/segmentPosition"](segmentId);
+      console.log(segmentPos);
+
+      const selection = {
+        timeline: segmentPos.timeline,
+        segment: segmentPos.segment,
+      };
       this.selectedTimelineSegment.push(selection);
       this.setCursor({
         type: "segment",
@@ -271,7 +279,15 @@ export default {
         segment: selection.segment,
       });
     },
-    onSelect(selection) {
+    onSelect(segmentId) {
+      const segmentPos =
+        this.$store.getters["timeline/segmentPosition"](segmentId);
+      console.log(segmentPos);
+
+      const selection = {
+        timeline: segmentPos.timeline,
+        segment: segmentPos.segment,
+      };
       this.selectedTimelineSegment = [selection];
       this.setCursor({
         type: "segment",
@@ -467,7 +483,6 @@ export default {
     },
     duration: {
       handler: function (newValue) {
-        console.log(newValue);
         this.endTime = newValue;
       },
       deep: true,
