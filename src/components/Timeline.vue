@@ -93,7 +93,7 @@ export default {
     },
     headerWidth: {
       type: Number,
-      default: 200,
+      default: 100,
     },
     scaleHeight: {
       type: Number,
@@ -312,6 +312,13 @@ export default {
           this.$nextTick(() => {
             this.showMenu = true;
           });
+        });
+        timeline.on("segmentClick", (ev) => {
+          if (ev.event.data.originalEvent.ctrlKey) {
+            this.$emit("addSelection", ev.segment.segment.id);
+          } else {
+            this.$emit("select", ev.segment.segment.id);
+          }
         });
         this.timelinesContainer.addChild(timeline);
         this.timelineObjects.push(timeline);
