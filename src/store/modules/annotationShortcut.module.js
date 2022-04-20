@@ -21,31 +21,28 @@ const api = {
     },
   },
   actions: {
-    async update({ commit }, { annotationShortcuts }) {
-      console.log(JSON.stringify(annotationShortcuts));
-      // const params = {
-      //   key: key,
-      // };
-      // if (videoId) {
-      //   params.video_id = videoId;
-      // } else {
-      //   const video = this.getters["video/current"];
-      //   if (video) {
-      //     params.video_id = video.id;
-      //   }
-      // }
+    async update({ commit }, { annotationShortcuts, videoId = null }) {
+      const params = {
+        annotation_shortcuts: annotationShortcuts,
+      };
+      if (videoId) {
+        params.video_id = videoId;
+      } else {
+        const video = this.getters["video/current"];
+        if (video) {
+          params.video_id = video.id;
+        }
+      }
 
-      // console.log(
-      //   `ANNOTATION_annotationSHORTCUT_CREATE ${JSON.stringify(params)}`
-      // );
-      // return axios
-      //   .post(`${config.API_LOCATION}/annotation/shortcut/create`, params)
-      //   .then((res) => {
-      //     if (res.data.status === "ok") {
-      //       commit("add", [res.data.entry]);
-      //       return res.data.entry.id;
-      //     }
-      //   });
+      console.log(`ANNOTATION_SHORTCUT_UPDATE ${JSON.stringify(params)}`);
+      return axios
+        .post(`${config.API_LOCATION}/annotation/shortcut/update`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+            commit("update", res.data.annotation_shortcuts);
+            commit("shortcut/update", res.data.shortcuts, { root: true });
+          }
+        });
       // .catch((error) => {
       //     const info = { date: Date(), error, origin: 'collection' };
       //     commit('error/update', info, { root: true });

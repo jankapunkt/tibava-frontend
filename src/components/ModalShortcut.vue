@@ -24,7 +24,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in shortcuts" :key="item.name">
+              <tr v-for="(item, index) in items" :key="item.name">
                 <td>
                   <v-chip>
                     <v-btn
@@ -94,7 +94,7 @@ export default {
       show: false,
       isSubmitting: false,
 
-      shortcuts: [],
+      items: [],
     };
   },
   computed: {
@@ -105,6 +105,14 @@ export default {
     annotations() {
       const annotations = this.$store.getters["annotation/all"];
       return annotations;
+    },
+    annotationShortcuts() {
+      const annotationShortcuts = this.$store.getters["annotationShortcut/all"];
+      return annotationShortcuts;
+    },
+    shortcuts() {
+      const shortcuts = this.$store.getters["shortcut/all"];
+      return shortcuts;
     },
   },
   methods: {
@@ -121,43 +129,56 @@ export default {
       if (lowerChar.length === 1) {
         newKeys.push(lowerChar);
       }
-      const newShortcut = { ...this.shortcuts[index], ...{ keys: newKeys } };
-      Vue.set(this.shortcuts, index, newShortcut);
+      const newShortcut = { ...this.items[index], ...{ keys: newKeys } };
+      Vue.set(this.items, index, newShortcut);
     },
     clear(index) {
-      const newShortcut = { ...this.shortcuts[index], ...{ keys: [] } };
-      Vue.set(this.shortcuts, index, newShortcut);
+      const newShortcut = { ...this.items[index], ...{ keys: [] } };
+      Vue.set(this.items, index, newShortcut);
     },
-    async downloadCSV() {
-      this.$store.dispatch("video/exportCSV", {}).then(() => {
-        this.show = false;
-      });
-    },
-    async downloadJson() {
-      await this.$store.dispatch("video/exportJson", {}).then(() => {
-        this.show = false;
-      });
-    },
+
     async submit() {
       if (this.isSubmitting) {
         return;
       }
       this.isSubmitting = true;
+      const shortcuts = this.items.map((e) => {
+        return { id: e.id, keys: e.keys };
+      });
+
       await this.$store.dispatch("annotationShortcut/update", {
-        annotationShortcuts: this.shortcuts,
+        annotationShortcuts: shortcuts,
       });
 
       this.isSubmitting = false;
-      this.$emit("update:show", false);
+      this.show = false;
     },
   },
   watch: {
     show(value) {
       if (value) {
-        this.shortcuts = this.annotations;
+        this.items = this.annotations;
+
+        let lutAnnotationShortcuts = {};
+
+        this.annotationShortcuts.forEach((e) => {
+          lutAnnotationShortcuts[e.annotation_id] = e;
+        });
+
+        let lutShortcuts = {};
 
         this.shortcuts.forEach((e) => {
-          e.keys = [];
+          lutShortcuts[e.id] = e;
+        });
+
+        this.items.forEach((e) => {
+          if (lutAnnotationShortcuts[e.id] == null) {
+            e.keys = [];
+          } else {
+            const annotationShortcut = lutAnnotationShortcuts[e.id];
+            const shortcut = lutShortcuts[annotationShortcut.shortcut_id];
+            e.keys = shortcut.keys;
+          }
         });
         this.$emit("close");
       }
