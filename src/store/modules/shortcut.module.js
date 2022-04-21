@@ -17,6 +17,9 @@ const api = {
     get: (state) => (id) => {
       return state.shortcuts[id];
     },
+    getByKeys: (state) => (id) => {
+      return state.shortcuts[id];
+    },
   },
   actions: {
     async create({ commit }, { key, videoId = null }) {
@@ -32,7 +35,6 @@ const api = {
         }
       }
 
-      console.log(`ANNOTATION_SHORTCUT_CREATE ${JSON.stringify(params)}`);
       return axios
         .post(`${config.API_LOCATION}/shortcut/create`, params)
         .then((res) => {

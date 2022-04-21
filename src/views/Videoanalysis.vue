@@ -117,6 +117,8 @@ import ShotCard from "@/components/ShotCard.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
+
+import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
 
 export default {
@@ -163,24 +165,24 @@ export default {
       const shownDuration = this.endTime - this.startTime;
       const selectedSegment =
         this.timelines[cursor.timeline].segments[cursor.segment];
-      console.log(JSON.stringify(selectedSegment));
       let newStartTime = Math.min(this.startTime, selectedSegment.start);
       let newEndTime = Math.max(this.endTime, selectedSegment.end);
       this.$nextTick(() => {
         this.startTime = newStartTime;
         this.endTime = newEndTime;
       });
-      console.log(JSON.stringify(cursor));
       this.videoTime = selectedSegment.start;
       this.targetTime = selectedSegment.start;
       this.cursor = cursor;
     },
     onKeyDown(event) {
+      // handling cursor
       let newCursor = {
         type: this.cursor.type,
         timeline: this.cursor.timeline,
         segment: this.cursor.segment,
       };
+
       if (event.key == "ArrowDown") {
         newCursor.timeline += 1;
         event.preventDefault();
@@ -199,7 +201,6 @@ export default {
           event.preventDefault();
         }
       }
-
       newCursor.timeline = Math.max(
         Math.min(newCursor.timeline, this.timelines.length - 1),
         0
@@ -228,6 +229,30 @@ export default {
         }
       }
       this.setCursor(newCursor);
+
+      // handling shortcut
+      const keys = [];
+      if (event.ctrlKey) {
+        keys.push("ctrl");
+      }
+
+      if (event.shiftKey) {
+        keys.push("shift");
+      }
+      if (event.key.length === 1) {
+        keys.push(event.key.toLowerCase());
+      }
+      const keysString = Keyboard.generateKeysString(keys);
+      console.log(keysString);
+      console.log(this.shortcutAnnotationMap);
+      if (this.shortcutAnnotationMap[keysString] != null) {
+        this.shortcutAnnotationMap[keysString].forEach((annotationId) => {
+          this.$store.dispatch("timelineSegmentAnnotation/create", {
+            timelineSegmentId: this.cursor.id,
+            annotationId: annotationId,
+          });
+        });
+      }
     },
     onTimeUpdate(time) {
       this.videoTime = time;
@@ -342,6 +367,27 @@ export default {
         return e;
       });
       return annotations;
+    },
+    shortcutAnnotationMap() {
+      const annotationShortcuts = this.$store.getters["annotationShortcut/all"];
+      const shortcuts = this.$store.getters["shortcut/all"];
+
+      let lutShortcuts = {};
+      shortcuts.forEach((e) => {
+        lutShortcuts[e.id] = e;
+      });
+
+      let shortcutAnnotationMap = {};
+      annotationShortcuts.forEach((e) => {
+        const keys = Keyboard.generateKeysString(
+          lutShortcuts[e.shortcut_id].keys
+        );
+        if (shortcutAnnotationMap[keys] == null) {
+          shortcutAnnotationMap[keys] = [];
+        }
+        shortcutAnnotationMap[keys].push(e.annotation_id);
+      });
+      return shortcutAnnotationMap;
     },
     timelines() {
       let timelines = this.$store.getters["timeline/forVideo"](
