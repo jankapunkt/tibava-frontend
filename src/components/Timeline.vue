@@ -62,7 +62,12 @@
 
 <script>
 import TimeMixin from "../mixins/time";
-import { AnnotationTimeline, TimelineHeader, TimeScale } from "../plugins/draw";
+import {
+  AnnotationTimeline,
+  TimelineHeader,
+  TimeScale,
+  TimeBar,
+} from "../plugins/draw";
 import paper from "paper";
 
 import * as PIXI from "pixi.js";
@@ -97,11 +102,11 @@ export default {
     },
     scaleHeight: {
       type: Number,
-      default: 60,
+      default: 40,
     },
     timelineHeight: {
       type: Number,
-      default: 80,
+      default: 50,
     },
     gap: {
       type: Number,
@@ -161,6 +166,7 @@ export default {
       timelinesContainer: null,
       timelineObjects: [],
       timeScaleObjects: [],
+      timeBarsObjects: [],
 
       canvasStyle: {
         height: this.scaleHeight,
@@ -212,6 +218,34 @@ export default {
       this.drawTimeline();
       this.drawTimelineHeader();
       this.drawScale();
+      this.drawTimeBar();
+    },
+    drawTimeBar() {
+      if (this.timeBarsContainer) {
+        this.app.stage.removeChild(this.timeBarsContainer);
+      }
+
+      this.timeBarsContainer = new PIXI.Container();
+      this.timeBarsObjects = [];
+
+      const x = this.timeToX(this.startTime);
+      const y = this.gap;
+      const width = this.timeToX(this.endTime) - x;
+      const height = window.innerHeight;
+
+      let timeline = new TimeBar(
+        x,
+        y,
+        width,
+        height,
+        1,
+        this.startTime,
+        this.endTime
+      );
+
+      this.timeBarsContainer.addChild(timeline);
+      this.timeBarsObjects.push(timeline);
+      this.app.stage.addChild(this.timeBarsContainer);
     },
     drawScale() {
       if (this.timeScalesContainer) {
@@ -379,9 +413,6 @@ export default {
         (x - this.headerWidth - 3 * this.gap) / this.timeScale + this.startTime
       );
     },
-    deltaXToTime(x) {
-      return x / this.timeScale;
-    },
     mapToGlobal(point) {
       const screenRect = this.app.screen;
       const canvasRect = this.$refs.canvas.getBoundingClientRect();
@@ -436,6 +467,9 @@ export default {
       this.timeScaleObjects.forEach((e) => {
         e.startTime = value;
       });
+      this.timeBarsObjects.forEach((e) => {
+        e.startTime = value;
+      });
     },
     endTime(value) {
       this.timelineObjects.forEach((e) => {
@@ -444,14 +478,18 @@ export default {
       this.timeScaleObjects.forEach((e) => {
         e.endTime = value;
       });
+      this.timeBarsObjects.forEach((e) => {
+        e.endTime = value;
+      });
     },
     timelines() {
       this.draw();
     },
-    // time() {
-    //   this.drawTime();
-    //   this.targetTime = this.time;
-    // },
+    time(value) {
+      this.timeBarsObjects.forEach((e) => {
+        e.time = value;
+      });
+    },
     selectedTimelineSegment(newSelection, oldSelection) {
       this.removeSelection(oldSelection);
       this.drawSelection(newSelection);

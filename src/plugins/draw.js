@@ -6,8 +6,8 @@ function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-      0.587 * Math.pow(rgb[1], 2) +
-      0.114 * Math.pow(rgb[2], 2)
+    0.587 * Math.pow(rgb[1], 2) +
+    0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -401,7 +401,7 @@ class TimeScale extends PIXI.Container {
         .lineTo(0, 25)
         .closePath();
       path.x = x;
-      path.y = 10;
+      path.y = 25;
 
       const timeCode = Time.get_timecode(time);
       const text = new PIXI.Text(timeCode, {
@@ -410,7 +410,7 @@ class TimeScale extends PIXI.Container {
         // fontWeight: 'bold',
       });
       text.x = x;
-      text.y = 35;
+      text.y = 5;
       text.resolution = 2;
       path.mask = this.pMask;
       text.mask = this.pMask;
@@ -425,11 +425,11 @@ class TimeScale extends PIXI.Container {
       if ((time * 1000) % majorStroke == 0) {
         path.visible = true;
         text.visible = true;
-        path.height = 10;
+        path.height = this.pHeight - 25;
       } else if ((time * 1000) % minorStroke == 0) {
         path.visible = true;
         text.visible = false;
-        path.height = 5;
+        path.height = this.pHeight - 35;
       } else {
         path.visible = false;
         text.visible = false;
@@ -464,11 +464,11 @@ class TimeScale extends PIXI.Container {
       if ((time * 1000) % majorStroke == 0) {
         e.stroke.visible = true;
         e.text.visible = true;
-        e.stroke.height = 10;
+        e.stroke.height = this.pHeight - 25;
       } else if ((time * 1000) % minorStroke == 0) {
         e.stroke.visible = true;
         e.text.visible = false;
-        e.stroke.height = 5;
+        e.stroke.height = this.pHeight - 35;
       } else {
         e.stroke.visible = false;
         e.text.visible = false;
@@ -494,10 +494,83 @@ class TimeScale extends PIXI.Container {
   }
 }
 
+class TimeBar extends PIXI.Container {
+  constructor(x, y, width, height, time = 0, startTime = 0, endTime = 10) {
+    super();
+    this.pX = x;
+    this.pY = y;
+    this.pWidth = width;
+    this.pHeight = height;
+    this.pTime = time;
+    this.pStartTime = startTime;
+    this.pEndTime = endTime;
+
+    this.pMask = new PIXI.Graphics();
+    this.pMask.beginFill(0xffffff);
+    this.pMask.drawRoundedRect(0, 0, width, height, 5);
+
+    this.pMask.x = x;
+    this.pMask.y = y;
+    this.mask = this.pMask
+    this.addChild(this.pMask);
+
+
+    const handleWidth = 10;
+    const handleHeight = 10;
+
+    const timeX = this._timeToX(time);
+    this.pCursor = new PIXI.Graphics()
+      .lineStyle(1, 0xae1313, 1)
+      .beginFill(0xae1313)
+      .moveTo(0, height)
+      .lineTo(0, handleHeight)
+      .lineTo(handleWidth, 0)
+      .lineTo(-handleWidth, 0)
+      .lineTo(0, handleHeight)
+      .closePath()
+      .endFill();
+    this.pCursor.x = timeX;
+    this.pCursor.y = 25;
+    console.log(timeX)
+    this.addChild(this.pCursor);
+
+    let shadow = new DropShadowFilter();
+    shadow.color = 0x0000;
+    shadow.distance = 2;
+    shadow.alpha = 0.4;
+    shadow.rotation = 90;
+    shadow.blur = 1;
+    this.pCursor.filters = [shadow];
+  }
+  get timeScale() {
+    return this.pWidth / (this.pEndTime - this.pStartTime);
+  }
+  _timeToX(time) {
+    return this.pX + this.timeScale * (time - this.pStartTime);
+  }
+  scaleSegment() {
+    this.pCursor.x = this._timeToX(this.pTime);
+  }
+  set startTime(time) {
+    this.pStartTime = time;
+    this.scaleSegment();
+  }
+  set endTime(time) {
+    this.pEndTime = time;
+    this.scaleSegment();
+  }
+  set time(time) {
+
+    this.pTime = time;
+    this.scaleSegment();
+  }
+}
+
 export {
   AnnotationTimeline,
   TimelineHeader,
   TimeScale,
+  TimeBar,
   hex2luminance,
   linspace,
 };
