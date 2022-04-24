@@ -159,20 +159,20 @@ export default {
     onVideoResize() {
       this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
     },
-    setCursor(cursor) {
+    setCursor(cursor, updateTime = false) {
       const shownDuration = this.endTime - this.startTime;
       const selectedSegment =
         this.timelines[cursor.timeline].segments[cursor.segment];
-      console.log(JSON.stringify(selectedSegment));
       let newStartTime = Math.min(this.startTime, selectedSegment.start);
       let newEndTime = Math.max(this.endTime, selectedSegment.end);
       this.$nextTick(() => {
         this.startTime = newStartTime;
         this.endTime = newEndTime;
       });
-      console.log(JSON.stringify(cursor));
-      this.videoTime = selectedSegment.start;
-      this.targetTime = selectedSegment.start;
+      if (updateTime) {
+        this.videoTime = selectedSegment.start;
+        this.targetTime = selectedSegment.start;
+      }
       this.cursor = cursor;
     },
     onKeyDown(event) {
@@ -227,7 +227,7 @@ export default {
           this.selectedTimelineSegment = [newCursor];
         }
       }
-      this.setCursor(newCursor);
+      this.setCursor(newCursor, true);
     },
     onTimeUpdate(time) {
       this.videoTime = time;

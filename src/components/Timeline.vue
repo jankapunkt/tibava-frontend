@@ -331,6 +331,9 @@ export default {
           } else {
             this.$emit("select", ev.segment.segment.id);
           }
+          const targetTime = this.xToTime(ev.event.data.global.x);
+          console.log(targetTime);
+          this.$emit("update:time", targetTime);
         });
         this.timelinesContainer.addChild(timeline);
         this.timelineObjects.push(timeline);
