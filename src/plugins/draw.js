@@ -531,7 +531,6 @@ class TimeBar extends PIXI.Container {
       .endFill();
     this.pCursor.x = timeX;
     this.pCursor.y = 25;
-    console.log(timeX)
     this.addChild(this.pCursor);
 
     let shadow = new DropShadowFilter();

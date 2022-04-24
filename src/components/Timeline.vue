@@ -1,6 +1,6 @@
 <template>
-  <div ref="container" style="width: 100%">
-    <canvas :style="canvasStyle" ref="canvas" resize> </canvas>
+  <div ref="container" style="width: 100%; min-height: 100px">
+    <canvas style="width: 100%" ref="canvas" resize> </canvas>
     <v-menu
       v-model="timelineMenu.show"
       :position-x="timelineMenu.x"
@@ -112,9 +112,6 @@ export default {
       type: Number,
       default: 4,
     },
-    radius: {
-      default: 5,
-    },
     headerStyle: {
       type: Object,
       default: () => {
@@ -163,33 +160,14 @@ export default {
   data() {
     return {
       app: null,
-      timelinesContainer: null,
       timelineObjects: [],
       timeScaleObjects: [],
       timeBarsObjects: [],
 
-      canvasStyle: {
-        height: this.scaleHeight,
-        width: this.width,
-      },
-
       canvasWidth: null,
       canvasHeight: null,
-      containerWidth: null,
-      containerHeight: null,
-
-      canvas: null,
-      scope: null,
-
-      // Groups
-      scaleGroup: null,
-      mainStrokes: null,
-      otherStrokes: null,
-      textGroup: null,
-
-      // Layers
-      scaleLayer: null,
-      headerLayer: null,
+      containerWidth: 100,
+      containerHeight: 100,
 
       // Context
       timelineMenu: {
@@ -399,8 +377,6 @@ export default {
         });
       }
     },
-
-    //  map time to x and x to time
     timeToX(time) {
       return (
         this.headerWidth +
@@ -482,7 +458,7 @@ export default {
         e.endTime = value;
       });
     },
-    timelines() {
+    timelines(values) {
       this.draw();
     },
     time(value) {
@@ -495,12 +471,20 @@ export default {
       this.drawSelection(newSelection);
     },
   },
-  computed: {},
+  computed: {
+    computedHeight() {
+      return (
+        this.timelines.length * (this.timelineHeight + this.gap) +
+        this.scaleHeight +
+        3 * this.gap
+      );
+    },
+  },
   mounted() {
     this.containerWidth = this.$refs.container.clientWidth;
     this.app = new PIXI.Application({
       width: this.containerWidth,
-      height: window.innerHeight,
+      height: this.containerHeight,
       antialias: true,
       transparent: true,
       view: this.$refs.canvas,
@@ -516,7 +500,15 @@ export default {
         this.containerWidth = this.$refs.container.clientWidth;
         this.draw();
       }
+      if (this.computedHeight != this.containerHeight) {
+        this.containerHeight = this.computedHeight;
+        this.$refs.container.style.height = this.computedHeight;
+        this.$refs.canvas.height = this.computedHeight;
+        this.app.resize();
+        this.draw();
+      }
     });
+    this.draw();
   },
 };
 </script>
