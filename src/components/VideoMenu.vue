@@ -17,6 +17,12 @@
         <v-list-item v-if="video.id" class="px-0">
           <ModalExport @close="menu = false" />
         </v-list-item>
+        <v-list-item v-if="video.id" class="px-0">
+          <ModalAnalyse @close="menu = false" />
+        </v-list-item>
+        <v-list-item v-if="video.id" class="px-0">
+          <ModalShortcut @close="menu = false" />
+        </v-list-item>
       </v-list-item-group>
     </v-list>
   </v-menu>
@@ -24,6 +30,8 @@
 
 <script>
 import ModalExport from "@/components/ModalExport.vue";
+import ModalAnalyse from "@/components/ModalAnalyse.vue";
+import ModalShortcut from "@/components/ModalShortcut.vue";
 
 export default {
   data() {
@@ -33,8 +41,7 @@ export default {
   },
   computed: {
     video() {
-      let video = this.$store.getters["video/current"];
-      console.log(video);
+      const video = this.$store.getters["video/current"];
       return video;
     },
     loggedIn() {
@@ -43,6 +50,8 @@ export default {
   },
   components: {
     ModalExport,
+    ModalAnalyse,
+    ModalShortcut,
   },
 };
 </script>
