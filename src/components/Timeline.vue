@@ -55,6 +55,12 @@
             {{ $t("timelineSegment.delete") }}
           </v-list-item-title>
         </v-list-item>
+        <v-list-item link v-on:click="onSplitSegment">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-content-cut" }}</v-icon>
+            {{ $t("timelineSegment.split") }}
+          </v-list-item-title>
+        </v-list-item>
       </v-list>
     </v-menu>
   </div>
@@ -426,6 +432,14 @@ export default {
     onDeleteSegment() {
       let id = this.segmentMenu.selected;
       this.$emit("deleteSegment", id);
+    },
+    onSplitSegment() {
+      let id = this.segmentMenu.selected;
+      this.$emit("splitSegment", id);
+    },
+    onMergeSegments() {
+      let id = this.segmentMenu.selected;
+      this.$emit("mergeSegments", id);
     },
     onResize(event) {
       this.$nextTick(() => {

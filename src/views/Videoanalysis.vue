@@ -89,6 +89,8 @@
                 @deleteTimeline="onDeleteTimeline"
                 @annotateSegment="onAnnotateSegment"
                 @coloringSegment="onColoringSegment"
+                @splitSegment="onSplitSegment"
+                @mergeSegments="onMergeSegments"
                 @deleteSegment="onDeleteSegment"
                 @update:time="onTagetTimeChange"
                 @addSelection="onAddSelection"
@@ -326,6 +328,18 @@ export default {
     onSegmentSelected(id) {
       this.cursorSegment = id;
       // this.$store.dispatch("timeline/delete", id);
+    },
+    onSplitSegment(id) {
+      this.$store.dispatch("timelineSegment/split", {
+        timelineSegmentId: id,
+        time: this.targetTime,
+      });
+    },
+    onMergeSegments(id) {
+      this.$store.dispatch("timelineSegment/merge", {
+        timelineSegmentId: id,
+        time: this.targetTime,
+      });
     },
     onAppendAnnotation(evt) {
       evt.preventDefault();
