@@ -235,7 +235,7 @@ export default {
         y,
         width,
         height,
-        1,
+        this.time,
         this.startTime,
         this.endTime
       );
