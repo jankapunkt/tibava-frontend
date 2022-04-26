@@ -17,7 +17,10 @@
         </v-list-item>
 
         <v-list-item>
-          <ModalRenameTimeline :timeline="timelineMenu.selected" />
+          <ModalRenameTimeline
+            :timeline="timelineMenu.selected"
+            @close="timelineMenu.show = false"
+          />
           <!-- @close="menu = false" /> -->
         </v-list-item>
         <!-- <v-list-item link v-on:click="onRenameTimeline">
