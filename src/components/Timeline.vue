@@ -12,19 +12,19 @@
         <v-list-item link v-on:click="onCopyTimeline">
           <v-list-item-title>
             <v-icon left>{{ "mdi-content-copy" }}</v-icon>
-            {{ $t("timline.duplicate") }}
+            {{ $t("timeline.duplicate") }}
           </v-list-item-title>
         </v-list-item>
         <v-list-item link v-on:click="onRenameTimeline">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timline.rename") }}
+            {{ $t("timeline.rename") }}
           </v-list-item-title>
         </v-list-item>
         <v-list-item link v-on:click="onDeleteTimeline">
           <v-list-item-title>
             <v-icon left>{{ "mdi-delete" }}</v-icon>
-            {{ $t("timline.delete") }}
+            {{ $t("timeline.delete") }}
           </v-list-item-title>
         </v-list-item>
       </v-list>
@@ -55,7 +55,7 @@
             {{ $t("timelineSegment.delete") }}
           </v-list-item-title>
         </v-list-item>
-        <v-list-item link v-on:click="onSplitSegment">
+        <v-list-item link v-on:click="ononMergeSegmentSplitSegment">
           <v-list-item-title>
             <v-icon left>{{ "mdi-content-cut" }}</v-icon>
             {{ $t("timelineSegment.split") }}
