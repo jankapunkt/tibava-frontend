@@ -231,24 +231,22 @@ export default {
         } else {
           this.selectedTimelineSegment = [newCursor];
         }
+        this.setCursor(newCursor, true);
       }
-      this.setCursor(newCursor, true);
 
       // handling shortcut
       const keys = [];
       if (event.ctrlKey) {
         keys.push("ctrl");
       }
-
       if (event.shiftKey) {
         keys.push("shift");
       }
       if (event.key.length === 1) {
         keys.push(event.key.toLowerCase());
       }
+
       const keysString = Keyboard.generateKeysString(keys);
-      console.log(keysString);
-      console.log(this.shortcutAnnotationMap);
       if (this.shortcutAnnotationMap[keysString] != null) {
         this.shortcutAnnotationMap[keysString].forEach((annotationId) => {
           this.$store.dispatch("timelineSegmentAnnotation/create", {
@@ -336,9 +334,15 @@ export default {
       });
     },
     onMergeSegments(id) {
+      const timelineSegmentIds = this.selectedTimelineSegment.map((e) => {
+        return this.$store.getters["timeline/getSegmentByPosition"](
+          e.timeline,
+          e.segment
+        );
+      });
+      console.log(timelineSegmentIds);
       this.$store.dispatch("timelineSegment/merge", {
-        timelineSegmentId: id,
-        time: this.targetTime,
+        timelineSegmentIds: timelineSegmentIds,
       });
     },
     onAppendAnnotation(evt) {

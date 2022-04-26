@@ -89,18 +89,33 @@ const api = {
             );
             commit("delete", res.data.timeline_segment_deleted);
             commit("add", res.data.timeline_segment_added);
-
-            // this.dispatch("annotationCategory/listUpdate", {videoId})
-            // this.dispatch("annotation/listUpdate", {videoId})
-
-            // this.dispatch("timeline/listUpdate", {videoId})
-            // this.dispatch("timelineSegment/listUpdate", {videoId})
-            // this.dispatch("timelineSegmentAnnotation/listUpdate", {videoId})
-
-            // commit('add', [res.data.entry]);
-
-            // commit('timelineSegment/addAnnotation', [{ timelineSegmentId, entry: res.data.entry }], { root: true });
-            // return res.data.entry.id;
+          }
+        });
+      // .catch((error) => {
+      //     const info = { date: Date(), error, origin: 'collection' };
+      //     commit('error/update', info, { root: true });
+      // });
+    },
+    async merge({ commit }, { timelineSegmentIds }) {
+      const params = {
+        timeline_segment_ids: timelineSegmentIds,
+      };
+      return axios
+        .post(`${config.API_LOCATION}/timeline/segment/merge`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+            commit(
+              "timelineSegmentAnnotation/delete",
+              res.data.timeline_segment_annotation_deleted,
+              { root: true }
+            );
+            commit(
+              "timelineSegmentAnnotation/add",
+              res.data.timeline_segment_annotation_added,
+              { root: true }
+            );
+            commit("delete", res.data.timeline_segment_deleted);
+            commit("add", res.data.timeline_segment_added);
           }
         });
       // .catch((error) => {

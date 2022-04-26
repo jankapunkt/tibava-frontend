@@ -34,6 +34,23 @@ const api = {
         });
       return result;
     },
+    getSegmentByPosition: (state) => (timelinePos, segmentPos) => {
+      console.log(timelinePos);
+      console.log(segmentPos);
+      let result = null;
+      state.timelineList
+        .map((id) => state.timelines[id])
+        .forEach((timeline, iTimelinePos) => {
+          if (timeline.segments != null && timelinePos === iTimelinePos) {
+            timeline.segments.forEach((segment, iSegmentPos) => {
+              if (iSegmentPos === segmentPos) {
+                result = segment.id;
+              }
+            });
+          }
+        });
+      return result;
+    },
   },
   actions: {
     async listAdd({ commit }, video_id) {
