@@ -20,12 +20,12 @@
           <ModalRenameTimeline :timeline="timelineMenu.selected" />
           <!-- @close="menu = false" /> -->
         </v-list-item>
-        <v-list-item link v-on:click="onRenameTimeline">
+        <!-- <v-list-item link v-on:click="onRenameTimeline">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
             {{ $t("timeline.rename") }}
           </v-list-item-title>
-        </v-list-item>
+        </v-list-item> -->
         <v-list-item link v-on:click="onDeleteTimeline">
           <v-list-item-title>
             <v-icon left>{{ "mdi-delete" }}</v-icon>
