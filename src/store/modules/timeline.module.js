@@ -19,6 +19,9 @@ const api = {
     all: (state) => {
       return state.timelineList.map((id) => state.timelines[id]);
     },
+    get: (state) => (id) => {
+      return state.timelines[id];
+    },
     segmentPosition: (state) => (segmentId) => {
       let result = null;
       state.timelineList
@@ -127,6 +130,24 @@ const api = {
       //     commit('error/update', info, { root: true });
       // });
     },
+
+    async rename({ commit }, { timelineId, name }) {
+      let params = {
+        id: timelineId,
+        name: name,
+      };
+      return axios
+        .post(`${config.API_LOCATION}/timeline/rename`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+            commit("rename", { timelineId, name });
+          }
+        });
+      // .catch((error) => {
+      //     const info = { date: Date(), error, origin: 'collection' };
+      //     commit('error/update', info, { root: true });
+      // });
+    },
   },
   mutations: {
     add(state, timelines) {
@@ -142,6 +163,15 @@ const api = {
         state.timelines[e.id] = e;
         state.timelineList.push(e.id);
       });
+    },
+    rename(state, args) {
+      const newTimelines = { ...state.timelines };
+      newTimelines[args.timelineId].name = args.name;
+      Vue.set(state, "timelines", newTimelines);
+      // console.log(args);
+      // var timeline = state.timelines[args.timelineId];
+      // timeline.name = args.name;
+      // console.log(Vue.set(state.timelines, args.timelineId, timeline));
     },
     delete(state, timeline_id) {
       let timeline_index = state.timelineList.findIndex(
