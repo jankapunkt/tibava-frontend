@@ -203,6 +203,9 @@ const api = {
     update(state, timelineSegments) {
       this.timelineSegmentList = [];
       this.timelineSegments = {};
+      timelineSegments = timelineSegments.sort((a, b) => {
+        return a.start - b.start;
+      });
       timelineSegments.forEach((e, i) => {
         state.timelineSegments[e.id] = e;
         state.timelineSegmentList.push(e.id);
