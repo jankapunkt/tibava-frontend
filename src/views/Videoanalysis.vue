@@ -167,6 +167,10 @@ export default {
       const shownDuration = this.endTime - this.startTime;
       const selectedSegment =
         this.timelines[cursor.timeline].segments[cursor.segment];
+      console.log("VideoAnalysis::setCursor");
+      console.log(cursor);
+      console.log(selectedSegment);
+      console.log(JSON.stringify(this.timelines));
       let newStartTime = Math.min(this.startTime, selectedSegment.start);
       let newEndTime = Math.max(this.endTime, selectedSegment.end);
       this.$nextTick(() => {
@@ -249,7 +253,7 @@ export default {
       const keysString = Keyboard.generateKeysString(keys);
       if (this.shortcutAnnotationMap[keysString] != null) {
         this.shortcutAnnotationMap[keysString].forEach((annotationId) => {
-          this.$store.dispatch("timelineSegmentAnnotation/create", {
+          this.$store.dispatch("timelineSegmentAnnotation/toggle", {
             timelineSegmentId: this.cursor.id,
             annotationId: annotationId,
           });
@@ -304,9 +308,12 @@ export default {
         type: "segment",
         timeline: selection.timeline,
         segment: selection.segment,
+        id: segmentId,
       });
     },
     onSelect(segmentId) {
+      console.log("Timeline::onSelect");
+      console.log(segmentId);
       const segmentPos =
         this.$store.getters["timeline/segmentPosition"](segmentId);
       console.log(segmentPos);
@@ -320,6 +327,7 @@ export default {
         type: "segment",
         timeline: selection.timeline,
         segment: selection.segment,
+        id: segmentId,
       });
     },
 

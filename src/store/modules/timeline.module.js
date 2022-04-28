@@ -113,7 +113,34 @@ const api = {
       //     commit('error/update', info, { root: true });
       // });
     },
+    async create({ commit }, { name, videoId = null }) {
+      let params = {
+        name: name,
+      };
 
+      if (videoId) {
+        params.video_id = videoId;
+      } else {
+        const video = this.getters["video/current"];
+        if (video) {
+          params.video_id = video.id;
+        }
+      }
+      return axios
+        .post(`${config.API_LOCATION}/timeline/create`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+            commit("add", res.data.timeline_added);
+            commit("timelineSegment/add", res.data.timeline_segment_added, {
+              root: true,
+            });
+          }
+        });
+      // .catch((error) => {
+      //     const info = { date: Date(), error, origin: 'upload' };
+      //     commit('error/update', info, { root: true });
+      // });
+    },
     async delete({ commit }, timeline_id) {
       let params = {
         id: timeline_id,
@@ -151,10 +178,14 @@ const api = {
   },
   mutations: {
     add(state, timelines) {
+      console.log("Timeline::add");
+      console.log(JSON.stringify(timelines));
       timelines.forEach((e, i) => {
+        console.log(e.id);
         state.timelines[e.id] = e;
         state.timelineList.push(e.id);
       });
+      console.log(JSON.stringify(state.timelineList));
     },
     update(state, timelines) {
       state.timelines = {};

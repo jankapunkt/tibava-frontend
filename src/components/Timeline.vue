@@ -75,17 +75,32 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <v-menu
+      v-model="menu.show"
+      :position-x="menu.x"
+      :position-y="menu.y"
+      absolute
+      offset-y
+    >
+      <v-list>
+        <v-list-item link>
+          <ModalCreateTimeline @close="menu.show = false" />
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 </template>
 
 <script>
 import TimeMixin from "../mixins/time";
 import ModalRenameTimeline from "@/components/ModalRenameTimeline.vue";
+import ModalCreateTimeline from "@/components/ModalCreateTimeline.vue";
 import {
   AnnotationTimeline,
   TimelineHeader,
   TimeScale,
   TimeBar,
+  Button,
 } from "../plugins/draw";
 import paper from "paper";
 
@@ -201,6 +216,12 @@ export default {
         y: null,
         selected: null,
       },
+      menu: {
+        show: false,
+        x: null,
+        y: null,
+        selected: null,
+      },
       // seek
       targetTime: 0,
       //segment_list
@@ -216,6 +237,39 @@ export default {
       this.drawTimelineHeader();
       this.drawScale();
       this.drawTimeBar();
+      this.drawMenu();
+    },
+    drawMenu() {
+      if (this.menuContainer) {
+        this.app.stage.removeChild(this.menuContainer);
+      }
+
+      this.menuContainer = new PIXI.Container();
+      this.menuObjects = [];
+
+      const x = 5;
+      const y = 5;
+      const width = 80;
+      const height = 80;
+
+      let button = new Button(
+        x,
+        y,
+        width,
+        height,
+        require("../assets/menu_24.png")
+      );
+
+      button.on("click", (ev) => {
+        console.log("click");
+        const point = this.mapToGlobal(ev.data.global);
+        this.menu.show = true;
+        this.menu.x = point.x;
+        this.menu.y = point.y;
+      });
+      this.menuContainer.addChild(button);
+      this.menuObjects.push(button);
+      this.app.stage.addChild(this.menuContainer);
     },
     drawTimeBar() {
       if (this.timeBarsContainer) {
@@ -345,6 +399,8 @@ export default {
           });
         });
         timeline.on("segmentClick", (ev) => {
+          console.log("segmentClick");
+          console.log(ev.segment.segment.id);
           if (ev.event.data.originalEvent.ctrlKey) {
             this.$emit("addSelection", ev.segment.segment.id);
           } else {
@@ -488,6 +544,8 @@ export default {
       });
     },
     timelines(values) {
+      console.log("Timeline::(watch)::timelines");
+      console.log(`### ${values.length}`);
       this.draw();
     },
     time(value) {
@@ -541,6 +599,7 @@ export default {
   },
   components: {
     ModalRenameTimeline,
+    ModalCreateTimeline,
   },
 };
 </script>
