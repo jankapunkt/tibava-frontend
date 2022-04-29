@@ -66,19 +66,68 @@ const api = {
       );
       return axios
         .post(
-          `${config.API_LOCATION}/timeline/segment/annotation/create`,
+          `${config.API_LOCATION}/timeline/segment/annotation/toggle`,
           params
         )
         .then((res) => {
           if (res.data.status === "ok") {
-            commit("add", [res.data.entry]);
+            if ("annotation_added" in res.data) {
+              commit("annotation/add", res.data.annotation_added, {
+                root: true,
+              });
+            }
+            if ("annotation_category_added" in res.data) {
+              commit(
+                "annotationCategory/add",
+                res.data.annotation_category_added,
+                {
+                  root: true,
+                }
+              );
+            }
+            if ("timeline_segment_annotation_deleted" in res.data) {
+              commit(
+                "timelineSegmentAnnotation/delete",
+                res.data.timeline_segment_annotation_deleted,
+                {
+                  root: true,
+                }
+              );
+            }
+            if ("timeline_segment_annotation_added" in res.data) {
+              commit(
+                "timelineSegmentAnnotation/add",
+                res.data.timeline_segment_annotation_added,
+                {
+                  root: true,
+                }
+              );
+            }
+            // commit(
+            //   "timelineSegment/addAnnotation",
+            //   [{ timelineSegmentId, entry: res.data.entry }],
+            //   { root: true }
+            // );
+            // annotation_added;
+            // timeline_segment_annotation_added;
+            // commit(
+            //   "timelineSegmentAnnotation/delete",
+            //   res.data.timeline_segment_annotation_deleted,
+            //   { root: true }
+            // );
+            // commit(
+            //   "timelineSegmentAnnotation/add",
+            //   res.data.timeline_segment_annotation_added,
+            //   { root: true }
+            // );
+            // commit("add", [res.data.entry]);
 
-            commit(
-              "timelineSegment/addAnnotation",
-              [{ timelineSegmentId, entry: res.data.entry }],
-              { root: true }
-            );
-            return res.data.entry.id;
+            // commit(
+            //   "timelineSegment/addAnnotation",
+            //   [{ timelineSegmentId, entry: res.data.entry }],
+            //   { root: true }
+            // );
+            // return res.data.entry.id;
           }
         });
       // .catch((error) => {
