@@ -230,9 +230,6 @@ export default {
   },
   methods: {
     draw() {
-      this.timeScale =
-        (this.containerWidth - this.headerWidth - 5 * this.gap) /
-        (this.endTime - this.startTime);
       this.drawTimeline();
       this.drawTimelineHeader();
       this.drawScale();
@@ -559,6 +556,12 @@ export default {
     },
   },
   computed: {
+    timeScale() {
+      return (
+        (this.containerWidth - this.headerWidth - 5 * this.gap) /
+        (this.endTime - this.startTime)
+      );
+    },
     computedHeight() {
       return (
         this.timelines.length * (this.timelineHeight + this.gap) +
