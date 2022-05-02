@@ -17,9 +17,9 @@
         <v-list-item v-if="video.id" class="px-0">
           <ModalExport @close="menu = false" />
         </v-list-item>
-        <v-list-item v-if="video.id" class="px-0">
+        <!-- <v-list-item v-if="video.id" class="px-0">
           <ModalAnalyse @close="menu = false" />
-        </v-list-item>
+        </v-list-item> -->
         <v-list-item v-if="video.id" class="px-0">
           <ModalShortcut @close="menu = false" />
         </v-list-item>

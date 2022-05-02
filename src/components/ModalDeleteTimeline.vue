@@ -2,31 +2,25 @@
   <v-dialog v-model="show" max-width="1000">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" text block large>
-        <v-icon left>{{ "mdi-plus-thick" }}</v-icon>
-        {{ $t("modal.timeline.create.title") }}
+        <v-icon left>{{ "mdi-trash-can-outline" }}</v-icon>
+        {{ $t("modal.timeline.delete.link") }}
       </v-btn>
     </template>
     <v-card>
       <v-card-title class="mb-2">
-        {{ $t("modal.timeline.create.title") }}
+        {{ $t("modal.timeline.delete.title") }}
 
         <v-btn icon @click.native="show = false" absolute top right>
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
-      <v-card-text>
-        <v-text-field
-          :label="$t('modal.timeline.create.name')"
-          prepend-icon="mdi-pencil"
-          v-model="name"
-        ></v-text-field>
-      </v-card-text>
+      <v-card-text> {{ $t("modal.timeline.delete.question") }}</v-card-text>
       <v-card-actions class="pt-0">
         <v-btn class="mr-4" @click="submit" :disable="isSubmitting">
-          {{ $t("modal.timeline.create.submit") }}
+          {{ $t("modal.timeline.delete.yes") }}
         </v-btn>
         <v-btn @click="show = false">{{
-          $t("modal.timeline.create.close")
+          $t("modal.timeline.delete.no")
         }}</v-btn>
       </v-card-actions>
     </v-card>
@@ -42,8 +36,6 @@ export default {
     return {
       show: false,
       isSubmitting: false,
-      name: null,
-      items: [],
     };
   },
   methods: {
@@ -53,9 +45,7 @@ export default {
       }
       this.isSubmitting = true;
 
-      await this.$store.dispatch("timeline/create", {
-        name: this.name,
-      });
+      await this.$store.dispatch("timeline/delete", this.timeline);
 
       this.isSubmitting = false;
       this.show = false;
@@ -64,10 +54,12 @@ export default {
   watch: {
     show(value) {
       if (value) {
-        this.name = null;
         this.$emit("close");
       }
     },
   },
 };
 </script>
+
+
+

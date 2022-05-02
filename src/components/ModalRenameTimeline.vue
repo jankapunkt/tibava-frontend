@@ -2,7 +2,8 @@
   <v-dialog v-model="show" max-width="1000">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" text block large>
-        {{ $t("modal.timeline.rename.title") }}
+        <v-icon left>{{ "mdi-pencil" }}</v-icon>
+        {{ $t("modal.timeline.rename.link") }}
       </v-btn>
     </template>
     <v-card>
@@ -16,7 +17,7 @@
       <v-card-text>
         <v-text-field
           :label="$t('modal.timeline.rename.name')"
-          prepend-icon="mdi-map-marker"
+          prepend-icon="mdi-pencil"
           v-model="name"
         ></v-text-field>
       </v-card-text>
@@ -65,7 +66,7 @@ export default {
 
       await this.$store.dispatch("timeline/rename", {
         timelineId: this.timeline,
-        name: this.nameProxy,
+        name: this.name,
       });
 
       this.isSubmitting = false;

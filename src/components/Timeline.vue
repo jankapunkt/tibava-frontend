@@ -9,11 +9,11 @@
       offset-y
     >
       <v-list>
-        <v-list-item link v-on:click="onCopyTimeline">
-          <v-list-item-title>
-            <v-icon left>{{ "mdi-content-copy" }}</v-icon>
-            {{ $t("timeline.duplicate") }}
-          </v-list-item-title>
+        <v-list-item>
+          <ModalCopyTimeline
+            :timeline="timelineMenu.selected"
+            @close="timelineMenu.show = false"
+          />
         </v-list-item>
 
         <v-list-item>
@@ -21,19 +21,12 @@
             :timeline="timelineMenu.selected"
             @close="timelineMenu.show = false"
           />
-          <!-- @close="menu = false" /> -->
         </v-list-item>
-        <!-- <v-list-item link v-on:click="onRenameTimeline">
-          <v-list-item-title>
-            <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timeline.rename") }}
-          </v-list-item-title>
-        </v-list-item> -->
-        <v-list-item link v-on:click="onDeleteTimeline">
-          <v-list-item-title>
-            <v-icon left>{{ "mdi-delete" }}</v-icon>
-            {{ $t("timeline.delete") }}
-          </v-list-item-title>
+        <v-list-item>
+          <ModalDeleteTimeline
+            :timeline="timelineMenu.selected"
+            @close="timelineMenu.show = false"
+          />
         </v-list-item>
       </v-list>
     </v-menu>
@@ -51,18 +44,35 @@
             {{ $t("timelineSegment.annotate") }}
           </v-list-item-title>
         </v-list-item>
-        <v-list-item link v-on:click="onDeleteSegment">
+
+        <!-- <v-list-item link v-on:click="onDeleteSegment">
           <v-list-item-title>
             <v-icon left>{{ "mdi-delete" }}</v-icon>
             {{ $t("timelineSegment.delete") }}
           </v-list-item-title>
-        </v-list-item>
+        </v-list-item> -->
+
         <v-list-item link v-on:click="onSplitSegment">
           <v-list-item-title>
             <v-icon left>{{ "mdi-content-cut" }}</v-icon>
             {{ $t("timelineSegment.split") }}
           </v-list-item-title>
         </v-list-item>
+
+        <v-list-item link v-on:click="onMergeSegmentsLeft">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-arrow-expand-left" }}</v-icon>
+            {{ $t("timelineSegment.mergeleft") }}
+          </v-list-item-title>
+        </v-list-item>
+
+        <v-list-item link v-on:click="onMergeSegmentsRight">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-arrow-expand-right" }}</v-icon>
+            {{ $t("timelineSegment.mergeright") }}
+          </v-list-item-title>
+        </v-list-item>
+
         <v-list-item
           v-if="selectedTimelineSegment.length > 1"
           link
@@ -94,6 +104,8 @@
 <script>
 import TimeMixin from "../mixins/time";
 import ModalRenameTimeline from "@/components/ModalRenameTimeline.vue";
+import ModalCopyTimeline from "@/components/ModalCopyTimeline.vue";
+import ModalDeleteTimeline from "@/components/ModalDeleteTimeline.vue";
 import ModalCreateTimeline from "@/components/ModalCreateTimeline.vue";
 import {
   AnnotationTimeline,
@@ -475,18 +487,6 @@ export default {
 
       return { x: windowsX, y: windowsY };
     },
-    onCopyTimeline() {
-      let id = this.timelineMenu.selected;
-      this.$emit("copyTimeline", id);
-    },
-    onRenameTimeline() {
-      let id = this.timelineMenu.selected;
-      this.$emit("renameTimeline", id);
-    },
-    onDeleteTimeline() {
-      let id = this.timelineMenu.selected;
-      this.$emit("deleteTimeline", id);
-    },
     onAnnotateSegment() {
       let id = this.segmentMenu.selected;
       this.$emit("annotateSegment", id);
@@ -602,6 +602,8 @@ export default {
   },
   components: {
     ModalRenameTimeline,
+    ModalCopyTimeline,
+    ModalDeleteTimeline,
     ModalCreateTimeline,
   },
 };

@@ -97,9 +97,11 @@ const api = {
       // });
     },
 
-    async duplicate({ commit }, timeline_id) {
+    async duplicate({ commit }, {id, name=null, includeannotations=true}) {
       let params = {
-        id: timeline_id,
+        id: id,
+        name: name,
+        includeannotations: includeannotations,
       };
       return axios
         .post(`${config.API_LOCATION}/timeline/duplicate`, params)
