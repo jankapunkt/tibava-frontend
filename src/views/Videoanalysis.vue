@@ -91,6 +91,8 @@
                 @coloringSegment="onColoringSegment"
                 @splitSegment="onSplitSegment"
                 @mergeSegments="onMergeSegments"
+                @mergeSegmentsLeft="onMergeSegmentsLeft"
+                @mergeSegmentsRight="onMergeSegmentsRight"
                 @deleteSegment="onDeleteSegment"
                 @update:time="onTagetTimeChange"
                 @addSelection="onAddSelection"
@@ -167,10 +169,6 @@ export default {
       const shownDuration = this.endTime - this.startTime;
       const selectedSegment =
         this.timelines[cursor.timeline].segments[cursor.segment];
-      console.log("VideoAnalysis::setCursor");
-      console.log(cursor);
-      console.log(selectedSegment);
-      console.log(JSON.stringify(this.timelines));
       let newStartTime = Math.min(this.startTime, selectedSegment.start);
       let newEndTime = Math.max(this.endTime, selectedSegment.end);
       this.$nextTick(() => {
@@ -351,6 +349,38 @@ export default {
       console.log(timelineSegmentIds);
       this.$store.dispatch("timelineSegment/merge", {
         timelineSegmentIds: timelineSegmentIds,
+      });
+    },
+    onMergeSegmentsLeft() {
+      const selectedSegmentId = this.cursor.id;
+
+      const leftSegmentIdx = this.cursor.segment - 1;
+      const leftSegmentId = this.$store.getters[
+        "timeline/getSegmentByPosition"
+      ](this.cursor.timeline, leftSegmentIdx);
+
+      if (leftSegmentId == null) {
+        return;
+      }
+
+      this.$store.dispatch("timelineSegment/merge", {
+        timelineSegmentIds: [selectedSegmentId, leftSegmentId],
+      });
+    },
+    onMergeSegmentsRight() {
+      const selectedSegmentId = this.cursor.id;
+
+      const rightSegmentIdx = this.cursor.segment + 1;
+      const rightSegmentId = this.$store.getters[
+        "timeline/getSegmentByPosition"
+      ](this.cursor.timeline, rightSegmentIdx);
+
+      if (rightSegmentId == null) {
+        return;
+      }
+
+      this.$store.dispatch("timelineSegment/merge", {
+        timelineSegmentIds: [selectedSegmentId, rightSegmentId],
       });
     },
     onAppendAnnotation(evt) {

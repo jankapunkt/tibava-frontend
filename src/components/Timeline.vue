@@ -270,7 +270,6 @@ export default {
       );
 
       button.on("click", (ev) => {
-        console.log("click");
         const point = this.mapToGlobal(ev.data.global);
         this.menu.show = true;
         this.menu.x = point.x;
@@ -408,15 +407,12 @@ export default {
           });
         });
         timeline.on("segmentClick", (ev) => {
-          console.log("segmentClick");
-          console.log(ev.segment.segment.id);
           if (ev.event.data.originalEvent.ctrlKey) {
             this.$emit("addSelection", ev.segment.segment.id);
           } else {
             this.$emit("select", ev.segment.segment.id);
           }
           const targetTime = this.xToTime(ev.event.data.global.x);
-          console.log(targetTime);
           this.$emit("update:time", targetTime);
         });
         this.timelinesContainer.addChild(timeline);
@@ -506,9 +502,14 @@ export default {
     onMergeSegments() {
       this.$emit("mergeSegments");
     },
+    onMergeSegmentsLeft() {
+      this.$emit("mergeSegmentsLeft");
+    },
+    onMergeSegmentsRight() {
+      this.$emit("mergeSegmentsRight");
+    },
     onResize(event) {
       this.$nextTick(() => {
-        console.log("resize");
         this.draw();
         this.$emit("resize");
       });

@@ -192,6 +192,9 @@ const api = {
         state.timelineSegmentList.push(e.id);
         // this.dispatch("timelineSegmentAnnotation/listAdd", e.id);
       });
+      timelineSegments = timelineSegments.sort((a, b) => {
+        return a.start - b.start;
+      });
     },
     delete(state, ids) {
       ids.forEach((id, i) => {
