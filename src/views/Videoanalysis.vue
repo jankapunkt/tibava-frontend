@@ -47,6 +47,7 @@
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
+              <v-tab>Entities</v-tab>
               <v-tab disabled>Persons</v-tab>
               <v-tab disabled>Scenes</v-tab>
 
@@ -57,6 +58,14 @@
                   :shot="item"
                   @seek="onTagetTimeChange"
                 />
+              </v-tab-item>
+              <v-tab-item>
+                <EntitiesCard
+                  v-for="item in segments_annotations"
+                  v-bind:key="item.id"
+                  :segment="item"
+                  @seek="onTagetTimeChange"
+                />          
               </v-tab-item>
               <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item>
@@ -121,6 +130,7 @@ import ShotCard from "@/components/ShotCard.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
+import EntitiesCard from "@/components/EntitiesCard.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -478,7 +488,106 @@ export default {
 
       return timelines;
     },
+    segments_annotations() {
+      function TimeSegments(id, name, start, end, annotations) {
+        this.id = id;
+        this.name = name;
+        this.start = start;
+        this.end = end;
+        this.annotations = annotations;
+      }
 
+      function AnnotationInformation(entity_name, entity_category, color) {
+        this.entity_name = entity_name;
+        this.entity_category = entity_category;
+        this.color = color;
+      }
+
+      let segments_annotations = [];
+      let timelines = this.$store.getters["timeline/forVideo"](
+        this.$route.params.id
+      );
+      let most_segments = null;
+      let timeline_name = null;
+      timelines.forEach((e) => {
+        let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
+        if (most_segments == null || this.$store.getters["timelineSegment/forTimeline"](e.id).length < segments.length) {
+          most_segments = segments;
+          timeline_name = e.name;
+        }
+      });
+      if (most_segments) {
+        let pos = 0;
+        most_segments.forEach((s) => {
+          let annotations = this.$store.getters[
+                            "timelineSegmentAnnotation/forTimelineSegment"
+          ](s.id);
+          let annotations_simplified = []
+          annotations.forEach((a) => {
+            let anno = this.$store.getters["annotation/get"](a.annotation_id);
+            let category = this.$store.getters["annotationCategory/get"](anno.category_id).name;
+            var anno_info= new AnnotationInformation(anno.name, category, anno.color);
+            annotations_simplified.push(anno_info)
+          });
+          if (annotations_simplified.length) {
+            var info_segment = new TimeSegments(pos, timeline_name, s.start, s.end, annotations_simplified);
+            segments_annotations.push(info_segment);
+          }
+          pos = pos + 1;
+        });
+      }
+      return segments_annotations;
+    },
+    segments_annotations() {
+      function TimeSegments(id, name, start, end, annotations) {
+        this.id = id;
+        this.name = name;
+        this.start = start;
+        this.end = end;
+        this.annotations = annotations;
+      }
+
+      function AnnotationInformation(entity_name, entity_category, color) {
+        this.entity_name = entity_name;
+        this.entity_category = entity_category;
+        this.color = color;
+      }
+
+      let segments_annotations = [];
+      let timelines = this.$store.getters["timeline/forVideo"](
+        this.$route.params.id
+      );
+      let most_segments = null;
+      let timeline_name = null;
+      timelines.forEach((e) => {
+        let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
+        if (most_segments == null || this.$store.getters["timelineSegment/forTimeline"](e.id).length < segments.length) {
+          most_segments = segments;
+          timeline_name = e.name;
+        }
+      });
+      if (most_segments) {
+        let pos = 0;
+        most_segments.forEach((s) => {
+          let annotations = this.$store.getters[
+                            "timelineSegmentAnnotation/forTimelineSegment"
+          ](s.id);
+          let annotations_simplified = []
+          annotations.forEach((a) => {
+            let anno = this.$store.getters["annotation/get"](a.annotation_id);
+            let category = this.$store.getters["annotationCategory/get"](anno.category_id).name;
+            var anno_info= new AnnotationInformation(anno.name, category, anno.color);
+            annotations_simplified.push(anno_info)
+          });
+          if (annotations_simplified.length) {
+            var info_segment = new TimeSegments(pos, timeline_name, s.start, s.end, annotations_simplified);
+            segments_annotations.push(info_segment);
+          }
+          pos = pos + 1;
+        });
+      }
+      return segments_annotations;
+    },
     shots() {
       let shotdetection = this.$store.getters["analyser/forVideo"](
         this.$route.params.id
@@ -598,6 +707,7 @@ export default {
     Timeline,
     TimeSelector,
     ModalTimelineSegmentAnnotate,
+    EntitiesCard,
   },
 };
 </script>
