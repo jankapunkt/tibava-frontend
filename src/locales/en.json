@@ -38,6 +38,12 @@
                 "submit": "Create",
                 "close": "Close"
             },
+            "import": {
+                "title": "Import Timeline",
+                "eaf": "Import from ELAN .eaf file",
+                "update": "Import",
+                "close": "Close"
+            },
             "duplicate": {
                 "title": "Duplicate Timeline",
                 "link": "Duplicate",

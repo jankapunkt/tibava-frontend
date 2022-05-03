@@ -96,6 +96,9 @@
         <v-list-item link>
           <ModalCreateTimeline @close="menu.show = false" />
         </v-list-item>
+        <v-list-item link>
+          <ModalImportTimeline @close="menu.show = false" />
+        </v-list-item>
       </v-list>
     </v-menu>
   </div>
@@ -107,6 +110,7 @@ import ModalRenameTimeline from "@/components/ModalRenameTimeline.vue";
 import ModalCopyTimeline from "@/components/ModalCopyTimeline.vue";
 import ModalDeleteTimeline from "@/components/ModalDeleteTimeline.vue";
 import ModalCreateTimeline from "@/components/ModalCreateTimeline.vue";
+import ModalImportTimeline from "@/components/ModalImportTimeline.vue";
 import {
   AnnotationTimeline,
   TimelineHeader,
@@ -606,6 +610,7 @@ export default {
     ModalCopyTimeline,
     ModalDeleteTimeline,
     ModalCreateTimeline,
+    ModalImportTimeline,
   },
 };
 </script>

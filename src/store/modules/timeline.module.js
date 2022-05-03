@@ -143,6 +143,22 @@ const api = {
       //     commit('error/update', info, { root: true });
       // });
     },
+    async importEAF({ commit }, params) {
+      const formData = new FormData();
+      
+      //use video id or take it from the current video
+      const video = this.getters["video/current"];
+      formData.append("file", params.importfile);
+      formData.append("video_id", video.id);
+
+      console.log(params)
+      console.log(formData)
+
+      return axios
+        .post(`${config.API_LOCATION}/timeline/import/eaf`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+    },
     async delete({ commit }, timeline_id) {
       let params = {
         id: timeline_id,
