@@ -15,15 +15,15 @@
       </v-card-title>
       <v-card-text>
         <v-row lign="center" justify="center">
-          <v-btn @click="pluginAudioWaveform" height="100px" class="mx-2">
+          <v-btn @click="pluginAudioWaveform" height="80px" class="mx-2">
             <div class="mx-auto text-center">
               <p>
                 <v-icon x-large> mdi-waveform </v-icon>
               </p>
-              {{ $t("modal.analyse.audio.waveform") }}
+              {{ $t("modal.analyse.audio_waveform") }}
             </div>
           </v-btn>
-          <!-- <v-btn @click="pluginAudioFrequency" height="100px" class="mx-2">
+          <!-- <v-btn @click="pluginAudioFrequency" height="80px" class="mx-2">
             <div class="mx-auto text-center">
               <p>
                 <v-icon x-large> mdi-waveform </v-icon>
@@ -32,12 +32,21 @@
             </div>
           </v-btn> -->
 
-          <v-btn @click="pluginShotDetection" height="100px" class="mx-2">
+          <v-btn @click="pluginShotDetection" height="80px" class="mx-2">
             <div class="mx-auto text-center">
               <p>
                 <v-icon x-large> mdi-arrow-expand-horizontal </v-icon>
               </p>
               {{ $t("modal.analyse.shot_detection") }}
+            </div>
+          </v-btn>
+
+          <v-btn @click="pluginMeanColor" height="80px" class="mx-2">
+            <div class="mx-auto text-center">
+              <p>
+                <v-icon x-large> mdi-palette </v-icon>
+              </p>
+              {{ $t("modal.analyse.mean_color") }}
             </div>
           </v-btn>
         </v-row>
@@ -77,6 +86,13 @@ export default {
     async pluginShotDetection() {
       this.$store
         .dispatch("pluginRun/new", { plugin: "shotdetection" })
+        .then(() => {
+          this.show = false;
+        });
+    },
+    async pluginMeanColor() {
+      this.$store
+        .dispatch("pluginRun/new", { plugin: "mean_color" })
         .then(() => {
           this.show = false;
         });
