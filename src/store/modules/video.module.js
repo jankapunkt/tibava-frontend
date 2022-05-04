@@ -71,11 +71,17 @@ const api = {
       }
       if (includeAnalyser) {
         promises.push(
-          this.dispatch("analyser/listUpdate", {
+          this.dispatch("pluginRun/listUpdate", {
             videoId: videoId,
             addResults: true,
           })
         );
+        promises.push(
+          this.dispatch("pluginRunResult/list", {
+            videoId: videoId,
+            addResults: true,
+          })
+        )
       }
       if (includeShortcut) {
         promises.push(this.dispatch("shortcut/listUpdate", { videoId }));
@@ -102,7 +108,7 @@ const api = {
             const totalLength = event.lengthComputable
               ? event.total
               : event.target.getResponseHeader("content-length") ||
-                event.target.getResponseHeader("x-decompressed-content-length");
+              event.target.getResponseHeader("x-decompressed-content-length");
             console.log("onUploadProgress", totalLength);
             if (totalLength !== null) {
               const progress = Math.round((event.loaded * 100) / totalLength);

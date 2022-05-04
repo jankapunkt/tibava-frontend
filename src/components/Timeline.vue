@@ -113,6 +113,7 @@ import ModalCreateTimeline from "@/components/ModalCreateTimeline.vue";
 import ModalImportTimeline from "@/components/ModalImportTimeline.vue";
 import {
   AnnotationTimeline,
+  ScalarTimeline,
   TimelineHeader,
   TimeScale,
   TimeBar,
@@ -382,6 +383,8 @@ export default {
       this.timelinesContainer = new PIXI.Container();
       this.timelineObjects = [];
       this.timelines.forEach((e, i) => {
+        console.log(e);
+
         const x = this.timeToX(startTime);
         const y =
           (this.gap + this.timelineHeight) * i +
@@ -390,37 +393,55 @@ export default {
         const width = this.timeToX(this.endTime) - x;
         const height = this.timelineHeight;
 
-        let timeline = new AnnotationTimeline(
-          e,
-          x,
-          y,
-          width,
-          height,
-          this.startTime,
-          this.endTime
-        );
+        if (e.type == "A") {
+          let timeline = new AnnotationTimeline(
+            e,
+            x,
+            y,
+            width,
+            height,
+            this.startTime,
+            this.endTime
+          );
 
-        timeline.on("segmentRightDown", (ev) => {
-          const point = this.mapToGlobal(ev.event.data.global);
-          this.segmentMenu.show = true;
-          this.segmentMenu.x = point.x;
-          this.segmentMenu.y = point.y;
-          this.segmentMenu.selected = ev.segment.segment.id;
-          this.$nextTick(() => {
-            this.showMenu = true;
+          timeline.on("segmentRightDown", (ev) => {
+            const point = this.mapToGlobal(ev.event.data.global);
+            this.segmentMenu.show = true;
+            this.segmentMenu.x = point.x;
+            this.segmentMenu.y = point.y;
+            this.segmentMenu.selected = ev.segment.segment.id;
+            this.$nextTick(() => {
+              this.showMenu = true;
+            });
           });
-        });
-        timeline.on("segmentClick", (ev) => {
-          if (ev.event.data.originalEvent.ctrlKey) {
-            this.$emit("addSelection", ev.segment.segment.id);
-          } else {
-            this.$emit("select", ev.segment.segment.id);
+          timeline.on("segmentClick", (ev) => {
+            if (ev.event.data.originalEvent.ctrlKey) {
+              this.$emit("addSelection", ev.segment.segment.id);
+            } else {
+              this.$emit("select", ev.segment.segment.id);
+            }
+            const targetTime = this.xToTime(ev.event.data.global.x);
+            this.$emit("update:time", targetTime);
+          });
+          this.timelinesContainer.addChild(timeline);
+          this.timelineObjects.push(timeline);
+        } else if (e.type == "R" && "plugin" in e) {
+          console.log(e.plugin.type);
+          if (e.plugin.type == "S") {
+            let timeline = new ScalarTimeline(
+              e,
+              x,
+              y,
+              width,
+              height,
+              this.startTime,
+              this.endTime,
+              e.plugin.data
+            );
+            this.timelinesContainer.addChild(timeline);
+            this.timelineObjects.push(timeline);
           }
-          const targetTime = this.xToTime(ev.event.data.global.x);
-          this.$emit("update:time", targetTime);
-        });
-        this.timelinesContainer.addChild(timeline);
-        this.timelineObjects.push(timeline);
+        }
       });
       this.app.stage.addChild(this.timelinesContainer);
     },

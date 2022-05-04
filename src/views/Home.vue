@@ -70,7 +70,7 @@ export default {
       // Ask backend about all videos
       await this.$store.dispatch("video/listUpdate");
 
-      await this.$store.dispatch("analyser/listUpdate", {
+      await this.$store.dispatch("pluginRun/listUpdate", {
         addResults: false,
       });
     },
@@ -80,11 +80,11 @@ export default {
       let videos = this.$store.getters["video/all"];
 
       videos.forEach((v) => {
-        v.analysers = this.$store.getters["analyser/forVideo"](v.id);
+        v.pluginRuns = this.$store.getters["pluginRun/forVideo"](v.id);
       });
       console.log(videos);
       videos.forEach((v) => {
-        v.loading = !v.analysers.reduce((a, b) => a && b.status === "D", true);
+        v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);
       });
       return videos;
     },

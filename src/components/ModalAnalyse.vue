@@ -15,23 +15,33 @@
       </v-card-title>
       <v-card-text>
         <v-row lign="center" justify="center">
-          <v-btn @click="downloadCSV" height="100px" class="mx-2">
+          <v-btn @click="pluginAudioWaveform" height="100px" class="mx-2">
             <div class="mx-auto text-center">
               <p>
-                <v-icon x-large> mdi-file </v-icon>
+                <v-icon x-large> mdi-waveform </v-icon>
               </p>
-              {{ $t("modal.analyse.csv") }}
+              {{ $t("modal.analyse.audio.waveform") }}
             </div>
           </v-btn>
-          <v-btn @click="downloadJson" height="100px" class="mx-2">
+          <!-- <v-btn @click="pluginAudioFrequency" height="100px" class="mx-2">
             <div class="mx-auto text-center">
               <p>
-                <v-icon x-large> mdi-file </v-icon>
+                <v-icon x-large> mdi-waveform </v-icon>
               </p>
-              {{ $t("modal.analyse.json") }}
+              {{ $t("modal.analyse.audio.frequency") }}
+            </div>
+          </v-btn> -->
+
+          <v-btn @click="pluginShotDetection" height="100px" class="mx-2">
+            <div class="mx-auto text-center">
+              <p>
+                <v-icon x-large> mdi-arrow-expand-horizontal </v-icon>
+              </p>
+              {{ $t("modal.analyse.shot_detection") }}
             </div>
           </v-btn>
         </v-row>
+        <!-- <v-row> </v-row> -->
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-btn @click="show = false">{{ $t("timelineSegment.close") }}</v-btn>
@@ -50,15 +60,26 @@ export default {
   },
   computed: {},
   methods: {
-    async downloadCSV() {
-      this.$store.dispatch("video/exportCSV", {}).then(() => {
-        this.show = false;
-      });
+    async pluginAudioWaveform() {
+      this.$store
+        .dispatch("pluginRun/new", { plugin: "audio_waveform" })
+        .then(() => {
+          this.show = false;
+        });
     },
-    async downloadJson() {
-      await this.$store.dispatch("video/exportJson", {}).then(() => {
-        this.show = false;
-      });
+    async pluginAudioFrequency() {
+      this.$store
+        .dispatch("pluginRun/new", { plugin: "audio_frequency" })
+        .then(() => {
+          this.show = false;
+        });
+    },
+    async pluginShotDetection() {
+      this.$store
+        .dispatch("pluginRun/new", { plugin: "shotdetection" })
+        .then(() => {
+          this.show = false;
+        });
     },
   },
   watch: {

@@ -6,8 +6,8 @@ export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-      0.587 * Math.pow(rgb[1], 2) +
-      0.114 * Math.pow(rgb[2], 2)
+    0.587 * Math.pow(rgb[1], 2) +
+    0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -161,6 +161,94 @@ export class AnnotationSegment extends PIXI.Container {
     this.drawBox();
   }
 }
+
+export class ScalarTimeline extends PIXI.Container {
+  constructor(
+    timeline,
+    x,
+    y,
+    width,
+    height,
+    startTime = 0,
+    endTime = 10,
+    data = null,
+    fill = 0xffffff
+  ) {
+    super();
+    this.pTimeline = timeline;
+    this.pSegmentList = [];
+    this.pX = x;
+    this.pY = y;
+    this.pWidth = width;
+    this.pHeight = height;
+    this.pStartTime = startTime;
+    this.pEndTime = endTime;
+    this.pData = data;
+
+    this.pRect = new PIXI.Graphics();
+    this.pRect.beginFill(fill);
+    this.pRect.drawRoundedRect(0, 0, width, height, 5);
+    this.pRect.x = x;
+    this.pRect.y = y;
+
+    this.pMask = new PIXI.Graphics();
+    this.pMask.beginFill(0xffffff);
+    this.pMask.drawRoundedRect(0, 0, width, height, 5);
+    this.pRect.mask = this.pMask;
+    this.pRect.addChild(this.pMask);
+
+    let shadow = new DropShadowFilter();
+    shadow.color = 0x0000;
+    shadow.distance = 2;
+    shadow.alpha = 0.4;
+    shadow.rotation = 90;
+    shadow.blur = 1;
+    this.pRect.filters = [shadow];
+
+    this.addChild(this.pRect);
+
+    this.path = new PIXI.Graphics()
+      .lineStyle(1, 0xae1313, 1)
+      .moveTo(0, 0)
+    this.pData.time.forEach((t, i) => {
+      this.path.lineTo(this._timeToX(t), this.pData.y[i] * this.pHeight / 2)
+    })
+    console.log('done')
+    this.path.closePath();
+
+    this.path.y = this.pHeight / 2;
+    this.pRect.addChild(this.path);
+  }
+  get timeScale() {
+    return this.pWidth / (this.pEndTime - this.pStartTime);
+  }
+  _timeToX(time) {
+    return this.timeScale * (time - this.pStartTime);
+  }
+  scalePath() {
+    if (this.path) {
+      const width = this._timeToX(this.pData.time[this.pData.time.length - 1]) - this._timeToX(this.pData.time[0]);
+      const x = this._timeToX(this.pData.time[0]);
+      this.path.x = x;
+      this.path.width = width;
+    }
+  }
+  set startTime(time) {
+    this.pStartTime = time;
+    this.scalePath();
+  }
+  set endTime(time) {
+    this.pEndTime = time;
+    this.scalePath();
+  }
+  set selected(value) {
+    this.pSelected = value;
+  }
+  get segments() {
+    return this.pSegmentList;
+  }
+}
+
 
 export class AnnotationTimeline extends PIXI.Container {
   constructor(

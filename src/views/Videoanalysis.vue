@@ -452,35 +452,47 @@ export default {
         this.$route.params.id
       );
       timelines.forEach((e) => {
-        let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
-        segments.forEach((s) => {
-          let annotations = this.$store.getters[
-            "timelineSegmentAnnotation/forTimelineSegment"
-          ](s.id);
+        if (e.type == "A") {
+          let segments = this.$store.getters["timelineSegment/forTimeline"](
+            e.id
+          );
+          segments.forEach((s) => {
+            let annotations = this.$store.getters[
+              "timelineSegmentAnnotation/forTimelineSegment"
+            ](s.id);
 
-          annotations.forEach((a) => {
-            a.annotation = this.$store.getters["annotation/get"](
-              a.annotation_id
-            );
-          });
+            annotations.forEach((a) => {
+              a.annotation = this.$store.getters["annotation/get"](
+                a.annotation_id
+              );
+            });
 
-          annotations.forEach((a) => {
-            a.category = this.$store.getters["annotationCategory/get"](
-              a.category_id
-            );
+            annotations.forEach((a) => {
+              a.category = this.$store.getters["annotationCategory/get"](
+                a.category_id
+              );
+            });
+            s.annotations = annotations;
+            if (annotations.length > 0) {
+            }
           });
-          s.annotations = annotations;
-          if (annotations.length > 0) {
+          e.segments = segments;
+        }
+        if (e.type == "R" && "plugin_run_result_id" in e) {
+          const result = this.$store.getters["pluginRunResult/get"](
+            e.plugin_run_result_id
+          );
+          if (result) {
+            e.plugin = { data: result.data, type: result.type };
           }
-        });
-        e.segments = segments;
+        }
       });
 
       return timelines;
     },
 
     shots() {
-      let shotdetection = this.$store.getters["analyser/forVideo"](
+      let shotdetection = this.$store.getters["pluginRun/forVideo"](
         this.$route.params.id
       )
         .filter((e) => {
@@ -494,18 +506,21 @@ export default {
       }
 
       shotdetection = shotdetection.at(-1);
+      let results = [];
       // if len(shotdetection)
-      let results = shotdetection.results.map((e) => {
-        return {
-          id: e.shot_id,
-          // start: e.start_time,
-          // end: e.end_time,
-          start: e.start_time_sec,
-          end: e.end_time_sec,
-        };
-      });
+      if ("results" in shotdetection) {
+        results = shotdetection.results.map((e) => {
+          return {
+            id: e.shot_id,
+            // start: e.start_time,
+            // end: e.end_time,
+            start: e.start_time_sec,
+            end: e.end_time_sec,
+          };
+        });
+      }
 
-      let thumbnail = this.$store.getters["analyser/forVideo"](
+      let thumbnail = this.$store.getters["pluginRun/forVideo"](
         this.$route.params.id
       )
         .filter((e) => {
