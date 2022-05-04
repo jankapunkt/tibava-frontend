@@ -1,15 +1,20 @@
 <template>
   <v-app id="tibava">
     <v-app-bar app>
-      <v-row>
-        <div class="logo ml-3 mr-5">
-          <img :title="appName" src="./assets/logo.png" height="40" />
-        </div>
+      <img :title="appName" src="./assets/logo_tib.svg" height="40" />
+      <v-toolbar-title style="padding-right: 50px"
+        >AV-Analytics</v-toolbar-title
+      >
 
-        <SearchBar />
-        <UserMenu />
-        <VideoMenu />
-      </v-row>
+      <v-btn tile text class="ml-n2" href="/">
+        <v-icon left color="primary">mdi-movie</v-icon>
+        Your Videos
+      </v-btn>
+
+      <v-spacer></v-spacer>
+
+      <UserMenu />
+      <VideoMenu />
     </v-app-bar>
     <router-view />
   </v-app>
@@ -17,7 +22,6 @@
 
 <script>
 import UserMenu from "@/components/UserMenu.vue";
-import SearchBar from "@/components/SearchBar.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
 
 export default {
@@ -28,7 +32,6 @@ export default {
   },
   components: {
     UserMenu,
-    SearchBar,
     VideoMenu,
   },
 };
