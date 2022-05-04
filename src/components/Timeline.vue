@@ -30,10 +30,20 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <v-tooltip
+      top
+      v-model="segmentContext.show"
+      :position-x="segmentContext.x"
+      :position-y="segmentContext.y"
+      absolute
+      offset-y
+    >
+      <span>{{ segmentContext.label }}</span>
+    </v-tooltip>
     <v-menu
       v-model="segmentMenu.show"
       :position-x="segmentMenu.x"
-      :position-y="segmentMenu.y"
+      :position-y="segmentMenu.y - 10"
       absolute
       offset-y
     >
@@ -233,6 +243,13 @@ export default {
         y: null,
         selected: null,
       },
+      segmentContext: {
+        show: false,
+        x: null,
+        y: null,
+        selected: null,
+        label: null,
+      },
       menu: {
         show: false,
         x: null,
@@ -423,6 +440,28 @@ export default {
             const targetTime = this.xToTime(ev.event.data.global.x);
             this.$emit("update:time", targetTime);
           });
+          timeline.on("segmentOver", (ev) => {
+            if (ev.segment.segment.annotations.length > 0) {
+              const tooltipPoint = {
+                x: ev.event.data.global.x,
+                y: ev.segment.y,
+              };
+              const point = this.mapToGlobal(tooltipPoint);
+              this.segmentContext.show = true;
+              this.segmentContext.x = point.x;
+              this.segmentContext.y = point.y;
+              this.segmentContext.selected = ev.segment.segment.id;
+
+              const annotations = ev.segment.segment.annotations.map((e) => {
+                return e.annotation.name;
+              });
+              this.segmentContext.label = annotations.join("; ");
+            }
+          });
+          timeline.on("segmentOut", (ev) => {
+            this.segmentContext.show = false;
+          });
+
           this.timelinesContainer.addChild(timeline);
           this.timelineObjects.push(timeline);
         } else if (e.type == "R" && "plugin" in e) {

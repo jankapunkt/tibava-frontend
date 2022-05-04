@@ -321,6 +321,22 @@ export class AnnotationTimeline extends PIXI.Container {
           ev.stopPropagation();
         });
 
+        segmentE.on("pointerover", (ev) => {
+          this.emit("segmentOver", {
+            event: ev,
+            segment: segmentE,
+          });
+          ev.stopPropagation();
+        });
+
+        segmentE.on("pointerout", (ev) => {
+          this.emit("segmentOut", {
+            event: ev,
+            segment: segmentE,
+          });
+          ev.stopPropagation();
+        });
+
         segmentE.mask = this.pMask;
 
         this.pSegments.addChild(segmentE);
