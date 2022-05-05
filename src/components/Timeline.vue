@@ -400,8 +400,6 @@ export default {
       this.timelinesContainer = new PIXI.Container();
       this.timelineObjects = [];
       this.timelines.forEach((e, i) => {
-        console.log(e);
-
         const x = this.timeToX(startTime);
         const y =
           (this.gap + this.timelineHeight) * i +
@@ -465,7 +463,6 @@ export default {
           this.timelinesContainer.addChild(timeline);
           this.timelineObjects.push(timeline);
         } else if (e.type == "R" && "plugin" in e) {
-          console.log(e.plugin.type);
           if (e.plugin.type == "S") {
             let timeline = new ScalarTimeline(
               e,
@@ -606,8 +603,6 @@ export default {
       });
     },
     timelines(values) {
-      console.log("Timeline::(watch)::timelines");
-      console.log(`### ${values.length}`);
       this.draw();
     },
     time(value) {

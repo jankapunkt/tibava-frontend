@@ -14,8 +14,7 @@
           <v-card
             elevation="2"
             min-width="400px"
-            v-bind:loading="item.loading"
-            v-bind:disabled="item.loading"
+            :loading="item.loading"
             outlined
             shaped
             v-for="item in videos"
@@ -82,7 +81,6 @@ export default {
       videos.forEach((v) => {
         v.pluginRuns = this.$store.getters["pluginRun/forVideo"](v.id);
       });
-      console.log(videos);
       videos.forEach((v) => {
         v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);
       });
