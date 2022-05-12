@@ -48,6 +48,7 @@
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
               <v-tab>Entities</v-tab>
+              <v-tab>Current Entities</v-tab>
               <v-tab disabled>Persons</v-tab>
               <v-tab disabled>Scenes</v-tab>
 
@@ -61,10 +62,17 @@
               </v-tab-item>
               <v-tab-item>
                 <EntitiesCard
-                  v-for="item in segments_annotations"
+                  v-for="item in segmentsAnnotations"
                   v-bind:key="item.id"
                   :segment="item"
                   @seek="onTagetTimeChange"
+                />          
+              </v-tab-item>
+              <v-tab-item>
+                <CurrentEntitiesOverView
+                  :annotations="currentSegmentsAnnotations"
+                  :time="videoTime"
+                  @seek="onTimeUpdate"
                 />          
               </v-tab-item>
               <v-tab-item> PERSONS </v-tab-item>
@@ -131,6 +139,7 @@ import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
+import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -147,6 +156,7 @@ export default {
       addedAnnotation: null,
       labels: [],
       selectedLabel: null,
+      annotationsLUT: {},
       //
       annotationDialog: {
         show: false,
@@ -406,6 +416,22 @@ export default {
     submitAnnotation(evt) {
       this.annotation_dialog = false;
     },
+    AnnotationInformation(id, entity_name, entity_category, color, start, end, timeline) {
+      this.id = id
+      this.entity_name = entity_name;
+      this.entity_category = entity_category;
+      this.color = color;
+      this.start = start;
+      this.end = end;
+      this.timeline = timeline;
+    },
+    TimeSegments(id, name, start, end, annotations) {
+      this.id = id;
+      this.name = name;
+      this.start = start;
+      this.end = end;
+      this.annotations = annotations;
+    },
     async fetch() {
       await this.$store.dispatch("video/fetch", {
         videoId: this.$route.params.id,
@@ -425,7 +451,6 @@ export default {
     },
     annotations() {
       let annotations = this.$store.getters["annotation/all"];
-
       annotations = annotations.map((e) => {
         if ("category_id" in e) {
           e["category"] = this.$store.getters["annotationCategory/get"](
@@ -488,22 +513,8 @@ export default {
 
       return timelines;
     },
-    segments_annotations() {
-      function TimeSegments(id, name, start, end, annotations) {
-        this.id = id;
-        this.name = name;
-        this.start = start;
-        this.end = end;
-        this.annotations = annotations;
-      }
-
-      function AnnotationInformation(entity_name, entity_category, color) {
-        this.entity_name = entity_name;
-        this.entity_category = entity_category;
-        this.color = color;
-      }
-
-      let segments_annotations = [];
+    segmentsAnnotations() {
+      let segmentsAnnotations = [];
       let timelines = this.$store.getters["timeline/forVideo"](
         this.$route.params.id
       );
@@ -526,67 +537,33 @@ export default {
           annotations.forEach((a) => {
             let anno = this.$store.getters["annotation/get"](a.annotation_id);
             let category = this.$store.getters["annotationCategory/get"](anno.category_id).name;
-            var anno_info= new AnnotationInformation(anno.name, category, anno.color);
+            var anno_info= new this.AnnotationInformation(anno.id, anno.name, category, anno.color, s.start, s.end, timeline_name);
             annotations_simplified.push(anno_info)
           });
           if (annotations_simplified.length) {
-            var info_segment = new TimeSegments(pos, timeline_name, s.start, s.end, annotations_simplified);
-            segments_annotations.push(info_segment);
+            var info_segment = new this.TimeSegments(pos, timeline_name, s.start, s.end, annotations_simplified);
+            segmentsAnnotations.push(info_segment);
           }
           pos = pos + 1;
         });
       }
-      return segments_annotations;
+      return segmentsAnnotations;
     },
-    segments_annotations() {
-      function TimeSegments(id, name, start, end, annotations) {
-        this.id = id;
-        this.name = name;
-        this.start = start;
-        this.end = end;
-        this.annotations = annotations;
-      }
-
-      function AnnotationInformation(entity_name, entity_category, color) {
-        this.entity_name = entity_name;
-        this.entity_category = entity_category;
-        this.color = color;
-      }
-
-      let segments_annotations = [];
-      let timelines = this.$store.getters["timeline/forVideo"](
-        this.$route.params.id
-      );
-      let most_segments = null;
-      let timeline_name = null;
-      timelines.forEach((e) => {
-        let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
-        if (most_segments == null || this.$store.getters["timelineSegment/forTimeline"](e.id).length < segments.length) {
-          most_segments = segments;
-          timeline_name = e.name;
-        }
-      });
-      if (most_segments) {
-        let pos = 0;
-        most_segments.forEach((s) => {
-          let annotations = this.$store.getters[
-                            "timelineSegmentAnnotation/forTimelineSegment"
-          ](s.id);
-          let annotations_simplified = []
+    
+    currentSegmentsAnnotations() {
+      let current_annotations = [];
+      let current_second = Math.trunc(this.videoTime);
+      if (this.annotationsLUT) {
+        let annotations = this.annotationsLUT[current_second];
+        if (annotations) {
           annotations.forEach((a) => {
-            let anno = this.$store.getters["annotation/get"](a.annotation_id);
-            let category = this.$store.getters["annotationCategory/get"](anno.category_id).name;
-            var anno_info= new AnnotationInformation(anno.name, category, anno.color);
-            annotations_simplified.push(anno_info)
+            if (a.start <= this.videoTime && a.end >= this.videoTime) {
+              current_annotations.push(a);
+            }
           });
-          if (annotations_simplified.length) {
-            var info_segment = new TimeSegments(pos, timeline_name, s.start, s.end, annotations_simplified);
-            segments_annotations.push(info_segment);
-          }
-          pos = pos + 1;
-        });
+        }
       }
-      return segments_annotations;
+      return current_annotations;
     },
     shots() {
       let shotdetection = this.$store.getters["analyser/forVideo"](
@@ -694,6 +671,26 @@ export default {
     currentTime() {
       this.videoTime = this.currentTime;
     },
+    segmentsAnnotations() {
+      let seconds = Math.trunc(this.duration);
+      let lut = {}
+      for (let i = 0;i <= seconds; i++) {
+        lut[i] = [];
+        let current_segments = this.$store.getters["timelineSegment/forTime"](i);
+        current_segments.forEach((s) => {
+          let annotations = this.$store.getters[
+                            "timelineSegmentAnnotation/forTimelineSegment"
+          ](s.id);
+          annotations.forEach((a) => {
+            let anno = this.$store.getters["annotation/get"](a.annotation_id);
+            let category = this.$store.getters["annotationCategory/get"](anno.category_id).name;
+            var anno_info = new this.AnnotationInformation(anno.id, anno.name, category, anno.color, s.start, s.end);
+            lut[i].push(anno_info);
+          });
+        });
+      }
+      this.annotationsLUT = lut;
+    },
     duration: {
       handler: function (newValue) {
         this.endTime = newValue;
@@ -708,6 +705,7 @@ export default {
     TimeSelector,
     ModalTimelineSegmentAnnotate,
     EntitiesCard,
+    CurrentEntitiesOverView,
   },
 };
 </script>
