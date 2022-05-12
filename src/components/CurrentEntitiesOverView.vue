@@ -5,10 +5,13 @@
         <v-row>
           <v-col v-for="(item, i) in annotations" :key="i" cols="3">
             <div style="padding-top:30px">
-              <v-progress-linear :color="item.color" :rounded="true" :height="15" :value="((time - item.start) / (item.end - item.start)) * 100">
-                {{((time - item.start) / (item.end - item.start)) * 100}}
+              <v-progress-linear :color="item.color" :rounded="true" :height="30" 
+              :value="((time - item.start) / (item.end - item.start)) * 100">
+                <template v-slot:default="{ name }">
+                  <strong>{{ item.entity_name }}</strong>
+                </template>
               </v-progress-linear>
-              <v-chip :color="item.color">{{ item.entity_name }}</v-chip>
+
             </div>
           </v-col>
         </v-row>
