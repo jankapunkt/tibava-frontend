@@ -11,10 +11,18 @@ const api = {
     timelineSegmentList: [],
   },
   getters: {
+    all: (state) => {
+      return state.timelineSegmentList.map((id) => state.timelineSegments[id]);
+    },
     forTimeline: (state) => (timeline_id) => {
       return state.timelineSegmentList
         .map((id) => state.timelineSegments[id])
         .filter((e) => e.timeline_id === timeline_id);
+    },
+    forTime: (state) => (current_time) => {
+      return state.timelineSegmentList
+        .map((id) => state.timelineSegments[id])
+        .filter((e) => e.start <= current_time && e.end >= current_time);
     },
     get: (state) => (id) => {
       return state.timelineSegments[id];
