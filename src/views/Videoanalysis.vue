@@ -66,14 +66,14 @@
                   v-bind:key="item.id"
                   :segment="item"
                   @seek="onTagetTimeChange"
-                />          
+                />
               </v-tab-item>
               <v-tab-item>
                 <CurrentEntitiesOverView
                   :annotations="currentSegmentsAnnotations"
                   :time="videoTime"
                   @seek="onTimeUpdate"
-                />          
+                />
               </v-tab-item>
               <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item>
@@ -416,8 +416,16 @@ export default {
     submitAnnotation(evt) {
       this.annotation_dialog = false;
     },
-    AnnotationInformation(id, entity_name, entity_category, color, start, end, timeline) {
-      this.id = id
+    AnnotationInformation(
+      id,
+      entity_name,
+      entity_category,
+      color,
+      start,
+      end,
+      timeline
+    ) {
+      this.id = id;
       this.entity_name = entity_name;
       this.entity_category = entity_category;
       this.color = color;
@@ -534,7 +542,11 @@ export default {
       let timeline_name = null;
       timelines.forEach((e) => {
         let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
-        if (most_segments == null || this.$store.getters["timelineSegment/forTimeline"](e.id).length < segments.length) {
+        if (
+          most_segments == null ||
+          this.$store.getters["timelineSegment/forTimeline"](e.id).length <
+            segments.length
+        ) {
           most_segments = segments;
           timeline_name = e.name;
         }
@@ -543,17 +555,33 @@ export default {
         let pos = 0;
         most_segments.forEach((s) => {
           let annotations = this.$store.getters[
-                            "timelineSegmentAnnotation/forTimelineSegment"
+            "timelineSegmentAnnotation/forTimelineSegment"
           ](s.id);
-          let annotations_simplified = []
+          let annotations_simplified = [];
           annotations.forEach((a) => {
             let anno = this.$store.getters["annotation/get"](a.annotation_id);
-            let category = this.$store.getters["annotationCategory/get"](anno.category_id).name;
-            var anno_info= new this.AnnotationInformation(anno.id, anno.name, category, anno.color, s.start, s.end, timeline_name);
-            annotations_simplified.push(anno_info)
+            let category = this.$store.getters["annotationCategory/get"](
+              anno.category_id
+            ).name;
+            var anno_info = new this.AnnotationInformation(
+              anno.id,
+              anno.name,
+              category,
+              anno.color,
+              s.start,
+              s.end,
+              timeline_name
+            );
+            annotations_simplified.push(anno_info);
           });
           if (annotations_simplified.length) {
-            var info_segment = new this.TimeSegments(pos, timeline_name, s.start, s.end, annotations_simplified);
+            var info_segment = new this.TimeSegments(
+              pos,
+              timeline_name,
+              s.start,
+              s.end,
+              annotations_simplified
+            );
             segmentsAnnotations.push(info_segment);
           }
           pos = pos + 1;
@@ -561,7 +589,7 @@ export default {
       }
       return segmentsAnnotations;
     },
-    
+
     currentSegmentsAnnotations() {
       let current_annotations = [];
       let current_second = Math.trunc(this.videoTime);
@@ -688,18 +716,31 @@ export default {
     },
     segmentsAnnotations() {
       let seconds = Math.trunc(this.duration);
-      let lut = {}
-      for (let i = 0;i <= seconds; i++) {
+      let lut = {};
+      for (let i = 0; i <= seconds; i++) {
         lut[i] = [];
-        let current_segments = this.$store.getters["timelineSegment/forTime"](i);
+        let current_segments =
+          this.$store.getters["timelineSegment/forTime"](i);
         current_segments.forEach((s) => {
           let annotations = this.$store.getters[
-                            "timelineSegmentAnnotation/forTimelineSegment"
+            "timelineSegmentAnnotation/forTimelineSegment"
           ](s.id);
           annotations.forEach((a) => {
             let anno = this.$store.getters["annotation/get"](a.annotation_id);
-            let category = this.$store.getters["annotationCategory/get"](anno.category_id).name;
-            var anno_info = new this.AnnotationInformation(anno.id, anno.name, category, anno.color, s.start, s.end);
+            let category = "";
+            if (anno.category_id) {
+              category = this.$store.getters["annotationCategory/get"](
+                anno.category_id
+              ).name;
+            }
+            var anno_info = new this.AnnotationInformation(
+              anno.id,
+              anno.name,
+              category,
+              anno.color,
+              s.start,
+              s.end
+            );
             lut[i].push(anno_info);
           });
         });
