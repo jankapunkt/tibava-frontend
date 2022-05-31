@@ -264,7 +264,7 @@ export default {
   },
   methods: {
     draw() {
-      // this.drawTimeline();
+      this.drawTimeline();
       this.drawTimelineHeader();
       this.drawScale();
       this.drawTimeBar();
@@ -388,6 +388,7 @@ export default {
       this.app.stage.addChild(this.timelineHeadersContainer);
     },
     drawTimeline() {
+      console.log(`a ${JSON.stringify(this.timelines)}`);
       let startTime = 0;
       if (this.startTime) {
         startTime = this.startTime;
@@ -399,6 +400,7 @@ export default {
 
       this.timelinesContainer = new PIXI.Container();
       this.timelineObjects = [];
+      console.log(JSON.stringify(this.timelines));
       this.timelines.forEach((e, i) => {
         const x = this.timeToX(startTime);
         const y =
@@ -646,16 +648,18 @@ export default {
     });
 
     this.app.ticker.add(() => {
-      if (this.$refs.container.clientWidth != this.containerWidth) {
-        this.containerWidth = this.$refs.container.clientWidth;
-        this.draw();
-      }
-      if (this.computedHeight != this.containerHeight) {
-        this.containerHeight = this.computedHeight;
-        this.$refs.container.style.height = this.computedHeight;
-        this.$refs.canvas.height = this.computedHeight;
-        this.app.resize();
-        this.draw();
+      if ("container" in this.$refs && this.$refs.container) {
+        if (this.$refs.container.clientWidth != this.containerWidth) {
+          this.containerWidth = this.$refs.container.clientWidth;
+          this.draw();
+        }
+        if (this.computedHeight != this.containerHeight) {
+          this.containerHeight = this.computedHeight;
+          this.$refs.container.style.height = this.computedHeight;
+          this.$refs.canvas.height = this.computedHeight;
+          this.app.resize();
+          this.draw();
+        }
       }
     });
     this.draw();

@@ -302,9 +302,6 @@ export default {
     onAnnotateSegment(id) {
       this.annotationDialog.selectedTimelineSegment =
         this.$store.getters["timelineSegment/get"](id);
-      console.log(
-        `${JSON.stringify(this.annotationDialog.selectedTimelineSegment)}`
-      );
       this.$nextTick(() => {
         this.annotationDialog.show = true;
       });
@@ -315,7 +312,6 @@ export default {
     onAddSelection(segmentId) {
       const segmentPos =
         this.$store.getters["timeline/segmentPosition"](segmentId);
-      console.log(segmentPos);
 
       const selection = {
         timeline: segmentPos.timeline,
@@ -330,11 +326,8 @@ export default {
       });
     },
     onSelect(segmentId) {
-      console.log("Timeline::onSelect");
-      console.log(segmentId);
       const segmentPos =
         this.$store.getters["timeline/segmentPosition"](segmentId);
-      console.log(segmentPos);
 
       const selection = {
         timeline: segmentPos.timeline,
@@ -366,7 +359,6 @@ export default {
           e.segment
         );
       });
-      console.log(timelineSegmentIds);
       this.$store.dispatch("timelineSegment/merge", {
         timelineSegmentIds: timelineSegmentIds,
       });
@@ -677,7 +669,6 @@ export default {
           {}
         );
       }
-      console.log(thumbnail_dict);
       results = results.map((e) => {
         let duration = e.end - e.start;
 
