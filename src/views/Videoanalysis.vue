@@ -47,8 +47,8 @@
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
-              <v-tab>Entities</v-tab>
-              <v-tab>Current Entities</v-tab>
+              <v-tab>Annotations</v-tab>
+              <!-- <v-tab>Current Entities</v-tab> -->
               <v-tab disabled>Persons</v-tab>
               <v-tab disabled>Scenes</v-tab>
 
@@ -60,14 +60,14 @@
                   @seek="onTagetTimeChange"
                 />
               </v-tab-item>
-              <v-tab-item>
+              <!-- <v-tab-item>
                 <EntitiesCard
                   v-for="item in segmentsAnnotations"
                   v-bind:key="item.id"
                   :segment="item"
                   @seek="onTagetTimeChange"
                 />
-              </v-tab-item>
+              </v-tab-item> -->
               <v-tab-item>
                 <CurrentEntitiesOverView
                   :annotations="currentSegmentsAnnotations"
