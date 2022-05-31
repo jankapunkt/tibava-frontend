@@ -598,6 +598,7 @@ export class TimeScale extends PIXI.Container {
         if ((time * 1000) % majorStroke == 0) {
           if (!e.text) {
             e.text = this._drawTime(time, e.timeCode)
+            e.text.mask = this.pMask
 
             this.pBars_graphics.addChild(e.text)
           }
@@ -605,6 +606,7 @@ export class TimeScale extends PIXI.Container {
 
           if (!e.stroke) {
             e.stroke = this._drawStroke(time)
+            e.stroke.mask = this.pMask
             this.pBars_graphics.addChild(e.stroke)
           }
           e.stroke.x = x;
@@ -617,6 +619,7 @@ export class TimeScale extends PIXI.Container {
 
           if (!e.stroke) {
             e.stroke = this._drawStroke(time)
+            e.stroke.mask = this.pMask
             this.pBars_graphics.addChild(e.stroke)
           }
           e.stroke.x = x;

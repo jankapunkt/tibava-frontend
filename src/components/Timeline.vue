@@ -264,7 +264,7 @@ export default {
   },
   methods: {
     draw() {
-      this.drawTimeline();
+      // this.drawTimeline();
       this.drawTimelineHeader();
       this.drawScale();
       this.drawTimeBar();

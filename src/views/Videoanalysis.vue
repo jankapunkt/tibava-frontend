@@ -612,12 +612,9 @@ export default {
         .filter((e) => {
           return e.type == "shotdetection" && e.status == "D";
         })
-        .map((e)=>{
-          e.results = this.$store.getters["pluginRunResult/forPluginRun"](
-            e.id
-          )
-          return e
-          
+        .map((e) => {
+          e.results = this.$store.getters["pluginRunResult/forPluginRun"](e.id);
+          return e;
         })
         .sort((a, b) => {
           return new Date(b.date) - new Date(a.date);
@@ -627,11 +624,13 @@ export default {
       }
 
       shotdetection = shotdetection.at(-1);
-      console.log(`shots ${JSON.stringify(shotdetection.results[0].data.shots)}`);
       let results = [];
       // if len(shotdetection)
-      if ("results" in shotdetection && "data" in shotdetection.results[0]) {
-        
+      if (
+        "results" in shotdetection &&
+        shotdetection.results.length > 0 &&
+        "data" in shotdetection.results[0]
+      ) {
         // TODO ask for type SH
         results = shotdetection.results[0].data.shots.map((e) => {
           return {
@@ -650,12 +649,9 @@ export default {
         .filter((e) => {
           return e.type == "thumbnail" && e.status == "D";
         })
-        .map((e)=>{
-          e.results = this.$store.getters["pluginRunResult/forPluginRun"](
-            e.id
-          )
-          return e
-          
+        .map((e) => {
+          e.results = this.$store.getters["pluginRunResult/forPluginRun"](e.id);
+          return e;
         })
         .sort((a, b) => {
           return new Date(b.date) - new Date(a.date);
@@ -666,14 +662,22 @@ export default {
       }
       thumbnail = thumbnail.at(-1);
 
-      console.log(`thumbnails ${JSON.stringify(thumbnail.results)}`);
       // TODO this is not realy stable
       //TODO localhost should be replaced
-      let thumbnail_dict = thumbnail.results[0].data.images.reduce(
-        (a, b) => ((a[b.time] = `http://localhost/thumbnails/${b.id}.${b.ext}`), a),
-        {}
-      );
-      console.log(thumbnail_dict)
+      let thumbnail_dict = {};
+      if (
+        "results" in thumbnail &&
+        thumbnail.results.length > 0 &&
+        "data" in thumbnail.results[0]
+      ) {
+        thumbnail_dict = thumbnail.results[0].data.images.reduce(
+          (a, b) => (
+            (a[b.time] = `http://localhost/thumbnails/${b.id}.${b.ext}`), a
+          ),
+          {}
+        );
+      }
+      console.log(thumbnail_dict);
       results = results.map((e) => {
         let duration = e.end - e.start;
 
