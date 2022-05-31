@@ -19,27 +19,10 @@
             <v-icon left> {{ plugin.icon }} </v-icon>
             {{ plugin.name }}
           </v-tab>
-          <v-tab-item>
+          <v-tab-item v-for="plugin in plugins" :key="plugin.name">
             <v-card flat>
-              <v-card-text>
-                <p>
-                  Sed aliquam ultrices mauris. Donec posuere vulputate arcu.
-                  Morbi ac felis. Etiam feugiat lorem non metus. Sed a libero.
-                </p>
-
-                <p>
-                  Nam ipsum risus, rutrum vitae, vestibulum eu, molestie vel,
-                  lacus. Aenean tellus metus, bibendum sed, posuere ac, mattis
-                  non, nunc. Aliquam lobortis. Aliquam lobortis. Suspendisse non
-                  nisl sit amet velit hendrerit rutrum.
-                </p>
-
-                <p class="mb-0">
-                  Phasellus dolor. Fusce neque. Fusce fermentum odio nec arcu.
-                  Pellentesque libero tortor, tincidunt et, tincidunt eget,
-                  semper nec, quam. Phasellus blandit leo ut odio.
-                </p>
-              </v-card-text>
+              <v-card-title>{{ plugin.name }} </v-card-title>
+              <v-card-text> </v-card-text>
             </v-card>
           </v-tab-item>
         </v-tabs>
@@ -105,8 +88,34 @@ export default {
       show: false,
       plugins: [
         {
+          name: this.$t("modal.analyse.audio_waveform"),
+          icon: "mdi-waveform",
+          plugin: "audio_amp",
+          parameters: [],
+        },
+        {
+          name: this.$t("modal.analyse.audio.frequency"),
+          icon: "mdi-waveform",
+          plugin: "audio_freq",
+          parameters: [],
+        },
+        {
+          name: this.$t("modal.analyse.shot_detection"),
+          icon: "mdi-arrow-expand-horizontal",
+          plugin: "shotdetection",
+          parameters: [],
+        },
+        {
+          name: this.$t("modal.analyse.mean_color"),
+          icon: "mdi-palette",
+          plugin: "mean_color",
+          parameters: [],
+        },
+        {
           name: this.$t("modal.analyse.thumbnail"),
-          //   icon: "mdi-arrow-expand-horizontal",
+          icon: "mdi-arrow-expand-horizontal",
+          plugin: "thumbnail",
+          parameters: [],
         },
       ],
     };
