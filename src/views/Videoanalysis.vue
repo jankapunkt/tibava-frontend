@@ -609,15 +609,15 @@ export default {
       let shotdetection = this.$store.getters["pluginRun/forVideo"](
         this.$route.params.id
       )
+        .filter((e) => {
+          return e.type == "shotdetection" && e.status == "D";
+        })
         .map((e)=>{
           e.results = this.$store.getters["pluginRunResult/forPluginRun"](
             e.id
           )
           return e
           
-        })
-        .filter((e) => {
-          return e.type == "shotdetection";
         })
         .sort((a, b) => {
           return new Date(b.date) - new Date(a.date);
@@ -648,7 +648,14 @@ export default {
         this.$route.params.id
       )
         .filter((e) => {
-          return e.type == "thumbnail";
+          return e.type == "thumbnail" && e.status == "D";
+        })
+        .map((e)=>{
+          e.results = this.$store.getters["pluginRunResult/forPluginRun"](
+            e.id
+          )
+          return e
+          
         })
         .sort((a, b) => {
           return new Date(b.date) - new Date(a.date);
@@ -659,12 +666,14 @@ export default {
       }
       thumbnail = thumbnail.at(-1);
 
+      console.log(`thumbnails ${JSON.stringify(thumbnail.results)}`);
       // TODO this is not realy stable
-      let thumbnail_dict = thumbnail.results.reduce(
-        (a, b) => ((a[b.time] = b.url), a),
+      //TODO localhost should be replaced
+      let thumbnail_dict = thumbnail.results[0].data.images.reduce(
+        (a, b) => ((a[b.time] = `http://localhost/thumbnails/${b.id}.${b.ext}`), a),
         {}
       );
-
+      console.log(thumbnail_dict)
       results = results.map((e) => {
         let duration = e.end - e.start;
 
