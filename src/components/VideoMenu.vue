@@ -18,7 +18,7 @@
           <ModalExport @close="menu = false" />
         </v-list-item>
         <v-list-item v-if="video.id" class="px-0">
-          <ModalAnalyse @close="menu = false" />
+          <ModalPlugin @close="menu = false" />
         </v-list-item>
         <v-list-item v-if="video.id" class="px-0">
           <ModalShortcut @close="menu = false" />
@@ -30,7 +30,7 @@
 
 <script>
 import ModalExport from "@/components/ModalExport.vue";
-import ModalAnalyse from "@/components/ModalAnalyse.vue";
+import ModalPlugin from "@/components/ModalPlugin.vue";
 import ModalShortcut from "@/components/ModalShortcut.vue";
 
 export default {
@@ -50,7 +50,7 @@ export default {
   },
   components: {
     ModalExport,
-    ModalAnalyse,
+    ModalPlugin,
     ModalShortcut,
   },
 };

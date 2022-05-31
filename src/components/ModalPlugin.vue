@@ -14,6 +14,36 @@
         </v-btn>
       </v-card-title>
       <v-card-text>
+        <v-tabs vertical>
+          <v-tab v-for="plugin in plugins" :key="plugin.name">
+            <v-icon left> {{ plugin.icon }} </v-icon>
+            {{ plugin.name }}
+          </v-tab>
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
+                <p>
+                  Sed aliquam ultrices mauris. Donec posuere vulputate arcu.
+                  Morbi ac felis. Etiam feugiat lorem non metus. Sed a libero.
+                </p>
+
+                <p>
+                  Nam ipsum risus, rutrum vitae, vestibulum eu, molestie vel,
+                  lacus. Aenean tellus metus, bibendum sed, posuere ac, mattis
+                  non, nunc. Aliquam lobortis. Aliquam lobortis. Suspendisse non
+                  nisl sit amet velit hendrerit rutrum.
+                </p>
+
+                <p class="mb-0">
+                  Phasellus dolor. Fusce neque. Fusce fermentum odio nec arcu.
+                  Pellentesque libero tortor, tincidunt et, tincidunt eget,
+                  semper nec, quam. Phasellus blandit leo ut odio.
+                </p>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+        </v-tabs>
+
         <v-row lign="center" justify="center">
           <v-btn @click="pluginAudioWaveform" height="80px" class="mx-2">
             <div class="mx-auto text-center">
@@ -73,13 +103,23 @@ export default {
   data() {
     return {
       show: false,
+      plugins: [
+        {
+          name: this.$t("modal.analyse.thumbnail"),
+          //   icon: "mdi-arrow-expand-horizontal",
+        },
+      ],
     };
   },
-  computed: {},
+  computed: {
+    // plugins() {
+    //   return []; //this._plugins;
+    // },
+  },
   methods: {
     async pluginAudioWaveform() {
       this.$store
-        .dispatch("pluginRun/new", { plugin: "audio_waveform" })
+        .dispatch("pluginRun/new", { plugin: "audio_amp" })
         .then(() => {
           this.show = false;
         });

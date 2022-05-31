@@ -388,7 +388,6 @@ export default {
       this.app.stage.addChild(this.timelineHeadersContainer);
     },
     drawTimeline() {
-      console.log(`a ${JSON.stringify(this.timelines)}`);
       let startTime = 0;
       if (this.startTime) {
         startTime = this.startTime;
@@ -400,7 +399,6 @@ export default {
 
       this.timelinesContainer = new PIXI.Container();
       this.timelineObjects = [];
-      console.log(JSON.stringify(this.timelines));
       this.timelines.forEach((e, i) => {
         const x = this.timeToX(startTime);
         const y =

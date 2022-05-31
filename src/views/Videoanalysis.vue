@@ -517,6 +517,7 @@ export default {
           const result = this.$store.getters["pluginRunResult/get"](
             e.plugin_run_result_id
           );
+          console.log(result);
           if (result) {
             e.plugin = { data: result.data, type: result.type };
           }
