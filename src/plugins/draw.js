@@ -1,13 +1,18 @@
 import * as PIXI from "pixi.js";
-import { DropShadowFilter } from "pixi-filters";
+import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 import * as Time from "./time.js";
+import palette from "google-palette";
+// import { magma, seismic, jet } from "./palette.js";
+
+var colors = palette("tol-dv", 101);
+console.log(PIXI.utils.hex2string(scalarToHex(1.0, false)));
 
 export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-    0.587 * Math.pow(rgb[1], 2) +
-    0.114 * Math.pow(rgb[2], 2)
+      0.587 * Math.pow(rgb[1], 2) +
+      0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -18,6 +23,21 @@ export function linspace(startValue, stopValue, cardinality) {
     arr.push(startValue + step * i);
   }
   return arr;
+}
+
+export function rgbToHex(c) {
+  const r = Math.floor(c[0] * 255);
+  const g = Math.floor(c[1] * 255);
+  const b = Math.floor(c[2] * 255);
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
+export function scalarToHex(s, invert = false) {
+  // maps a scalar [0, 1] to a color value
+  if (invert) {
+    s = 1 - s;
+  }
+  return PIXI.utils.string2hex(colors[Math.round(s * 100)]);
 }
 
 export class AnnotationBadge extends PIXI.Container {
@@ -161,6 +181,96 @@ export class AnnotationSegment extends PIXI.Container {
   }
 }
 
+export class ScalaraColorTimeline extends PIXI.Container {
+  constructor(
+    timeline,
+    x,
+    y,
+    width,
+    height,
+    startTime = 0,
+    endTime = 10,
+    data = null,
+    fill = 0xffffff
+  ) {
+    super();
+    this.pTimeline = timeline;
+    this.pSegmentList = [];
+    this.pX = x;
+    this.pY = y;
+    this.pWidth = width;
+    this.pHeight = height;
+    this.pStartTime = startTime;
+    this.pEndTime = endTime;
+    this.pData = data;
+
+    // draw canvas
+    this.pRect = new PIXI.Graphics();
+    this.pRect.beginFill(fill);
+    this.pRect.drawRoundedRect(0, 0, width, height, 5);
+    this.pRect.x = x;
+    this.pRect.y = y;
+
+    // set mask to visible area
+    this.pMask = new PIXI.Graphics();
+    this.pMask.beginFill(0xffffff);
+    this.pMask.drawRoundedRect(0, 0, width, height, 5);
+    this.pRect.mask = this.pMask;
+    this.pRect.addChild(this.pMask);
+
+    // let shadow = new DropShadowFilter();
+    // shadow.color = 0x0000;
+    // shadow.distance = 2;
+    // shadow.alpha = 0.4;
+    // shadow.rotation = 90;
+    // shadow.blur = 1;
+    // this.pRect.filters = [shadow];
+
+    // draw colored rectangles
+    this.addChild(this.pRect);
+    this.cRects = new PIXI.Graphics();
+    var prevX = 0;
+    this.pData.time.forEach((t, i) => {
+      let color = scalarToHex(this.pData.y[i]);
+      this.cRects.beginFill(color);
+      this.cRects.drawRect(prevX, 0, this._timeToX(t), this.pHeight);
+      prevX = this._timeToX(t);
+    });
+
+    this.addChild(this.cRects);
+  }
+  get timeScale() {
+    return this.pWidth / (this.pEndTime - this.pStartTime);
+  }
+  _timeToX(time) {
+    return this.timeScale * (time - this.pStartTime);
+  }
+  scalePath() {
+    if (this.path) {
+      const width =
+        this._timeToX(this.pData.time[this.pData.time.length - 1]) -
+        this._timeToX(this.pData.time[0]);
+      const x = this._timeToX(this.pData.time[0]);
+      this.path.x = x;
+      this.path.width = width;
+    }
+  }
+  set startTime(time) {
+    this.pStartTime = time;
+    this.scalePath();
+  }
+  set endTime(time) {
+    this.pEndTime = time;
+    this.scalePath();
+  }
+  set selected(value) {
+    this.pSelected = value;
+  }
+  get segments() {
+    return this.pSegmentList;
+  }
+}
+
 export class ScalarTimeline extends PIXI.Container {
   constructor(
     timeline,
@@ -206,12 +316,10 @@ export class ScalarTimeline extends PIXI.Container {
 
     this.addChild(this.pRect);
 
-    this.path = new PIXI.Graphics()
-      .lineStyle(1, 0xae1313, 1)
-      .moveTo(0, 0)
+    this.path = new PIXI.Graphics().lineStyle(1, 0xae1313, 1).moveTo(0, 0);
     this.pData.time.forEach((t, i) => {
-      this.path.lineTo(this._timeToX(t), this.pData.y[i] * this.pHeight / 2)
-    })
+      this.path.lineTo(this._timeToX(t), (this.pData.y[i] * this.pHeight) / 2);
+    });
     this.path.closePath();
 
     this.path.y = this.pHeight / 2;
@@ -225,7 +333,9 @@ export class ScalarTimeline extends PIXI.Container {
   }
   scalePath() {
     if (this.path) {
-      const width = this._timeToX(this.pData.time[this.pData.time.length - 1]) - this._timeToX(this.pData.time[0]);
+      const width =
+        this._timeToX(this.pData.time[this.pData.time.length - 1]) -
+        this._timeToX(this.pData.time[0]);
       const x = this._timeToX(this.pData.time[0]);
       this.path.x = x;
       this.path.width = width;
@@ -455,23 +565,27 @@ export class TimeScale extends PIXI.Container {
     this.pStartTime = startTime;
     this.pEndTime = endTime;
 
-    PIXI.BitmapFont.from("scale_font", {
-      fill: "#333333",
-      fontSize: 10
-    }, {
-      chars: [['a', 'z'], ['0', '9'], ['A', 'Z'], ' \\|/:.-^%$&*()!?']
-      // fontWeight: 'bold',
-    });
+    PIXI.BitmapFont.from(
+      "scale_font",
+      {
+        fill: "#333333",
+        fontSize: 10,
+      },
+      {
+        chars: [["a", "z"], ["0", "9"], ["A", "Z"], " \\|/:.-^%$&*()!?"],
+        // fontWeight: 'bold',
+      }
+    );
 
     this.pRect = null;
-    this._drawBox()
+    this._drawBox();
 
-    this.pBars_graphics = null
-    this._drawBars()
+    this.pBars_graphics = null;
+    this._drawBars();
   }
   _drawBox() {
     if (this.pRect) {
-      this.pRect.destroy()
+      this.pRect.destroy();
     }
     this.pRect = new PIXI.Graphics();
     this.pRect.beginFill(0xffffff);
@@ -497,7 +611,7 @@ export class TimeScale extends PIXI.Container {
   }
   _drawBars() {
     if (this.pBars_graphics) {
-      this.pBars_graphics.destroy()
+      this.pBars_graphics.destroy();
     }
     this.pBars_graphics = new PIXI.Container();
     this.pBars = [];
@@ -525,7 +639,7 @@ export class TimeScale extends PIXI.Container {
         time: time,
         stroke: null,
         text: null,
-      }
+      };
       if (this.pStartTime <= time && time <= this.pEndTime) {
         if ((time * 1000) % majorStroke == 0) {
           bar.stroke = this._drawStroke(time);
@@ -535,19 +649,17 @@ export class TimeScale extends PIXI.Container {
           bar.stroke.mask = this.pMask;
           bar.text.mask = this.pMask;
 
-          this.pBars_graphics.addChild(bar.stroke)
-          this.pBars_graphics.addChild(bar.text)
-
+          this.pBars_graphics.addChild(bar.stroke);
+          this.pBars_graphics.addChild(bar.text);
         } else if ((time * 1000) % minorStroke == 0) {
           bar.stroke = this._drawStroke(time);
           bar.stroke.height = this.pHeight - 35;
 
           bar.stroke.mask = this.pMask;
 
-          this.pBars_graphics.addChild(bar.stroke)
+          this.pBars_graphics.addChild(bar.stroke);
         }
       }
-
 
       this.pBars.push(bar);
     });
@@ -597,63 +709,61 @@ export class TimeScale extends PIXI.Container {
         const x = this._timeToX(time);
         if ((time * 1000) % majorStroke == 0) {
           if (!e.text) {
-            e.text = this._drawTime(time, e.timeCode)
-            e.text.mask = this.pMask
+            e.text = this._drawTime(time, e.timeCode);
+            e.text.mask = this.pMask;
 
-            this.pBars_graphics.addChild(e.text)
+            this.pBars_graphics.addChild(e.text);
           }
           e.text.x = x;
 
           if (!e.stroke) {
-            e.stroke = this._drawStroke(time)
-            e.stroke.mask = this.pMask
-            this.pBars_graphics.addChild(e.stroke)
+            e.stroke = this._drawStroke(time);
+            e.stroke.mask = this.pMask;
+            this.pBars_graphics.addChild(e.stroke);
           }
           e.stroke.x = x;
           e.stroke.height = this.pHeight - 25;
         } else if ((time * 1000) % minorStroke == 0) {
           if (e.text) {
-            e.text.destroy()
-            e.text = null
+            e.text.destroy();
+            e.text = null;
           }
 
           if (!e.stroke) {
-            e.stroke = this._drawStroke(time)
-            e.stroke.mask = this.pMask
-            this.pBars_graphics.addChild(e.stroke)
+            e.stroke = this._drawStroke(time);
+            e.stroke.mask = this.pMask;
+            this.pBars_graphics.addChild(e.stroke);
           }
           e.stroke.x = x;
           e.stroke.height = this.pHeight - 35;
         } else {
           if (e.stroke) {
-            e.stroke.destroy()
-            e.stroke = null
+            e.stroke.destroy();
+            e.stroke = null;
           }
           if (e.text) {
-            e.text.destroy()
-            e.text = null
+            e.text.destroy();
+            e.text = null;
           }
         }
         if (e.text && e.text.x <= largestX) {
-          e.text.destroy()
-          e.text = null
+          e.text.destroy();
+          e.text = null;
         }
 
         if (e.text) {
           largestX = e.text.x + e.text.width;
         }
-      }
-      else {
+      } else {
         if (e.stroke) {
-          e.stroke.destroy()
-          e.stroke = null
+          e.stroke.destroy();
+          e.stroke = null;
         }
         if (e.text) {
-          e.text.destroy()
-          e.text = null
+          e.text.destroy();
+          e.text = null;
         }
       }
-
     });
   }
   set startTime(time) {
