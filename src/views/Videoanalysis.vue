@@ -609,6 +609,13 @@ export default {
       let shotdetection = this.$store.getters["pluginRun/forVideo"](
         this.$route.params.id
       )
+        .map((e)=>{
+          e.results = this.$store.getters["pluginRunResult/forPluginRun"](
+            e.id
+          )
+          return e
+          
+        })
         .filter((e) => {
           return e.type == "shotdetection";
         })
@@ -620,16 +627,19 @@ export default {
       }
 
       shotdetection = shotdetection.at(-1);
+      console.log(`shots ${JSON.stringify(shotdetection.results[0].data.shots)}`);
       let results = [];
       // if len(shotdetection)
-      if ("results" in shotdetection) {
-        results = shotdetection.results.map((e) => {
+      if ("results" in shotdetection && "data" in shotdetection.results[0]) {
+        
+        // TODO ask for type SH
+        results = shotdetection.results[0].data.shots.map((e) => {
           return {
-            id: e.shot_id,
+            // id: e.shot_id,
             // start: e.start_time,
             // end: e.end_time,
-            start: e.start_time_sec,
-            end: e.end_time_sec,
+            start: e.start,
+            end: e.end,
           };
         });
       }

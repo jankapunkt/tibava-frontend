@@ -41,6 +41,14 @@
             </div>
           </v-btn>
 
+          <v-btn @click="pluginThumbnail" height="80px" class="mx-2">
+            <div class="mx-auto text-center">
+              <p>
+                <v-icon x-large> mdi-arrow-expand-horizontal </v-icon>
+              </p>
+              {{ $t("modal.analyse.thumbnail") }}
+            </div>
+          </v-btn>
           <v-btn @click="pluginMeanColor" height="80px" class="mx-2">
             <div class="mx-auto text-center">
               <p>
@@ -93,6 +101,13 @@ export default {
     async pluginMeanColor() {
       this.$store
         .dispatch("pluginRun/new", { plugin: "mean_color" })
+        .then(() => {
+          this.show = false;
+        });
+    },
+    async pluginThumbnail() {
+      this.$store
+        .dispatch("pluginRun/new", { plugin: "thumbnail" })
         .then(() => {
           this.show = false;
         });
