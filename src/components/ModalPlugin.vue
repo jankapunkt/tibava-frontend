@@ -22,28 +22,28 @@
           <v-tab-item v-for="plugin in plugins" :key="plugin.name">
             <v-card flat height="100%">
               <v-card-title>{{ plugin.name }} </v-card-title>
-              <v-card-text> 
-
-              <template v-for="parameter in plugin.parameters"> 
-                <v-text-field 
-                  v-model="parameter.value"
-                  :label="parameter.label"
-                  v-if="parameter.field=='text_field'" 
-                  :key="parameter.name"
-                ></v-text-field>
-              </template>
+              <v-card-text>
+                <template v-for="parameter in plugin.parameters">
+                  <v-text-field
+                    v-model="parameter.value"
+                    :label="parameter.label"
+                    v-if="parameter.field == 'text_field'"
+                    :key="parameter.name"
+                  ></v-text-field>
+                </template>
               </v-card-text>
 
               <v-card-actions class="pt-0">
-                <v-btn @click="runPlugin(plugin.plugin, plugin.parameters)">{{ $t("plugin.run") }}</v-btn>
+                <v-btn @click="runPlugin(plugin.plugin, plugin.parameters)">{{
+                  $t("modal.plugin.run")
+                }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-tab-item>
         </v-tabs>
-
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn @click="show = false">{{ $t("timelineSegment.close") }}</v-btn>
+        <v-btn @click="show = false">{{ $t("modal.plugin.close") }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -57,11 +57,16 @@ export default {
       show: false,
       plugins: [
         {
-          name: this.$t("modal.plugin.audio_waveform"),
+          name: this.$t("modal.plugin.audio.waveform"),
           icon: "mdi-waveform",
           plugin: "audio_amp",
           parameters: [
-            {field: "text_field", name:"timeline", value: "audio amplitude", label:this.$t('modal.plugin.timeline_name')}
+            {
+              field: "text_field",
+              name: "timeline",
+              value: "audio amplitude",
+              label: this.$t("modal.plugin.timeline_name"),
+            },
           ],
         },
         {
@@ -84,7 +89,7 @@ export default {
         },
         {
           name: this.$t("modal.plugin.thumbnail"),
-          icon: "mdi-arrow-expand-horizontal",
+          icon: "mdi-image-multiple",
           plugin: "thumbnail",
           parameters: [],
         },
@@ -98,10 +103,12 @@ export default {
   },
   methods: {
     async runPlugin(plugin, parameters) {
-      parameters = parameters.map((e)=>{ return {name:e.name, value:e.value}})
-      console.log(`${plugin}, ${JSON.stringify(parameters)}`)
+      parameters = parameters.map((e) => {
+        return { name: e.name, value: e.value };
+      });
+      console.log(`${plugin}, ${JSON.stringify(parameters)}`);
       this.$store
-        .dispatch("pluginRun/new", { plugin: plugin , parameters: parameters})
+        .dispatch("pluginRun/new", { plugin: plugin, parameters: parameters })
         .then(() => {
           this.show = false;
         });

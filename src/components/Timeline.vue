@@ -22,6 +22,12 @@
             @close="timelineMenu.show = false"
           />
         </v-list-item>
+        <v-list-item v-if="timelineMenu.type == 'R'">
+          <ModalVisualizationTimeline
+            :timeline="timelineMenu.selected"
+            @close="timelineMenu.show = false"
+          />
+        </v-list-item>
         <v-list-item>
           <ModalDeleteTimeline
             :timeline="timelineMenu.selected"
@@ -120,10 +126,12 @@ import ModalRenameTimeline from "@/components/ModalRenameTimeline.vue";
 import ModalCopyTimeline from "@/components/ModalCopyTimeline.vue";
 import ModalDeleteTimeline from "@/components/ModalDeleteTimeline.vue";
 import ModalCreateTimeline from "@/components/ModalCreateTimeline.vue";
+import ModalVisualizationTimeline from "@/components/ModalVisualizationTimeline.vue";
 import ModalImportTimeline from "@/components/ModalImportTimeline.vue";
 import {
   AnnotationTimeline,
   ScalarLineTimeline,
+  ScalarColorTimeline,
   TimelineHeader,
   TimeScale,
   TimeBar,
@@ -236,6 +244,7 @@ export default {
         x: null,
         y: null,
         selected: null,
+        type: "S",
       },
       segmentMenu: {
         show: false,
@@ -377,6 +386,7 @@ export default {
           this.timelineMenu.show = true;
           this.timelineMenu.x = point.x;
           this.timelineMenu.y = point.y;
+          this.timelineMenu.type = ev.timeline.timeline.type;
           this.timelineMenu.selected = ev.timeline.timeline.id;
           this.$nextTick(() => {
             this.showMenu = true;
@@ -463,7 +473,21 @@ export default {
           this.timelinesContainer.addChild(timeline);
           this.timelineObjects.push(timeline);
         } else if (e.type == "R" && "plugin" in e) {
-          if (e.plugin.type == "S") {
+          if (e.visualization == "SC") {
+            let timeline = new ScalarColorTimeline(
+              e,
+              x,
+              y,
+              width,
+              height,
+              this.startTime,
+              this.endTime,
+              e.plugin.data
+            );
+            this.timelinesContainer.addChild(timeline);
+            this.timelineObjects.push(timeline);
+          }
+          if (e.visualization == "SL") {
             let timeline = new ScalarLineTimeline(
               e,
               x,
@@ -667,6 +691,7 @@ export default {
     ModalCopyTimeline,
     ModalDeleteTimeline,
     ModalCreateTimeline,
+    ModalVisualizationTimeline,
     ModalImportTimeline,
   },
 };

@@ -1,13 +1,7 @@
 <template>
   <v-menu v-model="menu" min-width="175" offset-y bottom left open-on-hover>
     <template v-slot:activator="{ attrs, on: menu }">
-      <v-btn
-        icon
-        v-bind="attrs"
-        v-on="menu"
-        class="ml-n2"
-        :title="$t('video.menu.title')"
-      >
+      <v-btn icon v-bind="attrs" v-on="menu" class="ml-n2">
         <v-icon color="primary">mdi-menu</v-icon>
       </v-btn>
     </template>

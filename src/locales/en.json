@@ -23,6 +23,19 @@
         "analyse": {
             "title": "Analyse"
         },
+        "plugin": {
+            "title": "Plugins",
+            "audio": {
+                "waveform": "Audio Waveform Analysis",
+                "frequency": "Audio Frequency Analysis"
+            },
+            "shot_detection": "Shot Boundary Detection",
+            "mean_color": "Color Analysis",
+            "thumbnail": "Thumbnail Generation",
+            "timeline_name": "Timeline Name",
+            "run": "OK",
+            "close": "close"
+        },
         "shortcut": {
             "title": "Shortcuts",
             "annotation": "Annotation",
@@ -57,6 +70,13 @@
                 "link": "Rename",
                 "name": "Timeline Name",
                 "update": "Rename",
+                "close": "Close"
+            },
+            "visualization": {
+                "title": "Change Visualization",
+                "link": "Visualization",
+                "name": "Timeline Name",
+                "update": "OK",
                 "close": "Close"
             },
             "delete": {

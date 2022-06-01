@@ -11,8 +11,8 @@ export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-    0.587 * Math.pow(rgb[1], 2) +
-    0.114 * Math.pow(rgb[2], 2)
+      0.587 * Math.pow(rgb[1], 2) +
+      0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -184,7 +184,7 @@ export class Timeline extends PIXI.Container {
     endTime = 10,
     fill = 0xffffff
   ) {
-    console.log(`${x},    ${y},    ${width},    ${height}`)
+    console.log(`${x},    ${y},    ${width},    ${height}`);
     super();
     this.pX = x;
     this.pY = y;
@@ -214,15 +214,13 @@ export class Timeline extends PIXI.Container {
     shadow.rotation = 90;
     shadow.blur = 1;
     this.pRect.filters = [shadow];
-    this.addChild(this.pRect)
+    this.addChild(this.pRect);
   }
 
   timeToX(time) {
     return this.timeScale * (time - this.pStartTime);
   }
-  scaleContainer() {
-
-  }
+  scaleContainer() {}
   get timeScale() {
     return this.pWidth / (this.pEndTime - this.pStartTime);
   }
@@ -253,8 +251,6 @@ export class ScalarColorTimeline extends Timeline {
     this.pSegmentList = [];
 
     this.pData = data;
-
-
 
     // draw colored rectangles
     this.addChild(this.pRect);
@@ -300,7 +296,6 @@ export class ScalarLineTimeline extends Timeline {
 
     this.pData = data;
 
-
     this.path = new PIXI.Graphics().lineStyle(1, 0xae1313, 1).moveTo(0, 0);
     this.pData.time.forEach((t, i) => {
       this.path.lineTo(this.timeToX(t), (this.pData.y[i] * this.pHeight) / 2);
@@ -339,8 +334,6 @@ export class ColorTimeline extends Timeline {
     this.pSegmentList = [];
 
     this.pData = data;
-
-
 
     // draw colored rectangles
     this.addChild(this.pRect);

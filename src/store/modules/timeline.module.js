@@ -97,7 +97,10 @@ const api = {
       // });
     },
 
-    async duplicate({ commit }, {id, name=null, includeannotations=true}) {
+    async duplicate(
+      { commit },
+      { id, name = null, includeannotations = true }
+    ) {
       let params = {
         id: id,
         name: name,
@@ -145,19 +148,22 @@ const api = {
     },
     async importEAF({ commit }, params) {
       const formData = new FormData();
-      
+
       //use video id or take it from the current video
       const video = this.getters["video/current"];
       formData.append("file", params.importfile);
       formData.append("video_id", video.id);
 
-      console.log(params)
-      console.log(formData)
+      console.log(params);
+      console.log(formData);
 
-      return axios
-        .post(`${config.API_LOCATION}/timeline/import/eaf`, formData, {
+      return axios.post(
+        `${config.API_LOCATION}/timeline/import/eaf`,
+        formData,
+        {
           headers: { "Content-Type": "multipart/form-data" },
-        });
+        }
+      );
     },
     async delete({ commit }, timeline_id) {
       let params = {
@@ -193,6 +199,21 @@ const api = {
       //     commit('error/update', info, { root: true });
       // });
     },
+    async changevisualization({ commit }, { timelineId, visualization }) {
+      let params = {
+        id: timelineId,
+        visualization: visualization,
+      };
+      console.log(timelineId);
+      console.log(params);
+      return axios
+        .post(`${config.API_LOCATION}/timeline/changevisualization`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+            commit("changevisualization", { timelineId, visualization });
+          }
+        });
+    },
   },
   mutations: {
     add(state, timelines) {
@@ -221,6 +242,11 @@ const api = {
       // var timeline = state.timelines[args.timelineId];
       // timeline.name = args.name;
       // console.log(Vue.set(state.timelines, args.timelineId, timeline));
+    },
+    changevisualization(state, args) {
+      const newTimelines = { ...state.timelines };
+      newTimelines[args.timelineId].visualization = args.visualization;
+      Vue.set(state, "timelines", newTimelines);
     },
     delete(state, timeline_id) {
       let timeline_index = state.timelineList.findIndex(

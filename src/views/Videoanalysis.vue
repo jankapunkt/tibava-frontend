@@ -103,6 +103,7 @@
                 :selectedTimeline="selectedTimeline"
                 @copyTimeline="onCopyTimeline"
                 @renameTimeline="onRenameTimeline"
+                @changeTimelineVisualization="onChangeTimelineVisualization"
                 @deleteTimeline="onDeleteTimeline"
                 @annotateSegment="onAnnotateSegment"
                 @coloringSegment="onColoringSegment"
@@ -295,6 +296,10 @@ export default {
     },
     onRenameTimeline(id) {
       this.$store.dispatch("timeline/rename", id);
+    },
+    onChangeTimelineVisualization(id) {
+      console.log(id);
+      this.$store.dispatch("timeline/changevisualization", id);
     },
     onDeleteTimeline(id) {
       this.$store.dispatch("timeline/delete", id);
