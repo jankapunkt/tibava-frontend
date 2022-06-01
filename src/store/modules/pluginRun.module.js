@@ -14,9 +14,10 @@ const api = {
     }
   },
   actions: {
-    async new({ commit }, { plugin, videoId = null }) {
+    async new({ commit }, { plugin, parameters = [], videoId = null }) {
       const params = {
         plugin: plugin,
+        parameters: parameters,
       }
 
       //use video id or take it from the current video
