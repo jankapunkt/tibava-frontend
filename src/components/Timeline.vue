@@ -123,7 +123,7 @@ import ModalCreateTimeline from "@/components/ModalCreateTimeline.vue";
 import ModalImportTimeline from "@/components/ModalImportTimeline.vue";
 import {
   AnnotationTimeline,
-  ScalarTimeline,
+  ScalarLineTimeline,
   TimelineHeader,
   TimeScale,
   TimeBar,
@@ -464,7 +464,7 @@ export default {
           this.timelineObjects.push(timeline);
         } else if (e.type == "R" && "plugin" in e) {
           if (e.plugin.type == "S") {
-            let timeline = new ScalarTimeline(
+            let timeline = new ScalarLineTimeline(
               e,
               x,
               y,
@@ -635,7 +635,7 @@ export default {
     this.app = new PIXI.Application({
       width: this.containerWidth,
       height: this.containerHeight,
-      antialias: true,
+      // antialias: true,
       transparent: true,
       view: this.$refs.canvas,
       resizeTo: this.$refs.canvas,
