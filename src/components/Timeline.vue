@@ -421,14 +421,14 @@ export default {
         if (e.type == "A") {
           let timeline = new AnnotationTimeline(
             e,
-            x,
-            y,
             width,
             height,
             this.startTime,
             this.endTime
           );
 
+          timeline.x = x;
+          timeline.y = y;
           timeline.on("segmentRightDown", (ev) => {
             const point = this.mapToGlobal(ev.event.data.global);
             this.segmentMenu.show = true;
@@ -490,14 +490,14 @@ export default {
           if (e.visualization == "SL") {
             let timeline = new ScalarLineTimeline(
               e,
-              x,
-              y,
               width,
               height,
               this.startTime,
               this.endTime,
               e.plugin.data
             );
+            timeline.x = x;
+            timeline.y = y;
             this.timelinesContainer.addChild(timeline);
             this.timelineObjects.push(timeline);
           }
