@@ -82,10 +82,10 @@
         </v-col>
       </v-row>
 
-      <v-row class="fill-height ma-2">
+      <v-row class="ma-2">
         <v-col>
           <v-card
-            class="d-flex flex-column flex-nowrap overflow-auto"
+            class="d-flex flex-column flex-nowrap"
             max-width="100%"
             elevation="2"
             scrollable="False"
