@@ -193,7 +193,7 @@ export class Timeline extends PIXI.Container {
     this.pMask = new PIXI.Graphics()
       .beginFill(0xffffff)
       .drawRoundedRect(0, 0, width, height, 5);
-    // this.pRect.mask = this.pMask;
+    this.pRect.mask = this.pMask;
     this.pRect.addChild(this.pMask);
 
     let shadow = new DropShadowFilter();
@@ -229,75 +229,114 @@ export class Timeline extends PIXI.Container {
 
 export class ScalarColorTimeline extends Timeline {
   constructor(
-    timeline,
-    width,
-    height,
-    startTime = 0,
-    endTime = 10,
-    data = null,
-    fill = 0xffffff
+    {
+      width = 10,
+      height = 10,
+      startTime = 0,
+      endTime = 10,
+      data = null,
+      fill = 0xffffff,
+      renderer = null,
+      resolution = 0.01,
+    }
   ) {
     super(width, height, startTime, endTime, fill);
-    this.pTimeline = timeline;
-    this.pSegmentList = [];
 
     this.pData = data;
 
-    // draw colored rectangles
-    this.cRects = new PIXI.Graphics();
-    var prevX = 0;
-    this.pData.time.forEach((t, i) => {
-      let color = scalarToHex(this.pData.y[i]);
-      this.cRects.beginFill(color);
-      this.cRects.drawRect(prevX, 0, this.timeToX(t), this.pHeight);
-      prevX = this.timeToX(t);
-    });
+    this.pDataMinTime = Math.min(...data.time)
+    this.pDataMaxTime = Math.max(...data.time)
+
+    this.cRects = this.renderGraph(renderer, resolution)
+
 
     this.addChild(this.cRects);
   }
 
+  renderGraph(renderer, resolution) {
+
+    const renderWidth = Math.ceil((this.pDataMaxTime - this.pDataMinTime) / resolution);
+
+    const brt = new PIXI.BaseRenderTexture(renderWidth, this.pHeight, PIXI.SCALE_MODES.LINEAR, 1);
+    const rt = new PIXI.RenderTexture(brt);
+
+    const sprite = new PIXI.Sprite(rt);
+    var prevX = 0;
+    let colorRects = new PIXI.Graphics()
+    this.pData.time.forEach((t, i) => {
+      let color = scalarToHex(this.pData.y[i]);
+      colorRects.beginFill(color);
+      colorRects.drawRect(prevX, 0, t / resolution, this.pHeight);
+      prevX = t / resolution;
+    });
+
+    renderer.render(colorRects, rt);
+    return sprite
+  }
+
   scaleContainer() {
-    if (this.path) {
+    if (this.cRects) {
       const width =
         this.timeToX(this.pData.time[this.pData.time.length - 1]) -
         this.timeToX(this.pData.time[0]);
       const x = this.timeToX(this.pData.time[0]);
-      this.path.x = x;
-      this.path.width = width;
+      this.cRects.x = x;
+      this.cRects.width = width;
     }
   }
 }
 
 export class ScalarLineTimeline extends Timeline {
   constructor(
-    timeline,
-    width,
-    height,
-    startTime = 0,
-    endTime = 10,
-    data = null,
-    fill = 0xffffff
+    {
+      width = 10,
+      height = 10,
+      startTime = 0,
+      endTime = 10,
+      data = null,
+      fill = 0xffffff,
+      renderer = null,
+      resolution = 0.01,
+    }
   ) {
     super(width, height, startTime, endTime, fill);
-    this.pTimeline = timeline;
-    this.pSegmentList = [];
 
     this.pData = data;
 
+    this.pDataMinTime = Math.min(...data.time)
+    this.pDataMaxTime = Math.max(...data.time)
 
-    this.path = new PIXI.Graphics().lineStyle(1, 0xae1313, 1);
-    if (this.pData.time.length > 0) {
-      this.path.moveTo(this.timeToX(this.pData.time[0]), (this.pData.y[0] * this.pHeight))
-    }
-    this.pData.time.forEach((t, i) => {
-      this.path.lineTo(this.timeToX(t), (this.pData.y[i] * this.pHeight));
-    });
-    this.path.closePath();
+    this.path = this.renderGraph(renderer, resolution)
+
 
     // this.path.y = this.pHeight / 2;
 
     this.addChild(this.path);
   }
+
+  renderGraph(renderer, resolution) {
+
+    const renderWidth = Math.ceil((this.pDataMaxTime - this.pDataMinTime) / resolution);
+
+    const brt = new PIXI.BaseRenderTexture(renderWidth, this.pHeight, PIXI.SCALE_MODES.NEAREST, 1);
+    const rt = new PIXI.RenderTexture(brt);
+
+    const sprite = new PIXI.Sprite(rt);
+
+    const path = new PIXI.Graphics().lineStyle(1, 0xae1313, 1);
+    if (this.pData.time.length > 0) {
+      path.moveTo(this.pData.time[0] / resolution, (this.pData.y[0] * this.pHeight))
+    }
+    this.pData.time.forEach((t, i) => {
+      path.lineTo(t / resolution, (this.pData.y[i] * this.pHeight));
+    });
+    path.closePath();
+
+
+    renderer.render(path, rt);
+    return sprite
+  }
+
   scaleContainer() {
     if (this.path) {
       const width =
