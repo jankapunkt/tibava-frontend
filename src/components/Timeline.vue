@@ -1,44 +1,98 @@
 <template>
   <div ref="container" style="width: 100%; min-height: 100px">
-    <!-- <DraggableTree
-      :data="timelineHierarchy"
-      draggable="draggable"
-      cross-tree="cross-tree"
-      :indent="30"
-      :space="0"
-    >
-      <div slot-scope="{ data, store }">
-        <template v-if="!data.isDragPlaceHolder"
-          ><b
-            v-if="data.children &amp;&amp; data.children.length"
-            @click="store.toggleOpen(data)"
-            >{{ data.open ? "-" : "+" }}&nbsp;</b
-          ><span>{{ data.text }}</span></template
-        >
-      </div>
-    </DraggableTree> -->
-
     <v-row>
       <v-col cols="2" style="margin: 0; padding: 0">
-        <div
+        <!-- <div
           style="height: 40px; margin-top: 4px; margin-bottom: 4px; width: 100%"
-        ></div>
+        > -->
+        <v-menu bottom right>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              v-bind="attrs"
+              v-on="on"
+              style="
+                height: 40px;
+                margin-top: 4px;
+                margin-bottom: 4px;
+                width: 100%;
+              "
+            >
+              <v-icon left>mdi-cog</v-icon>
+              {{ $t("modal.timeline.menu.title") }}
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item link>
+              <ModalCreateTimeline @close="menu.show = false" />
+            </v-list-item>
+            <v-list-item link>
+              <ModalImportTimeline @close="menu.show = false" />
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <!-- </div> -->
 
-        <v-app-bar
-          dense
-          v-for="timeline in timelines"
-          :key="timeline.id"
-          style="height: 50px; margin-top: 4px; margin-bottom: 4px; width: 100%"
+        <DraggableTree
+          draggable="draggable"
+          cross-tree="cross-tree"
+          class="timelinetree"
+          :data="timelineHierarchy"
+          :indent="25"
+          :space="0"
+          @change="change"
+          @nodeOpenChanged="nodeOpenChanged"
         >
-          <v-app-bar-title>{{ timeline.name }}</v-app-bar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon small>
-            <v-icon>mdi-eye-off</v-icon>
-          </v-btn>
-          <v-btn icon small>
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </v-app-bar>
+          <div slot-scope="{ data, store }">
+            <template v-if="!data.isDragPlaceHolder">
+              <v-app-bar
+                dense
+                color="white"
+                style="
+                  height: 50px;
+                  margin-top: 4px;
+                  margin-bottom: 4px;
+                  width: 100%;
+                "
+              >
+                <v-icon
+                  v-if="data.children && data.children.length"
+                  @click="store.toggleOpen(data)"
+                  >{{ data.open ? "mdi-minus" : "mdi-plus" }}</v-icon
+                >
+                <v-app-bar-title>{{ data.text }}</v-app-bar-title>
+
+                <v-spacer></v-spacer>
+
+                <!-- <v-btn icon small>
+                  <v-icon>mdi-eye-off</v-icon>
+                </v-btn> -->
+
+                <v-menu bottom right>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon small>
+                      <v-icon v-bind="attrs" v-on="on"
+                        >mdi-dots-vertical</v-icon
+                      >
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item>
+                      <ModalCopyTimeline :timeline="data.id" />
+                    </v-list-item>
+                    <v-list-item>
+                      <ModalRenameTimeline :timeline="data.id" />
+                    </v-list-item>
+                    <v-list-item v-if="data.type == 'R'">
+                      <ModalVisualizationTimeline :timeline="data.id" />
+                    </v-list-item>
+                    <v-list-item>
+                      <ModalDeleteTimeline :timeline="data.id" />
+                    </v-list-item>
+                  </v-list>
+                </v-menu> </v-app-bar
+            ></template>
+          </div>
+        </DraggableTree>
       </v-col>
 
       <v-col cols="10" style="margin: 0; padding: 0">
@@ -46,41 +100,6 @@
       </v-col>
     </v-row>
 
-    <v-menu
-      v-model="timelineMenu.show"
-      :position-x="timelineMenu.x"
-      :position-y="timelineMenu.y"
-      absolute
-      offset-y
-    >
-      <v-list>
-        <v-list-item>
-          <ModalCopyTimeline
-            :timeline="timelineMenu.selected"
-            @close="timelineMenu.show = false"
-          />
-        </v-list-item>
-
-        <v-list-item>
-          <ModalRenameTimeline
-            :timeline="timelineMenu.selected"
-            @close="timelineMenu.show = false"
-          />
-        </v-list-item>
-        <v-list-item v-if="timelineMenu.type == 'R'">
-          <ModalVisualizationTimeline
-            :timeline="timelineMenu.selected"
-            @close="timelineMenu.show = false"
-          />
-        </v-list-item>
-        <v-list-item>
-          <ModalDeleteTimeline
-            :timeline="timelineMenu.selected"
-            @close="timelineMenu.show = false"
-          />
-        </v-list-item>
-      </v-list>
-    </v-menu>
     <v-tooltip
       top
       v-model="segmentContext.show"
@@ -146,22 +165,6 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-menu
-      v-model="menu.show"
-      :position-x="menu.x"
-      :position-y="menu.y"
-      absolute
-      offset-y
-    >
-      <v-list>
-        <v-list-item link>
-          <ModalCreateTimeline @close="menu.show = false" />
-        </v-list-item>
-        <v-list-item link>
-          <ModalImportTimeline @close="menu.show = false" />
-        </v-list-item>
-      </v-list>
-    </v-menu>
   </div>
 </template>
 
@@ -213,7 +216,7 @@ export default {
     },
     headerWidth: {
       type: Number,
-      default: 100,
+      default: 0,
     },
     scaleHeight: {
       type: Number,
@@ -287,13 +290,6 @@ export default {
       containerHeight: 100,
 
       // Context
-      timelineMenu: {
-        show: false,
-        x: null,
-        y: null,
-        selected: null,
-        type: "S",
-      },
       segmentMenu: {
         show: false,
         x: null,
@@ -320,43 +316,20 @@ export default {
     };
   },
   methods: {
+    nodeOpenChanged(node) {
+      // on a node is closed or open(node)
+      console.log(node);
+    },
+    change(node, targetTree, oldTree) {
+      // after drop, only when the node position changed
+      console.log(node);
+      console.log(targetTree);
+      console.log(oldTree);
+    },
     draw() {
       this.drawTimeline();
-      // this.drawTimelineHeader();
       this.drawScale();
       // this.drawTimeBar();
-      // this.drawMenu();
-    },
-    drawMenu() {
-      if (this.menuContainer) {
-        this.app.stage.removeChild(this.menuContainer);
-      }
-
-      this.menuContainer = new PIXI.Container();
-      this.menuObjects = [];
-
-      const x = 5;
-      const y = 5;
-      const width = 80;
-      const height = 80;
-
-      let button = new Button(
-        x,
-        y,
-        width,
-        height,
-        require("../assets/menu_24.png")
-      );
-
-      button.on("click", (ev) => {
-        const point = this.mapToGlobal(ev.data.global);
-        this.menu.show = true;
-        this.menu.x = point.x;
-        this.menu.y = point.y;
-      });
-      this.menuContainer.addChild(button);
-      this.menuObjects.push(button);
-      this.app.stage.addChild(this.menuContainer);
     },
     drawTimeBar() {
       if (this.timeBarsContainer) {
@@ -410,73 +383,6 @@ export default {
       this.timeScalesContainer.addChild(timeline);
       this.timeScaleObjects.push(timeline);
       this.app.stage.addChild(this.timeScalesContainer);
-    },
-    drawTimelineHeader() {
-      if (this.timelineHeadersContainer) {
-        this.app.stage.removeChild(this.timelineHeadersContainer);
-      }
-
-      this.timelineHeadersContainer = new PIXI.Container();
-      this.timelineHeaderObjects = [];
-      this.timelines.forEach((e, i) => {
-        const x = this.gap;
-        const y =
-          (this.gap + this.timelineHeight) * i +
-          this.scaleHeight +
-          2 * this.gap;
-        const width = this.headerWidth;
-        const height = this.timelineHeight;
-
-        let timeline = new TimelineHeader(e, 0, 0, width, height);
-        timeline.x = x;
-        timeline.y = y;
-
-        timeline.on("timelineRightDown", (ev) => {
-          const point = this.mapToGlobal(ev.event.data.global);
-          this.timelineMenu.show = true;
-          this.timelineMenu.x = point.x;
-          this.timelineMenu.y = point.y;
-          this.timelineMenu.type = ev.timeline.timeline.type;
-          this.timelineMenu.selected = ev.timeline.timeline.id;
-          this.$nextTick(() => {
-            this.showMenu = true;
-          });
-        });
-
-        timeline.on("mousedown", function (ev) {
-          console.log("Picked up");
-          console.log(
-            timeline.x,
-            timeline.y,
-            ev.data.global.x,
-            ev.data.global.y
-          );
-          // timeline.x = ev.data.global.x - timeline.x / 2;
-          timeline.y = ev.data.global.y - timeline.y / 2;
-          timeline.dragging = true;
-        });
-
-        timeline.on("mousemove", function (ev) {
-          console.log("Dragging");
-
-          if (timeline.dragging) {
-            // timeline.x = ev.data.global.x - timeline.x / 2;
-            timeline.y = ev.data.global.y - timeline.y / 2;
-          }
-        });
-
-        timeline.on("mouseup", function (ev) {
-          console.log("Moving");
-
-          // timeline.x = ev.data.global.x - timeline.x / 2;
-          // timeline.y = ev.data.global.y - timeline.y / 2;
-          timeline.dragging = false;
-        });
-
-        this.timelineHeadersContainer.addChild(timeline);
-        this.timelineHeaderObjects.push(timeline);
-      });
-      this.app.stage.addChild(this.timelineHeadersContainer);
     },
     drawTimeline() {
       let startTime = 0;
@@ -712,16 +618,17 @@ export default {
         elem.forEach((e) => {
           if (e.parent == parent) {
             let children = findChildren(elem, e.id);
-            hierarchy.push({ id: e.id, text: e.name, children: children });
+            hierarchy.push({
+              id: e.id,
+              text: e.name,
+              children: children,
+              type: e.type,
+            });
           }
         });
         return hierarchy;
       }
-      console.log(JSON.stringify(values));
-
       this.timelineHierarchy = findChildren(values, null);
-      console.log(JSON.stringify(this.timelineHierarchy));
-      console.log(values.length);
       this.draw();
     },
     time(value) {
@@ -792,3 +699,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.draggable-placeholder-inner {
+  border: 1px solid #ae1313;
+  background: #ae131377;
+}
+</style>
