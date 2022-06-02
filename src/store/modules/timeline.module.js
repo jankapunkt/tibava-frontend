@@ -214,6 +214,39 @@ const api = {
           }
         });
     },
+    async setparent({ commit }, { timelineId, parentId }) {
+      let params = {
+        timelineId: timelineId,
+        parentId: parentId,
+      };
+
+      if (!parentId) {
+        params.parentId = null;
+      }
+
+      console.log(timelineId);
+      console.log(params);
+      return axios
+        .post(`${config.API_LOCATION}/timeline/setparent`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+            commit("setparent", { timelineId, parentId });
+          }
+        });
+    },
+    async setorder({ commit }, { order }) {
+      let params = {
+        order: order,
+      };
+      console.log(order);
+      return axios
+        .post(`${config.API_LOCATION}/timeline/setorder`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+            commit("setorder", { order });
+          }
+        });
+    },
   },
   mutations: {
     add(state, timelines) {
@@ -242,6 +275,14 @@ const api = {
       // var timeline = state.timelines[args.timelineId];
       // timeline.name = args.name;
       // console.log(Vue.set(state.timelines, args.timelineId, timeline));
+    },
+    setparent(state, args) {
+      const newTimelines = { ...state.timelines };
+      newTimelines[args.timelineId].parent_id = args.parentId;
+      Vue.set(state, "timelines", newTimelines);
+    },
+    setorder(state, args) {
+      Vue.set(state, "timelineList", args.order);
     },
     changevisualization(state, args) {
       const newTimelines = { ...state.timelines };

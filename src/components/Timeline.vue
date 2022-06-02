@@ -2,9 +2,6 @@
   <div ref="container" style="width: 100%; min-height: 100px">
     <v-row>
       <v-col cols="2" style="margin: 0; padding: 0">
-        <!-- <div
-          style="height: 40px; margin-top: 4px; margin-bottom: 4px; width: 100%"
-        > -->
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
@@ -27,7 +24,6 @@
             </v-list>
           </v-menu>
         </div>
-        <!-- </div> -->
 
         <DraggableTree
           draggable="draggable"
@@ -60,9 +56,9 @@
 
                 <v-spacer></v-spacer>
 
-                <!-- <v-btn icon small>
+                <v-btn icon small disabled>
                   <v-icon>mdi-eye-off</v-icon>
-                </v-btn> -->
+                </v-btn>
 
                 <v-menu bottom right>
                   <template v-slot:activator="{ on, attrs }">
@@ -315,18 +311,36 @@ export default {
   methods: {
     nodeOpenChanged(node) {
       // on a node is closed or open(node)
-      console.log(node);
+      // TODO set visibible attribute of each timeline
     },
     change(node, targetTree, oldTree) {
       // after drop, only when the node position changed
-      console.log(node);
-      console.log(targetTree);
-      console.log(oldTree);
+
+      // set new order of timelines
+      function timelineOrder(elem) {
+        var hierarchy = [];
+        elem.forEach((e) => {
+          hierarchy.push(e.id);
+          hierarchy.push.apply(hierarchy, timelineOrder(e.children));
+        });
+        return hierarchy;
+      }
+
+      let order = timelineOrder(this.timelineHierarchy);
+      this.$store.dispatch("timeline/setorder", {
+        order: order,
+      });
+
+      // set new parent of node
+      this.$store.dispatch("timeline/setparent", {
+        timelineId: node.id,
+        parentId: node.parent.id,
+      });
     },
     draw() {
       this.drawTimeline();
       this.drawScale();
-      // this.drawTimeBar();
+      this.drawTimeBar();
     },
     drawTimeBar() {
       if (this.timeBarsContainer) {
@@ -613,7 +627,7 @@ export default {
       function findChildren(elem, parent) {
         var hierarchy = [];
         elem.forEach((e) => {
-          if (e.parent == parent) {
+          if (e.parent_id == parent) {
             let children = findChildren(elem, e.id);
             hierarchy.push({
               id: e.id,
@@ -626,6 +640,7 @@ export default {
         return hierarchy;
       }
       this.timelineHierarchy = findChildren(values, null);
+      console.log(this.timelines);
       this.draw();
     },
     time(value) {

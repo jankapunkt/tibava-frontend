@@ -299,8 +299,14 @@ export default {
       this.$store.dispatch("timeline/rename", id);
     },
     onChangeTimelineVisualization(id) {
-      console.log(id);
       this.$store.dispatch("timeline/changevisualization", id);
+    },
+    onTimelineSetParent(id) {
+      console.log(id);
+      this.$store.dispatch("timeline/setparent", id);
+    },
+    onTimelineSetOrder(id) {
+      this.$store.dispatch("timeline/setorder", id);
     },
     onDeleteTimeline(id) {
       this.$store.dispatch("timeline/delete", id);
