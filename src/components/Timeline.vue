@@ -476,14 +476,14 @@ export default {
           if (e.visualization == "SC") {
             let timeline = new ScalarColorTimeline(
               e,
-              x,
-              y,
               width,
               height,
               this.startTime,
               this.endTime,
               e.plugin.data
             );
+            timeline.x = x;
+            timeline.y = y;
             this.timelinesContainer.addChild(timeline);
             this.timelineObjects.push(timeline);
           }
