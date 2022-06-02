@@ -5,31 +5,28 @@
         <!-- <div
           style="height: 40px; margin-top: 4px; margin-bottom: 4px; width: 100%"
         > -->
-        <v-menu bottom right>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              v-bind="attrs"
-              v-on="on"
-              style="
-                height: 40px;
-                margin-top: 4px;
-                margin-bottom: 4px;
-                width: 100%;
-              "
-            >
-              <v-icon left>mdi-cog</v-icon>
-              {{ $t("modal.timeline.menu.title") }}
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item link>
-              <ModalCreateTimeline @close="menu.show = false" />
-            </v-list-item>
-            <v-list-item link>
-              <ModalImportTimeline @close="menu.show = false" />
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
+          <v-menu bottom right>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                style="height: 40px; width: 100%; height: 100%"
+              >
+                <v-icon left>mdi-cog</v-icon>
+                {{ $t("modal.timeline.menu.title") }}
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item link>
+                <ModalCreateTimeline @close="menu.show = false" />
+              </v-list-item>
+              <v-list-item link>
+                <ModalImportTimeline @close="menu.show = false" />
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
         <!-- </div> -->
 
         <DraggableTree

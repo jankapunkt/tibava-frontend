@@ -88,6 +88,7 @@
             class="d-flex flex-column flex-nowrap overflow-auto"
             max-width="100%"
             elevation="2"
+            scrollable="False"
           >
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
