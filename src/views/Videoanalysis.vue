@@ -89,7 +89,7 @@
             max-width="100%"
             elevation="2"
           >
-            <v-card-title> Annotation Timeline </v-card-title>
+            <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
               <Timeline
                 ref="timeline"

@@ -45,6 +45,9 @@
             "close": "Close"
         },
         "timeline": {
+            "menu": {
+                "title": "Options"
+            },
             "create": {
                 "title": "Create Timeline",
                 "name": "Timeline Name",
