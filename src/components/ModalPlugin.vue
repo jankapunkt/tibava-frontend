@@ -82,10 +82,30 @@ export default {
           parameters: [],
         },
         {
-          name: this.$t("modal.plugin.mean_color"),
+          name: this.$t("modal.plugin.color_analysis"),
           icon: "mdi-palette",
-          plugin: "mean_color",
-          parameters: [],
+          plugin: "color_analysis",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: "color analysis",
+              label: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+        },
+        {
+          name: this.$t("modal.plugin.shot_type_classification"),
+          icon: "mdi-video-switch",
+          plugin: "shot_type_classification",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: "shot type classification",
+              label: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
         },
         {
           name: this.$t("modal.plugin.thumbnail"),
