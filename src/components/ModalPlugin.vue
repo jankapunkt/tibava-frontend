@@ -70,6 +70,19 @@ export default {
           ],
         },
         {
+          name: this.$t("modal.plugin.shot_type"),
+          icon: "mdi-camera-account",
+          plugin: "shot_type",
+          parameters: [
+            {
+              field: "text_field",
+              name: "close_shot",
+              value: "close_",
+              label: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+        },
+        {
           name: this.$t("modal.plugin.audio.frequency"),
           icon: "mdi-waveform",
           plugin: "audio_freq",
