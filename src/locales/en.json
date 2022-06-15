@@ -30,7 +30,11 @@
                 "frequency": "Audio Frequency Analysis"
             },
             "shot_detection": "Shot Boundary Detection",
-            "mean_color": "Color Analysis",
+            "shot_type_classification": "Camera Setting",
+            "color_analysis": {
+                "name": "Color Analysis",
+                "slider": "Number of dominant colors"
+            },
             "thumbnail": "Thumbnail Generation",
             "timeline_name": "Timeline Name",
             "run": "OK",
