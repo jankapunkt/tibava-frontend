@@ -11,8 +11,8 @@ export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-    0.587 * Math.pow(rgb[1], 2) +
-    0.114 * Math.pow(rgb[2], 2)
+      0.587 * Math.pow(rgb[1], 2) +
+      0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -171,13 +171,7 @@ export class AnnotationSegment extends PIXI.Container {
 }
 
 export class Timeline extends PIXI.Container {
-  constructor(
-    width,
-    height,
-    startTime = 0,
-    endTime = 10,
-    fill = 0xffffff
-  ) {
+  constructor(width, height, startTime = 0, endTime = 10, fill = 0xffffff) {
     super();
     this.pWidth = width;
     this.pHeight = height;
@@ -203,17 +197,17 @@ export class Timeline extends PIXI.Container {
     shadow.rotation = 90;
     shadow.blur = 1;
     this.pRect.filters = [shadow];
-    super.addChild(this.pRect)
+    super.addChild(this.pRect);
   }
 
   addChild(child) {
-    this.pRect.addChild(child)
+    this.pRect.addChild(child);
   }
 
   timeToX(time) {
     return this.timeScale * (time - this.pStartTime);
   }
-  scaleContainer() { }
+  scaleContainer() {}
   get timeScale() {
     return this.pWidth / (this.pEndTime - this.pStartTime);
   }
@@ -227,42 +221,107 @@ export class Timeline extends PIXI.Container {
   }
 }
 
-export class ScalarColorTimeline extends Timeline {
-  constructor(
-    {
-      width = 10,
-      height = 10,
-      startTime = 0,
-      endTime = 10,
-      data = null,
-      fill = 0xffffff,
-      renderer = null,
-      resolution = 0.01,
-    }
-  ) {
+export class ColorTimeline extends Timeline {
+  constructor({
+    width = 10,
+    height = 10,
+    startTime = 0,
+    endTime = 10,
+    data = null,
+    fill = 0xffffff,
+    renderer = null,
+    resolution = 0.01,
+  }) {
     super(width, height, startTime, endTime, fill);
 
     this.pData = data;
 
-    this.pDataMinTime = Math.min(...data.time)
-    this.pDataMaxTime = Math.max(...data.time)
+    this.pDataMinTime = Math.min(...data.time);
+    this.pDataMaxTime = Math.max(...data.time);
 
-    this.cRects = this.renderGraph(renderer, resolution)
-
+    this.cRects = this.renderGraph(renderer, resolution);
 
     this.addChild(this.cRects);
   }
 
   renderGraph(renderer, resolution) {
+    const renderWidth = Math.ceil(
+      (this.pDataMaxTime - this.pDataMinTime) / resolution
+    );
 
-    const renderWidth = Math.ceil((this.pDataMaxTime - this.pDataMinTime) / resolution);
-
-    const brt = new PIXI.BaseRenderTexture(renderWidth, this.pHeight, PIXI.SCALE_MODES.LINEAR, 1);
+    const brt = new PIXI.BaseRenderTexture(
+      renderWidth,
+      this.pHeight,
+      PIXI.SCALE_MODES.LINEAR,
+      1
+    );
     const rt = new PIXI.RenderTexture(brt);
 
     const sprite = new PIXI.Sprite(rt);
     var prevX = 0;
-    let colorRects = new PIXI.Graphics()
+    let colorRects = new PIXI.Graphics();
+    this.pData.time.forEach((t, i) => {
+      let color = PIXI.utils.rgb2hex(this.pData.colors[i]);
+      colorRects.beginFill(color);
+      colorRects.drawRect(prevX, 0, t / resolution, this.pHeight);
+      prevX = t / resolution;
+    });
+
+    renderer.render(colorRects, rt);
+    return sprite;
+  }
+
+  scaleContainer() {
+    if (this.cRects) {
+      const width =
+        this.timeToX(this.pData.time[this.pData.time.length - 1]) -
+        this.timeToX(this.pData.time[0]);
+      const x = this.timeToX(this.pData.time[0]);
+      this.cRects.x = x;
+      this.cRects.width = width;
+    }
+  }
+}
+
+export class ScalarColorTimeline extends Timeline {
+  constructor({
+    width = 10,
+    height = 10,
+    startTime = 0,
+    endTime = 10,
+    data = null,
+    fill = 0xffffff,
+    renderer = null,
+    resolution = 0.01,
+  }) {
+    super(width, height, startTime, endTime, fill);
+
+    this.pData = data;
+
+    this.pDataMinTime = Math.min(...data.time);
+    this.pDataMaxTime = Math.max(...data.time);
+
+    this.cRects = this.renderGraph(renderer, resolution);
+
+    this.addChild(this.cRects);
+  }
+
+  renderGraph(renderer, resolution) {
+    const renderWidth = Math.ceil(
+      (this.pDataMaxTime - this.pDataMinTime) / resolution
+    );
+
+    const brt = new PIXI.BaseRenderTexture(
+      renderWidth,
+      this.pHeight,
+      PIXI.SCALE_MODES.LINEAR,
+      1
+    );
+    const rt = new PIXI.RenderTexture(brt);
+
+    const sprite = new PIXI.Sprite(rt);
+    var prevX = 0;
+    let colorRects = new PIXI.Graphics();
     this.pData.time.forEach((t, i) => {
       let color = scalarToHex(this.pData.y[i]);
       colorRects.beginFill(color);
@@ -271,7 +330,7 @@ export class ScalarColorTimeline extends Timeline {
     });
 
     renderer.render(colorRects, rt);
-    return sprite
+    return sprite;
   }
 
   scaleContainer() {
@@ -287,27 +346,24 @@ export class ScalarColorTimeline extends Timeline {
 }
 
 export class ScalarLineTimeline extends Timeline {
-  constructor(
-    {
-      width = 10,
-      height = 10,
-      startTime = 0,
-      endTime = 10,
-      data = null,
-      fill = 0xffffff,
-      renderer = null,
-      resolution = 0.01,
-    }
-  ) {
+  constructor({
+    width = 10,
+    height = 10,
+    startTime = 0,
+    endTime = 10,
+    data = null,
+    fill = 0xffffff,
+    renderer = null,
+    resolution = 0.01,
+  }) {
     super(width, height, startTime, endTime, fill);
 
     this.pData = data;
 
-    this.pDataMinTime = Math.min(...data.time)
-    this.pDataMaxTime = Math.max(...data.time)
+    this.pDataMinTime = Math.min(...data.time);
+    this.pDataMaxTime = Math.max(...data.time);
 
-    this.path = this.renderGraph(renderer, resolution)
-
+    this.path = this.renderGraph(renderer, resolution);
 
     // this.path.y = this.pHeight / 2;
 
@@ -315,68 +371,34 @@ export class ScalarLineTimeline extends Timeline {
   }
 
   renderGraph(renderer, resolution) {
+    const renderWidth = Math.ceil(
+      (this.pDataMaxTime - this.pDataMinTime) / resolution
+    );
 
-    const renderWidth = Math.ceil((this.pDataMaxTime - this.pDataMinTime) / resolution);
-
-    const brt = new PIXI.BaseRenderTexture(renderWidth, this.pHeight, PIXI.SCALE_MODES.NEAREST, 1);
+    const brt = new PIXI.BaseRenderTexture(
+      renderWidth,
+      this.pHeight,
+      PIXI.SCALE_MODES.NEAREST,
+      1
+    );
     const rt = new PIXI.RenderTexture(brt);
 
     const sprite = new PIXI.Sprite(rt);
 
     const path = new PIXI.Graphics().lineStyle(1, 0xae1313, 1);
     if (this.pData.time.length > 0) {
-      path.moveTo(this.pData.time[0] / resolution, (this.pData.y[0] * this.pHeight))
+      path.moveTo(
+        this.pData.time[0] / resolution,
+        this.pData.y[0] * this.pHeight
+      );
     }
     this.pData.time.forEach((t, i) => {
-      path.lineTo(t / resolution, (this.pData.y[i] * this.pHeight));
+      path.lineTo(t / resolution, this.pData.y[i] * this.pHeight);
     });
     path.closePath();
 
-
     renderer.render(path, rt);
-    return sprite
-  }
-
-  scaleContainer() {
-    if (this.path) {
-      const width =
-        this.timeToX(this.pData.time[this.pData.time.length - 1]) -
-        this.timeToX(this.pData.time[0]);
-      const x = this.timeToX(this.pData.time[0]);
-      this.path.x = x;
-      this.path.width = width;
-    }
-  }
-}
-
-export class ColorTimeline extends Timeline {
-  constructor(
-    timeline,
-    width,
-    height,
-    startTime = 0,
-    endTime = 10,
-    data = null,
-    fill = 0xffffff
-  ) {
-    super(width, height, startTime, endTime, fill);
-    this.pTimeline = timeline;
-    this.pSegmentList = [];
-
-    this.pData = data;
-
-    // draw colored rectangles
-    this.addChild(this.pRect);
-    this.cRects = new PIXI.Graphics();
-    var prevX = 0;
-    this.pData.time.forEach((t, i) => {
-      let color = PIXI.utils.rgb2hex(this.pData.color[i]);
-      this.cRects.beginFill(color);
-      this.cRects.drawRect(prevX, 0, this.timeToX(t), this.pHeight);
-      prevX = this.timeToX(t);
-    });
-
-    this.addChild(this.cRects);
+    return sprite;
   }
 
   scaleContainer() {

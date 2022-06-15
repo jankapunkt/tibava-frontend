@@ -172,6 +172,7 @@ import ModalVisualizationTimeline from "@/components/ModalVisualizationTimeline.
 import ModalImportTimeline from "@/components/ModalImportTimeline.vue";
 import {
   AnnotationTimeline,
+  ColorTimeline,
   ScalarLineTimeline,
   ScalarColorTimeline,
   TimelineHeader,
@@ -469,6 +470,17 @@ export default {
             this.segmentContext.show = false;
           });
         } else if (e.type == "R" && "plugin" in e) {
+          if (e.visualization == "C") {
+            timeline = new ColorTimeline({
+              width: width,
+              height: height,
+              startTime: this.startTime,
+              endTime: this.endTime,
+              data: e.plugin.data,
+              renderer: this.app.renderer,
+              resolution: 0.01,
+            });
+          }
           if (e.visualization == "SC") {
             timeline = new ScalarColorTimeline({
               width: width,
