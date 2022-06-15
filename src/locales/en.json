@@ -33,7 +33,10 @@
             "shot_type_classification": "Camera Setting",
             "color_analysis": {
                 "name": "Color Analysis",
-                "slider": "Number of dominant colors"
+                "slider": "Number of dominant colors",
+                "buttongroup": "Show dominant colors in:",
+                "singletimeline": "Single Timeline",
+                "multipletimelines": "Individual Timelines"
             },
             "thumbnail": "Thumbnail Generation",
             "timeline_name": "Timeline Name",

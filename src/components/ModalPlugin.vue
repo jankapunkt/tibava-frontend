@@ -26,24 +26,46 @@
                 <template v-for="parameter in plugin.parameters">
                   <v-text-field
                     v-model="parameter.value"
-                    :label="parameter.label"
+                    :label="parameter.text"
                     v-if="parameter.field == 'text_field'"
                     :key="parameter.name"
                   ></v-text-field>
-                  <!-- <v-row v-if="parameter.field == 'slider'"> -->
-                  <!-- {{ "parameter.label" }} -->
-                  <v-slider
-                    v-model="parameter.value"
-                    :label="parameter.label"
-                    :min="parameter.min"
-                    :max="parameter.max"
-                    :step="parameter.step"
-                    :value="parameter.default"
-                    thumb-label="always"
-                    v-if="parameter.field == 'slider'"
+
+                  <div v-if="parameter.field == 'slider'" :key="parameter.name">
+                    <!-- <p>
+                      {{ parameter.text }}
+                    </p> -->
+
+                    <v-slider
+                      v-model="parameter.value"
+                      :label="parameter.text"
+                      :min="parameter.min"
+                      :max="parameter.max"
+                      :step="parameter.step"
+                      :value="parameter.default"
+                      thumb-label="always"
+                    ></v-slider>
+                  </div>
+
+                  <div
+                    v-if="parameter.field == 'buttongroup'"
                     :key="parameter.name"
-                  ></v-slider>
-                  <!-- </v-row> -->
+                  >
+                    <p>
+                      {{ parameter.text }}
+                    </p>
+                    <v-btn-toggle
+                      v-model="parameter.value"
+                      :label="parameter.text"
+                      tile
+                      group
+                      mandatory
+                    >
+                      <v-btn v-for="button in parameter.buttons" :key="button">
+                        {{ button }}
+                      </v-btn>
+                    </v-btn-toggle>
+                  </div>
                 </template>
               </v-card-text>
 
@@ -79,7 +101,7 @@ export default {
               field: "text_field",
               name: "timeline",
               value: this.$t("modal.plugin.audio.waveform"),
-              label: this.$t("modal.plugin.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
             },
           ],
         },
@@ -104,7 +126,7 @@ export default {
               field: "text_field",
               name: "timeline",
               value: this.$t("modal.plugin.shot_type_classification"),
-              label: this.$t("modal.plugin.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
             },
           ],
         },
@@ -117,7 +139,7 @@ export default {
               field: "text_field",
               name: "timeline",
               value: this.$t("modal.plugin.color_analysis.name"),
-              label: this.$t("modal.plugin.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
             },
             {
               field: "slider",
@@ -126,9 +148,18 @@ export default {
               value: 4,
               step: 1,
               name: "k",
-              label: this.$t("modal.plugin.color_analysis.slider"),
+              text: this.$t("modal.plugin.color_analysis.slider"),
             },
-            {},
+            {
+              field: "buttongroup",
+              text: this.$t("modal.plugin.color_analysis.buttongroup"),
+              name: "timeline_visualization",
+              value: 0,
+              buttons: [
+                this.$t("modal.plugin.color_analysis.singletimeline"),
+                this.$t("modal.plugin.color_analysis.multipletimelines"),
+              ],
+            },
           ],
         },
         {
