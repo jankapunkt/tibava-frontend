@@ -178,6 +178,7 @@ import {
   TimelineHeader,
   TimeScale,
   TimeBar,
+  HistTimeline,
   Button,
 } from "../plugins/draw";
 import paper from "paper";
@@ -501,6 +502,17 @@ export default {
               data: e.plugin.data,
               renderer: this.app.renderer,
               resolution: 0.01,
+            });
+          }
+          if (e.visualization == "H") {
+            timeline = new HistTimeline({
+              width: width,
+              height: height,
+              startTime: this.startTime,
+              endTime: this.endTime,
+              data: e.plugin.data,
+              renderer: this.app.renderer,
+              resolution: 0.1,
             });
           }
         }
