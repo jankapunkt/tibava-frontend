@@ -479,7 +479,7 @@ export default {
               endTime: this.endTime,
               data: e.plugin.data,
               renderer: this.app.renderer,
-              resolution: 0.01,
+              resolution: 0.1,
             });
           }
           if (e.visualization == "SC") {
@@ -490,7 +490,7 @@ export default {
               endTime: this.endTime,
               data: e.plugin.data,
               renderer: this.app.renderer,
-              resolution: 0.01,
+              resolution: 0.1,
             });
           }
           if (e.visualization == "SL") {
@@ -501,7 +501,7 @@ export default {
               endTime: this.endTime,
               data: e.plugin.data,
               renderer: this.app.renderer,
-              resolution: 0.01,
+              resolution: 0.1,
             });
           }
           if (e.visualization == "H") {

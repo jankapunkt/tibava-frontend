@@ -131,6 +131,32 @@ export default {
           ],
         },
         {
+          name: this.$t("modal.plugin.facedetection"),
+          icon: "mdi-face-recognition",
+          plugin: "insightface_detection",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.facedetection"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+        },
+        {
+          name: this.$t("modal.plugin.faceemotion"),
+          icon: "mdi-emoticon-happy-outline",
+          plugin: "deepface_emotion",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.faceemotion"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+        },
+        {
           name: this.$t("modal.plugin.color_analysis.name"),
           icon: "mdi-palette",
           plugin: "color_analysis",
@@ -145,7 +171,7 @@ export default {
               field: "slider",
               min: 1,
               max: 8,
-              value: 4,
+              value: 1,
               step: 1,
               name: "k",
               text: this.$t("modal.plugin.color_analysis.slider"),
