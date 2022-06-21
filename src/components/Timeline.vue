@@ -616,8 +616,18 @@ export default {
     },
   },
   watch: {
-    duration() {
-      this.draw();
+    duration(value) {
+      // this.draw();
+      console.log(value);
+      this.timelineObjects.forEach((e) => {
+        e.endTime = value;
+      });
+      this.timeScaleObjects.forEach((e) => {
+        e.endTime = value;
+      });
+      this.timeBarsObjects.forEach((e) => {
+        e.endTime = value;
+      });
     },
     startTime(value) {
       this.timelineObjects.forEach((e) => {
@@ -685,7 +695,6 @@ export default {
   },
   mounted() {
     this.containerWidth = this.$refs.container.clientWidth;
-    console.log(this.containerWidth);
     this.app = new PIXI.Application({
       width: this.containerWidth,
       height: this.containerHeight,

@@ -5,14 +5,14 @@ import palette from "google-palette";
 // import { magma, seismic, jet } from "./palette.js";
 
 var colors = palette("tol-dv", 101);
-console.log(PIXI.utils.hex2string(scalarToHex(1.0, false)));
+// console.log(PIXI.utils.hex2string(scalarToHex(1.0, false)));
 
 export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-    0.587 * Math.pow(rgb[1], 2) +
-    0.114 * Math.pow(rgb[2], 2)
+      0.587 * Math.pow(rgb[1], 2) +
+      0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -207,7 +207,7 @@ export class Timeline extends PIXI.Container {
   timeToX(time) {
     return this.timeScale * (time - this.pStartTime);
   }
-  scaleContainer() { }
+  scaleContainer() {}
   get timeScale() {
     return this.pWidth / (this.pEndTime - this.pStartTime);
   }
@@ -263,7 +263,12 @@ export class ColorTimeline extends Timeline {
     this.pData.time.forEach((t, i) => {
       let color = PIXI.utils.rgb2hex(this.pData.colors[i]);
       colorRects.beginFill(color);
-      colorRects.drawRect(prevX, 0, t / resolution, this.pHeight);
+      colorRects.drawRect(
+        t / resolution,
+        0,
+        (t + this.pData.delta_time) / resolution,
+        this.pHeight
+      );
       prevX = t / resolution;
     });
 
@@ -325,7 +330,12 @@ export class ScalarColorTimeline extends Timeline {
     this.pData.time.forEach((t, i) => {
       let color = scalarToHex(this.pData.y[i]);
       colorRects.beginFill(color);
-      colorRects.drawRect(prevX, 0, t / resolution, this.pHeight);
+      colorRects.drawRect(
+        t / resolution,
+        0,
+        (t + this.pData.delta_time) / resolution,
+        this.pHeight
+      );
       prevX = t / resolution;
     });
 
@@ -460,7 +470,7 @@ export class HistTimeline extends Timeline {
         let color = scalarToHex(this.pData.hist[i][j]);
         colorRects.beginFill(color);
         colorRects.drawRect(prevX, startY, t / resolution, stopY);
-      })
+      });
       prevX = t / resolution;
     });
 
