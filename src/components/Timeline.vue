@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" style="width: 100%; min-height: 100px">
+  <div style="width: 100%; min-height: 100px">
     <v-row>
       <v-col cols="2" style="margin: 0; padding: 0">
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
@@ -88,7 +88,7 @@
         </DraggableTree>
       </v-col>
 
-      <v-col cols="10" style="margin: 0; padding: 0">
+      <v-col ref="container" cols="10" style="margin: 0; padding: 0">
         <canvas style="width: 100%" ref="canvas" resize> </canvas>
       </v-col>
     </v-row>
@@ -567,16 +567,10 @@ export default {
       }
     },
     timeToX(time) {
-      return (
-        this.headerWidth +
-        3 * this.gap +
-        this.timeScale * (time - this.startTime)
-      );
+      return this.timeScale * (time - this.startTime);
     },
     xToTime(x) {
-      return (
-        (x - this.headerWidth - 3 * this.gap) / this.timeScale + this.startTime
-      );
+      return x / this.timeScale + this.startTime;
     },
     mapToGlobal(point) {
       const screenRect = this.app.screen;
@@ -679,10 +673,7 @@ export default {
   },
   computed: {
     timeScale() {
-      return (
-        (this.containerWidth - this.headerWidth - 5 * this.gap) /
-        (this.endTime - this.startTime)
-      );
+      return this.containerWidth / (this.endTime - this.startTime);
     },
     computedHeight() {
       return (
@@ -694,6 +685,7 @@ export default {
   },
   mounted() {
     this.containerWidth = this.$refs.container.clientWidth;
+    console.log(this.containerWidth);
     this.app = new PIXI.Application({
       width: this.containerWidth,
       height: this.containerHeight,
