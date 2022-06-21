@@ -25,12 +25,11 @@
         },
         "plugin": {
             "title": "Plugins",
+            "close": "close",
             "audio": {
                 "waveform": "Audio Waveform Analysis",
                 "frequency": "Audio Frequency Analysis"
             },
-            "shot_detection": "Shot Boundary Detection",
-            "shot_type_classification": "Camera Setting",
             "color_analysis": {
                 "name": "Color Analysis",
                 "slider": "Number of dominant colors",
@@ -38,10 +37,14 @@
                 "singletimeline": "Single Timeline",
                 "multipletimelines": "Individual Timelines"
             },
-            "thumbnail": "Thumbnail Generation",
-            "timeline_name": "Timeline Name",
+            "facedetection": "Face Detection",
+            "faceemotion": "Face Emotion",
+            "facesize": "Face Size",
             "run": "OK",
-            "close": "close"
+            "shot_detection": "Shot Boundary Detection",
+            "shot_type_classification": "Shot Size",
+            "timeline_name": "Timeline Name",
+            "thumbnail": "Thumbnail Generation"
         },
         "shortcut": {
             "title": "Shortcuts",

@@ -130,15 +130,28 @@ export default {
             },
           ],
         },
+        // {
+        //   name: this.$t("modal.plugin.facedetection"),
+        //   icon: "mdi-face-recognition",
+        //   plugin: "insightface_detection",
+        //   parameters: [
+        //     {
+        //       field: "text_field",
+        //       name: "timeline",
+        //       value: this.$t("modal.plugin.facedetection"),
+        //       text: this.$t("modal.plugin.timeline_name"),
+        //     },
+        //   ],
+        // },
         {
-          name: this.$t("modal.plugin.facedetection"),
+          name: this.$t("modal.plugin.facesize"),
           icon: "mdi-face-recognition",
-          plugin: "insightface_detection",
+          plugin: "insightface_facesize",
           parameters: [
             {
               field: "text_field",
               name: "timeline",
-              value: this.$t("modal.plugin.facedetection"),
+              value: this.$t("modal.plugin.facesize"),
               text: this.$t("modal.plugin.timeline_name"),
             },
           ],
