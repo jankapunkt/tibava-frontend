@@ -6,8 +6,6 @@ import i18n from '@/plugins/i18n';
 
 import './styles/custom.css';
 
-import Router from "vue-router";
-
 import { createPinia, PiniaVuePlugin } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { useUserStore } from "@/store/user"
@@ -17,9 +15,10 @@ Vue.use(PiniaVuePlugin)
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
-Vue.use(Router)
+
 
 import router from '@/router';
+
 var app = Vue.extend({
 
   async created() {
@@ -56,16 +55,18 @@ new app({
   render: h => h(App),
 }).$mount('#app')
 
-console.log("init done")
+import Router from "vue-router";
+Vue.use(Router)
+// console.log("init done")
 
-router.beforeEach(async (to, from, next) => {
-  console.log("router")
-  const userStore = useUserStore()
+// router.beforeEach(async (to, from, next) => {
+//   console.log("router")
+//   const userStore = useUserStore()
 
-  const loggedIn = userStore.state.loggedIn;
-  console.log(loggedIn);
-  if (!loggedIn && to.name !== "Login") {
-    return router.push({ path: `/login`, query: { redirect: to.path } });
-  }
-  return next()
-})
+//   const loggedIn = userStore.loggedIn;
+//   console.log(loggedIn);
+//   if (!loggedIn && to.name !== "Login") {
+//     return router.push({ path: `/login`, query: { redirect: to.path } });
+//   }
+//   return next()
+// })

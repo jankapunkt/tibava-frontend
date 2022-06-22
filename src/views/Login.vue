@@ -60,6 +60,8 @@
 <script>
 import router from "../router";
 import UserRegister from "@/components/UserRegister.vue";
+import { mapStores } from "pinia";
+import { useUserStore } from "@/store/user";
 
 export default {
   data() {
@@ -74,7 +76,7 @@ export default {
   },
   methods: {
     async login() {
-      const loggedIn = await this.$store.dispatch("user/login", this.user);
+      const loggedIn = await this.userStore.login(this.user);
       if (loggedIn) {
         this.$router.push(this.$route.query.redirect || "/");
       }
@@ -110,6 +112,7 @@ export default {
 
       return true;
     },
+    ...mapStores(useUserStore),
   },
   watch: {
     dialog(value) {

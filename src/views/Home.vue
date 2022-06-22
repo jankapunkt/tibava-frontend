@@ -49,8 +49,10 @@
 import router from "../router";
 import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
 import TimeMixin from "../mixins/time";
-import { mapStores } from 'pinia'
-import { videoStore } from "@/store/video.js"
+import { mapStores } from "pinia";
+import { useVideoStore } from "@/store/video.js";
+import { useUserStore } from "@/store/user.js";
+import { usePluginRunStore } from "@/store/plugin_run.js";
 
 export default {
   mixins: [TimeMixin],
@@ -68,26 +70,26 @@ export default {
     },
     async fetchData() {
       // Ask backend about all videos
-      await this.$store.dispatch("video/listUpdate");
+      await this.videoStore.list();
 
-      await this.$store.dispatch("pluginRun/listUpdate", {
-        addResults: false,
-      });
+      // await this.$store.dispatch("pluginRun/listUpdate", {
+      //   addResults: false,
+      // });
     },
   },
   computed: {
     videos() {
-      let videos = this.$store.getters["video/all"];
-
+      let videos = this.videoStore.all;
+      console.log(videos);
       videos.forEach((v) => {
-        v.pluginRuns = this.$store.getters["pluginRun/forVideo"](v.id);
+        v.pluginRuns = this.pluginRunStore.pluginRunByVideoId(v.id);
       });
-      videos.forEach((v) => {
-        v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);
-      });
+      // videos.forEach((v) => {
+      //   v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);
+      // });
       return videos;
     },
-    ...mapStores(videoStore)
+    ...mapStores(useVideoStore, usePluginRunStore),
   },
   components: {
     ModalVideoUpload,
@@ -103,6 +105,17 @@ export default {
     );
   },
 
+  // TODO rwrite everything
+  beforeRouteEnter(to, from, next) {
+    next(() => {
+      const userStore = useUserStore();
+
+      const loggedIn = userStore.loggedIn;
+      if (!loggedIn && to.name !== "Login") {
+        return router.push({ path: `/login`, query: { redirect: to.path } });
+      }
+    });
+  },
   beforeRouteLeave(to, from, next) {
     clearInterval(this.fetchTimer);
     next(true);

@@ -27,9 +27,9 @@ import ModalExport from "@/components/ModalExport.vue";
 import ModalPlugin from "@/components/ModalPlugin.vue";
 import ModalShortcut from "@/components/ModalShortcut.vue";
 
-import { mapStores } from 'pinia'
-import { useUserStore } from "@/store/user"
-import { usePlayerStore } from "@/store/player"
+import { mapStores } from "pinia";
+import { useUserStore } from "@/store/user";
+import { useVideoStore } from "@/store/video";
 
 export default {
   data() {
@@ -39,14 +39,14 @@ export default {
   },
   computed: {
     video() {
-      const video = this.playerStore.video;
+      const video = this.videoStore.current;
       return video;
     },
     loggedIn() {
       return this.userStore.loggedIn;
     },
 
-    ...mapStores(useUserStore, usePlayerStore)
+    ...mapStores(useUserStore, useVideoStore),
   },
   components: {
     ModalExport,

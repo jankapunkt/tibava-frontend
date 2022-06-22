@@ -146,6 +146,10 @@ import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
 
+import { mapStores } from "pinia";
+import { useVideoStore } from "@/store/video";
+import { usePlayerStore } from "@/store/player";
+
 export default {
   data() {
     return {
@@ -445,14 +449,12 @@ export default {
       this.annotations = annotations;
     },
     async fetch() {
-      await this.$store.dispatch("video/fetch", {
-        videoId: this.$route.params.id,
-      });
+      await this.videoStore.fetch({ videoId: this.$route.params.id });
     },
   },
   computed: {
     duration() {
-      let duration = this.$store.state.video.current.duration;
+      let duration = this.playerStore.duration;
       return duration;
     },
     annotationCategories() {
@@ -495,9 +497,7 @@ export default {
       return shortcutAnnotationMap;
     },
     timelines() {
-      return this.$store.getters["timeline/forVideo"](
-        this.$route.params.id
-      );
+      return this.$store.getters["timeline/forVideo"](this.$route.params.id);
     },
     segmentsAnnotations() {
       let segmentsAnnotations = [];
@@ -681,6 +681,8 @@ export default {
       });
       return results;
     },
+
+    ...mapStores(useVideoStore, usePlayerStore),
   },
   created() {
     // fetch the data when the view is created and the data is
