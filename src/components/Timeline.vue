@@ -318,8 +318,6 @@ export default {
   methods: {
     nodeOpenChanged(node) {
       // on a node is closed or open(node)
-      // TODO set visibible attribute of each timeline
-      console.log(node);
       this.$store.dispatch("timeline/setcollapse", {
         timelineId: node.id,
         collapse: !node.open,
@@ -423,14 +421,18 @@ export default {
           return false;
         }
 
-        let parent = self.$store.getters["timeline/get"](e.parent_id);
-        console.log(parent);
+        let parent_id = e.parent_id;
 
-        if (!parent.collapse) {
-          return false;
+        while (parent_id != null) {
+          let parent = self.$store.getters["timeline/get"](parent_id);
+          console.log(parent);
+          parent_id = parent.parent_id;
+          if (parent.collapse) {
+            return true;
+          }
         }
 
-        return true;
+        return false;
       }
 
       this.timelinesContainer = new PIXI.Container();
@@ -646,7 +648,6 @@ export default {
   watch: {
     duration(value) {
       // this.draw();
-      console.log(value);
       this.timelineObjects.forEach((e) => {
         e.endTime = value;
       });
@@ -697,7 +698,6 @@ export default {
         return hierarchy;
       }
       this.timelineHierarchy = findChildren(values, null);
-      console.log(this.timelines);
       this.draw();
     },
     time(value) {
