@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%; min-height: 100px">
     <v-row>
-      <v-col cols="2" style="margin: 0; padding: 0">
+      <v-col cols="3" style="margin: 0px; padding: 0px; padding-right: 10px">
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
@@ -52,7 +52,17 @@
                   @click="store.toggleOpen(data)"
                   >{{ data.open ? "mdi-minus" : "mdi-plus" }}</v-icon
                 >
-                <v-app-bar-title>{{ data.text }}</v-app-bar-title>
+                <!-- <v-tooltip top>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-app-bar-title v-bind="attrs" v-on="on">
+                      {{ data.text }}
+                    </v-app-bar-title>
+                  </template>
+                  <span>{{ data.text }}</span>
+                </v-tooltip> -->
+                <v-app-bar-title>
+                  {{ data.text }}
+                </v-app-bar-title>
 
                 <v-spacer></v-spacer>
 
@@ -88,7 +98,7 @@
         </DraggableTree>
       </v-col>
 
-      <v-col ref="container" cols="10" style="margin: 0; padding: 0">
+      <v-col ref="container" cols="9" style="margin: 0; padding: 0">
         <canvas style="width: 100%" ref="canvas" resize> </canvas>
       </v-col>
     </v-row>
@@ -175,16 +185,13 @@ import {
   ColorTimeline,
   ScalarLineTimeline,
   ScalarColorTimeline,
-  TimelineHeader,
   TimeScale,
   TimeBar,
   HistTimeline,
-  Button,
 } from "../plugins/draw";
-import paper from "paper";
 
 import * as PIXI from "pixi.js";
-import { DropShadowFilter } from "pixi-filters";
+import { NoiseFilter } from "@pixi/filter-noise";
 
 export default {
   mixins: [TimeMixin],
@@ -236,7 +243,6 @@ export default {
         };
       },
     },
-
     timeStyle: {
       type: Object,
       default: () => {
@@ -259,7 +265,6 @@ export default {
         };
       },
     },
-
     segmentStyle: {
       type: Object,
       default: () => {
@@ -314,6 +319,11 @@ export default {
     nodeOpenChanged(node) {
       // on a node is closed or open(node)
       // TODO set visibible attribute of each timeline
+      console.log(node);
+      this.$store.dispatch("timeline/setcollapse", {
+        timelineId: node.id,
+        collapse: !node.open,
+      });
     },
     change(node, targetTree, oldTree) {
       // after drop, only when the node position changed
@@ -407,123 +417,141 @@ export default {
         this.app.stage.removeChild(this.timelinesContainer);
       }
 
+      let self = this;
+      function parentCollapsed(e) {
+        if (!e.parent_id) {
+          return false;
+        }
+
+        let parent = self.$store.getters["timeline/get"](e.parent_id);
+        console.log(parent);
+
+        if (!parent.collapse) {
+          return false;
+        }
+
+        return true;
+      }
+
       this.timelinesContainer = new PIXI.Container();
       this.timelineObjects = [];
-      this.timelines.forEach((e, i) => {
-        const x = this.timeToX(startTime);
-        const y =
-          (this.gap + this.timelineHeight) * i +
-          this.scaleHeight +
-          2 * this.gap;
-        const width = this.timeToX(this.endTime) - x;
-        const height = this.timelineHeight;
-        var timeline = null;
+      this.timelines
+        .filter((e) => !parentCollapsed(e))
+        .forEach((e, i) => {
+          const x = this.timeToX(startTime);
+          const y =
+            (this.gap + this.timelineHeight) * i +
+            this.scaleHeight +
+            2 * this.gap;
+          const width = this.timeToX(this.endTime) - x;
+          const height = this.timelineHeight;
+          var timeline = null;
 
-        if (e.type == "A") {
-          timeline = new AnnotationTimeline(
-            e,
-            width,
-            height,
-            this.startTime,
-            this.endTime
-          );
+          if (e.type == "A") {
+            timeline = new AnnotationTimeline(
+              e,
+              width,
+              height,
+              this.startTime,
+              this.endTime
+            );
 
-          timeline.x = x;
-          timeline.y = y;
-          timeline.on("segmentRightDown", (ev) => {
-            const point = this.mapToGlobal(ev.event.data.global);
-            this.segmentMenu.show = true;
-            this.segmentMenu.x = point.x;
-            this.segmentMenu.y = point.y;
-            this.segmentMenu.selected = ev.segment.segment.id;
-            this.$nextTick(() => {
-              this.showMenu = true;
-            });
-          });
-          timeline.on("segmentClick", (ev) => {
-            if (ev.event.data.originalEvent.ctrlKey) {
-              this.$emit("addSelection", ev.segment.segment.id);
-            } else {
-              this.$emit("select", ev.segment.segment.id);
-            }
-            const targetTime = this.xToTime(ev.event.data.global.x);
-            this.$emit("update:time", targetTime);
-          });
-          timeline.on("segmentOver", (ev) => {
-            if (ev.segment.segment.annotations.length > 0) {
-              const tooltipPoint = {
-                x: ev.event.data.global.x,
-                y: ev.segment.y,
-              };
-              const point = this.mapToGlobal(tooltipPoint);
-              this.segmentContext.show = true;
-              this.segmentContext.x = point.x;
-              this.segmentContext.y = point.y;
-              this.segmentContext.selected = ev.segment.segment.id;
-
-              const annotations = ev.segment.segment.annotations.map((e) => {
-                return e.annotation.name;
+            timeline.x = x;
+            timeline.y = y;
+            timeline.on("segmentRightDown", (ev) => {
+              const point = this.mapToGlobal(ev.event.data.global);
+              this.segmentMenu.show = true;
+              this.segmentMenu.x = point.x;
+              this.segmentMenu.y = point.y;
+              this.segmentMenu.selected = ev.segment.segment.id;
+              this.$nextTick(() => {
+                this.showMenu = true;
               });
-              this.segmentContext.label = annotations.join("; ");
-            }
-          });
-          timeline.on("segmentOut", (ev) => {
-            this.segmentContext.show = false;
-          });
-        } else if (e.type == "R" && "plugin" in e) {
-          if (e.visualization == "C") {
-            timeline = new ColorTimeline({
-              width: width,
-              height: height,
-              startTime: this.startTime,
-              endTime: this.endTime,
-              data: e.plugin.data,
-              renderer: this.app.renderer,
-              resolution: 0.1,
             });
-          }
-          if (e.visualization == "SC") {
-            timeline = new ScalarColorTimeline({
-              width: width,
-              height: height,
-              startTime: this.startTime,
-              endTime: this.endTime,
-              data: e.plugin.data,
-              renderer: this.app.renderer,
-              resolution: 0.1,
+            timeline.on("segmentClick", (ev) => {
+              if (ev.event.data.originalEvent.ctrlKey) {
+                this.$emit("addSelection", ev.segment.segment.id);
+              } else {
+                this.$emit("select", ev.segment.segment.id);
+              }
+              const targetTime = this.xToTime(ev.event.data.global.x);
+              this.$emit("update:time", targetTime);
             });
-          }
-          if (e.visualization == "SL") {
-            timeline = new ScalarLineTimeline({
-              width: width,
-              height: height,
-              startTime: this.startTime,
-              endTime: this.endTime,
-              data: e.plugin.data,
-              renderer: this.app.renderer,
-              resolution: 0.1,
-            });
-          }
-          if (e.visualization == "H") {
-            timeline = new HistTimeline({
-              width: width,
-              height: height,
-              startTime: this.startTime,
-              endTime: this.endTime,
-              data: e.plugin.data,
-              renderer: this.app.renderer,
-              resolution: 0.1,
-            });
-          }
-        }
+            timeline.on("segmentOver", (ev) => {
+              if (ev.segment.segment.annotations.length > 0) {
+                const tooltipPoint = {
+                  x: ev.event.data.global.x,
+                  y: ev.segment.y,
+                };
+                const point = this.mapToGlobal(tooltipPoint);
+                this.segmentContext.show = true;
+                this.segmentContext.x = point.x;
+                this.segmentContext.y = point.y;
+                this.segmentContext.selected = ev.segment.segment.id;
 
-        if (timeline) {
-          timeline.x = x;
-          timeline.y = y;
-          this.timelinesContainer.addChild(timeline);
-          this.timelineObjects.push(timeline);
-        }
-      });
+                const annotations = ev.segment.segment.annotations.map((e) => {
+                  return e.annotation.name;
+                });
+                this.segmentContext.label = annotations.join("; ");
+              }
+            });
+            timeline.on("segmentOut", (ev) => {
+              this.segmentContext.show = false;
+            });
+          } else if (e.type == "R" && "plugin" in e) {
+            if (e.visualization == "C") {
+              timeline = new ColorTimeline({
+                width: width,
+                height: height,
+                startTime: this.startTime,
+                endTime: this.endTime,
+                data: e.plugin.data,
+                renderer: this.app.renderer,
+                resolution: 0.1,
+              });
+            }
+            if (e.visualization == "SC") {
+              timeline = new ScalarColorTimeline({
+                width: width,
+                height: height,
+                startTime: this.startTime,
+                endTime: this.endTime,
+                data: e.plugin.data,
+                renderer: this.app.renderer,
+                resolution: 0.1,
+              });
+            }
+            if (e.visualization == "SL") {
+              timeline = new ScalarLineTimeline({
+                width: width,
+                height: height,
+                startTime: this.startTime,
+                endTime: this.endTime,
+                data: e.plugin.data,
+                renderer: this.app.renderer,
+                resolution: 0.1,
+              });
+            }
+            if (e.visualization == "H") {
+              timeline = new HistTimeline({
+                width: width,
+                height: height,
+                startTime: this.startTime,
+                endTime: this.endTime,
+                data: e.plugin.data,
+                renderer: this.app.renderer,
+                resolution: 0.1,
+              });
+            }
+          }
+
+          if (timeline) {
+            timeline.x = x;
+            timeline.y = y;
+            this.timelinesContainer.addChild(timeline);
+            this.timelineObjects.push(timeline);
+          }
+        });
       this.app.stage.addChild(this.timelinesContainer);
     },
     drawSelection(selectedTimelineSegment) {
@@ -662,6 +690,7 @@ export default {
               text: e.name,
               children: children,
               type: e.type,
+              open: !e.collapse,
             });
           }
         });

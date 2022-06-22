@@ -234,6 +234,20 @@ const api = {
           }
         });
     },
+    async setcollapse({ commit }, { timelineId, collapse }) {
+      let params = {
+        timelineId: timelineId,
+        collapse: collapse,
+      };
+      console.log(timelineId, collapse);
+      return axios
+        .post(`${config.API_LOCATION}/timeline/setcollapse`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+            commit("setcollapse", { timelineId, collapse });
+          }
+        });
+    },
     async setorder({ commit }, { order }) {
       let params = {
         order: order,
@@ -279,6 +293,11 @@ const api = {
     setparent(state, args) {
       const newTimelines = { ...state.timelines };
       newTimelines[args.timelineId].parent_id = args.parentId;
+      Vue.set(state, "timelines", newTimelines);
+    },
+    setcollapse(state, args) {
+      const newTimelines = { ...state.timelines };
+      newTimelines[args.timelineId].collapse = args.collapse;
       Vue.set(state, "timelines", newTimelines);
     },
     setorder(state, args) {

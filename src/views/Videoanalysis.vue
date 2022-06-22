@@ -305,6 +305,9 @@ export default {
       console.log(id);
       this.$store.dispatch("timeline/setparent", id);
     },
+    onTimelineSetCollapse(id) {
+      this.$store.dispatch("timeline/setcollapse", id);
+    },
     onTimelineSetOrder(id) {
       this.$store.dispatch("timeline/setorder", id);
     },
