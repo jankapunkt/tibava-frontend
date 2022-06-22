@@ -495,47 +495,9 @@ export default {
       return shortcutAnnotationMap;
     },
     timelines() {
-      let timelines = this.$store.getters["timeline/forVideo"](
+      return this.$store.getters["timeline/forVideo"](
         this.$route.params.id
       );
-      timelines.forEach((e) => {
-        if (e.type == "A") {
-          let segments = this.$store.getters["timelineSegment/forTimeline"](
-            e.id
-          );
-          segments.forEach((s) => {
-            let annotations = this.$store.getters[
-              "timelineSegmentAnnotation/forTimelineSegment"
-            ](s.id);
-
-            annotations.forEach((a) => {
-              a.annotation = this.$store.getters["annotation/get"](
-                a.annotation_id
-              );
-            });
-
-            annotations.forEach((a) => {
-              a.category = this.$store.getters["annotationCategory/get"](
-                a.category_id
-              );
-            });
-            s.annotations = annotations;
-            if (annotations.length > 0) {
-            }
-          });
-          e.segments = segments;
-        }
-        if (e.type == "R" && "plugin_run_result_id" in e) {
-          const result = this.$store.getters["pluginRunResult/get"](
-            e.plugin_run_result_id
-          );
-          if (result) {
-            e.plugin = { data: result.data, type: result.type };
-          }
-        }
-      });
-
-      return timelines;
     },
     segmentsAnnotations() {
       let segmentsAnnotations = [];

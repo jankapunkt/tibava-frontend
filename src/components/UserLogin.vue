@@ -63,6 +63,9 @@
 <script>
 import UserRegister from "@/components/UserRegister.vue";
 
+import { userStore } from '@/store/user.js'
+
+
 export default {
   data() {
     return {

@@ -48,8 +48,9 @@
 <script>
 import router from "../router";
 import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
-
 import TimeMixin from "../mixins/time";
+import { mapStores } from 'pinia'
+import { videoStore } from "@/store/video.js"
 
 export default {
   mixins: [TimeMixin],
@@ -86,6 +87,7 @@ export default {
       });
       return videos;
     },
+    ...mapStores(videoStore)
   },
   components: {
     ModalVideoUpload,
