@@ -178,7 +178,6 @@ export class Timeline extends PIXI.Container {
     this.pStartTime = startTime;
     this.pEndTime = endTime;
     this.pDuration = duration;
-    console.log(`duration ${this.pDuration}`)
 
     // draw canvas
     this.pRect = new PIXI.Graphics()
@@ -316,7 +315,6 @@ export class ScalarColorTimeline extends Timeline {
   }
 
   renderGraph(renderer, resolution) {
-    console.log(this.pDuration)
     const renderWidth = Math.ceil(
       this.pDuration / resolution
     );
@@ -330,7 +328,6 @@ export class ScalarColorTimeline extends Timeline {
     const rt = new PIXI.RenderTexture(brt);
 
     const sprite = new PIXI.Sprite(rt);
-    var prevX = 0;
     let colorRects = new PIXI.Graphics();
     // fill with nothing
     let color = scalarToHex(0);
@@ -349,10 +346,9 @@ export class ScalarColorTimeline extends Timeline {
       colorRects.drawRect(
         t / resolution,
         0,
-        (t + this.pData.delta_time) / resolution,
+        (this.pData.delta_time) / resolution,
         this.pHeight
       );
-      prevX = t / resolution;
     });
 
     renderer.render(colorRects, rt);
@@ -399,8 +395,9 @@ export class ScalarLineTimeline extends Timeline {
 
   renderGraph(renderer, resolution) {
     const renderWidth = Math.ceil(
-      (this.pDataMaxTime - this.pDataMinTime) / resolution
+      this.pDuration / resolution
     );
+
 
     const brt = new PIXI.BaseRenderTexture(
       renderWidth,
@@ -413,16 +410,14 @@ export class ScalarLineTimeline extends Timeline {
     const sprite = new PIXI.Sprite(rt);
 
     const path = new PIXI.Graphics().lineStyle(1, 0xae1313, 1);
-    if (this.pData.time.length > 0) {
-      path.moveTo(
-        this.pData.time[0] / resolution,
-        this.pData.y[0] * this.pHeight
-      );
-    }
+
     this.pData.time.forEach((t, i) => {
-      path.lineTo(t / resolution, this.pData.y[i] * this.pHeight);
+      if (i == 0) {
+        path.moveTo(t / resolution, this.pHeight - this.pData.y[i] * this.pHeight
+        );
+      }
+      path.lineTo(t / resolution, this.pHeight - this.pData.y[i] * this.pHeight);
     });
-    path.closePath();
 
     renderer.render(path, rt);
     return sprite;
@@ -431,9 +426,9 @@ export class ScalarLineTimeline extends Timeline {
   scaleContainer() {
     if (this.path) {
       const width =
-        this.timeToX(this.pData.time[this.pData.time.length - 1]) -
-        this.timeToX(this.pData.time[0]);
-      const x = this.timeToX(this.pData.time[0]);
+        this.timeToX(this.pDuration) -
+        this.timeToX(0);
+      const x = this.timeToX(0);
       this.path.x = x;
       this.path.width = width;
     }
