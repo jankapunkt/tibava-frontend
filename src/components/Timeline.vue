@@ -196,6 +196,10 @@ import { NoiseFilter } from "@pixi/filter-noise";
 export default {
   mixins: [TimeMixin],
   props: {
+    duration:{
+      type: Number,
+      default: 0,
+    },
     time: {
       type: Number,
     },
@@ -455,7 +459,8 @@ export default {
               width,
               height,
               this.startTime,
-              this.endTime
+              this.endTime,
+              this.duration,
             );
 
             timeline.x = x;
@@ -501,12 +506,14 @@ export default {
               this.segmentContext.show = false;
             });
           } else if (e.type == "R" && "plugin" in e) {
+            console.log(this.duration)
             if (e.visualization == "C") {
               timeline = new ColorTimeline({
                 width: width,
                 height: height,
                 startTime: this.startTime,
                 endTime: this.endTime,
+                duration: this.duration,
                 data: e.plugin.data,
                 renderer: this.app.renderer,
                 resolution: 0.1,
@@ -518,6 +525,7 @@ export default {
                 height: height,
                 startTime: this.startTime,
                 endTime: this.endTime,
+                duration: this.duration,
                 data: e.plugin.data,
                 renderer: this.app.renderer,
                 resolution: 0.1,
@@ -529,6 +537,7 @@ export default {
                 height: height,
                 startTime: this.startTime,
                 endTime: this.endTime,
+                duration: this.duration,
                 data: e.plugin.data,
                 renderer: this.app.renderer,
                 resolution: 0.1,
@@ -540,6 +549,7 @@ export default {
                 height: height,
                 startTime: this.startTime,
                 endTime: this.endTime,
+                duration: this.duration,
                 data: e.plugin.data,
                 renderer: this.app.renderer,
                 resolution: 0.1,
@@ -647,7 +657,10 @@ export default {
   },
   watch: {
     duration(value) {
+      console.log("duration")
+      console.log(value)
       // this.draw();
+
       this.timelineObjects.forEach((e) => {
         e.endTime = value;
       });

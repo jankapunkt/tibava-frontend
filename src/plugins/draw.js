@@ -11,8 +11,8 @@ export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-      0.587 * Math.pow(rgb[1], 2) +
-      0.114 * Math.pow(rgb[2], 2)
+    0.587 * Math.pow(rgb[1], 2) +
+    0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -171,12 +171,14 @@ export class AnnotationSegment extends PIXI.Container {
 }
 
 export class Timeline extends PIXI.Container {
-  constructor(width, height, startTime = 0, endTime = 10, fill = 0xffffff) {
+  constructor(width, height, startTime = 0, endTime = 10, duration = 10, fill = 0xffffff) {
     super();
     this.pWidth = width;
     this.pHeight = height;
     this.pStartTime = startTime;
     this.pEndTime = endTime;
+    this.pDuration = duration;
+    console.log(`duration ${this.pDuration}`)
 
     // draw canvas
     this.pRect = new PIXI.Graphics()
@@ -207,7 +209,7 @@ export class Timeline extends PIXI.Container {
   timeToX(time) {
     return this.timeScale * (time - this.pStartTime);
   }
-  scaleContainer() {}
+  scaleContainer() { }
   get timeScale() {
     return this.pWidth / (this.pEndTime - this.pStartTime);
   }
@@ -227,12 +229,13 @@ export class ColorTimeline extends Timeline {
     height = 10,
     startTime = 0,
     endTime = 10,
+    duration = 10,
     data = null,
     fill = 0xffffff,
     renderer = null,
     resolution = 0.01,
   }) {
-    super(width, height, startTime, endTime, fill);
+    super(width, height, startTime, endTime, duration, fill);
 
     this.pData = data;
 
@@ -294,12 +297,13 @@ export class ScalarColorTimeline extends Timeline {
     height = 10,
     startTime = 0,
     endTime = 10,
+    duration = 10,
     data = null,
     fill = 0xffffff,
     renderer = null,
     resolution = 0.01,
   }) {
-    super(width, height, startTime, endTime, fill);
+    super(width, height, startTime, endTime, duration, fill);
 
     this.pData = data;
 
@@ -312,8 +316,9 @@ export class ScalarColorTimeline extends Timeline {
   }
 
   renderGraph(renderer, resolution) {
+    console.log(this.pDuration)
     const renderWidth = Math.ceil(
-      (this.pDataMaxTime - this.pDataMinTime) / resolution
+      this.pDuration / resolution
     );
 
     const brt = new PIXI.BaseRenderTexture(
@@ -327,6 +332,17 @@ export class ScalarColorTimeline extends Timeline {
     const sprite = new PIXI.Sprite(rt);
     var prevX = 0;
     let colorRects = new PIXI.Graphics();
+    // fill with nothing
+    let color = scalarToHex(0);
+    colorRects.beginFill(color);
+    colorRects.drawRect(
+      0,
+      0,
+      renderWidth,
+      this.pHeight
+    );
+
+
     this.pData.time.forEach((t, i) => {
       let color = scalarToHex(this.pData.y[i]);
       colorRects.beginFill(color);
@@ -346,9 +362,9 @@ export class ScalarColorTimeline extends Timeline {
   scaleContainer() {
     if (this.cRects) {
       const width =
-        this.timeToX(this.pData.time[this.pData.time.length - 1]) -
-        this.timeToX(this.pData.time[0]);
-      const x = this.timeToX(this.pData.time[0]);
+        this.timeToX(this.pDuration) -
+        this.timeToX(0);
+      const x = this.timeToX(0);
       this.cRects.x = x;
       this.cRects.width = width;
     }
@@ -361,12 +377,13 @@ export class ScalarLineTimeline extends Timeline {
     height = 10,
     startTime = 0,
     endTime = 10,
+    duration = 10,
     data = null,
     fill = 0xffffff,
     renderer = null,
     resolution = 0.01,
   }) {
-    super(width, height, startTime, endTime, fill);
+    super(width, height, startTime, endTime, duration, fill);
 
     this.pData = data;
 
@@ -429,12 +446,13 @@ export class HistTimeline extends Timeline {
     height = 10,
     startTime = 0,
     endTime = 10,
+    duration = 10,
     data = null,
     fill = 0xffffff,
     renderer = null,
     resolution = 0.1,
   }) {
-    super(width, height, startTime, endTime, fill);
+    super(width, height, startTime, endTime, duration, fill);
 
     this.pData = data;
 
@@ -497,9 +515,10 @@ export class AnnotationTimeline extends Timeline {
     height,
     startTime = 0,
     endTime = 10,
+    duration = 10,
     fill = 0xffffff
   ) {
-    super(width, height, startTime, endTime, fill);
+    super(width, height, startTime, endTime, duration, fill);
     this.pTimeline = timeline;
     this.pSegmentList = [];
 
