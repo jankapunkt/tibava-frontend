@@ -12,7 +12,7 @@
         v-on:loadeddata="onLoadedData"
         v-on:canplay="onCanPlay"
         v-on:resize="onResize"
-        :src="video.url"
+        :src="playerStore.videoUrl"
       >
         <!-- <source :src="video.url" type="video/mp4" /> -->
       </video>
@@ -91,13 +91,11 @@
 <script>
 import TimeMixin from "../mixins/time";
 
+import { mapStores } from "pinia";
+import { usePlayerStore } from "@/store/player";
+
 export default {
   mixins: [TimeMixin],
-  model: {
-    prob: "time",
-    event: "timeUpdate",
-  },
-  props: ["video", "time"],
   data() {
     return {
       playing: false,
@@ -196,6 +194,10 @@ export default {
       }
       return Math.round(this.hiddenVolume * 100);
     },
+    time(){
+      return usePlayerStore.targetTime
+    },
+    ...mapStores(usePlayerStore),
   },
   watch: {
     time() {

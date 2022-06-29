@@ -8,13 +8,13 @@
 
     <v-list class="pa-0">
       <v-list-item-group>
-        <v-list-item v-if="video.id" class="px-0">
+        <v-list-item v-if="videoId" class="px-0">
           <ModalExport @close="menu = false" />
         </v-list-item>
-        <v-list-item v-if="video.id" class="px-0">
+        <v-list-item v-if="videoId" class="px-0">
           <ModalPlugin @close="menu = false" />
         </v-list-item>
-        <v-list-item v-if="video.id" class="px-0">
+        <v-list-item v-if="videoId" class="px-0">
           <ModalShortcut @close="menu = false" />
         </v-list-item>
       </v-list-item-group>
@@ -29,7 +29,7 @@ import ModalShortcut from "@/components/ModalShortcut.vue";
 
 import { mapStores } from "pinia";
 import { useUserStore } from "@/store/user";
-import { useVideoStore } from "@/store/video";
+import { usePlayerStore } from "@/store/player";
 
 export default {
   data() {
@@ -38,15 +38,15 @@ export default {
     };
   },
   computed: {
-    video() {
-      const video = this.videoStore.current;
-      return video;
+    videoId() {
+      const videoId = this.playerStore.videoId;
+      return videoId;
     },
     loggedIn() {
       return this.userStore.loggedIn;
     },
 
-    ...mapStores(useUserStore, useVideoStore),
+    ...mapStores(useUserStore, usePlayerStore),
   },
   components: {
     ModalExport,
