@@ -206,11 +206,12 @@ const api = {
       };
       console.log(timelineId);
       console.log(params);
+
+      commit("changevisualization", { timelineId, visualization });
       return axios
         .post(`${config.API_LOCATION}/timeline/changevisualization`, params)
         .then((res) => {
           if (res.data.status === "ok") {
-            commit("changevisualization", { timelineId, visualization });
           }
         });
     },
@@ -226,11 +227,11 @@ const api = {
 
       console.log(timelineId);
       console.log(params);
+      commit("setparent", { timelineId, parentId });
       return axios
         .post(`${config.API_LOCATION}/timeline/setparent`, params)
         .then((res) => {
           if (res.data.status === "ok") {
-            commit("setparent", { timelineId, parentId });
           }
         });
     },
@@ -240,11 +241,11 @@ const api = {
         collapse: collapse,
       };
       console.log(timelineId, collapse);
+      commit("setcollapse", { timelineId, collapse });
       return axios
         .post(`${config.API_LOCATION}/timeline/setcollapse`, params)
         .then((res) => {
           if (res.data.status === "ok") {
-            commit("setcollapse", { timelineId, collapse });
           }
         });
     },
@@ -253,11 +254,11 @@ const api = {
         order: order,
       };
       console.log(order);
+      commit("setorder", { order });
       return axios
         .post(`${config.API_LOCATION}/timeline/setorder`, params)
         .then((res) => {
           if (res.data.status === "ok") {
-            commit("setorder", { order });
           }
         });
     },
