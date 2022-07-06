@@ -112,6 +112,25 @@ export default {
           parameters: [],
         },
         {
+          name: this.$t("modal.plugin.clip.probability"),
+          icon: "mdi-eye",
+          plugin: "clip",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.clip.name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "text_field",
+              name: "search_term",
+              value:"",
+              text: this.$t("modal.plugin.clip.search_term"),
+            },
+          ],
+        },
+        {
           name: this.$t("modal.plugin.shot_detection"),
           icon: "mdi-arrow-expand-horizontal",
           plugin: "shotdetection",
