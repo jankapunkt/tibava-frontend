@@ -198,7 +198,7 @@ export default {
   props: {
     duration:{
       type: Number,
-      default: 0,
+      default: 5000,
     },
     time: {
       type: Number,
@@ -210,7 +210,7 @@ export default {
     },
     endTime: {
       type: Number,
-      default: 10,
+      default: 5000,
     },
     selectedTimelineSegment: {
       default: [],
@@ -656,43 +656,45 @@ export default {
     },
   },
   watch: {
-    duration(value) {
-      console.log("duration")
-      console.log(value)
-      // this.draw();
+    // duration(value) {
+    //   console.log("duration")
+    //   console.log(value)
 
-      this.timelineObjects.forEach((e) => {
-        e.endTime = value;
-      });
-      this.timeScaleObjects.forEach((e) => {
-        e.endTime = value;
-      });
-      this.timeBarsObjects.forEach((e) => {
-        e.endTime = value;
-      });
-    },
-    startTime(value) {
-      this.timelineObjects.forEach((e) => {
-        e.startTime = value;
-      });
-      this.timeScaleObjects.forEach((e) => {
-        e.startTime = value;
-      });
-      this.timeBarsObjects.forEach((e) => {
-        e.startTime = value;
-      });
-    },
-    endTime(value) {
-      this.timelineObjects.forEach((e) => {
-        e.endTime = value;
-      });
-      this.timeScaleObjects.forEach((e) => {
-        e.endTime = value;
-      });
-      this.timeBarsObjects.forEach((e) => {
-        e.endTime = value;
-      });
-    },
+    //   this.timelineObjects.forEach((e) => {
+    //     e.startTime = 0;
+    //     e.endTime = value;
+    //   });
+    //   this.timeScaleObjects.forEach((e) => {
+    //     e.startTime = 0;
+    //     e.endTime = value;
+    //   });
+    //   this.timeBarsObjects.forEach((e) => {
+    //     e.startTime = 0;
+    //     e.endTime = value;
+    //   });
+    // },
+    // startTime(value) {
+    //   this.timelineObjects.forEach((e) => {
+    //     e.startTime = value;
+    //   });
+    //   this.timeScaleObjects.forEach((e) => {
+    //     e.startTime = value;
+    //   });
+    //   this.timeBarsObjects.forEach((e) => {
+    //     e.startTime = value;
+    //   });
+    // },
+    // endTime(value) {
+    //   this.timelineObjects.forEach((e) => {
+    //     e.endTime = value;
+    //   });
+    //   this.timeScaleObjects.forEach((e) => {
+    //     e.endTime = value;
+    //   });
+    //   this.timeBarsObjects.forEach((e) => {
+    //     e.endTime = value;
+    //   });
+    // },
     timelines(values) {
       function findChildren(elem, parent) {
         var hierarchy = [];
@@ -713,11 +715,11 @@ export default {
       this.timelineHierarchy = findChildren(values, null);
       this.draw();
     },
-    time(value) {
-      this.timeBarsObjects.forEach((e) => {
-        e.time = value;
-      });
-    },
+    // time(value) {
+    //   this.timeBarsObjects.forEach((e) => {
+    //     e.time = value;
+    //   });
+    // },
     selectedTimelineSegment(newSelection, oldSelection) {
       this.removeSelection(oldSelection);
       this.drawSelection(newSelection);
@@ -764,6 +766,29 @@ export default {
           this.draw();
         }
       }
+
+      this.timelineObjects.forEach((e) => {
+        e.startTime = this.startTime;
+      });
+      this.timeScaleObjects.forEach((e) => {
+        e.startTime = this.startTime;
+      });
+      this.timeBarsObjects.forEach((e) => {
+        e.startTime = this.startTime;
+      });
+      this.timelineObjects.forEach((e) => {
+        e.endTime = this.endTime;
+      });
+      this.timeScaleObjects.forEach((e) => {
+        e.endTime = this.endTime;
+      });
+      this.timeBarsObjects.forEach((e) => {
+        e.endTime = this.endTime;
+      });
+
+      this.timeBarsObjects.forEach((e) => {
+        e.time = this.time;
+      });
     });
     this.draw();
   },
