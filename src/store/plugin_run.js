@@ -11,7 +11,7 @@ export const usePluginRunStore = defineStore('pluginRun', {
         }
     },
     getters: {
-        pluginRunByVideoId: (state) => {
+        forVideo: (state) => {
             return (videoId) => {
                 return state.pluginRunList.map(id => state.pluginRuns[id]).filter(e => e.video_id === videoId)
             }

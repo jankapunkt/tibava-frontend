@@ -573,13 +573,14 @@ export default {
 
     ...mapStores(useVideoStore, usePlayerStore, useShotStore),
   },
-  created() {
+  async created() {
     // fetch the data when the view is created and the data is
     // already being observed
     // this.fetch_data();
     // this.$store.dispatch('')
     
-    this.videoStore.loadVideo({ videoId: this.$route.params.id });
+    await this.videoStore.loadVideo({ videoId: this.$route.params.id });
+    this.shotStore.buildShots()
   },
   mounted() {
     this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;

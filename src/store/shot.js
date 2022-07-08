@@ -84,7 +84,7 @@ export const useShotStore = defineStore('shot', {
             ) {
                 thumbnail_dict = thumbnail.results[0].data.images.reduce(
                     (a, b) => (
-                        (a[b.time] = THUMBNAIL_LOCATION + `${b.id}.${b.ext}`), a
+                        (a[b.time] = config.THUMBNAIL_LOCATION + `/${b.id}.${b.ext}`), a
                     ),
                     {}
                 );
@@ -125,7 +125,7 @@ export const useShotStore = defineStore('shot', {
                     ],
                 };
             });
-            return results;
+            this.shots = results;
         }
     },
 })
