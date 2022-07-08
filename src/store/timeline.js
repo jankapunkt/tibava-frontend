@@ -56,24 +56,7 @@ export const useTimelineStore = defineStore('timeline', {
         },
     },
     actions: {
-        async listAdd(video_id) {
-            let params = {
-                id: video_id,
-            };
-            return axios
-                .get(`${config.API_LOCATION}/timeline/list`, { params })
-                .then((res) => {
-                    if (res.data.status === "ok") {
-                        commit("add", res.data.entries);
-                    }
-                });
-            // .catch((error) => {
-            //     const info = { date: Date(), error, origin: 'collection' };
-            //     commit('error/update', info, { root: true });
-            // });
-        },
-
-        async listUpdate({ videoId = null }) {
+        async fetchForVideo({ videoId = null }) {
             //use video id or take it from the current video
             let params = {};
             if (videoId) {
@@ -90,7 +73,7 @@ export const useTimelineStore = defineStore('timeline', {
                 .get(`${config.API_LOCATION}/timeline/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        commit("update", res.data.entries);
+                        this.replaceAll(res.data.entries);
                     }
                 });
             // .catch((error) => {
@@ -307,7 +290,7 @@ export const useTimelineStore = defineStore('timeline', {
                 this.timelineList.push(e.id);
             });
         },
-        updateAll(timelines) {
+        replaceAll(timelines) {
             this.timelines = {};
             this.timelineList = [];
             timelines.forEach((e, i) => {

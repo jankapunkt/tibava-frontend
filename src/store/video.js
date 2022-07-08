@@ -60,37 +60,37 @@ export const useVideoStore = defineStore('video', {
             const annotationShortcutStore = useAnnotationShortcutStore()
 
 
-            promises.push(playerStore.loadVideo({ videoId }));
+            promises.push(playerStore.fetchVideo({ videoId }));
             if (includeAnnotation) {
-                promises.push(annotationCategoryStore.loadForVideo({ videoId }));
-                promises.push(annotationStore.loadForVideo({ videoId }));
+                promises.push(annotationCategoryStore.fetchForVideo({ videoId }));
+                promises.push(annotationStore.fetchForVideo({ videoId }));
             }
             if (includeTimeline) {
-                promises.push(timelineStore.loadForVideo({ videoId }));
-                promises.push(timelineSegmentStore.loadForVideo({ videoId }));
-                promises.push(timelineSegmentAnnotation.loadForVideo({ videoId })
+                promises.push(timelineStore.fetchForVideo({ videoId }));
+                promises.push(timelineSegmentStore.fetchForVideo({ videoId }));
+                promises.push(timelineSegmentAnnotationStore.fetchForVideo({ videoId })
                 );
             }
-            // if (includeAnalyser) {
-            //     promises.push(
-            //         this.dispatch("pluginRun/listUpdate", {
-            //             videoId: videoId,
-            //             addResults: true,
-            //         })
-            //     );
-            //     promises.push(
-            //         this.dispatch("pluginRunResult/list", {
-            //             videoId: videoId,
-            //             addResults: true,
-            //         })
-            //     )
-            // }
-            // if (includeShortcut) {
-            //     promises.push(this.dispatch("shortcut/listUpdate", { videoId }));
-            //     promises.push(
-            //         this.dispatch("annotationShortcut/listUpdate", { videoId })
-            //     );
-            // }
+            if (includeAnalyser) {
+                promises.push(
+                    pluginRunStore.fetchForVideo({
+                        videoId: videoId,
+                        addResults: true,
+                    })
+                );
+                promises.push(
+                    pluginRunResultStore.fetchForVideo({
+                        videoId: videoId,
+                        addResults: true,
+                    })
+                )
+            }
+            if (includeShortcut) {
+                promises.push(shortcutStore.fetchForVideo({ videoId }));
+                promises.push(
+                    annotationShortcutStore.fetchForVideo({ videoId })
+                );
+            }
             return Promise.all(promises);
         },
         async list() {

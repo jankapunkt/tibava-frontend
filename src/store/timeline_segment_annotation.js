@@ -1,3 +1,6 @@
+import Vue from 'vue';
+import axios from '../plugins/axios';
+import config from '../../app.config';
 import { defineStore } from 'pinia'
 
 export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnnotation', {
@@ -123,7 +126,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             //     commit('error/update', info, { root: true });
             // });
         },
-        async loadTimelineSegmentAnnotation({ videoId }) {
+        async fetchForVideo({ videoId }) {
             let params = {};
             if (videoId) {
                 params.video_id = videoId;
@@ -140,18 +143,21 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        state.timelineSegmentAnnotations = {};
-                        state.timelineSegmentAnnotationList = [];
-                        res.data.entries.forEach((e, i) => {
-                            state.timelineSegmentAnnotations[e.id] = e;
-                            state.timelineSegmentAnnotationList.push(e.id);
-                        });
+                        this.replaceAll(res.data.entries)
                     }
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
             //     commit('error/update', info, { root: true });
             // });
+        },
+        replaceAll(timelineSegmentAnnotations) {
+            this.timelineSegmentAnnotations = {};
+            this.timelineSegmentAnnotationList = [];
+            timelineSegmentAnnotations.forEach((e, i) => {
+                this.timelineSegmentAnnotations[e.id] = e;
+                this.timelineSegmentAnnotationList.push(e.id);
+            });
         },
     },
 })

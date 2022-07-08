@@ -29,7 +29,8 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
             if (videoId) {
                 params.video_id = videoId;
             } else {
-                const video = this.getters["video/current"];
+                const playerStore = usePlayerStore();
+                const video = playerStore.video();
                 if (video) {
                     params.video_id = video.id;
                 }
@@ -40,7 +41,7 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
                 .post(`${config.API_LOCATION}/annotation/shortcut/update`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        commit("update", res.data.annotation_shortcuts);
+                        this.replaceAll(res.data.annotation_shortcuts);
                         commit("shortcut/update", res.data.shortcuts, { root: true });
                     }
                 });
@@ -49,14 +50,15 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
             //     commit('error/update', info, { root: true });
             // });
         },
-        async loadForVideo({ videoId = null }) {
+        async fetchForVideo({ videoId = null }) {
             let params = {};
 
             //use video id or take it from the current video
             if (videoId) {
                 params.video_id = videoId;
             } else {
-                const video = this.getters["video/current"];
+                const playerStore = usePlayerStore();
+                const video = playerStore.video();
                 if (video) {
                     params.video_id = video.id;
                 }
@@ -68,7 +70,7 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
                 })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        commit("update", res.data.entries);
+                        this.replaceAll(res.data.entries);
                     }
                 });
             // .catch((error) => {
@@ -76,18 +78,12 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
             //     commit('error/update', info, { root: true });
             // });
         },
-        add(categories) {
-            categories.forEach((e, i) => {
-                state.annotationShortcuts[e.id] = e;
-                state.annotationShortcutList.push(e.id);
-            });
-        },
-        update(categories) {
-            state.annotationShortcuts = {};
-            state.annotationShortcutList = [];
-            categories.forEach((e, i) => {
-                state.annotationShortcuts[e.id] = e;
-                state.annotationShortcutList.push(e.id);
+        replaceAll(annotationShortcuts) {
+            this.annotationShortcuts = {};
+            this.annotationShortcutList = [];
+            annotationShortcuts.forEach((e, i) => {
+                this.annotationShortcuts[e.id] = e;
+                this.annotationShortcutList.push(e.id);
             });
         },
     },

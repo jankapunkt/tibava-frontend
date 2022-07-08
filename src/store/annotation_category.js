@@ -48,7 +48,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             //     commit('error/update', info, { root: true });
             // });
         },
-        async loadForVideo({ videoId = null }) {
+        async fetchForVideo({ videoId = null }) {
             let params = {}
 
             //use video id or take it from the current video
@@ -66,7 +66,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             return axios.get(`${config.API_LOCATION}/annotation/category/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        this.updateAll(res.data.entries);
+                        this.replaceAll(res.data.entries);
                     }
                 })
             // .catch((error) => {
@@ -82,7 +82,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             });
         },
 
-        updateAll(annotationCategories) {
+        replaceAll(annotationCategories) {
             this.annotationCategories = {}
             this.annotationCategoryList = []
             annotationCategories.forEach((e, i) => {

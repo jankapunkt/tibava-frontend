@@ -102,8 +102,6 @@ export default {
       currentTime: this.time,
       duration: 0,
       ended: false,
-      hiddenVolume: 1.0,
-      mute: false,
       syncTime: true,
       currentSpeed: { title: "1.00", value: 1.0 },
       speeds: [
@@ -157,19 +155,10 @@ export default {
       this.$refs.video.playbackRate = this.currentSpeed.value;
     },
     onToggleVolume() {
-      this.mute = !this.mute;
-      if (this.mute) {
-        this.$refs.video.volume = 0.0;
-      } else {
-        this.$refs.video.volume = this.hiddenVolume;
-      }
+      this.playerStore.toggleMute();
     },
     onVolumeChange(volume) {
-      this.hiddenVolume = volume / 100;
-      if (this.hiddenVolume > 0) {
-        this.mute = false;
-      }
-      this.$refs.video.volume = this.hiddenVolume;
+      this.playerStore.setVolume(volume)
     },
     onLoadedData() {
       this.$emit("loadedData");
@@ -186,25 +175,25 @@ export default {
       if (this.duration <= 0) {
         return 0;
       }
-      return this.currentTime / this.duration;
+      return this.playerStore.currentTime / this.playerStore.video.duration;
     },
     volume() {
-      if (this.mute) {
-        return 0;
-      }
-      return Math.round(this.hiddenVolume * 100);
+      return this.playerStore.volume;
     },
     time(){
-      return usePlayerStore.targetTime
+      return this.playerStore.targetTime
     },
     ...mapStores(usePlayerStore),
   },
   watch: {
     time() {
-      if (this.syncTime) {
+      if (this.playerStore.syncTime) {
         this.$refs.video.currentTime = this.time;
       }
     },
+    volume(volume){
+      this.$refs.video.volume = volume/100;
+    }
   },
 };
 </script>

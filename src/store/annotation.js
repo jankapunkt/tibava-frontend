@@ -103,7 +103,7 @@ export const useAnnotationStore = defineStore('annotation', {
         //             commit('error/update', info, { root: true });
         //         });
         // },
-        async loadForVideo({ videoId = null }) {
+        async fetchForVideo({ videoId = null }) {
             let params = {};
 
             //use video id or take it from the current video

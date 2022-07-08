@@ -12,6 +12,12 @@ export const usePlayerStore = defineStore('player', {
             video: null,
             currentTime: 0.0,
             targetTime: 0.0,
+            playing: false,
+
+            hiddenVolume: 1.0,
+            mute: false,
+
+            syncTime: true,
         }
     },
     getters: {
@@ -39,10 +45,31 @@ export const usePlayerStore = defineStore('player', {
             }
             return null
         },
+        volume(state) {
+            if (state.mute) {
+                return 0;
+            }
+            return Math.round(state.hiddenVolume * 100);
+        }
     },
     actions: {
+        setVolume(volume) {
+            this.hiddenVolume = volume / 100;
+            if (this.hiddenVolume > 0) {
+                this.mute = false;
+            }
+        },
+        toggleMute() {
+            this.mute = !this.mute;
+        },
+        setTargetTime(time) {
+            this.targetTime = time;
+        },
+        setCurrentTime(time) {
+            this.currentTime = time;
+        },
 
-        async loadVideo({ videoId }) {
+        async fetchVideo({ videoId }) {
             const params = {
                 id: videoId,
             };
@@ -61,5 +88,8 @@ export const usePlayerStore = defineStore('player', {
         },
         // setDuration()
 
-    }
+    },
+    persist: {
+        paths: ['volume', 'mute'],
+    },
 })
