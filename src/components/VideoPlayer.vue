@@ -98,11 +98,6 @@ export default {
   mixins: [TimeMixin],
   data() {
     return {
-      playing: false,
-      currentTime: this.time,
-      duration: 0,
-      ended: false,
-      syncTime: true,
       currentSpeed: { title: "1.00", value: 1.0 },
       speeds: [
         { title: "0.25", value: 0.25 },
@@ -118,37 +113,33 @@ export default {
   },
   methods: {
     toggle() {
-      if (this.playing) {
-        this.$refs.video.pause();
-      } else {
-        this.$refs.video.play();
-      }
+      this.playerStore.togglePlaying();
     },
     toggleSyncTime() {
-      this.syncTime = !this.syncTime;
+      this.playerStore.toggleSyncTime();
     },
     deltaSeek(delta) {
+      this.playerStore.setCurrentTime(this.$refs.video.currentTime + delta)
       this.$refs.video.currentTime += delta;
     },
     onEnded() {
-      this.ended = true;
-      this.playing = false;
+      this.playerStore.setEnded(true);
+      this.playerStore.setPlaying(false);
     },
     onPause() {
-      this.playing = false;
+      this.playerStore.setPlaying(false);
     },
     onPlay() {
-      this.playing = true;
-      this.ended = false;
+      this.playerStore.setEnded(false);
+      this.playerStore.setPlaying(true);
     },
     onTimeUpdate(event) {
-      this.currentTime = event.srcElement.currentTime;
-      this.duration = event.srcElement.duration;
-      this.ended = event.srcElement.ended;
-      this.$emit("timeUpdate", this.currentTime);
+      this.playerStore.setCurrentTime(event.srcElement.currentTime);
+      this.playerStore.setEnded(event.srcElement.ended);
     },
     onSeek(percentage) {
-      this.$refs.video.currentTime = (this.duration * percentage) / 100;
+      const targetTime = (this.duration * percentage) / 100;
+      this.$refs.video.currentTime = targetTime;
     },
     onSpeedChange(idx) {
       this.currentSpeed = this.speeds[idx];
@@ -180,15 +171,39 @@ export default {
     volume() {
       return this.playerStore.volume;
     },
-    time(){
+    ended() {
+      return this.playerStore.ended;
+    },
+    currentTime(){
+      return this.playerStore.currentTime
+    },
+    targetTime(){
       return this.playerStore.targetTime
+    },
+    playing(){
+      return this.playerStore.playing
+    },
+    duration(){
+      return this.playerStore.videoDuration;
+    },
+    syncTime(){
+      return this.playerStore.syncTime;
     },
     ...mapStores(usePlayerStore),
   },
   watch: {
-    time() {
-      if (this.playerStore.syncTime) {
-        this.$refs.video.currentTime = this.time;
+    targetTime(targetTime) {
+      if (this.syncTime) {
+        this.$refs.video.currentTime = targetTime;
+      }
+    },
+    playing(playing) {
+      if (playing) {
+        this.$refs.video.volume = this.volume/100;
+        this.$refs.video.play();
+      }
+      else{
+        this.$refs.video.pause();
       }
     },
     volume(volume){

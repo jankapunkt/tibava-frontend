@@ -13,6 +13,7 @@ export const usePlayerStore = defineStore('player', {
             currentTime: 0.0,
             targetTime: 0.0,
             playing: false,
+            ended: false,
 
             hiddenVolume: 1.0,
             mute: false,
@@ -51,6 +52,7 @@ export const usePlayerStore = defineStore('player', {
             }
             return Math.round(state.hiddenVolume * 100);
         }
+
     },
     actions: {
         setVolume(volume) {
@@ -67,6 +69,18 @@ export const usePlayerStore = defineStore('player', {
         },
         setCurrentTime(time) {
             this.currentTime = time;
+        },
+        setEnded(ended) {
+            this.ended = ended;
+        },
+        toggleSyncTime() {
+            this.syncTime = !this.syncTime;
+        },
+        setPlaying(playing) {
+            this.playing = playing
+        },
+        togglePlaying() {
+            this.playing = !this.playing;
         },
 
         async fetchVideo({ videoId }) {
