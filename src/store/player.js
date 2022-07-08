@@ -19,6 +19,11 @@ export const usePlayerStore = defineStore('player', {
             mute: false,
 
             syncTime: true,
+
+            selectedTimeRange: {
+                start: 0,
+                end: 0,
+            },
         }
     },
     getters: {
@@ -55,6 +60,12 @@ export const usePlayerStore = defineStore('player', {
 
     },
     actions: {
+        setSelectedTimeRangeStart(time) {
+            this.selectedTimeRange.start = time;
+        },
+        setSelectedTimeRangeEnd(time) {
+            this.selectedTimeRange.end = time;
+        },
         setVolume(volume) {
             this.hiddenVolume = volume / 100;
             if (this.hiddenVolume > 0) {
@@ -93,6 +104,7 @@ export const usePlayerStore = defineStore('player', {
                     if (res.data.status === "ok") {
                         // const playerStore = usePlayerStore();
                         this.video = res.data.entry;
+                        this.selectedTimeRange.end = this.videoDuration;
                     }
                 });
             // .catch((error) => {

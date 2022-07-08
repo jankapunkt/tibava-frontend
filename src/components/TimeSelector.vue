@@ -7,13 +7,13 @@
 <script>
 import TimeMixin from "../mixins/time";
 import paper from "paper";
+
+import { mapStores } from "pinia";
+import { usePlayerStore } from "@/store/player";
+
 export default {
   mixins: [TimeMixin],
   props: {
-    duration: {
-      type: Number,
-      default: 10,
-    },
     width: {
       default: "100%",
     },
@@ -23,14 +23,6 @@ export default {
     radius: {
       type: Number,
       default: 5,
-    },
-    endTime: {
-      type: Number,
-      default: 5,
-    },
-    startTime: {
-      type: Number,
-      default: 0,
     },
   },
   data() {
@@ -81,6 +73,7 @@ export default {
       this.canvasWidth = this.scope.view.size.width;
       this.canvasHeight = this.scope.view.size.height;
       this.timeScale = this.scope.view.size.width / this.duration;
+
       if (isNaN(this.timeScale)) {
         return;
       }
@@ -281,18 +274,39 @@ export default {
       this.hiddenEndTime = newValue;
       this.draw();
     },
+    duration(){
+      this.hiddenStartTime =this.startTime
+      this.hiddenEndTime = this.endTime
+      this.draw();
+    },
     hiddenStartTime() {
       this.$nextTick(() => {
+      this.playerStore.setSelectedTimeRangeStart(this.hiddenStartTime)
         this.$emit("update:startTime", this.hiddenStartTime);
       });
     },
     hiddenEndTime() {
       this.$nextTick(() => {
+      this.playerStore.setSelectedTimeRangeEnd(this.hiddenEndTime);
         this.$emit("update:endTime", this.hiddenEndTime);
       });
     },
   },
-  computed: {},
+  computed: {
+    duration(){
+      return this.playerStore.videoDuration;
+    },
+    currentTime(){
+      return this.playerStore.currentTime;
+    },
+    startTime(){
+      return this.playerStore.selectedTimeRange.start;
+    },
+    endTime(){
+      return this.playerStore.selectedTimeRange.end;
+    },
+    ...mapStores(usePlayerStore),
+  },
   mounted() {
     this.canvas = this.$refs.canvas;
 

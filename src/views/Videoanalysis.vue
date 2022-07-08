@@ -25,10 +25,7 @@
             <v-row class="mb-2 px-4">
               <TimeSelector
                 width="100%"
-                :duration="duration"
                 @resize="onVideoResize"
-                :endTime.sync="endTime"
-                :startTime.sync="startTime"
               />
             </v-row>
           </v-card>
@@ -146,6 +143,8 @@ import * as Keyboard from "../plugins/keyboard.js";
 import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video";
 import { usePlayerStore } from "@/store/player";
+import { useShotStore } from "@/store/shot";
+
 
 export default {
   data() {
@@ -569,112 +568,10 @@ export default {
       // return current_annotations;
     },
     shots() {
-      // let shotdetection = this.$store.getters["pluginRun/forVideo"](
-      //   this.$route.params.id
-      // )
-      //   .filter((e) => {
-      //     return e.type == "shotdetection" && e.status == "D";
-      //   })
-      //   .map((e) => {
-      //     e.results = this.$store.getters["pluginRunResult/forPluginRun"](e.id);
-      //     return e;
-      //   })
-      //   .sort((a, b) => {
-      //     return new Date(b.date) - new Date(a.date);
-      //   });
-      // if (!shotdetection.length) {
-      //   return [];
-      // }
-
-      // shotdetection = shotdetection.at(-1);
-      // let results = [];
-      // if (
-      //   "results" in shotdetection &&
-      //   shotdetection.results.length > 0 &&
-      //   "data" in shotdetection.results[0]
-      // ) {
-      //   results = shotdetection.results[0].data.shots.map((e) => {
-      //     return {
-      //       start: e.start,
-      //       end: e.end,
-      //     };
-      //   });
-      // }
-
-      // let thumbnail = this.$store.getters["pluginRun/forVideo"](
-      //   this.$route.params.id
-      // )
-      //   .filter((e) => {
-      //     return e.type == "thumbnail" && e.status == "D";
-      //   })
-      //   .map((e) => {
-      //     e.results = this.$store.getters["pluginRunResult/forPluginRun"](e.id);
-      //     return e;
-      //   })
-      //   .sort((a, b) => {
-      //     return new Date(b.date) - new Date(a.date);
-      //   });
-
-      // if (!thumbnail.length) {
-      //   return results;
-      // }
-      // thumbnail = thumbnail.at(-1);
-
-      // // TODO this is not realy stable
-      // //TODO localhost should be replaced
-      // let thumbnail_dict = {};
-      // if (
-      //   "results" in thumbnail &&
-      //   thumbnail.results.length > 0 &&
-      //   "data" in thumbnail.results[0]
-      // ) {
-      //   thumbnail_dict = thumbnail.results[0].data.images.reduce(
-      //     (a, b) => (
-      //       (a[b.time] = `http://localhost/thumbnails/${b.id}.${b.ext}`), a
-      //     ),
-      //     {}
-      //   );
-      // }
-      // results = results.map((e) => {
-      //   let duration = e.end - e.start;
-
-      //   let start_thumb_time = 0;
-      //   let mid_thumb_time = 0;
-      //   let end_thumb_time = 0;
-
-      //   if (duration < 2) {
-      //     start_thumb_time = Math.ceil(e.start + duration / 2);
-      //     mid_thumb_time = Math.round(e.start + duration / 2);
-      //     end_thumb_time = Math.floor(e.start + duration / 2);
-      //   } else {
-      //     start_thumb_time = Math.ceil(e.start + duration / 5);
-      //     mid_thumb_time = Math.round(e.start + duration / 2);
-      //     end_thumb_time = Math.floor(e.start + (duration * 4) / 5);
-      //   }
-
-      //   if (start_thumb_time > mid_thumb_time) {
-      //     start_thumb_time = mid_thumb_time;
-      //   }
-
-      //   if (mid_thumb_time > end_thumb_time) {
-      //     end_thumb_time = mid_thumb_time;
-      //   }
-
-      //   return {
-      //     id: e.id,
-      //     start: e.start,
-      //     end: e.end,
-      //     thumbnails: [
-      //       thumbnail_dict[start_thumb_time],
-      //       thumbnail_dict[mid_thumb_time],
-      //       thumbnail_dict[end_thumb_time],
-      //     ],
-      //   };
-      // });
-      // return results;
+      return this.shotStore.shots;
     },
 
-    ...mapStores(useVideoStore, usePlayerStore),
+    ...mapStores(useVideoStore, usePlayerStore, useShotStore),
   },
   created() {
     // fetch the data when the view is created and the data is
