@@ -82,7 +82,7 @@ export default {
       let videos = this.videoStore.all;
       console.log(videos);
       videos.forEach((v) => {
-        v.pluginRuns = this.pluginRunStore.pluginRunByVideoId(v.id);
+        v.pluginRuns = this.pluginRunStore.forVideo(v.id);
       });
       // videos.forEach((v) => {
       //   v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);

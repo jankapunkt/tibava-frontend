@@ -7,6 +7,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
     state: () => {
         return {
             timelineSegmentAnnotations: {},
+            timelineSegmentAnnotationByTime: {},
             timelineSegmentAnnotationList: [],
         }
     },
@@ -38,10 +39,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 )
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        [res.data.entry].forEach((e, i) => {
-                            state.timelineSegmentAnnotations[e.id] = e;
-                            state.timelineSegmentAnnotationList.push(e.id);
-                        });
+                        this.addMany([res.data.entry])
                         timelineSegmentStore.addAnnotation([{ timelineSegmentId, entry: res.data.entry }])
                         return res.data.entry.id;
                     }
@@ -75,19 +73,10 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                             annotationCategoryStore.add(res.data.annotation_category_added);
                         }
                         if ("timeline_segment_annotation_deleted" in res.data) {
-                            res.data.timeline_segment_annotation_deleted.forEach((id, i) => {
-                                let index = state.timelineSegmentAnnotationList.findIndex(
-                                    (f) => f === id
-                                );
-                                state.timelineSegmentAnnotationList.splice(index, 1);
-                                delete state.timelineSegmentAnnotations[id];
-                            });
+                            this.deleteMany(res.data.timeline_segment_annotation_deleted);
                         }
                         if ("timeline_segment_annotation_added" in res.data) {
-                            res.data.timeline_segment_annotation_added.forEach((e, i) => {
-                                state.timelineSegmentAnnotations[e.id] = e;
-                                state.timelineSegmentAnnotationList.push(e.id);
-                            });
+                            this.addMany(res.data.timeline_segment_annotation_added);
                         }
                     }
                 });
@@ -150,6 +139,21 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             //     const info = { date: Date(), error, origin: 'collection' };
             //     commit('error/update', info, { root: true });
             // });
+        },
+        deleteMany(timelineSegmentAnnotations) {
+            timelineSegmentAnnotations.forEach((id, i) => {
+                let index = state.timelineSegmentAnnotationList.findIndex(
+                    (f) => f === id
+                );
+                state.timelineSegmentAnnotationList.splice(index, 1);
+                delete state.timelineSegmentAnnotations[id];
+            });
+        },
+        addMany(timelineSegmentAnnotations) {
+            timelineSegmentAnnotations.forEach((e, i) => {
+                this.timelineSegmentAnnotations[e.id] = e;
+                this.timelineSegmentAnnotationList.push(e.id);
+            });
         },
         replaceAll(timelineSegmentAnnotations) {
             this.timelineSegmentAnnotations = {};

@@ -116,6 +116,6 @@ export const usePlayerStore = defineStore('player', {
 
     },
     persist: {
-        paths: ['volume', 'mute'],
+        paths: ['hiddenVolume', 'mute', 'syncTime'],
     },
 })
