@@ -3,6 +3,11 @@ import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
 
+
+import { useTimelineStore } from "@/store/timeline";
+import { useTimelineSegmentStore } from "@/store/timeline_segment";
+
+
 export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnnotation', {
     state: () => {
         return {
@@ -22,6 +27,9 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 .map((id) => state.timelineSegmentAnnotations[id])
                 .filter((e) => e.timeline_segment_id === timelineSegmentId);
         },
+        forTime: (state) => (time) => {
+
+        }
     },
     actions: {
         async create({ timelineSegmentId, annotationId }) {
@@ -39,7 +47,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 )
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.addMany([res.data.entry])
+                        this.addToStore([res.data.entry])
                         timelineSegmentStore.addAnnotation([{ timelineSegmentId, entry: res.data.entry }])
                         return res.data.entry.id;
                     }
@@ -73,10 +81,10 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                             annotationCategoryStore.add(res.data.annotation_category_added);
                         }
                         if ("timeline_segment_annotation_deleted" in res.data) {
-                            this.deleteMany(res.data.timeline_segment_annotation_deleted);
+                            this.deleteFromStore(res.data.timeline_segment_annotation_deleted);
                         }
                         if ("timeline_segment_annotation_added" in res.data) {
-                            this.addMany(res.data.timeline_segment_annotation_added);
+                            this.addToStore(res.data.timeline_segment_annotation_added);
                         }
                     }
                 });
@@ -132,7 +140,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceAll(res.data.entries)
+                        this.replaceStore(res.data.entries)
                     }
                 });
             // .catch((error) => {
@@ -140,7 +148,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             //     commit('error/update', info, { root: true });
             // });
         },
-        deleteMany(timelineSegmentAnnotations) {
+        deleteFromStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((id, i) => {
                 let index = state.timelineSegmentAnnotationList.findIndex(
                     (f) => f === id
@@ -148,20 +156,33 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 state.timelineSegmentAnnotationList.splice(index, 1);
                 delete state.timelineSegmentAnnotations[id];
             });
+            this.updateTimeStore()
         },
-        addMany(timelineSegmentAnnotations) {
+        addToStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((e, i) => {
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
             });
+            this.updateTimeStore()
         },
-        replaceAll(timelineSegmentAnnotations) {
+        replaceStore(timelineSegmentAnnotations) {
             this.timelineSegmentAnnotations = {};
             this.timelineSegmentAnnotationList = [];
             timelineSegmentAnnotations.forEach((e, i) => {
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
             });
+            this.updateTimeStore()
         },
+        updateTimeStore() {
+
+            const timelineSegmentStore = useTimelineSegmentStore()
+            timelineSegmentStore.all.forEach((e) => {
+                console.log(Math.floor(e.start))
+                console.log(Math.ceil(e.end))
+                console.log(e.start)
+                console.log(e.end)
+            })
+        }
     },
 })

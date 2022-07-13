@@ -628,12 +628,6 @@ export default {
       }
       this.annotationsLUT = lut;
     },
-    duration: {
-      handler: function (newValue) {
-        this.endTime = newValue;
-      },
-      deep: true,
-    },
   },
   components: {
     VideoPlayer,
