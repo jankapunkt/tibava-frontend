@@ -15,58 +15,36 @@
       </v-card-title>
       <v-card-text>
         <v-tabs vertical class="tabs-left">
-          <v-tab v-for="plugin in plugins" :key="plugin.name">
+          <v-tab v-for="plugin in plugins_sorted" :key="plugin.name">
             <v-icon left> {{ plugin.icon }} </v-icon>
             <span class="text-button">{{ plugin.name }}</span>
           </v-tab>
-          <v-tab-item v-for="plugin in plugins" :key="plugin.name">
+          <v-tab-item v-for="plugin in plugins_sorted" :key="plugin.name">
             <v-card flat height="100%">
               <v-card-title>{{ plugin.name }} </v-card-title>
               <v-card-text>
-                <template v-for="parameter in plugin.parameters">
-                  <v-text-field
-                    v-model="parameter.value"
-                    :label="parameter.text"
-                    v-if="parameter.field == 'text_field'"
-                    :key="parameter.name"
-                  ></v-text-field>
+                <ModalPluginParameters :parameters="plugin.parameters">
+                </ModalPluginParameters>
 
-                  <div v-if="parameter.field == 'slider'" :key="parameter.name">
-                    <!-- <p>
-                      {{ parameter.text }}
-                    </p> -->
+                <v-expansion-panels
+                  v-if="
+                    plugin.optional_parameters &&
+                    plugin.optional_parameters.length > 0
+                  "
+                >
+                  <v-expansion-panel>
+                    <v-expansion-panel-header expand-icon="mdi-menu-down">
+                      Advanced Options
+                    </v-expansion-panel-header>
 
-                    <v-slider
-                      v-model="parameter.value"
-                      :label="parameter.text"
-                      :min="parameter.min"
-                      :max="parameter.max"
-                      :step="parameter.step"
-                      :value="parameter.default"
-                      thumb-label="always"
-                    ></v-slider>
-                  </div>
-
-                  <div
-                    v-if="parameter.field == 'buttongroup'"
-                    :key="parameter.name"
-                  >
-                    <p>
-                      {{ parameter.text }}
-                    </p>
-                    <v-btn-toggle
-                      v-model="parameter.value"
-                      :label="parameter.text"
-                      tile
-                      group
-                      mandatory
-                    >
-                      <v-btn v-for="button in parameter.buttons" :key="button">
-                        {{ button }}
-                      </v-btn>
-                    </v-btn-toggle>
-                  </div>
-                </template>
+                    <v-expansion-panel-content>
+                      <ModalPluginParameters
+                        :parameters="plugin.optional_parameters"
+                      >
+                      </ModalPluginParameters>
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
+                </v-expansion-panels>
               </v-card-text>
 
               <v-card-actions class="pt-0">
@@ -86,6 +64,7 @@
 </template>
 
 <script>
+import ModalPluginParameters from "./ModalPluginParameters.vue";
 export default {
   props: [],
   data() {
@@ -104,37 +83,68 @@ export default {
               text: this.$t("modal.plugin.timeline_name"),
             },
           ],
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.audio.frequency"),
           icon: "mdi-waveform",
           plugin: "audio_freq",
-          parameters: [],
-        },
-        {
-          name: this.$t("modal.plugin.clip.probability"),
-          icon: "mdi-eye",
-          plugin: "clip",
           parameters: [
             {
               field: "text_field",
               name: "timeline",
-              value: this.$t("modal.plugin.clip.name"),
+              value: this.$t("modal.plugin.audio.frequency"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+          optional_parameters: [],
+        },
+        {
+          name: this.$t("modal.plugin.color_analysis.name"),
+          icon: "mdi-palette",
+          plugin: "color_analysis",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.color_analysis.name"),
               text: this.$t("modal.plugin.timeline_name"),
             },
             {
-              field: "text_field",
-              name: "search_term",
-              value:"",
-              text: this.$t("modal.plugin.clip.search_term"),
+              field: "slider",
+              min: 1,
+              max: 8,
+              value: 1,
+              step: 1,
+              name: "k",
+              text: this.$t("modal.plugin.color_analysis.slider"),
             },
+            // {
+            //   field: "buttongroup",
+            //   text: this.$t("modal.plugin.color_analysis.buttongroup"),
+            //   name: "timeline_visualization",
+            //   value: 0,
+            //   buttons: [
+            //     this.$t("modal.plugin.color_analysis.singletimeline"),
+            //     this.$t("modal.plugin.color_analysis.multipletimelines"),
+            //   ],
+            // },
           ],
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.shot_detection"),
           icon: "mdi-arrow-expand-horizontal",
           plugin: "shotdetection",
-          parameters: [],
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.shot_detection"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.shot_type_classification"),
@@ -148,6 +158,7 @@ export default {
               text: this.$t("modal.plugin.timeline_name"),
             },
           ],
+          optional_parameters: [],
         },
         // {
         //   name: this.$t("modal.plugin.facedetection"),
@@ -174,6 +185,7 @@ export default {
               text: this.$t("modal.plugin.timeline_name"),
             },
           ],
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.faceemotion"),
@@ -187,38 +199,7 @@ export default {
               text: this.$t("modal.plugin.timeline_name"),
             },
           ],
-        },
-        {
-          name: this.$t("modal.plugin.color_analysis.name"),
-          icon: "mdi-palette",
-          plugin: "color_analysis",
-          parameters: [
-            {
-              field: "text_field",
-              name: "timeline",
-              value: this.$t("modal.plugin.color_analysis.name"),
-              text: this.$t("modal.plugin.timeline_name"),
-            },
-            {
-              field: "slider",
-              min: 1,
-              max: 8,
-              value: 1,
-              step: 1,
-              name: "k",
-              text: this.$t("modal.plugin.color_analysis.slider"),
-            },
-            {
-              field: "buttongroup",
-              text: this.$t("modal.plugin.color_analysis.buttongroup"),
-              name: "timeline_visualization",
-              value: 0,
-              buttons: [
-                this.$t("modal.plugin.color_analysis.singletimeline"),
-                this.$t("modal.plugin.color_analysis.multipletimelines"),
-              ],
-            },
-          ],
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.thumbnail"),
@@ -226,13 +207,43 @@ export default {
           plugin: "thumbnail",
           parameters: [],
         },
+        {
+          name: this.$t("modal.plugin.clip.probability"),
+          icon: "mdi-eye",
+          plugin: "clip",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.clip.probability"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "text_field",
+              name: "search_term",
+              value: "",
+              text: this.$t("modal.plugin.clip.search_term"),
+            },
+          ],
+          optional_parameters: [
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 2,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.clip.fps"),
+            },
+          ],
+        },
       ],
     };
   },
   computed: {
-    // plugins() {
-    //   return []; //this._plugins;
-    // },
+    plugins_sorted() {
+      return this.plugins.sort((a, b) => a.name.localeCompare(b.name));
+    },
   },
   methods: {
     async runPlugin(plugin, parameters) {
@@ -254,6 +265,7 @@ export default {
       }
     },
   },
+  components: { ModalPluginParameters },
 };
 </script>
 
