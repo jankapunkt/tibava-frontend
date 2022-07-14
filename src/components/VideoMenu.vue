@@ -34,7 +34,7 @@ import { usePlayerStore } from "@/store/player";
 export default {
   data() {
     return {
-      menu: false,
+      menu: true,
     };
   },
   computed: {

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
+import { usePlayerStore } from '@/store/player'
 
 export const usePluginRunStore = defineStore('pluginRun', {
     state: () => {
@@ -29,9 +30,9 @@ export const usePluginRunStore = defineStore('pluginRun', {
                 params.video_id = videoId;
             } else {
                 const playerStore = usePlayerStore();
-                const video = playerStore.video();
+                const video = playerStore.videoId;
                 if (video) {
-                    params.video_id = video.id;
+                    params.video_id = video;
                 }
             }
 

@@ -3,12 +3,7 @@
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
-          <v-card
-            class="d-flex flex-column flex-nowrap px-2"
-            elevation="2"
-            v-resize="onVideoResize"
-            ref="videoCard"
-          >
+          <v-card class="d-flex flex-column flex-nowrap px-2" elevation="2" v-resize="onVideoResize" ref="videoCard">
             <v-row>
               <v-card-title>
                 {{ playerStore.videoName }}
@@ -27,12 +22,7 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card
-            class="overflow-auto"
-            elevation="2"
-            ref="resultCard"
-            :height="resultCardHeight"
-          >
+          <v-card class="overflow-auto" elevation="2" ref="resultCard" :height="resultCardHeight">
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
@@ -42,12 +32,7 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
-                <ShotCard
-                  v-for="item in shots"
-                  v-bind:key="item.id"
-                  :shot="item"
-                  @seek="onTagetTimeChange"
-                />
+                <ShotCard v-for="item in shots" v-bind:key="item.id" :shot="item" @seek="onTagetTimeChange" />
               </v-tab-item>
               <!-- <v-tab-item>
                 <EntitiesCard
@@ -58,11 +43,8 @@
                 />
               </v-tab-item> -->
               <v-tab-item>
-                <CurrentEntitiesOverView
-                  :annotations="currentSegmentsAnnotations"
-                  :time="videoTime"
-                  @seek="onTimeUpdate"
-                />
+                <CurrentEntitiesOverView :annotations="currentSegmentsAnnotations" :time="videoTime"
+                  @seek="onTimeUpdate" />
               </v-tab-item>
               <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item>
@@ -73,42 +55,21 @@
 
       <v-row class="ma-2">
         <v-col>
-          <v-card
-            class="d-flex flex-column flex-nowrap"
-            max-width="100%"
-            elevation="2"
-            scrollable="False"
-          >
+          <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
-              <Timeline
-                ref="timeline"
-                width="100%"
-                :selectedTimelineSegment="selectedTimelineSegment"
-                :selectedTimeline="selectedTimeline"
-                @copyTimeline="onCopyTimeline"
-                @renameTimeline="onRenameTimeline"
-                @changeTimelineVisualization="onChangeTimelineVisualization"
-                @deleteTimeline="onDeleteTimeline"
-                @annotateSegment="onAnnotateSegment"
-                @coloringSegment="onColoringSegment"
-                @splitSegment="onSplitSegment"
-                @mergeSegments="onMergeSegments"
-                @mergeSegmentsLeft="onMergeSegmentsLeft"
-                @mergeSegmentsRight="onMergeSegmentsRight"
-                @deleteSegment="onDeleteSegment"
-                @update:time="onTagetTimeChange"
-                @addSelection="onAddSelection"
-                @select="onSelect"
-              >
+              <Timeline ref="timeline" width="100%" :selectedTimelineSegment="selectedTimelineSegment"
+                :selectedTimeline="selectedTimeline" @copyTimeline="onCopyTimeline" @renameTimeline="onRenameTimeline"
+                @changeTimelineVisualization="onChangeTimelineVisualization" @deleteTimeline="onDeleteTimeline"
+                @annotateSegment="onAnnotateSegment" @coloringSegment="onColoringSegment" @splitSegment="onSplitSegment"
+                @mergeSegments="onMergeSegments" @mergeSegmentsLeft="onMergeSegmentsLeft"
+                @mergeSegmentsRight="onMergeSegmentsRight" @deleteSegment="onDeleteSegment"
+                @update:time="onTagetTimeChange" @addSelection="onAddSelection" @select="onSelect">
               </Timeline>
 
-              <ModalTimelineSegmentAnnotate
-                :show.sync="annotationDialog.show"
-                :timelineSegment="annotationDialog.selectedTimelineSegment"
-                :annotations="annotations"
-                :annotationCategories="annotationCategories"
-              >
+              <ModalTimelineSegmentAnnotate :show.sync="annotationDialog.show"
+                :timelineSegment="annotationDialog.selectedTimelineSegment" :annotations="annotations"
+                :annotationCategories="annotationCategories">
               </ModalTimelineSegmentAnnotate>
             </v-flex>
           </v-card>
@@ -134,6 +95,9 @@ import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video";
 import { usePlayerStore } from "@/store/player";
 import { useShotStore } from "@/store/shot";
+import { useTimelineStore } from "@/store/timeline";
+import { useTimelineSegmentStore } from "@/store/timeline_segment";
+import { useShortcutStore } from "@/store/shortcut";
 
 export default {
   data() {
@@ -262,7 +226,7 @@ export default {
       const keysString = Keyboard.generateKeysString(keys);
       if (this.shortcutAnnotationMap[keysString] != null) {
         this.shortcutAnnotationMap[keysString].forEach((annotationId) => {
-          this.$store.dispatch("timelineSegmentAnnotation/toggle", {
+          this.timelineSegmentAnnotationStroe.toggle({
             timelineSegmentId: this.cursor.id,
             annotationId: annotationId,
           });
@@ -282,40 +246,40 @@ export default {
       this.startTime = time;
     },
     onCopyTimeline(id) {
-      this.$store.dispatch("timeline/duplicate", id);
+      this.timelineStore.duplicate(id);
     },
     onRenameTimeline(id) {
-      this.$store.dispatch("timeline/rename", id);
+      this.timelineStore.rename(id);
     },
     onChangeTimelineVisualization(id) {
-      this.$store.dispatch("timeline/changevisualization", id);
+      this.timelineStore.changevisualization(id);
     },
     onTimelineSetParent(id) {
       console.log(id);
-      this.$store.dispatch("timeline/setparent", id);
+      this.timelineStore.setparent(id);
     },
     onTimelineSetCollapse(id) {
-      this.$store.dispatch("timeline/setcollapse", id);
+      this.timelineStore.setcollapse(id);
     },
     onTimelineSetOrder(id) {
-      this.$store.dispatch("timeline/setorder", id);
+      this.timelineStore.setorder(id);
     },
     onDeleteTimeline(id) {
-      this.$store.dispatch("timeline/delete", id);
+      this.timelineStore.delete(id);
     },
     onAnnotateSegment(id) {
       this.annotationDialog.selectedTimelineSegment =
-        this.$store.getters["timelineSegment/get"](id);
+        this.timelineSegmentStore.get(id);
       this.$nextTick(() => {
         this.annotationDialog.show = true;
       });
     },
-    onColoringSegment(id) {},
-    onDeleteSegment(id) {},
+    onColoringSegment(id) { },
+    onDeleteSegment(id) { },
 
     onAddSelection(segmentId) {
       const segmentPos =
-        this.$store.getters["timeline/segmentPosition"](segmentId);
+        this.timelineStore.segmentPosition(segmentId);
 
       const selection = {
         timeline: segmentPos.timeline,
@@ -330,8 +294,7 @@ export default {
       });
     },
     onSelect(segmentId) {
-      const segmentPos =
-        this.$store.getters["timeline/segmentPosition"](segmentId);
+      const segmentPos = this.timelineStore.segmentPosition(segmentId);
 
       const selection = {
         timeline: segmentPos.timeline,
@@ -348,22 +311,22 @@ export default {
 
     onSegmentSelected(id) {
       this.cursorSegment = id;
-      // this.$store.dispatch("timeline/delete", id);
+      // this.timelineStroe.delete( id);
     },
     onSplitSegment(id) {
-      this.$store.dispatch("timelineSegment/split", {
+      this.timelineSegmentStroe.split({
         timelineSegmentId: id,
         time: this.targetTime,
       });
     },
     onMergeSegments(id) {
       const timelineSegmentIds = this.selectedTimelineSegment.map((e) => {
-        return this.$store.getters["timeline/getSegmentByPosition"](
+        return this.timelineStore.getSegmentByPosition(
           e.timeline,
           e.segment
         );
       });
-      this.$store.dispatch("timelineSegment/merge", {
+      this.timelineSegmentStore.merge({
         timelineSegmentIds: timelineSegmentIds,
       });
     },
@@ -371,15 +334,13 @@ export default {
       const selectedSegmentId = this.cursor.id;
 
       const leftSegmentIdx = this.cursor.segment - 1;
-      const leftSegmentId = this.$store.getters[
-        "timeline/getSegmentByPosition"
-      ](this.cursor.timeline, leftSegmentIdx);
+      const leftSegmentId = this.timelineStore.getSegmentByPosition(this.cursor.timeline, leftSegmentIdx);
 
       if (leftSegmentId == null) {
         return;
       }
 
-      this.$store.dispatch("timelineSegment/merge", {
+      this.timelineSegmentStroe.merge({
         timelineSegmentIds: [selectedSegmentId, leftSegmentId],
       });
     },
@@ -387,21 +348,19 @@ export default {
       const selectedSegmentId = this.cursor.id;
 
       const rightSegmentIdx = this.cursor.segment + 1;
-      const rightSegmentId = this.$store.getters[
-        "timeline/getSegmentByPosition"
-      ](this.cursor.timeline, rightSegmentIdx);
+      const rightSegmentId = this.timelineStore.getSegmentByPosition(this.cursor.timeline, rightSegmentIdx);
 
       if (rightSegmentId == null) {
         return;
       }
 
-      this.$store.dispatch("timelineSegment/merge", {
+      this.timelineSegmentStroe.merge({
         timelineSegmentIds: [selectedSegmentId, rightSegmentId],
       });
     },
     onAppendAnnotation(evt) {
       evt.preventDefault();
-      this.$store.dispatch("timeline/annotate", {
+      this.timelineStroe.annotate({
         segment_id: this.cursorSegment,
         annotation: this.addedAnnotation,
       });
@@ -480,7 +439,7 @@ export default {
       // return shortcutAnnotationMap;
     },
     timelines() {
-      // return this.$store.getters["timeline/forVideo"](this.$route.params.id);
+      return this.timelineStore.forVideo(this.$route.params.id);
     },
     segmentsAnnotations() {
       // let segmentsAnnotations = [];
@@ -558,7 +517,7 @@ export default {
       return this.shotStore.shots;
     },
 
-    ...mapStores(useVideoStore, usePlayerStore, useShotStore),
+    ...mapStores(useVideoStore, usePlayerStore, useShotStore, useTimelineStore, useTimelineSegmentStore, useShortcutStore),
   },
   async created() {
     // fetch the data when the view is created and the data is
@@ -629,7 +588,7 @@ export default {
 </script>
 
 <style scoped>
-.logo > img {
+.logo>img {
   max-height: 56px;
 }
 
@@ -640,6 +599,7 @@ export default {
 .timeline-bar {
   height: 80px;
 }
+
 .main:focus {
   outline: none;
 }

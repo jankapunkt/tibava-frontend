@@ -200,6 +200,8 @@ import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_anno
 import { useAnnotationStore } from "@/store/annotation";
 import { useAnnotationCategoryStore } from "@/store/annotation_category";
 import { usePlayerStore } from "@/store/player";
+import { useVideoStore } from "@/store/video";
+import { usePluginRunResultStore } from "@/store/plugin_run_result";
 
 export default {
   mixins: [TimeMixin],
@@ -455,6 +457,7 @@ export default {
         });
         s.annotations = annotations;
       });
+
       timeline.segments = segments;
 
       let drawnTimeline = new AnnotationTimeline(
@@ -508,11 +511,70 @@ export default {
       return drawnTimeline;
     },
     drawGraphicTimeline(timeline, width, height) {
-      const timelineSegmentStore = useTimelineSegmentStore();
-      const timelineSegmentAnnotationStore =
-        useTimelineSegmentAnnotationStore();
-      const annotationStore = useAnnotationStore();
-      const annotationCategoryStore = useAnnotationCategoryStore();
+      const pluginRunResultStore = usePluginRunResultStore();
+      if ("plugin_run_result_id" in timeline) {
+        const result = pluginRunResultStore.get(timeline.plugin_run_result_id);
+        console.log(timeline.plugin_run_result_id);
+        console.log(result);
+        if (result === undefined) {
+          return null;
+        } else {
+          timeline.plugin = { data: result.data, type: result.type };
+        }
+        if (timeline.visualization == "C") {
+          const drawnTimeline = new ColorTimeline({
+            width: width,
+            height: height,
+            startTime: this.startTime,
+            endTime: this.endTime,
+            duration: this.duration,
+            data: timeline.plugin.data,
+            renderer: this.app.renderer,
+            resolution: 0.1,
+          });
+          return drawnTimeline;
+        }
+        if (timeline.visualization == "SC") {
+          const drawnTimeline = new ScalarColorTimeline({
+            width: width,
+            height: height,
+            startTime: this.startTime,
+            endTime: this.endTime,
+            duration: this.duration,
+            data: timeline.plugin.data,
+            renderer: this.app.renderer,
+            resolution: 0.1,
+          });
+          return drawnTimeline;
+        }
+        if (timeline.visualization == "SL") {
+          const drawnTimeline = new ScalarLineTimeline({
+            width: width,
+            height: height,
+            startTime: this.startTime,
+            endTime: this.endTime,
+            duration: this.duration,
+            data: timeline.plugin.data,
+            renderer: this.app.renderer,
+            resolution: 0.1,
+          });
+          return drawnTimeline;
+        }
+        if (timeline.visualization == "H") {
+          const drawnTimeline = new HistTimeline({
+            width: width,
+            height: height,
+            startTime: this.startTime,
+            endTime: this.endTime,
+            duration: this.duration,
+            data: timeline.plugin.data,
+            renderer: this.app.renderer,
+            resolution: 0.1,
+          });
+          return drawnTimeline;
+        }
+      }
+      return null;
     },
     drawTimeline(timeline) {
       this.timelinesContainer = new PIXI.Container();
@@ -553,7 +615,6 @@ export default {
           timeline.x = x;
           timeline.y = y;
         } else if (e.type == "R" && "plugin" in e) {
-          console.log(this.duration);
           if (e.visualization == "C") {
             timeline = new ColorTimeline({
               width: width,
@@ -707,6 +768,10 @@ export default {
       let duration = this.playerStore.videoDuration;
       return duration;
     },
+    isLoading() {
+      let isLoading = this.videoStore.isLoading;
+      return isLoading;
+    },
     startTime() {
       let start = this.playerStore.selectedTimeRange.start;
       return start;
@@ -730,9 +795,14 @@ export default {
       );
     },
 
-    ...mapStores(useTimelineStore, usePlayerStore),
+    ...mapStores(useTimelineStore, usePlayerStore, useVideoStore),
   },
   watch: {
+    isLoading(newValue, oldValue) {
+      if (newValue === false) {
+        this.draw();
+      }
+    },
     timelines(values) {
       function findChildren(elem, parent) {
         var hierarchy = [];
@@ -751,7 +821,6 @@ export default {
         return hierarchy;
       }
       this.timelineHierarchy = findChildren(values, null);
-      this.draw();
     },
     // time(value) {
     //   this.timeBarsObjects.forEach((e) => {

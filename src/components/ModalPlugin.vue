@@ -86,11 +86,14 @@
 </template>
 
 <script>
+import { mapStores } from "pinia";
+import { usePluginRunStore } from "@/store/plugin_run";
+
 export default {
   props: [],
   data() {
     return {
-      show: false,
+      show: true,
       plugins: [
         {
           name: this.$t("modal.plugin.audio.waveform"),
@@ -125,7 +128,7 @@ export default {
             {
               field: "text_field",
               name: "search_term",
-              value:"",
+              value: "",
               text: this.$t("modal.plugin.clip.search_term"),
             },
           ],
@@ -233,15 +236,16 @@ export default {
     // plugins() {
     //   return []; //this._plugins;
     // },
+
+    ...mapStores(usePluginRunStore),
   },
   methods: {
     async runPlugin(plugin, parameters) {
       parameters = parameters.map((e) => {
         return { name: e.name, value: e.value };
       });
-      console.log(`${plugin}, ${JSON.stringify(parameters)}`);
-      this.$store
-        .dispatch("pluginRun/new", { plugin: plugin, parameters: parameters })
+      this.pluginRunStore
+        .submit({ plugin: plugin, parameters: parameters })
         .then(() => {
           this.show = false;
         });
@@ -250,7 +254,7 @@ export default {
   watch: {
     show(value) {
       if (value) {
-        this.$emit("close");
+        // this.$emit("close");
       }
     },
   },

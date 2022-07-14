@@ -25,6 +25,7 @@ export const useVideoStore = defineStore('video', {
         return {
             videos: {},
             videoList: [],
+            isLoading: false,
         }
     },
     getters: {
@@ -47,6 +48,7 @@ export const useVideoStore = defineStore('video', {
                 includeShortcut = true,
             }
         ) {
+            this.isLoading = true;
             let promises = [];
             const playerStore = usePlayerStore()
             const annotationCategoryStore = useAnnotationCategoryStore()
@@ -91,7 +93,9 @@ export const useVideoStore = defineStore('video', {
                     annotationShortcutStore.fetchForVideo({ videoId })
                 );
             }
-            return Promise.all(promises);
+            return Promise.all(promises).then(() => {
+                this.isLoading = false
+            });
         },
         async list() {
             return axios
