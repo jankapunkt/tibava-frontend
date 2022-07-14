@@ -38,8 +38,6 @@ export const useTimelineStore = defineStore('timeline', {
             return result;
         },
         getSegmentByPosition: (state) => (timelinePos, segmentPos) => {
-            console.log(timelinePos);
-            console.log(segmentPos);
             let result = null;
             state.timelineList
                 .map((id) => state.timelines[id])
@@ -73,7 +71,7 @@ export const useTimelineStore = defineStore('timeline', {
                 .get(`${config.API_LOCATION}/timeline/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceAll(res.data.entries);
+                        this.replaceStore(res.data.entries);
                     }
                 });
             // .catch((error) => {
@@ -118,14 +116,15 @@ export const useTimelineStore = defineStore('timeline', {
                     params.video_id = video.id;
                 }
             }
+
             return axios
                 .post(`${config.API_LOCATION}/timeline/create`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.add(res.data.timeline_added);
-                        commit("timelineSegment/add", res.data.timeline_segment_added, {
-                            root: true,
-                        });
+                        this.addToStore(res.data.timeline_added);
+
+                        const timelineSegmentStore = useTimelineSegmentStore();
+                        timelineSegmentStore.addToStore(res.data.timeline_segment_added);
                     }
                 });
             // .catch((error) => {
@@ -164,9 +163,10 @@ export const useTimelineStore = defineStore('timeline', {
             this.timelineList.splice(timeline_index, 1);
             delete this.timelines[timeline_id];
             //TODO we don't need to send changes to the backend
-            this.commit("timelineSegment/deleteTimeline", timeline_id, {
-                root: true,
-            });
+
+            const timelineSegmentStore = useTimelineSegmentStore();
+            timelineSegmentStore.deleteTimeline(timeline_id);
+
 
             return axios
                 .post(`${config.API_LOCATION}/timeline/delete`, params)
@@ -272,7 +272,6 @@ export const useTimelineStore = defineStore('timeline', {
             let params = {
                 order: order,
             };
-            console.log(order);
 
             Vue.set(this, "timelineList", args.order);
 
@@ -284,19 +283,45 @@ export const useTimelineStore = defineStore('timeline', {
                     }
                 });
         },
-        add(timelines) {
+        addToStore(timelines) {
             timelines.forEach((e, i) => {
                 this.timelines[e.id] = e;
                 this.timelineList.push(e.id);
             });
+            this.updateVisibleStore();
         },
-        replaceAll(timelines) {
+        replaceStore(timelines) {
             this.timelines = {};
             this.timelineList = [];
             timelines.forEach((e, i) => {
                 this.timelines[e.id] = e;
                 this.timelineList.push(e.id);
             });
+            this.updateVisibleStore();
         },
+        updateVisibleStore() {
+
+            function parentCollapsed(e) {
+                if (!e.parent_id) {
+                    return false;
+                }
+
+                let parent_id = e.parent_id;
+
+                while (parent_id != null) {
+                    let parent = this.timelineStore.get(parent_id);
+                    parent_id = parent.parent_id;
+                    if (parent.collapse) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            this.timelineList.map((e) => {
+                this.timelines[e].visible = !parentCollapsed(e);
+                return e;
+            });
+        }
     },
 })

@@ -17,16 +17,11 @@
 
             <v-row class="flex-grow-1">
               <v-col>
-                <VideoPlayer
-                  @resize="onVideoResize"
-                />
+                <VideoPlayer @resize="onVideoResize" />
               </v-col>
             </v-row>
             <v-row class="mb-2 px-4">
-              <TimeSelector
-                width="100%"
-                @resize="onVideoResize"
-              />
+              <TimeSelector width="100%" @resize="onVideoResize" />
             </v-row>
           </v-card>
         </v-col>
@@ -89,11 +84,6 @@
               <Timeline
                 ref="timeline"
                 width="100%"
-                :duration="duration"
-                :time="videoTime"
-                :timelines="timelines"
-                :startTime="startTime"
-                :endTime="endTime"
                 :selectedTimelineSegment="selectedTimelineSegment"
                 :selectedTimeline="selectedTimeline"
                 @copyTimeline="onCopyTimeline"
@@ -144,7 +134,6 @@ import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video";
 import { usePlayerStore } from "@/store/player";
 import { useShotStore } from "@/store/shot";
-
 
 export default {
   data() {
@@ -474,12 +463,10 @@ export default {
     shortcutAnnotationMap() {
       // const annotationShortcuts = this.$store.getters["annotationShortcut/all"];
       // const shortcuts = this.$store.getters["shortcut/all"];
-
       // let lutShortcuts = {};
       // shortcuts.forEach((e) => {
       //   lutShortcuts[e.id] = e;
       // });
-
       // let shortcutAnnotationMap = {};
       // annotationShortcuts.forEach((e) => {
       //   const keys = Keyboard.generateKeysString(
@@ -578,9 +565,9 @@ export default {
     // already being observed
     // this.fetch_data();
     // this.$store.dispatch('')
-    
+
     await this.videoStore.loadVideo({ videoId: this.$route.params.id });
-    this.shotStore.buildShots()
+    this.shotStore.buildShots();
   },
   mounted() {
     this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;

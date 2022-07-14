@@ -178,10 +178,14 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
 
             const timelineSegmentStore = useTimelineSegmentStore()
             timelineSegmentStore.all.forEach((e) => {
-                console.log(Math.floor(e.start))
-                console.log(Math.ceil(e.end))
-                console.log(e.start)
-                console.log(e.end)
+                for (var i = Math.floor(e.start); i < Math.ceil(e.end); i++) {
+                    // console.log(i)
+                    // TODO
+                }
+                // console.log(Math.floor(e.start))
+                // console.log(Math.ceil(e.end))
+                // console.log(e.start)
+                // console.log(e.end)
             })
         }
     },

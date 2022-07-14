@@ -193,25 +193,17 @@ import {
 import * as PIXI from "pixi.js";
 import { NoiseFilter } from "@pixi/filter-noise";
 
+import { mapStores } from "pinia";
+import { useTimelineStore } from "@/store/timeline";
+import { useTimelineSegmentStore } from "@/store/timeline_segment";
+import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
+import { useAnnotationStore } from "@/store/annotation";
+import { useAnnotationCategoryStore } from "@/store/annotation_category";
+import { usePlayerStore } from "@/store/player";
+
 export default {
   mixins: [TimeMixin],
   props: {
-    duration:{
-      type: Number,
-      default: 5000,
-    },
-    time: {
-      type: Number,
-    },
-    timelines: {},
-    startTime: {
-      type: Number,
-      default: 0,
-    },
-    endTime: {
-      type: Number,
-      default: 5000,
-    },
     selectedTimelineSegment: {
       default: [],
       type: Array,
@@ -352,7 +344,7 @@ export default {
       });
     },
     draw() {
-      this.drawTimeline();
+      this.drawTimelines();
       this.drawScale();
       this.drawTimeBar();
     },
@@ -409,161 +401,216 @@ export default {
       this.timeScaleObjects.push(timeline);
       this.app.stage.addChild(this.timeScalesContainer);
     },
-    drawTimeline() {
-      let startTime = 0;
-      if (this.startTime) {
-        startTime = this.startTime;
-      }
 
+    drawTimelines() {
       if (this.timelinesContainer) {
         this.app.stage.removeChild(this.timelinesContainer);
       }
-
-      let self = this;
-      function parentCollapsed(e) {
-        if (!e.parent_id) {
-          return false;
-        }
-
-        let parent_id = e.parent_id;
-
-        while (parent_id != null) {
-          let parent = self.$store.getters["timeline/get"](parent_id);
-          console.log(parent);
-          parent_id = parent.parent_id;
-          if (parent.collapse) {
-            return true;
-          }
-        }
-
-        return false;
-      }
-
       this.timelinesContainer = new PIXI.Container();
       this.timelineObjects = [];
-      this.timelines
-        .filter((e) => !parentCollapsed(e))
-        .forEach((e, i) => {
-          const x = this.timeToX(startTime);
-          const y =
-            (this.gap + this.timelineHeight) * i +
-            this.scaleHeight +
-            2 * this.gap;
-          const width = this.timeToX(this.endTime) - x;
-          const height = this.timelineHeight;
-          var timeline = null;
 
-          if (e.type == "A") {
-            timeline = new AnnotationTimeline(
-              e,
-              width,
-              height,
-              this.startTime,
-              this.endTime,
-              this.duration,
-            );
+      this.timelines.forEach((e, i) => {
+        const x = this.timeToX(this.startTime);
+        const y =
+          (this.gap + this.timelineHeight) * i +
+          this.scaleHeight +
+          2 * this.gap;
+        const width = this.timeToX(this.endTime) - x;
+        const height = this.timelineHeight;
 
-            timeline.x = x;
-            timeline.y = y;
-            timeline.on("segmentRightDown", (ev) => {
-              const point = this.mapToGlobal(ev.event.data.global);
-              this.segmentMenu.show = true;
-              this.segmentMenu.x = point.x;
-              this.segmentMenu.y = point.y;
-              this.segmentMenu.selected = ev.segment.segment.id;
-              this.$nextTick(() => {
-                this.showMenu = true;
-              });
-            });
-            timeline.on("segmentClick", (ev) => {
-              if (ev.event.data.originalEvent.ctrlKey) {
-                this.$emit("addSelection", ev.segment.segment.id);
-              } else {
-                this.$emit("select", ev.segment.segment.id);
-              }
-              const targetTime = this.xToTime(ev.event.data.global.x);
-              this.$emit("update:time", targetTime);
-            });
-            timeline.on("segmentOver", (ev) => {
-              if (ev.segment.segment.annotations.length > 0) {
-                const tooltipPoint = {
-                  x: ev.event.data.global.x,
-                  y: ev.segment.y,
-                };
-                const point = this.mapToGlobal(tooltipPoint);
-                this.segmentContext.show = true;
-                this.segmentContext.x = point.x;
-                this.segmentContext.y = point.y;
-                this.segmentContext.selected = ev.segment.segment.id;
+        let timeline = null;
+        if (e.type == "A") {
+          timeline = this.drawAnnotationTimeline(e, width, height);
+        } else if (e.type == "R") {
+          timeline = this.drawGraphicTimeline(e, width, height);
+        }
 
-                const annotations = ev.segment.segment.annotations.map((e) => {
-                  return e.annotation.name;
-                });
-                this.segmentContext.label = annotations.join("; ");
-              }
-            });
-            timeline.on("segmentOut", (ev) => {
-              this.segmentContext.show = false;
-            });
-          } else if (e.type == "R" && "plugin" in e) {
-            console.log(this.duration)
-            if (e.visualization == "C") {
-              timeline = new ColorTimeline({
-                width: width,
-                height: height,
-                startTime: this.startTime,
-                endTime: this.endTime,
-                duration: this.duration,
-                data: e.plugin.data,
-                renderer: this.app.renderer,
-                resolution: 0.1,
-              });
-            }
-            if (e.visualization == "SC") {
-              timeline = new ScalarColorTimeline({
-                width: width,
-                height: height,
-                startTime: this.startTime,
-                endTime: this.endTime,
-                duration: this.duration,
-                data: e.plugin.data,
-                renderer: this.app.renderer,
-                resolution: 0.1,
-              });
-            }
-            if (e.visualization == "SL") {
-              timeline = new ScalarLineTimeline({
-                width: width,
-                height: height,
-                startTime: this.startTime,
-                endTime: this.endTime,
-                duration: this.duration,
-                data: e.plugin.data,
-                renderer: this.app.renderer,
-                resolution: 0.1,
-              });
-            }
-            if (e.visualization == "H") {
-              timeline = new HistTimeline({
-                width: width,
-                height: height,
-                startTime: this.startTime,
-                endTime: this.endTime,
-                duration: this.duration,
-                data: e.plugin.data,
-                renderer: this.app.renderer,
-                resolution: 0.1,
-              });
-            }
-          }
+        if (timeline) {
+          timeline.x = x;
+          timeline.y = y;
+          this.timelinesContainer.addChild(timeline);
+          this.timelineObjects.push(timeline);
+        }
+      });
 
-          if (timeline) {
-            timeline.x = x;
-            timeline.y = y;
-            this.timelinesContainer.addChild(timeline);
-            this.timelineObjects.push(timeline);
-          }
+      this.app.stage.addChild(this.timelinesContainer);
+    },
+    drawAnnotationTimeline(timeline, width, height) {
+      const timelineSegmentStore = useTimelineSegmentStore();
+      const timelineSegmentAnnotationStore =
+        useTimelineSegmentAnnotationStore();
+      const annotationStore = useAnnotationStore();
+      const annotationCategoryStore = useAnnotationCategoryStore();
+
+      let segments = timelineSegmentStore.forTimeline(timeline.id);
+      segments.forEach((s) => {
+        let annotations = timelineSegmentAnnotationStore.forTimelineSegment(
+          s.id
+        );
+        annotations.forEach((a) => {
+          a.annotation = annotationStore.get(a.annotation_id);
         });
+        annotations.forEach((a) => {
+          a.category = annotationCategoryStore.get(a.category_id);
+        });
+        s.annotations = annotations;
+      });
+      timeline.segments = segments;
+
+      let drawnTimeline = new AnnotationTimeline(
+        timeline,
+        width,
+        height,
+        this.startTime,
+        this.endTime,
+        this.duration
+      );
+      drawnTimeline.on("segmentRightDown", (ev) => {
+        const point = this.mapToGlobal(ev.event.data.global);
+        this.segmentMenu.show = true;
+        this.segmentMenu.x = point.x;
+        this.segmentMenu.y = point.y;
+        this.segmentMenu.selected = ev.segment.segment.id;
+        this.$nextTick(() => {
+          this.showMenu = true;
+        });
+      });
+      drawnTimeline.on("segmentClick", (ev) => {
+        if (ev.event.data.originalEvent.ctrlKey) {
+          this.$emit("addSelection", ev.segment.segment.id);
+        } else {
+          this.$emit("select", ev.segment.segment.id);
+        }
+        const targetTime = this.xToTime(ev.event.data.global.x);
+        this.$emit("update:time", targetTime);
+      });
+      drawnTimeline.on("segmentOver", (ev) => {
+        if (ev.segment.segment.annotations.length > 0) {
+          const tooltipPoint = {
+            x: ev.event.data.global.x,
+            y: ev.segment.y,
+          };
+          const point = this.mapToGlobal(tooltipPoint);
+          this.segmentContext.show = true;
+          this.segmentContext.x = point.x;
+          this.segmentContext.y = point.y;
+          this.segmentContext.selected = ev.segment.segment.id;
+
+          const annotations = ev.segment.segment.annotations.map((e) => {
+            return e.annotation.name;
+          });
+          this.segmentContext.label = annotations.join("; ");
+        }
+      });
+      drawnTimeline.on("segmentOut", (ev) => {
+        this.segmentContext.show = false;
+      });
+      return drawnTimeline;
+    },
+    drawGraphicTimeline(timeline, width, height) {
+      const timelineSegmentStore = useTimelineSegmentStore();
+      const timelineSegmentAnnotationStore =
+        useTimelineSegmentAnnotationStore();
+      const annotationStore = useAnnotationStore();
+      const annotationCategoryStore = useAnnotationCategoryStore();
+    },
+    drawTimeline(timeline) {
+      this.timelinesContainer = new PIXI.Container();
+      this.timelineObjects = [];
+      this.timelines.forEach((e, i) => {
+        const x = this.timeToX(this.startTime);
+        const y =
+          (this.gap + this.timelineHeight) * i +
+          this.scaleHeight +
+          2 * this.gap;
+        const width = this.timeToX(this.endTime) - x;
+        const height = this.timelineHeight;
+        var timeline = null;
+
+        if (e.type == "A") {
+          let segments = this.timelineSegmentStore.forTimeline(e.id);
+          segments.forEach((s) => {
+            let annotations =
+              this.timelineSegmentAnnotationStore.forTimelineSegment(s.id);
+            annotations.forEach((a) => {
+              a.annotation = this.annotationStore.get(a.annotation_id);
+            });
+            annotations.forEach((a) => {
+              a.category = this.annotationCategoryStore.get(a.category_id);
+            });
+            s.annotations = annotations;
+          });
+          e.segments = segments;
+          timeline = new AnnotationTimeline(
+            e,
+            width,
+            height,
+            this.startTime,
+            this.endTime,
+            this.duration
+          );
+
+          timeline.x = x;
+          timeline.y = y;
+        } else if (e.type == "R" && "plugin" in e) {
+          console.log(this.duration);
+          if (e.visualization == "C") {
+            timeline = new ColorTimeline({
+              width: width,
+              height: height,
+              startTime: this.startTime,
+              endTime: this.endTime,
+              duration: this.duration,
+              data: e.plugin.data,
+              renderer: this.app.renderer,
+              resolution: 0.1,
+            });
+          }
+          if (e.visualization == "SC") {
+            timeline = new ScalarColorTimeline({
+              width: width,
+              height: height,
+              startTime: this.startTime,
+              endTime: this.endTime,
+              duration: this.duration,
+              data: e.plugin.data,
+              renderer: this.app.renderer,
+              resolution: 0.1,
+            });
+          }
+          if (e.visualization == "SL") {
+            timeline = new ScalarLineTimeline({
+              width: width,
+              height: height,
+              startTime: this.startTime,
+              endTime: this.endTime,
+              duration: this.duration,
+              data: e.plugin.data,
+              renderer: this.app.renderer,
+              resolution: 0.1,
+            });
+          }
+          if (e.visualization == "H") {
+            timeline = new HistTimeline({
+              width: width,
+              height: height,
+              startTime: this.startTime,
+              endTime: this.endTime,
+              duration: this.duration,
+              data: e.plugin.data,
+              renderer: this.app.renderer,
+              resolution: 0.1,
+            });
+          }
+        }
+
+        if (timeline) {
+          timeline.x = x;
+          timeline.y = y;
+          this.timelinesContainer.addChild(timeline);
+          this.timelineObjects.push(timeline);
+        }
+      });
       this.app.stage.addChild(this.timelinesContainer);
     },
     drawSelection(selectedTimelineSegment) {
@@ -655,46 +702,37 @@ export default {
       });
     },
   },
-  watch: {
-    // duration(value) {
-    //   console.log("duration")
-    //   console.log(value)
+  computed: {
+    duration() {
+      let duration = this.playerStore.videoDuration;
+      return duration;
+    },
+    startTime() {
+      let start = this.playerStore.selectedTimeRange.start;
+      return start;
+    },
+    endTime() {
+      let end = this.playerStore.selectedTimeRange.end;
+      return end;
+    },
+    timelines() {
+      let timelines = this.timelineStore.all;
+      return timelines;
+    },
+    timeScale() {
+      return this.containerWidth / (this.endTime - this.startTime);
+    },
+    computedHeight() {
+      return (
+        this.timelines.length * (this.timelineHeight + this.gap) +
+        this.scaleHeight +
+        3 * this.gap
+      );
+    },
 
-    //   this.timelineObjects.forEach((e) => {
-    //     e.startTime = 0;
-    //     e.endTime = value;
-    //   });
-    //   this.timeScaleObjects.forEach((e) => {
-    //     e.startTime = 0;
-    //     e.endTime = value;
-    //   });
-    //   this.timeBarsObjects.forEach((e) => {
-    //     e.startTime = 0;
-    //     e.endTime = value;
-    //   });
-    // },
-    // startTime(value) {
-    //   this.timelineObjects.forEach((e) => {
-    //     e.startTime = value;
-    //   });
-    //   this.timeScaleObjects.forEach((e) => {
-    //     e.startTime = value;
-    //   });
-    //   this.timeBarsObjects.forEach((e) => {
-    //     e.startTime = value;
-    //   });
-    // },
-    // endTime(value) {
-    //   this.timelineObjects.forEach((e) => {
-    //     e.endTime = value;
-    //   });
-    //   this.timeScaleObjects.forEach((e) => {
-    //     e.endTime = value;
-    //   });
-    //   this.timeBarsObjects.forEach((e) => {
-    //     e.endTime = value;
-    //   });
-    // },
+    ...mapStores(useTimelineStore, usePlayerStore),
+  },
+  watch: {
     timelines(values) {
       function findChildren(elem, parent) {
         var hierarchy = [];
@@ -723,18 +761,6 @@ export default {
     selectedTimelineSegment(newSelection, oldSelection) {
       this.removeSelection(oldSelection);
       this.drawSelection(newSelection);
-    },
-  },
-  computed: {
-    timeScale() {
-      return this.containerWidth / (this.endTime - this.startTime);
-    },
-    computedHeight() {
-      return (
-        this.timelines.length * (this.timelineHeight + this.gap) +
-        this.scaleHeight +
-        3 * this.gap
-      );
     },
   },
   mounted() {
