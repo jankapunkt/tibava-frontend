@@ -153,6 +153,10 @@ function onlySpaces(str) {
   return /^\s*$/.test(str);
 }
 
+
+import { mapStores } from "pinia";
+import { useTimelineSegmentStore } from "@/store/timeline_segment";
+
 export default {
   props: ["timelineSegment", "annotations", "annotationCategories", "show"],
   data() {
@@ -187,6 +191,8 @@ export default {
     items() {
       return this.hiddenAnnotations;
     },
+    
+    ...mapStores(useTimelineSegmentStore),
   },
   methods: {
     onDeleteItem(index) {
@@ -329,7 +335,7 @@ export default {
         return;
       }
       this.isSubmitting = true;
-      await this.$store.dispatch("timelineSegment/annotate", {
+      await this.timelineSegmentStore.annotate({
         timelineSegmentId: this.timelineSegment.id,
         annotations: inputs,
       });

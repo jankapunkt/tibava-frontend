@@ -39,7 +39,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             return axios.post(`${config.API_LOCATION}/annotation/category/create`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        this.add([res.data.entry]);
+                        this.addToStore([res.data.entry]);
                         return res.data.entry.id;
                     }
                 })
@@ -66,7 +66,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             return axios.get(`${config.API_LOCATION}/annotation/category/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        this.replaceAll(res.data.entries);
+                        this.replaceStore(res.data.entries);
                     }
                 })
             // .catch((error) => {
@@ -75,14 +75,14 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             // });
         },
 
-        add(annotationCategories) {
+        addToStore(annotationCategories) {
             annotationCategories.forEach((e, i) => {
                 this.annotationCategories[e.id] = e
                 this.annotationCategoryList.push(e.id)
             });
         },
 
-        replaceAll(annotationCategories) {
+        replaceStore(annotationCategories) {
             this.annotationCategories = {}
             this.annotationCategoryList = []
             annotationCategories.forEach((e, i) => {

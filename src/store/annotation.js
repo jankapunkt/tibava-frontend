@@ -36,9 +36,9 @@ export const useAnnotationStore = defineStore('annotation', {
             } else {
 
                 const playerStore = usePlayerStore();
-                const video = playerStore.video();
-                if (video) {
-                    params.video_id = video.id;
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
                 }
             }
 
@@ -47,7 +47,7 @@ export const useAnnotationStore = defineStore('annotation', {
                 .post(`${config.API_LOCATION}/annotation/create`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.add([res.data.entry]);
+                        this.addToStore([res.data.entry]);
                         return res.data.entry.id;
                     }
                 });
@@ -71,7 +71,7 @@ export const useAnnotationStore = defineStore('annotation', {
                 .then((res) => {
                     console.log(res.data);
                     if (res.data.status === "ok") {
-                        this.update([
+                        this.updateInStore([
                             {
                                 id: annotationId,
                                 color: color,
@@ -123,7 +123,7 @@ export const useAnnotationStore = defineStore('annotation', {
                 .get(`${config.API_LOCATION}/annotation/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceAll(res.data.entries);
+                        this.replaceStore(res.data.entries);
                     }
                 });
             // .catch((error) => {
@@ -131,20 +131,20 @@ export const useAnnotationStore = defineStore('annotation', {
             //     commit('error/update', info, { root: true });
             // });
         },
-        update(annotations) {
+        updateInStore(annotations) {
             const newAnnotations = { ...this.annotations };
             annotations.forEach((e, i) => {
                 Vue.set(newAnnotations, e.id, e);
             });
             this.annotations = newAnnotations;
         },
-        add(annotations) {
+        addToStore(annotations) {
             annotations.forEach((e, i) => {
                 this.annotations[e.id] = e;
                 this.annotationList.push(e.id);
             });
         },
-        replaceAll(annotations) {
+        replaceStore(annotations) {
             this.annotations = {};
             this.annotationList = [];
             annotations.forEach((e, i) => {

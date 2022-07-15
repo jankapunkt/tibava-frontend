@@ -3,6 +3,10 @@ import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
 
+import { useTimelineSegmentAnnotationStore } from '@/store/timeline_segment_annotation'
+import { useAnnotationCategoryStore } from '@/store/annotation_category'
+import { useAnnotationStore } from '@/store/annotation'
+
 export const useTimelineSegmentStore = defineStore('timelineSegment', {
     state: () => {
         return {
@@ -36,29 +40,23 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 annotations: annotations,
             };
 
-            const videoId = this.getters["video/current"].id;
-
-            console.log(
-                `TIMELINE_SEGMENT_ANNOTATE ${JSON.stringify(params)} ${videoId}`
-            );
             return axios
                 .post(`${config.API_LOCATION}/timeline/segment/annotate`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.commit(
-                            "timelineSegmentAnnotation/delete",
-                            res.data.timeline_segment_annotation_deleted
+                        const timelineSegmentAnnotationStore = useTimelineSegmentAnnotationStore();
+                        const annotationCategoryStore = useAnnotationCategoryStore();
+                        const annotationStore = useAnnotationStore();
+
+                        timelineSegmentAnnotationStore.deleteFromStore(res.data.timeline_segment_annotation_deleted
                         );
-                        this.commit(
-                            "timelineSegmentAnnotation/add",
-                            res.data.timeline_segment_annotation_added
+                        timelineSegmentAnnotationStore.addToStore(res.data.timeline_segment_annotation_added
                         );
 
-                        this.commit(
-                            "annotationCategory/add",
+                        annotationCategoryStore.addToStore(
                             res.data.annotation_category_added
                         );
-                        this.commit("annotation/add", res.data.annotation_added);
+                        annotationStore.addToStore(res.data.annotation_added);
                         // this.dispatch("annotationCategory/listUpdate", {videoId})
                         // this.dispatch("annotation/listUpdate", {videoId})
 
