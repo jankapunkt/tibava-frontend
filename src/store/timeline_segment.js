@@ -57,17 +57,6 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                             res.data.annotation_category_added
                         );
                         annotationStore.addToStore(res.data.annotation_added);
-                        // this.dispatch("annotationCategory/listUpdate", {videoId})
-                        // this.dispatch("annotation/listUpdate", {videoId})
-
-                        // this.dispatch("timeline/listUpdate", {videoId})
-                        // this.dispatch("timelineSegment/listUpdate", {videoId})
-                        // this.dispatch("timelineSegmentAnnotation/listUpdate", {videoId})
-
-                        // commit('add', [res.data.entry]);
-
-                        // commit('timelineSegment/addAnnotation', [{ timelineSegmentId, entry: res.data.entry }], { root: true });
-                        // return res.data.entry.id;
                     }
                 });
             // .catch((error) => {
@@ -180,7 +169,6 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             timelineSegments.forEach((e, i) => {
                 state.timelineSegments[e.id] = e;
                 state.timelineSegmentList.push(e.id);
-                // this.dispatch("timelineSegmentAnnotation/listAdd", e.id);
             });
             timelineSegments = timelineSegments.sort((a, b) => {
                 return a.start - b.start;
@@ -202,7 +190,6 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             timelineSegments.forEach((e, i) => {
                 this.timelineSegments[e.id] = e;
                 this.timelineSegmentList.push(e.id);
-                // this.dispatch("timelineSegmentAnnotation/listAdd", e.id);
             });
         },
         // delete(state, timeline_id) {

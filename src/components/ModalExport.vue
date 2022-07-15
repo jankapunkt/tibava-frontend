@@ -42,6 +42,9 @@
 
 <script>
 import AnnotationForm from "./AnnotationForm.vue";
+import { mapStores } from "pinia";
+import { useVideoStore } from "@/store/video";
+
 export default {
   components: { AnnotationForm },
   props: [],
@@ -50,15 +53,17 @@ export default {
       show: false,
     };
   },
-  computed: {},
+  computed: {
+    ...mapStores(useVideoStore)
+  },
   methods: {
     async downloadCSV() {
-      this.$store.dispatch("video/exportCSV", {}).then(() => {
+      this.videoStore.exportCSV().then(() => {
         this.show = false;
       });
     },
     async downloadJson() {
-      await this.$store.dispatch("video/exportJson", {}).then(() => {
+      await this.videoStore.exportJson().then(() => {
         this.show = false;
       });
     },

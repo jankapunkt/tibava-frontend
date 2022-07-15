@@ -401,117 +401,8 @@ export default {
       let duration = this.playerStore.videoDuration;
       return duration;
     },
-    annotationCategories() {
-      // return this.$store.getters["annotationCategory/all"];
-    },
-    annotationsLut() {
-      // return this.$store.state.annotation.annotations;
-    },
-    annotations() {
-      // let annotations = this.$store.getters["annotation/all"];
-      // annotations = annotations.map((e) => {
-      //   if ("category_id" in e) {
-      //     e["category"] = this.$store.getters["annotationCategory/get"](
-      //       e.category_id
-      //     );
-      //   }
-      //   return e;
-      // });
-      // return annotations;
-    },
-    shortcutAnnotationMap() {
-      // const annotationShortcuts = this.$store.getters["annotationShortcut/all"];
-      // const shortcuts = this.$store.getters["shortcut/all"];
-      // let lutShortcuts = {};
-      // shortcuts.forEach((e) => {
-      //   lutShortcuts[e.id] = e;
-      // });
-      // let shortcutAnnotationMap = {};
-      // annotationShortcuts.forEach((e) => {
-      //   const keys = Keyboard.generateKeysString(
-      //     lutShortcuts[e.shortcut_id].keys
-      //   );
-      //   if (shortcutAnnotationMap[keys] == null) {
-      //     shortcutAnnotationMap[keys] = [];
-      //   }
-      //   shortcutAnnotationMap[keys].push(e.annotation_id);
-      // });
-      // return shortcutAnnotationMap;
-    },
     timelines() {
       return this.timelineStore.forVideo(this.$route.params.id);
-    },
-    segmentsAnnotations() {
-      // let segmentsAnnotations = [];
-      // let timelines = this.$store.getters["timeline/forVideo"](
-      //   this.$route.params.id
-      // );
-      // let most_segments = null;
-      // let timeline_name = null;
-      // timelines.forEach((e) => {
-      //   let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
-      //   if (
-      //     most_segments == null ||
-      //     this.$store.getters["timelineSegment/forTimeline"](e.id).length <
-      //       segments.length
-      //   ) {
-      //     most_segments = segments;
-      //     timeline_name = e.name;
-      //   }
-      // });
-      // if (most_segments) {
-      //   let pos = 0;
-      //   most_segments.forEach((s) => {
-      //     let annotations = this.$store.getters[
-      //       "timelineSegmentAnnotation/forTimelineSegment"
-      //     ](s.id);
-      //     let annotations_simplified = [];
-      //     annotations.forEach((a) => {
-      //       let anno = this.$store.getters["annotation/get"](a.annotation_id);
-      //       let category = this.$store.getters["annotationCategory/get"](
-      //         anno.category_id
-      //       ).name;
-      //       var anno_info = new this.AnnotationInformation(
-      //         anno.id,
-      //         anno.name,
-      //         category,
-      //         anno.color,
-      //         s.start,
-      //         s.end,
-      //         timeline_name
-      //       );
-      //       annotations_simplified.push(anno_info);
-      //     });
-      //     if (annotations_simplified.length) {
-      //       var info_segment = new this.TimeSegments(
-      //         pos,
-      //         timeline_name,
-      //         s.start,
-      //         s.end,
-      //         annotations_simplified
-      //       );
-      //       segmentsAnnotations.push(info_segment);
-      //     }
-      //     pos = pos + 1;
-      //   });
-      // }
-      // return segmentsAnnotations;
-    },
-
-    currentSegmentsAnnotations() {
-      // let current_annotations = [];
-      // let current_second = Math.trunc(this.videoTime);
-      // if (this.annotationsLUT) {
-      //   let annotations = this.annotationsLUT[current_second];
-      //   if (annotations) {
-      //     annotations.forEach((a) => {
-      //       if (a.start <= this.videoTime && a.end >= this.videoTime) {
-      //         current_annotations.push(a);
-      //       }
-      //     });
-      //   }
-      // }
-      // return current_annotations;
     },
     shots() {
       return this.shotStore.shots;
@@ -522,8 +413,6 @@ export default {
   async created() {
     // fetch the data when the view is created and the data is
     // already being observed
-    // this.fetch_data();
-    // this.$store.dispatch('')
 
     await this.videoStore.loadVideo({ videoId: this.$route.params.id });
     this.shotStore.buildShots();
@@ -534,46 +423,6 @@ export default {
     // document.addEventListener("keydown", (e) => {
 
     // });
-  },
-  watch: {
-    // call again the method if the route changes
-    // $route: "fetch",
-    currentTime() {
-      this.videoTime = this.currentTime;
-    },
-    segmentsAnnotations() {
-      let seconds = Math.trunc(this.duration);
-      let lut = {};
-      for (let i = 0; i <= seconds; i++) {
-        lut[i] = [];
-        let current_segments =
-          this.$store.getters["timelineSegment/forTime"](i);
-        current_segments.forEach((s) => {
-          let annotations = this.$store.getters[
-            "timelineSegmentAnnotation/forTimelineSegment"
-          ](s.id);
-          annotations.forEach((a) => {
-            let anno = this.$store.getters["annotation/get"](a.annotation_id);
-            let category = "";
-            if (anno.category_id) {
-              category = this.$store.getters["annotationCategory/get"](
-                anno.category_id
-              ).name;
-            }
-            var anno_info = new this.AnnotationInformation(
-              anno.id,
-              anno.name,
-              category,
-              anno.color,
-              s.start,
-              s.end
-            );
-            lut[i].push(anno_info);
-          });
-        });
-      }
-      this.annotationsLUT = lut;
-    },
   },
   components: {
     VideoPlayer,

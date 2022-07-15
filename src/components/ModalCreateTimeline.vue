@@ -35,6 +35,8 @@
 
 <script>
 import Vue from "vue";
+import { mapStores } from "pinia";
+import { useTimelineStore } from "@/store/timeline";
 
 export default {
   props: ["timeline"],
@@ -46,6 +48,10 @@ export default {
       items: [],
     };
   },
+  computed:{
+
+    ...mapStores(useTimelineStore)
+  },
   methods: {
     async submit() {
       if (this.isSubmitting) {
@@ -53,7 +59,7 @@ export default {
       }
       this.isSubmitting = true;
 
-      await this.$store.dispatch("timeline/create", {
+      await this.timelineStore.create({
         name: this.name,
       });
 

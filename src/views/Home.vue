@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     delete_video(video_id) {
-      this.$store.dispatch("video/delete", video_id);
+      this.videoStore.delete(video_id);
     },
     show_video(video_id) {
       router.push({ path: `/videoanalysis/${video_id}` });
@@ -72,9 +72,9 @@ export default {
       // Ask backend about all videos
       await this.videoStore.list();
 
-      // await this.$store.dispatch("pluginRun/listUpdate", {
-      //   addResults: false,
-      // });
+      await this.pluginRunStore.listUpdate({
+        addResults: false,
+      });
     },
   },
   computed: {

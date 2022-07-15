@@ -316,7 +316,7 @@ export default {
   methods: {
     nodeOpenChanged(node) {
       // on a node is closed or open(node)
-      this.$store.dispatch("timeline/setcollapse", {
+      this.timelineStore.setCollapse( {
         timelineId: node.id,
         collapse: !node.open,
       });
@@ -335,12 +335,12 @@ export default {
       }
 
       let order = timelineOrder(this.timelineHierarchy);
-      this.$store.dispatch("timeline/setorder", {
+      this.timelineStore.setOrder( {
         order: order,
       });
 
       // set new parent of node
-      this.$store.dispatch("timeline/setparent", {
+      this.timelineStore.setParent( {
         timelineId: node.id,
         parentId: node.parent.id,
       });
