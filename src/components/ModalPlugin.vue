@@ -48,9 +48,16 @@
               </v-card-text>
 
               <v-card-actions class="pt-0">
-                <v-btn @click="runPlugin(plugin.plugin, plugin.parameters)">{{
-                  $t("modal.plugin.run")
-                }}</v-btn>
+                <v-btn
+                  @click="
+                    runPlugin(
+                      plugin.plugin,
+                      plugin.parameters,
+                      plugin.optional_parameters
+                    )
+                  "
+                  >{{ $t("modal.plugin.run") }}</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-tab-item>
@@ -246,7 +253,8 @@ export default {
     },
   },
   methods: {
-    async runPlugin(plugin, parameters) {
+    async runPlugin(plugin, parameters, optional_parameters) {
+      parameters = parameters.concat(optional_parameters);
       parameters = parameters.map((e) => {
         return { name: e.name, value: e.value };
       });
