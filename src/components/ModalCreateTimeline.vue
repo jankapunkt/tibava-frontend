@@ -49,7 +49,6 @@ export default {
     };
   },
   computed:{
-
     ...mapStores(useTimelineStore)
   },
   methods: {

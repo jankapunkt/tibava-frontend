@@ -113,6 +113,8 @@
     >
       <span>{{ segmentContext.label }}</span>
     </v-tooltip>
+
+    <ModalTimelineSegmentAnnotate></ModalTimelineSegmentAnnotate>
     <v-menu
       v-model="segmentMenu.show"
       :position-x="segmentMenu.x"
@@ -180,6 +182,8 @@ import ModalDeleteTimeline from "@/components/ModalDeleteTimeline.vue";
 import ModalCreateTimeline from "@/components/ModalCreateTimeline.vue";
 import ModalVisualizationTimeline from "@/components/ModalVisualizationTimeline.vue";
 import ModalImportTimeline from "@/components/ModalImportTimeline.vue";
+import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
+
 import {
   AnnotationTimeline,
   ColorTimeline,
@@ -514,8 +518,6 @@ export default {
       const pluginRunResultStore = usePluginRunResultStore();
       if ("plugin_run_result_id" in timeline) {
         const result = pluginRunResultStore.get(timeline.plugin_run_result_id);
-        console.log(timeline.plugin_run_result_id);
-        console.log(result);
         if (result === undefined) {
           return null;
         } else {
@@ -895,6 +897,7 @@ export default {
     ModalVisualizationTimeline,
     ModalImportTimeline,
     DraggableTree,
+    ModalTimelineSegmentAnnotate,
   },
 };
 </script>

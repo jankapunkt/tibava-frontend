@@ -2,6 +2,7 @@ import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
+import { useTimelineSegmentStore } from '@/store/timeline_segment'
 
 export const useTimelineStore = defineStore('timeline', {
     state: () => {
@@ -188,7 +189,7 @@ export const useTimelineStore = defineStore('timeline', {
             };
 
             const newTimelines = { ...this.timelines };
-            newTimelines[args.timelineId].name = args.name;
+            newTimelines[timelineId].name = name;
             Vue.set(this, "timelines", newTimelines);
 
             return axios
@@ -213,7 +214,7 @@ export const useTimelineStore = defineStore('timeline', {
 
 
             const newTimelines = { ...this.timelines };
-            newTimelines[args.timelineId].visualization = args.visualization;
+            newTimelines[timelineId].visualization = visualization;
             Vue.set(this, "timelines", newTimelines);
 
             return axios
@@ -238,7 +239,7 @@ export const useTimelineStore = defineStore('timeline', {
             console.log(params);
 
             const newTimelines = { ...this.timelines };
-            newTimelines[args.timelineId].parent_id = args.parentId;
+            newTimelines[timelineId].parent_id = parentId;
             Vue.set(this, "timelines", newTimelines);
 
             return axios
@@ -257,7 +258,7 @@ export const useTimelineStore = defineStore('timeline', {
             console.log(timelineId, collapse);
 
             const newTimelines = { ...this.timelines };
-            newTimelines[args.timelineId].collapse = args.collapse;
+            newTimelines[timelineId].collapse = collapse;
             Vue.set(this, "timelines", newTimelines);
 
             return axios

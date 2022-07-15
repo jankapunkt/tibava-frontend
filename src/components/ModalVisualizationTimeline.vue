@@ -90,9 +90,7 @@ export default {
         return;
       }
       this.isSubmitting = true;
-      console.log(this.visualization_options[this.visualization_idx].value);
-      console.log(this.timeline);
-      await this.timelineStore.changevisualization({
+      await this.timelineStore.changeVisualization({
         timelineId: this.timeline,
         visualization: this.visualization_options[this.visualization_idx].value,
       });

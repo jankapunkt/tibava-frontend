@@ -51,8 +51,7 @@ export default {
   computed: {
     name: {
       get() {
-        const name =
-          this.timelineStore.get(this.timeline).name + " (1)";
+        const name = this.timelineStore.get(this.timeline).name;
         return this.nameProxy === null ? name : this.nameProxy;
       },
       set(val) {

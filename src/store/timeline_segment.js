@@ -146,17 +146,17 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             //     commit('error/update', info, { root: true });
             // });
         },
-        addAnnotation(state, annotations) {
+        addAnnotation(annotations) {
             annotations.forEach((e) => {
-                state.timelineSegments[e.timelineSegmentId].annotation_ids.push(
+                this.timelineSegments[e.timelineSegmentId].annotation_ids.push(
                     e.entry.id
                 );
             });
         },
-        deleteAnnotation(state, timeline_segment_annotations) {
+        deleteAnnotation(timeline_segment_annotations) {
             timeline_segment_annotations.forEach((f) => {
-                state.timelineSegmentList
-                    .map((id) => state.timelineSegments[id])
+                this.timelineSegmentList
+                    .map((id) => this.timelineSegments[id])
                     .forEach((e) => {
                         let index = e.annotation_ids.findIndex((k) => k === f);
                         if (index >= 0) {
@@ -165,20 +165,20 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                     });
             });
         },
-        add(state, timelineSegments) {
+        add(timelineSegments) {
             timelineSegments.forEach((e, i) => {
-                state.timelineSegments[e.id] = e;
-                state.timelineSegmentList.push(e.id);
+                this.timelineSegments[e.id] = e;
+                this.timelineSegmentList.push(e.id);
             });
             timelineSegments = timelineSegments.sort((a, b) => {
                 return a.start - b.start;
             });
         },
-        delete(state, ids) {
+        delete(ids) {
             ids.forEach((id, i) => {
-                let index = state.timelineSegmentList.findIndex((f) => f === id);
-                state.timelineSegmentList.splice(index, 1);
-                delete state.timelineSegments[id];
+                let index = this.timelineSegmentList.findIndex((f) => f === id);
+                this.timelineSegmentList.splice(index, 1);
+                delete this.timelineSegments[id];
             });
         },
         replaceAll(timelineSegments) {
@@ -192,25 +192,25 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 this.timelineSegmentList.push(e.id);
             });
         },
-        // delete(state, timeline_id) {
-        //     let timeline_index = state.timelines.findIndex(e => e.id === timeline_id);
-        //     state.timelines.splice(timeline_index, 1);
+        // delete(this, timeline_id) {
+        //     let timeline_index = this.timelines.findIndex(e => e.id === timeline_id);
+        //     this.timelines.splice(timeline_index, 1);
         // },
 
-        clear(state) {
+        clear() {
             this.timelineSegmentList = [];
             this.timelineSegments = {};
         },
-        deleteTimeline(state, timeline_id) {
-            const timeline_indexes = state.timelineSegmentList
-                .map((id) => state.timelineSegments[id])
+        deleteTimeline(timeline_id) {
+            const timeline_indexes = this.timelineSegmentList
+                .map((id) => this.timelineSegments[id])
                 .filter((e) => e.timeline_id === timeline_id);
             timeline_indexes.forEach((e) => {
-                let segment_index = state.timelineSegmentList.findIndex(
+                let segment_index = this.timelineSegmentList.findIndex(
                     (f) => f === e.id
                 );
-                state.timelineSegmentList.splice(segment_index, 1);
-                delete state.timelineSegments[e.id];
+                this.timelineSegmentList.splice(segment_index, 1);
+                delete this.timelineSegments[e.id];
             });
         },
     },

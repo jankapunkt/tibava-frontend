@@ -43,8 +43,7 @@
                 />
               </v-tab-item> -->
               <v-tab-item>
-                <CurrentEntitiesOverView :annotations="currentSegmentsAnnotations" :time="videoTime"
-                  @seek="onTimeUpdate" />
+                <CurrentEntitiesOverView/>
               </v-tab-item>
               <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item>
@@ -66,11 +65,6 @@
                 @mergeSegmentsRight="onMergeSegmentsRight" @deleteSegment="onDeleteSegment"
                 @update:time="onTagetTimeChange" @addSelection="onAddSelection" @select="onSelect">
               </Timeline>
-
-              <ModalTimelineSegmentAnnotate :show.sync="annotationDialog.show"
-                :timelineSegment="annotationDialog.selectedTimelineSegment" :annotations="annotations"
-                :annotationCategories="annotationCategories">
-              </ModalTimelineSegmentAnnotate>
             </v-flex>
           </v-card>
         </v-col>
@@ -84,7 +78,6 @@ import VideoPlayer from "@/components/VideoPlayer.vue";
 import ShotCard from "@/components/ShotCard.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
-import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 
@@ -429,7 +422,6 @@ export default {
     ShotCard,
     Timeline,
     TimeSelector,
-    ModalTimelineSegmentAnnotate,
     EntitiesCard,
     CurrentEntitiesOverView,
   },
