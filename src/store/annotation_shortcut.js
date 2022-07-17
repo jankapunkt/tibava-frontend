@@ -29,10 +29,11 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
             if (videoId) {
                 params.video_id = videoId;
             } else {
+
                 const playerStore = usePlayerStore();
-                const video = playerStore.video();
-                if (video) {
-                    params.video_id = video.id;
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
                 }
             }
 
@@ -57,10 +58,11 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
             if (videoId) {
                 params.video_id = videoId;
             } else {
+
                 const playerStore = usePlayerStore();
-                const video = playerStore.video();
-                if (video) {
-                    params.video_id = video.id;
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
                 }
             }
             console.log(`annotationShortcut::listUpdate ${JSON.stringify(params)}`);

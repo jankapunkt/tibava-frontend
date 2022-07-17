@@ -29,9 +29,9 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             }
             else {
                 const playerStore = usePlayerStore();
-                const video = playerStore.video();
-                if (video) {
-                    params.video_id = video.id;
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
                 }
             }
 
@@ -56,10 +56,10 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
                 params.video_id = videoId;
             }
             else {
-
-                const video = this.getters["video/current"];
-                if (video) {
-                    params.video_id = video.id
+                const playerStore = usePlayerStore();
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
                 }
             }
             // console.log(`AnnotationCategory::listUpdate ${JSON.stringify(params)}`)

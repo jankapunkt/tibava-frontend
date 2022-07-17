@@ -70,9 +70,9 @@ export default {
     },
     async fetchData() {
       // Ask backend about all videos
-      await this.videoStore.list();
+      await this.videoStore.fetchAll();
 
-      await this.pluginRunStore.listUpdate({
+      await this.pluginRunStore.fetchAll({
         addResults: false,
       });
     },
@@ -82,7 +82,7 @@ export default {
       let videos = this.videoStore.all;
       console.log(videos);
       videos.forEach((v) => {
-        v.pluginRuns = this.pluginRunStore.forVideo(v.id);
+        v.pluginRuns = this.pluginRunStore.fetchForVideo(v.id);
       });
       // videos.forEach((v) => {
       //   v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);

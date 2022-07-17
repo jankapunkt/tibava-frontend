@@ -33,9 +33,9 @@ export const useShortcutStore = defineStore('shortcut', {
             } else {
 
                 const playerStore = usePlayerStore();
-                const video = playerStore.video();
-                if (video) {
-                    params.video_id = video.id;
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
                 }
             }
 
@@ -62,9 +62,9 @@ export const useShortcutStore = defineStore('shortcut', {
             } else {
 
                 const playerStore = usePlayerStore();
-                const video = playerStore.video();
-                if (video) {
-                    params.video_id = video.id;
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
                 }
             }
             return axios

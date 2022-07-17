@@ -3,7 +3,12 @@
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
-          <v-card class="d-flex flex-column flex-nowrap px-2" elevation="2" v-resize="onVideoResize" ref="videoCard">
+          <v-card
+            class="d-flex flex-column flex-nowrap px-2"
+            elevation="2"
+            v-resize="onVideoResize"
+            ref="videoCard"
+          >
             <v-row>
               <v-card-title>
                 {{ playerStore.videoName }}
@@ -22,7 +27,12 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card class="overflow-auto" elevation="2" ref="resultCard" :height="resultCardHeight">
+          <v-card
+            class="overflow-auto"
+            elevation="2"
+            ref="resultCard"
+            :height="resultCardHeight"
+          >
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
@@ -32,7 +42,12 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
-                <ShotCard v-for="item in shots" v-bind:key="item.id" :shot="item" @seek="onTagetTimeChange" />
+                <ShotCard
+                  v-for="item in shots"
+                  v-bind:key="item.id"
+                  :shot="item"
+                  @seek="onTagetTimeChange"
+                />
               </v-tab-item>
               <!-- <v-tab-item>
                 <EntitiesCard
@@ -43,7 +58,7 @@
                 />
               </v-tab-item> -->
               <v-tab-item>
-                <CurrentEntitiesOverView/>
+                <CurrentEntitiesOverView />
               </v-tab-item>
               <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item>
@@ -54,16 +69,34 @@
 
       <v-row class="ma-2">
         <v-col>
-          <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
+          <v-card
+            class="d-flex flex-column flex-nowrap"
+            max-width="100%"
+            elevation="2"
+            scrollable="False"
+          >
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
-              <Timeline ref="timeline" width="100%" :selectedTimelineSegment="selectedTimelineSegment"
-                :selectedTimeline="selectedTimeline" @copyTimeline="onCopyTimeline" @renameTimeline="onRenameTimeline"
-                @changeTimelineVisualization="onChangeTimelineVisualization" @deleteTimeline="onDeleteTimeline"
-                @annotateSegment="onAnnotateSegment" @coloringSegment="onColoringSegment" @splitSegment="onSplitSegment"
-                @mergeSegments="onMergeSegments" @mergeSegmentsLeft="onMergeSegmentsLeft"
-                @mergeSegmentsRight="onMergeSegmentsRight" @deleteSegment="onDeleteSegment"
-                @update:time="onTagetTimeChange" @addSelection="onAddSelection" @select="onSelect">
+              <Timeline
+                ref="timeline"
+                width="100%"
+                :selectedTimelineSegment="selectedTimelineSegment"
+                :selectedTimeline="selectedTimeline"
+                @copyTimeline="onCopyTimeline"
+                @renameTimeline="onRenameTimeline"
+                @changeTimelineVisualization="onChangeTimelineVisualization"
+                @deleteTimeline="onDeleteTimeline"
+                @annotateSegment="onAnnotateSegment"
+                @coloringSegment="onColoringSegment"
+                @splitSegment="onSplitSegment"
+                @mergeSegments="onMergeSegments"
+                @mergeSegmentsLeft="onMergeSegmentsLeft"
+                @mergeSegmentsRight="onMergeSegmentsRight"
+                @deleteSegment="onDeleteSegment"
+                @update:time="onTagetTimeChange"
+                @addSelection="onAddSelection"
+                @select="onSelect"
+              >
               </Timeline>
             </v-flex>
           </v-card>
@@ -267,12 +300,11 @@ export default {
         this.annotationDialog.show = true;
       });
     },
-    onColoringSegment(id) { },
-    onDeleteSegment(id) { },
+    onColoringSegment(id) {},
+    onDeleteSegment(id) {},
 
     onAddSelection(segmentId) {
-      const segmentPos =
-        this.timelineStore.segmentPosition(segmentId);
+      const segmentPos = this.timelineStore.segmentPosition(segmentId);
 
       const selection = {
         timeline: segmentPos.timeline,
@@ -314,10 +346,7 @@ export default {
     },
     onMergeSegments(id) {
       const timelineSegmentIds = this.selectedTimelineSegment.map((e) => {
-        return this.timelineStore.getSegmentByPosition(
-          e.timeline,
-          e.segment
-        );
+        return this.timelineStore.getSegmentByPosition(e.timeline, e.segment);
       });
       this.timelineSegmentStore.merge({
         timelineSegmentIds: timelineSegmentIds,
@@ -327,7 +356,10 @@ export default {
       const selectedSegmentId = this.cursor.id;
 
       const leftSegmentIdx = this.cursor.segment - 1;
-      const leftSegmentId = this.timelineStore.getSegmentByPosition(this.cursor.timeline, leftSegmentIdx);
+      const leftSegmentId = this.timelineStore.getSegmentByPosition(
+        this.cursor.timeline,
+        leftSegmentIdx
+      );
 
       if (leftSegmentId == null) {
         return;
@@ -341,7 +373,10 @@ export default {
       const selectedSegmentId = this.cursor.id;
 
       const rightSegmentIdx = this.cursor.segment + 1;
-      const rightSegmentId = this.timelineStore.getSegmentByPosition(this.cursor.timeline, rightSegmentIdx);
+      const rightSegmentId = this.timelineStore.getSegmentByPosition(
+        this.cursor.timeline,
+        rightSegmentIdx
+      );
 
       if (rightSegmentId == null) {
         return;
@@ -401,13 +436,20 @@ export default {
       return this.shotStore.shots;
     },
 
-    ...mapStores(useVideoStore, usePlayerStore, useShotStore, useTimelineStore, useTimelineSegmentStore, useShortcutStore),
+    ...mapStores(
+      useVideoStore,
+      usePlayerStore,
+      useShotStore,
+      useTimelineStore,
+      useTimelineSegmentStore,
+      useShortcutStore
+    ),
   },
   async created() {
     // fetch the data when the view is created and the data is
     // already being observed
 
-    await this.videoStore.loadVideo({ videoId: this.$route.params.id });
+    await this.videoStore.fetch({ videoId: this.$route.params.id });
     this.shotStore.buildShots();
   },
   mounted() {
@@ -429,7 +471,7 @@ export default {
 </script>
 
 <style scoped>
-.logo>img {
+.logo > img {
   max-height: 56px;
 }
 

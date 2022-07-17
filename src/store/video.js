@@ -39,7 +39,7 @@ export const useVideoStore = defineStore('video', {
         },
     },
     actions: {
-        async loadVideo(
+        async fetch(
             {
                 videoId,
                 includeTimeline = true,
@@ -97,24 +97,26 @@ export const useVideoStore = defineStore('video', {
                 this.isLoading = false
             });
         },
-        async list() {
+        async fetchAll() {
             return axios
                 .get(`${config.API_LOCATION}/video/list`)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        const entries = res.data.entries;
-                        this.videos = {}
-                        this.videoList = []
-                        entries.forEach((e, i) => {
-                            this.videos[e.id] = e
-                            this.videoList.push(e.id)
-                        });
+                        this.replaceStore(res.data.entries)
                     }
                 })
         },
-        add(video) {
+        addToStore(video) {
             this.videos[video.id] = video;
             this.videoList.push(video.id);
+        },
+        replaceStore(videos) {
+            this.videos = {};
+            this.videoList = [];
+            videos.forEach((e, i) => {
+                this.videos[e.id] = e;
+                this.videoList.push(e.id);
+            });
         },
     },
 })
