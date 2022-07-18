@@ -13,6 +13,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
 
             timelineSegments: {},
             timelineSegmentList: [],
+            timelineSegmentSelectedList: [],
         }
     },
     getters: {
@@ -32,8 +33,34 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         get: (state) => (id) => {
             return state.timelineSegments[id];
         },
+        selected: (state) => {
+            return state.timelineSegmentSelectedList.map((id) => state.timelineSegments[id]);
+        },
     },
     actions: {
+        clearSelection() {
+            this.timelineSegmentSelectedList = []
+            // this.timelineSegmentList.forEach((id) => {
+            //     this.timelineSegments[id].selected = false;
+            // })
+        },
+        addToSelection(timelineSegmentId) {
+            this.timelineSegmentSelectedList.push(timelineSegmentId)
+            // if (timelineSegmentId in this.timelineSegments) {
+            //     this.timelineSegments[timelineSegmentId].selected = true;
+            // }
+        },
+        removeFromSelection(timelineSegmentId) {
+
+            let segment_index = this.timelineSegmentSelectedList.findIndex(
+                (f) => f === timelineSegmentId
+            );
+            this.timelineSegmentSimelineSegmentList.splice(segment_index, 1);
+
+            // if (timelineSegmentId in this.timelineSegments) {
+            //     this.timelineSegments[timelineSegmentId].selected = false;
+            // }
+        },
         async annotate({ timelineSegmentId, annotations }) {
             const params = {
                 timeline_segment_id: timelineSegmentId,
@@ -191,6 +218,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 this.timelineSegments[e.id] = e;
                 this.timelineSegmentList.push(e.id);
             });
+            this.clearSelection()
         },
         // delete(this, timeline_id) {
         //     let timeline_index = this.timelines.findIndex(e => e.id === timeline_id);
@@ -200,6 +228,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         clear() {
             this.timelineSegmentList = [];
             this.timelineSegments = {};
+            this.clearSelection()
         },
         deleteTimeline(timeline_id) {
             const timeline_indexes = this.timelineSegmentList

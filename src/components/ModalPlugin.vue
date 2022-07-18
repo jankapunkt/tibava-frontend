@@ -90,10 +90,10 @@ import { mapStores } from "pinia";
 import { usePluginRunStore } from "@/store/plugin_run";
 
 export default {
-  props: [],
+  props: ['value'],
   data() {
     return {
-      show: true,
+      show: false,
       plugins: [
         {
           name: this.$t("modal.plugin.audio.waveform"),
@@ -252,9 +252,14 @@ export default {
     },
   },
   watch: {
+    value(value) {
+      if(value){
+        this.show = value;
+      }
+    },
     show(value) {
       if (value) {
-        // this.$emit("close");
+        this.$emit("close");
       }
     },
   },

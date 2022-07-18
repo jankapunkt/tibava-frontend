@@ -114,7 +114,6 @@
       <span>{{ segmentContext.label }}</span>
     </v-tooltip>
 
-    <ModalTimelineSegmentAnnotate></ModalTimelineSegmentAnnotate>
     <v-menu
       v-model="segmentMenu.show"
       :position-x="segmentMenu.x"
@@ -170,6 +169,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <ModalTimelineSegmentAnnotate :show.sync="annotationDialogShow"/>
   </div>
 </template>
 
@@ -290,6 +290,10 @@ export default {
       canvasHeight: null,
       containerWidth: 100,
       containerHeight: 100,
+
+      // Some dialog show flags
+
+      annotationDialogShow: false,
 
       // Context
       segmentMenu: {
@@ -464,13 +468,15 @@ export default {
 
       timeline.segments = segments;
 
-      let drawnTimeline = new AnnotationTimeline(
-        timeline,
-        width,
-        height,
-        this.startTime,
-        this.endTime,
-        this.duration
+      let drawnTimeline = new AnnotationTimeline({
+        timelineId: timeline.id,
+        width:width,
+        height:height,
+        startTime:this.startTime,
+        endTime:this.endTime,
+        duration:this.duration,
+        data: timeline,
+      }
       );
       drawnTimeline.on("segmentRightDown", (ev) => {
         const point = this.mapToGlobal(ev.event.data.global);
@@ -484,9 +490,10 @@ export default {
       });
       drawnTimeline.on("segmentClick", (ev) => {
         if (ev.event.data.originalEvent.ctrlKey) {
-          this.$emit("addSelection", ev.segment.segment.id);
+          this.timelineSegmentStore.addToSelection(ev.segment.segment.id)
         } else {
-          this.$emit("select", ev.segment.segment.id);
+          this.timelineSegmentStore.clearSelection()
+          this.timelineSegmentStore.addToSelection(ev.segment.segment.id)
         }
         const targetTime = this.xToTime(ev.event.data.global.x);
         this.$emit("update:time", targetTime);
@@ -525,6 +532,7 @@ export default {
         }
         if (timeline.visualization == "C") {
           const drawnTimeline = new ColorTimeline({
+            timelineId: timeline.id,
             width: width,
             height: height,
             startTime: this.startTime,
@@ -538,6 +546,7 @@ export default {
         }
         if (timeline.visualization == "SC") {
           const drawnTimeline = new ScalarColorTimeline({
+            timelineId: timeline.id,
             width: width,
             height: height,
             startTime: this.startTime,
@@ -551,6 +560,7 @@ export default {
         }
         if (timeline.visualization == "SL") {
           const drawnTimeline = new ScalarLineTimeline({
+            timelineId: timeline.id,
             width: width,
             height: height,
             startTime: this.startTime,
@@ -564,6 +574,7 @@ export default {
         }
         if (timeline.visualization == "H") {
           const drawnTimeline = new HistTimeline({
+            timelineId: timeline.id,
             width: width,
             height: height,
             startTime: this.startTime,
@@ -578,43 +589,35 @@ export default {
       }
       return null;
     },
-    drawSelection(selectedTimelineSegment) {
+    drawSelection(selectedTimelineSegments) {
+      console.log(selectedTimelineSegments)
       if (
-        selectedTimelineSegment &&
-        selectedTimelineSegment.length > 0 &&
+        selectedTimelineSegments &&
+        selectedTimelineSegments.length > 0 &&
         this.timelineObjects &&
         this.timelineObjects.length > 0
       ) {
-        selectedTimelineSegment.forEach((e) => {
-          if (
-            this.timelineObjects[e.timeline] &&
-            this.timelineObjects[e.timeline].segments.length > 0
-          ) {
-            let segment = this.timelineObjects[e.timeline].segments[e.segment];
-            if (segment) {
-              segment.selected = true;
-            }
-          }
+        selectedTimelineSegments.forEach((selectedTimelineSegment) => {
+          console.log(selectedTimelineSegment)
+          this.timelineObjects.filter((timelineObject)=>timelineObject.timelineId === selectedTimelineSegment.timeline_id).forEach((timelineObject) => {
+            console.log(timelineObject)
+            timelineObject.selected({selected:true, segment:selectedTimelineSegment})
+          })
         });
       }
     },
-    removeSelection(selectedTimelineSegment) {
+    removeSelection(selectedTimelineSegments) {
       if (
-        selectedTimelineSegment &&
-        selectedTimelineSegment.length > 0 &&
+        selectedTimelineSegments &&
+        selectedTimelineSegments.length > 0 &&
         this.timelineObjects &&
         this.timelineObjects.length > 0
       ) {
-        selectedTimelineSegment.forEach((e) => {
-          if (
-            this.timelineObjects[e.timeline] &&
-            this.timelineObjects[e.timeline].segments.length > 0
-          ) {
-            let segment = this.timelineObjects[e.timeline].segments[e.segment];
-            if (segment) {
-              segment.selected = false;
-            }
-          }
+        selectedTimelineSegments.forEach((selectedTimelineSegment) => {
+          this.timelineObjects.filter((timelineObject)=>timelineObject.timelineId === selectedTimelineSegment.timeline_id).forEach((timelineObject) => {
+            
+            timelineObject.selected({selected:false, segment:selectedTimelineSegment})
+          })
         });
       }
     },
@@ -636,16 +639,9 @@ export default {
       return { x: windowsX, y: windowsY };
     },
     onAnnotateSegment() {
-      let id = this.segmentMenu.selected;
-      this.$emit("annotateSegment", id);
-    },
-    onColoringSegment() {
-      let id = this.segmentMenu.selected;
-      this.$emit("coloringSegment", id);
-    },
-    onDeleteSegment() {
-      let id = this.segmentMenu.selected;
-      this.$emit("deleteSegment", id);
+      // let id = this.segmentMenu.selected;
+      this.annotationDialogShow=true;
+      // this.$emit("annotateSegment", id);
     },
     onSplitSegment() {
       let id = this.segmentMenu.selected;
@@ -688,6 +684,9 @@ export default {
       let timelines = this.timelineStore.all;
       return timelines;
     },
+    selectedTimelineSegments(){
+      return this.timelineSegmentStore.selected;
+    },
     timeScale() {
       return this.containerWidth / (this.endTime - this.startTime);
     },
@@ -699,7 +698,7 @@ export default {
       );
     },
 
-    ...mapStores(useTimelineStore, usePlayerStore, useVideoStore),
+    ...mapStores(useTimelineStore, usePlayerStore, useVideoStore, useTimelineSegmentStore),
   },
   watch: {
     isLoading(newValue, oldValue) {
@@ -731,7 +730,8 @@ export default {
     //     e.time = value;
     //   });
     // },
-    selectedTimelineSegment(newSelection, oldSelection) {
+    selectedTimelineSegments(newSelection, oldSelection) {
+
       this.removeSelection(oldSelection);
       this.drawSelection(newSelection);
     },
