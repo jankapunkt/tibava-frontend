@@ -93,7 +93,6 @@
                 @mergeSegmentsLeft="onMergeSegmentsLeft"
                 @mergeSegmentsRight="onMergeSegmentsRight"
                 @deleteSegment="onDeleteSegment"
-                @update:time="onTagetTimeChange"
                 @addSelection="onAddSelection"
                 @select="onSelect"
               >

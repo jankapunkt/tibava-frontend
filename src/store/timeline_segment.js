@@ -14,6 +14,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             timelineSegments: {},
             timelineSegmentList: [],
             timelineSegmentSelectedList: [],
+            timelineSegmentByTime: {}
         }
     },
     getters: {
@@ -36,6 +37,17 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         selected: (state) => {
             return state.timelineSegmentSelectedList.map((id) => state.timelineSegments[id]);
         },
+        forTimeLUT: (state) => (time) => {
+            const timeSecond = Math.round(time)
+            if (timeSecond in state.timelineSegmentByTime) {
+                const timelineSegmentIds = state.timelineSegmentByTime[timeSecond];
+                return timelineSegmentIds.map((id) => {
+                    return state.timelineSegments[id]
+                }
+                );
+            }
+            return []
+        }
     },
     actions: {
         clearSelection() {
@@ -200,6 +212,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             timelineSegments = timelineSegments.sort((a, b) => {
                 return a.start - b.start;
             });
+            this.updateTimeStore()
         },
         delete(ids) {
             ids.forEach((id, i) => {
@@ -207,6 +220,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 this.timelineSegmentList.splice(index, 1);
                 delete this.timelineSegments[id];
             });
+            this.updateTimeStore()
         },
         replaceAll(timelineSegments) {
             this.timelineSegmentList = [];
@@ -219,6 +233,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 this.timelineSegmentList.push(e.id);
             });
             this.clearSelection()
+            this.updateTimeStore()
         },
         // delete(this, timeline_id) {
         //     let timeline_index = this.timelines.findIndex(e => e.id === timeline_id);
@@ -229,6 +244,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             this.timelineSegmentList = [];
             this.timelineSegments = {};
             this.clearSelection()
+            this.updateTimeStore()
         },
         deleteTimeline(timeline_id) {
             const timeline_indexes = this.timelineSegmentList
@@ -241,6 +257,21 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 this.timelineSegmentList.splice(segment_index, 1);
                 delete this.timelineSegments[e.id];
             });
+            this.updateTimeStore()
         },
+
+        updateTimeStore() {
+            this.all.forEach((e) => {
+                for (var i = Math.floor(e.start); i < Math.ceil(e.end); i++) {
+                    if (i in this.timelineSegmentByTime) {
+                        this.timelineSegmentByTime[i].push(e.id)
+
+                    }
+                    else {
+                        this.timelineSegmentByTime[i] = [e.id]
+                    }
+                }
+            })
+        }
     },
 })

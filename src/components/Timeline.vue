@@ -496,7 +496,8 @@ export default {
           this.timelineSegmentStore.addToSelection(ev.segment.segment.id)
         }
         const targetTime = this.xToTime(ev.event.data.global.x);
-        this.$emit("update:time", targetTime);
+        this.playerStore.setTargetTime(targetTime)
+        
       });
       drawnTimeline.on("segmentOver", (ev) => {
         if (ev.segment.segment.annotations.length > 0) {
@@ -694,7 +695,9 @@ export default {
         3 * this.gap
       );
     },
-
+    time(){
+      return this.playerStore.currentTime;
+    },
     ...mapStores(useTimelineStore, usePlayerStore, useVideoStore, useTimelineSegmentStore),
   },
   watch: {
@@ -722,13 +725,7 @@ export default {
       }
       this.timelineHierarchy = findChildren(values, null);
     },
-    // time(value) {
-    //   this.timeBarsObjects.forEach((e) => {
-    //     e.time = value;
-    //   });
-    // },
     selectedTimelineSegments(newSelection, oldSelection) {
-
       this.removeSelection(oldSelection);
       this.drawSelection(newSelection);
     },

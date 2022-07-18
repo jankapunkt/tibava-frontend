@@ -27,8 +27,16 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 .map((id) => state.timelineSegmentAnnotations[id])
                 .filter((e) => e.timeline_segment_id === timelineSegmentId);
         },
-        forTime: (state) => (time) => {
-
+        forTimeLUT: (state) => (time) => {
+            const timeSecond = Math.round(time)
+            if (timeSecond in state.timelineSegmentAnnotationByTime) {
+                const timelineSegmentIds = state.timelineSegmentAnnotationByTime[timeSecond];
+                return timelineSegmentIds.map((id) => {
+                    return state.timelineSegmentAnnotations[id]
+                }
+                );
+            }
+            return []
         }
     },
     actions: {
@@ -176,17 +184,19 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             this.updateTimeStore()
         },
         updateTimeStore() {
-
             const timelineSegmentStore = useTimelineSegmentStore()
             timelineSegmentStore.all.forEach((e) => {
                 for (var i = Math.floor(e.start); i < Math.ceil(e.end); i++) {
-                    // console.log(i)
-                    // TODO
+                    if (i in this.timelineSegmentAnnotationByTime) {
+                        this.forTimelineSegment(e.id).forEach((timelineSegmentAnnotation) => {
+                            this.timelineSegmentAnnotationByTime[i].push(timelineSegmentAnnotation.id)
+                        })
+                    }
+                    else {
+                        this.timelineSegmentAnnotationByTime[i] =
+                            this.forTimelineSegment(e.id).map((timelineSegmentAnnotation) => timelineSegmentAnnotation.id)
+                    }
                 }
-                // console.log(Math.floor(e.start))
-                // console.log(Math.ceil(e.end))
-                // console.log(e.start)
-                // console.log(e.end)
             })
         }
     },
