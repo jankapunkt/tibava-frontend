@@ -5,7 +5,7 @@ import palette from "google-palette";
 // import { magma, seismic, jet } from "./palette.js";
 
 var colors = palette("tol-dv", 101);
-// console.log(PIXI.utils.hex2string(scalarToHex(1.0, false)));
+
 
 export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
@@ -86,9 +86,6 @@ export class AnnotationSegment extends PIXI.Container {
 
   ) {
     super();
-    console.log('#########')
-    console.log(segmentId);
-    console.log(data);
     this.pSegmentId = segmentId;
     this.pPadding = padding;
     this.pGap = gap;
@@ -174,7 +171,7 @@ export class AnnotationSegment extends PIXI.Container {
     return this.pSegment;
   }
   set selected(value) {
-    console.log('TEST')
+
     this.pSelected = value;
     this.pRect.clear();
     this.drawBox();
@@ -605,7 +602,7 @@ export class AnnotationTimeline extends Timeline {
   }
   selected({ selected = true, segment = null }) {
     if (segment) {
-      this.pSegmentList.forEach((e) => console.log(e.segmentId))
+
       this.pSegmentList.filter((e) => segment.id === e.segmentId).forEach((e) => e.selected = selected)
     }
   }

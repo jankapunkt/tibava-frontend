@@ -151,11 +151,11 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
         },
         deleteFromStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((id, i) => {
-                let index = state.timelineSegmentAnnotationList.findIndex(
+                let index = this.timelineSegmentAnnotationList.findIndex(
                     (f) => f === id
                 );
-                state.timelineSegmentAnnotationList.splice(index, 1);
-                delete state.timelineSegmentAnnotations[id];
+                this.timelineSegmentAnnotationList.splice(index, 1);
+                delete this.timelineSegmentAnnotations[id];
             });
             this.updateTimeStore()
         },

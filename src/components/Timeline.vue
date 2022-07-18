@@ -590,7 +590,6 @@ export default {
       return null;
     },
     drawSelection(selectedTimelineSegments) {
-      console.log(selectedTimelineSegments)
       if (
         selectedTimelineSegments &&
         selectedTimelineSegments.length > 0 &&
@@ -598,9 +597,7 @@ export default {
         this.timelineObjects.length > 0
       ) {
         selectedTimelineSegments.forEach((selectedTimelineSegment) => {
-          console.log(selectedTimelineSegment)
           this.timelineObjects.filter((timelineObject)=>timelineObject.timelineId === selectedTimelineSegment.timeline_id).forEach((timelineObject) => {
-            console.log(timelineObject)
             timelineObject.selected({selected:true, segment:selectedTimelineSegment})
           })
         });
