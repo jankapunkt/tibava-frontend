@@ -276,7 +276,7 @@ export const useTimelineStore = defineStore('timeline', {
                 order: order,
             };
 
-            Vue.set(this, "timelineList", args.order);
+            Vue.set(this, "timelineList", order);
 
             return axios
                 .post(`${config.API_LOCATION}/timeline/setorder`, params)

@@ -88,10 +88,6 @@
                 @deleteTimeline="onDeleteTimeline"
                 @annotateSegment="onAnnotateSegment"
                 @coloringSegment="onColoringSegment"
-                @splitSegment="onSplitSegment"
-                @mergeSegments="onMergeSegments"
-                @mergeSegmentsLeft="onMergeSegmentsLeft"
-                @mergeSegmentsRight="onMergeSegmentsRight"
                 @deleteSegment="onDeleteSegment"
                 @addSelection="onAddSelection"
                 @select="onSelect"
@@ -336,54 +332,6 @@ export default {
     onSegmentSelected(id) {
       this.cursorSegment = id;
       // this.timelineStroe.delete( id);
-    },
-    onSplitSegment(id) {
-      this.timelineSegmentStroe.split({
-        timelineSegmentId: id,
-        time: this.targetTime,
-      });
-    },
-    onMergeSegments(id) {
-      const timelineSegmentIds = this.selectedTimelineSegment.map((e) => {
-        return this.timelineStore.getSegmentByPosition(e.timeline, e.segment);
-      });
-      this.timelineSegmentStore.merge({
-        timelineSegmentIds: timelineSegmentIds,
-      });
-    },
-    onMergeSegmentsLeft() {
-      const selectedSegmentId = this.cursor.id;
-
-      const leftSegmentIdx = this.cursor.segment - 1;
-      const leftSegmentId = this.timelineStore.getSegmentByPosition(
-        this.cursor.timeline,
-        leftSegmentIdx
-      );
-
-      if (leftSegmentId == null) {
-        return;
-      }
-
-      this.timelineSegmentStroe.merge({
-        timelineSegmentIds: [selectedSegmentId, leftSegmentId],
-      });
-    },
-    onMergeSegmentsRight() {
-      const selectedSegmentId = this.cursor.id;
-
-      const rightSegmentIdx = this.cursor.segment + 1;
-      const rightSegmentId = this.timelineStore.getSegmentByPosition(
-        this.cursor.timeline,
-        rightSegmentIdx
-      );
-
-      if (rightSegmentId == null) {
-        return;
-      }
-
-      this.timelineSegmentStroe.merge({
-        timelineSegmentIds: [selectedSegmentId, rightSegmentId],
-      });
     },
     onAppendAnnotation(evt) {
       evt.preventDefault();

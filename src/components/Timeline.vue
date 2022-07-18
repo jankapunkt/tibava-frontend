@@ -642,17 +642,41 @@ export default {
       // this.$emit("annotateSegment", id);
     },
     onSplitSegment() {
-      let id = this.segmentMenu.selected;
-      this.$emit("splitSegment", id);
+      this.timelineSegmentStroe.split({
+        timelineSegmentId: id,
+        time: this.targetTime,
+      });
     },
     onMergeSegments() {
-      this.$emit("mergeSegments");
+      const timelineSegmentIds = this.timelineSegmentStore.selected.map((e) => e.id);
+      this.timelineSegmentStore.merge({
+        timelineSegmentIds: timelineSegmentIds,
+      });
     },
     onMergeSegmentsLeft() {
-      this.$emit("mergeSegmentsLeft");
+      if(this.timelineSegmentStore.selected.length <= 0 ){
+        return;
+      }
+      const timelineSegmentId = this.timelineSegmentStore.selected[this.timelineSegmentStore.selected.length -1].id;
+      const previousTimelineSegment = this.timelineSegmentStore.getPreviousOnTimeline(timelineSegmentId)
+      if(previousTimelineSegment){
+        this.timelineSegmentStore.merge({
+          timelineSegmentIds: [timelineSegmentId, previousTimelineSegment.id],
+        });
+      }
+
     },
-    onMergeSegmentsRight() {
-      this.$emit("mergeSegmentsRight");
+    onMergeSegmentsRight() { 
+      if(this.timelineSegmentStore.selected.length <= 0 ){
+        return;
+      }
+      const timelineSegmentId = this.timelineSegmentStore.selected[this.timelineSegmentStore.selected.length -1].id;
+      const nextTimelineSegment = this.timelineSegmentStore.getNextOnTimeline(timelineSegmentId)
+      if(nextTimelineSegment){
+        this.timelineSegmentStore.merge({
+          timelineSegmentIds: [timelineSegmentId, nextTimelineSegment.id],
+        });
+      }
     },
     onResize(event) {
       this.$nextTick(() => {

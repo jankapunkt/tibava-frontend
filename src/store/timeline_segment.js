@@ -10,7 +10,6 @@ import { useAnnotationStore } from '@/store/annotation'
 export const useTimelineSegmentStore = defineStore('timelineSegment', {
     state: () => {
         return {
-
             timelineSegments: {},
             timelineSegmentList: [],
             timelineSegmentSelectedList: [],
@@ -47,6 +46,28 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 );
             }
             return []
+        },
+        getPreviousOnTimeline(state) {
+            return (id) => {
+                const startTime = state.timelineSegments[id].start
+                const timelineId = state.timelineSegments[id].timeline_id
+                const segments = this.forTimeline(timelineId).filter((e) => e.end <= startTime).sort((a, b) => a.end - b.end)
+                if (segments.length <= 0) {
+                    return null
+                }
+                return segments[segments.length - 1];
+            }
+        },
+        getNextOnTimeline(state) {
+            return (id) => {
+                const endTime = state.timelineSegments[id].end
+                const timelineId = state.timelineSegments[id].timeline_id
+                const segments = this.forTimeline(timelineId).filter((e) => e.start >= endTime).sort((a, b) => a.end - b.end)
+                if (segments.length <= 0) {
+                    return null
+                }
+                return segments[0];
+            }
         }
     },
     actions: {
@@ -112,18 +133,14 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 .post(`${config.API_LOCATION}/timeline/segment/split`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        commit(
-                            "timelineSegmentAnnotation/delete",
-                            res.data.timeline_segment_annotation_deleted,
-                            { root: true }
+                        const timelineSegmentAnnotationStore = useTimelineSegmentAnnotationStore();
+
+                        timelineSegmentAnnotationStore.deleteFromStore(res.data.timeline_segment_annotation_deleted
                         );
-                        commit(
-                            "timelineSegmentAnnotation/add",
-                            res.data.timeline_segment_annotation_added,
-                            { root: true }
+                        timelineSegmentAnnotationStore.addToStore(res.data.timeline_segment_annotation_added
                         );
-                        commit("delete", res.data.timeline_segment_deleted);
-                        commit("add", res.data.timeline_segment_added);
+                        this.delete(res.data.timeline_segment_deleted);
+                        this.add(res.data.timeline_segment_added);
                     }
                 });
             // .catch((error) => {
@@ -139,18 +156,14 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 .post(`${config.API_LOCATION}/timeline/segment/merge`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        commit(
-                            "timelineSegmentAnnotation/delete",
-                            res.data.timeline_segment_annotation_deleted,
-                            { root: true }
+                        const timelineSegmentAnnotationStore = useTimelineSegmentAnnotationStore();
+
+                        timelineSegmentAnnotationStore.deleteFromStore(res.data.timeline_segment_annotation_deleted
                         );
-                        commit(
-                            "timelineSegmentAnnotation/add",
-                            res.data.timeline_segment_annotation_added,
-                            { root: true }
+                        timelineSegmentAnnotationStore.addToStore(res.data.timeline_segment_annotation_added
                         );
-                        commit("delete", res.data.timeline_segment_deleted);
-                        commit("add", res.data.timeline_segment_added);
+                        this.delete(res.data.timeline_segment_deleted);
+                        this.add(res.data.timeline_segment_added);
                     }
                 });
             // .catch((error) => {
