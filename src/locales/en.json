@@ -37,6 +37,11 @@
                 "singletimeline": "Single Timeline",
                 "multipletimelines": "Individual Timelines"
             },
+            "clip": {
+                "probability": "Object Classification",
+                "search_term": "Search Term",
+                "fps": "FPS"
+            },
             "facedetection": "Face Detection",
             "faceemotion": "Face Emotion",
             "facesize": "Face Size",
