@@ -12,46 +12,54 @@ export const useTimelineStore = defineStore('timeline', {
         }
     },
     getters: {
-        forVideo: (state) => (videoId) => {
-            return state.timelineList
-                .map((id) => state.timelines[id])
-                .filter((e) => e.video_id === videoId);
+        forVideo(state) {
+            return (videoId) => {
+                return state.timelineList
+                    .map((id) => state.timelines[id])
+                    .filter((e) => e.video_id === videoId);
+            }
         },
-        all: (state) => {
+        all(state) {
             return state.timelineList.map((id) => state.timelines[id]);
         },
-        get: (state) => (id) => {
-            return state.timelines[id];
+        get(state) {
+            return (id) => {
+                return state.timelines[id];
+            }
         },
-        segmentPosition: (state) => (segmentId) => {
-            let result = null;
-            state.timelineList
-                .map((id) => state.timelines[id])
-                .forEach((timeline, timelinePos) => {
-                    if (timeline.segments != null) {
-                        timeline.segments.forEach((segment, segmentPos) => {
-                            if (segment.id === segmentId) {
-                                result = { timeline: timelinePos, segment: segmentPos };
-                            }
-                        });
-                    }
-                });
-            return result;
+        segmentPosition(state) {
+            return (segmentId) => {
+                let result = null;
+                state.timelineList
+                    .map((id) => state.timelines[id])
+                    .forEach((timeline, timelinePos) => {
+                        if (timeline.segments != null) {
+                            timeline.segments.forEach((segment, segmentPos) => {
+                                if (segment.id === segmentId) {
+                                    result = { timeline: timelinePos, segment: segmentPos };
+                                }
+                            });
+                        }
+                    });
+                return result;
+            }
         },
-        getSegmentByPosition: (state) => (timelinePos, segmentPos) => {
-            let result = null;
-            state.timelineList
-                .map((id) => state.timelines[id])
-                .forEach((timeline, iTimelinePos) => {
-                    if (timeline.segments != null && timelinePos === iTimelinePos) {
-                        timeline.segments.forEach((segment, iSegmentPos) => {
-                            if (iSegmentPos === segmentPos) {
-                                result = segment.id;
-                            }
-                        });
-                    }
-                });
-            return result;
+        getSegmentByPosition(state) {
+            return (timelinePos, segmentPos) => {
+                let result = null;
+                state.timelineList
+                    .map((id) => state.timelines[id])
+                    .forEach((timeline, iTimelinePos) => {
+                        if (timeline.segments != null && timelinePos === iTimelinePos) {
+                            timeline.segments.forEach((segment, iSegmentPos) => {
+                                if (iSegmentPos === segmentPos) {
+                                    result = segment.id;
+                                }
+                            });
+                        }
+                    });
+                return result;
+            }
         },
     },
     actions: {
@@ -277,6 +285,10 @@ export const useTimelineStore = defineStore('timeline', {
             };
 
             Vue.set(this, "timelineList", order);
+
+            this.timelineList.forEach((id, i) => {
+                this.timelines[id].order = i;
+            })
 
             return axios
                 .post(`${config.API_LOCATION}/timeline/setorder`, params)
