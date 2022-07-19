@@ -833,11 +833,15 @@ export default {
       }
 
       //update order of all objects
-      this.timelines.forEach((timeline, i) => {
+      let skipped = 0
+      this.timelines.sort((a,b) => a.order-b.order).forEach((timeline, i) => {
         const timelineObject = this.getTimeline(timeline.id);
         if (timelineObject) {
-          console.log(timeline.order);
-          timelineObject.y = this.computeTimelineY(timeline.order);
+          timelineObject.y = this.computeTimelineY(i-skipped);
+          if(!timeline.visible){
+            skipped+=1
+          }
+          timelineObject.visible = timeline.visible;
         }
       });
 

@@ -245,9 +245,6 @@ export const useTimelineStore = defineStore('timeline', {
                 params.parentId = null;
             }
 
-            console.log(timelineId);
-            console.log(params);
-
             const newTimelines = { ...this.timelines };
             newTimelines[timelineId].parent_id = parentId;
             Vue.set(this, "timelines", newTimelines);
@@ -265,11 +262,11 @@ export const useTimelineStore = defineStore('timeline', {
                 timelineId: timelineId,
                 collapse: collapse,
             };
-            console.log(timelineId, collapse);
 
             const newTimelines = { ...this.timelines };
             newTimelines[timelineId].collapse = collapse;
             Vue.set(this, "timelines", newTimelines);
+            this.updateVisibleStore();
 
             return axios
                 .post(`${config.API_LOCATION}/timeline/setcollapse`, params)
@@ -315,6 +312,7 @@ export const useTimelineStore = defineStore('timeline', {
             this.updateVisibleStore();
         },
         updateVisibleStore() {
+            const that = this;
 
             function parentCollapsed(e) {
                 if (!e.parent_id) {
@@ -324,7 +322,7 @@ export const useTimelineStore = defineStore('timeline', {
                 let parent_id = e.parent_id;
 
                 while (parent_id != null) {
-                    let parent = this.timelineStore.get(parent_id);
+                    let parent = that.get(parent_id);
                     parent_id = parent.parent_id;
                     if (parent.collapse) {
                         return true;
@@ -334,7 +332,7 @@ export const useTimelineStore = defineStore('timeline', {
                 return false;
             }
             this.timelineList.map((e) => {
-                this.timelines[e].visible = !parentCollapsed(e);
+                this.timelines[e].visible = !parentCollapsed(this.timelines[e]);
                 return e;
             });
         }
