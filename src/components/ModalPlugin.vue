@@ -172,7 +172,7 @@ export default {
         },
         {
           name: this.$t("modal.plugin.places_classification"),
-          icon: "mdi-video-switch",
+          icon: "mdi-map-marker",
           plugin: "places_classification",
           parameters: [
             {

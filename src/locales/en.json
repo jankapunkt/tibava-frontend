@@ -42,6 +42,7 @@
                 "search_term": "Search Term",
                 "fps": "FPS"
             },
+            "places_classification": "Place Classification",
             "facedetection": "Face Detection",
             "faceemotion": "Face Emotion",
             "facesize": "Face Size",
