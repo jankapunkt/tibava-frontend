@@ -17,35 +17,44 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         }
     },
     getters: {
-        all: (state) => {
+        all(state) {
             return state.timelineSegmentList.map((id) => state.timelineSegments[id]);
         },
-        forTimeline: (state) => (timeline_id) => {
-            return state.timelineSegmentList
-                .map((id) => state.timelineSegments[id])
-                .filter((e) => e.timeline_id === timeline_id);
-        },
-        forTime: (state) => (current_time) => {
-            return state.timelineSegmentList
-                .map((id) => state.timelineSegments[id])
-                .filter((e) => e.start <= current_time && e.end >= current_time);
-        },
-        get: (state) => (id) => {
-            return state.timelineSegments[id];
-        },
-        selected: (state) => {
-            return state.timelineSegmentSelectedList.map((id) => state.timelineSegments[id]);
-        },
-        forTimeLUT: (state) => (time) => {
-            const timeSecond = Math.round(time)
-            if (timeSecond in state.timelineSegmentByTime) {
-                const timelineSegmentIds = state.timelineSegmentByTime[timeSecond];
-                return timelineSegmentIds.map((id) => {
-                    return state.timelineSegments[id]
-                }
-                );
+        forTimeline(state) {
+            return (timeline_id) => {
+                return state.timelineSegmentList
+                    .map((id) => state.timelineSegments[id])
+                    .filter((e) => e.timeline_id === timeline_id);
             }
-            return []
+        },
+        forTime(state) {
+            return (current_time) => {
+                return state.timelineSegmentList
+                    .map((id) => state.timelineSegments[id])
+                    .filter((e) => e.start <= current_time && e.end >= current_time);
+            }
+        },
+        get(state) {
+            return (id) => {
+                return state.timelineSegments[id];
+            }
+        },
+        selected(state) {
+            return state.timelineSegmentSelectedList.map((id) => state.timelineSegments[id]);
+
+        },
+        forTimeLUT(state) {
+            return (time) => {
+                const timeSecond = Math.round(time)
+                if (timeSecond in state.timelineSegmentByTime) {
+                    const timelineSegmentIds = state.timelineSegmentByTime[timeSecond];
+                    return timelineSegmentIds.map((id) => {
+                        return state.timelineSegments[id]
+                    }
+                    );
+                }
+                return []
+            }
         },
         getPreviousOnTimeline(state) {
             return (id) => {

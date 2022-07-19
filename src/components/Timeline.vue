@@ -169,7 +169,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <ModalTimelineSegmentAnnotate :show.sync="annotationDialogShow"/>
+    <ModalTimelineSegmentAnnotate :show.sync="annotationDialogShow" />
   </div>
 </template>
 
@@ -322,9 +322,28 @@ export default {
     };
   },
   methods: {
+    getTimeline(timelineId) {
+      var founded = null;
+      this.timelineObjects.forEach((timelineObject) => {
+        if (timelineObject.timelineId === timelineId) {
+          founded = timelineObject;
+        }
+      });
+      return founded;
+    },
+    computeTimelineX() {
+      return this.timeToX(this.startTime);
+    },
+    computeTimelineY(index) {
+      return (
+        (this.gap + this.timelineHeight) * index +
+        this.scaleHeight +
+        2 * this.gap
+      );
+    },
     nodeOpenChanged(node) {
       // on a node is closed or open(node)
-      this.timelineStore.setCollapse( {
+      this.timelineStore.setCollapse({
         timelineId: node.id,
         collapse: !node.open,
       });
@@ -343,12 +362,12 @@ export default {
       }
 
       let order = timelineOrder(this.timelineHierarchy);
-      this.timelineStore.setOrder( {
+      this.timelineStore.setOrder({
         order: order,
       });
 
       // set new parent of node
-      this.timelineStore.setParent( {
+      this.timelineStore.setParent({
         timelineId: node.id,
         parentId: node.parent.id,
       });
@@ -470,14 +489,13 @@ export default {
 
       let drawnTimeline = new AnnotationTimeline({
         timelineId: timeline.id,
-        width:width,
-        height:height,
-        startTime:this.startTime,
-        endTime:this.endTime,
-        duration:this.duration,
+        width: width,
+        height: height,
+        startTime: this.startTime,
+        endTime: this.endTime,
+        duration: this.duration,
         data: timeline,
-      }
-      );
+      });
       drawnTimeline.on("segmentRightDown", (ev) => {
         const point = this.mapToGlobal(ev.event.data.global);
         this.segmentMenu.show = true;
@@ -490,14 +508,13 @@ export default {
       });
       drawnTimeline.on("segmentClick", (ev) => {
         if (ev.event.data.originalEvent.ctrlKey) {
-          this.timelineSegmentStore.addToSelection(ev.segment.segment.id)
+          this.timelineSegmentStore.addToSelection(ev.segment.segment.id);
         } else {
-          this.timelineSegmentStore.clearSelection()
-          this.timelineSegmentStore.addToSelection(ev.segment.segment.id)
+          this.timelineSegmentStore.clearSelection();
+          this.timelineSegmentStore.addToSelection(ev.segment.segment.id);
         }
         const targetTime = this.xToTime(ev.event.data.global.x);
-        this.playerStore.setTargetTime(targetTime)
-        
+        this.playerStore.setTargetTime(targetTime);
       });
       drawnTimeline.on("segmentOver", (ev) => {
         if (ev.segment.segment.annotations.length > 0) {
@@ -598,9 +615,18 @@ export default {
         this.timelineObjects.length > 0
       ) {
         selectedTimelineSegments.forEach((selectedTimelineSegment) => {
-          this.timelineObjects.filter((timelineObject)=>timelineObject.timelineId === selectedTimelineSegment.timeline_id).forEach((timelineObject) => {
-            timelineObject.selected({selected:true, segment:selectedTimelineSegment})
-          })
+          this.timelineObjects
+            .filter(
+              (timelineObject) =>
+                timelineObject.timelineId ===
+                selectedTimelineSegment.timeline_id
+            )
+            .forEach((timelineObject) => {
+              timelineObject.selected({
+                selected: true,
+                segment: selectedTimelineSegment,
+              });
+            });
         });
       }
     },
@@ -612,10 +638,18 @@ export default {
         this.timelineObjects.length > 0
       ) {
         selectedTimelineSegments.forEach((selectedTimelineSegment) => {
-          this.timelineObjects.filter((timelineObject)=>timelineObject.timelineId === selectedTimelineSegment.timeline_id).forEach((timelineObject) => {
-            
-            timelineObject.selected({selected:false, segment:selectedTimelineSegment})
-          })
+          this.timelineObjects
+            .filter(
+              (timelineObject) =>
+                timelineObject.timelineId ===
+                selectedTimelineSegment.timeline_id
+            )
+            .forEach((timelineObject) => {
+              timelineObject.selected({
+                selected: false,
+                segment: selectedTimelineSegment,
+              });
+            });
         });
       }
     },
@@ -638,7 +672,7 @@ export default {
     },
     onAnnotateSegment() {
       // let id = this.segmentMenu.selected;
-      this.annotationDialogShow=true;
+      this.annotationDialogShow = true;
       // this.$emit("annotateSegment", id);
     },
     onSplitSegment() {
@@ -648,31 +682,40 @@ export default {
       });
     },
     onMergeSegments() {
-      const timelineSegmentIds = this.timelineSegmentStore.selected.map((e) => e.id);
+      const timelineSegmentIds = this.timelineSegmentStore.selected.map(
+        (e) => e.id
+      );
       this.timelineSegmentStore.merge({
         timelineSegmentIds: timelineSegmentIds,
       });
     },
     onMergeSegmentsLeft() {
-      if(this.timelineSegmentStore.selected.length <= 0 ){
+      if (this.timelineSegmentStore.selected.length <= 0) {
         return;
       }
-      const timelineSegmentId = this.timelineSegmentStore.selected[this.timelineSegmentStore.selected.length -1].id;
-      const previousTimelineSegment = this.timelineSegmentStore.getPreviousOnTimeline(timelineSegmentId)
-      if(previousTimelineSegment){
+      const timelineSegmentId =
+        this.timelineSegmentStore.selected[
+          this.timelineSegmentStore.selected.length - 1
+        ].id;
+      const previousTimelineSegment =
+        this.timelineSegmentStore.getPreviousOnTimeline(timelineSegmentId);
+      if (previousTimelineSegment) {
         this.timelineSegmentStore.merge({
           timelineSegmentIds: [timelineSegmentId, previousTimelineSegment.id],
         });
       }
-
     },
-    onMergeSegmentsRight() { 
-      if(this.timelineSegmentStore.selected.length <= 0 ){
+    onMergeSegmentsRight() {
+      if (this.timelineSegmentStore.selected.length <= 0) {
         return;
       }
-      const timelineSegmentId = this.timelineSegmentStore.selected[this.timelineSegmentStore.selected.length -1].id;
-      const nextTimelineSegment = this.timelineSegmentStore.getNextOnTimeline(timelineSegmentId)
-      if(nextTimelineSegment){
+      const timelineSegmentId =
+        this.timelineSegmentStore.selected[
+          this.timelineSegmentStore.selected.length - 1
+        ].id;
+      const nextTimelineSegment =
+        this.timelineSegmentStore.getNextOnTimeline(timelineSegmentId);
+      if (nextTimelineSegment) {
         this.timelineSegmentStore.merge({
           timelineSegmentIds: [timelineSegmentId, nextTimelineSegment.id],
         });
@@ -706,7 +749,7 @@ export default {
       let timelines = this.timelineStore.all;
       return timelines;
     },
-    selectedTimelineSegments(){
+    selectedTimelineSegments() {
       return this.timelineSegmentStore.selected;
     },
     timeScale() {
@@ -719,10 +762,15 @@ export default {
         3 * this.gap
       );
     },
-    time(){
+    time() {
       return this.playerStore.currentTime;
     },
-    ...mapStores(useTimelineStore, usePlayerStore, useVideoStore, useTimelineSegmentStore),
+    ...mapStores(
+      useTimelineStore,
+      usePlayerStore,
+      useVideoStore,
+      useTimelineSegmentStore
+    ),
   },
   watch: {
     isLoading(newValue, oldValue) {
@@ -784,25 +832,34 @@ export default {
         }
       }
 
-      this.timelineObjects.forEach((e) => {
-        e.startTime = this.startTime;
-      });
-      this.timeScaleObjects.forEach((e) => {
-        e.startTime = this.startTime;
-      });
-      this.timeBarsObjects.forEach((e) => {
-        e.startTime = this.startTime;
-      });
-      this.timelineObjects.forEach((e) => {
-        e.endTime = this.endTime;
-      });
-      this.timeScaleObjects.forEach((e) => {
-        e.endTime = this.endTime;
-      });
-      this.timeBarsObjects.forEach((e) => {
-        e.endTime = this.endTime;
+      //update order of all objects
+      this.timelines.forEach((timeline, i) => {
+        const timelineObject = this.getTimeline(timeline.id);
+        if (timelineObject) {
+          console.log(timeline.order);
+          timelineObject.y = this.computeTimelineY(timeline.order);
+        }
       });
 
+      // update all time position
+      this.timelineObjects.forEach((e) => {
+        e.startTime = this.startTime;
+      });
+      this.timeScaleObjects.forEach((e) => {
+        e.startTime = this.startTime;
+      });
+      this.timeBarsObjects.forEach((e) => {
+        e.startTime = this.startTime;
+      });
+      this.timelineObjects.forEach((e) => {
+        e.endTime = this.endTime;
+      });
+      this.timeScaleObjects.forEach((e) => {
+        e.endTime = this.endTime;
+      });
+      this.timeBarsObjects.forEach((e) => {
+        e.endTime = this.endTime;
+      });
       this.timeBarsObjects.forEach((e) => {
         e.time = this.time;
       });
