@@ -1,6 +1,6 @@
 <template>
-  <v-menu v-model="menu" min-width="175" offset-y bottom left open-on-hover close-delay="10000" >
-  <!-- open-on-hover close-delay -->
+  <v-menu v-model="menu" min-width="175" offset-y bottom left>
+    <!-- open-on-hover close-delay -->
     <template v-slot:activator="{ attrs, on: menu }">
       <v-btn icon v-bind="attrs" v-on="menu" class="ml-n2">
         <v-icon color="primary">mdi-menu</v-icon>
@@ -11,7 +11,7 @@
       <v-list-item-group>
         <v-list-item v-if="videoId" class="px-0">
           <!-- <ModalExport @close="menu = false" /> -->
-          <ModalExport/>
+          <ModalExport />
         </v-list-item>
         <v-list-item v-if="videoId" class="px-0">
           <ModalPlugin @close="menu = false" />
@@ -26,7 +26,7 @@
         </v-list-item> -->
         <v-list-item v-if="videoId" class="px-0">
           <!-- <ModalShortcut @close="menu = false" /> -->
-          <ModalShortcut/>
+          <ModalShortcut />
         </v-list-item>
       </v-list-item-group>
     </v-list>

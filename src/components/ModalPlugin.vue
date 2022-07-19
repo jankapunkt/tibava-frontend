@@ -79,7 +79,7 @@ export default {
   props: ["value"],
   data() {
     return {
-      show: false,
+      show: true,
       plugins: [
         {
           name: this.$t("modal.plugin.audio.waveform"),
@@ -165,6 +165,20 @@ export default {
               field: "text_field",
               name: "timeline",
               value: this.$t("modal.plugin.shot_type_classification"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+          optional_parameters: [],
+        },
+        {
+          name: this.$t("modal.plugin.places_classification"),
+          icon: "mdi-video-switch",
+          plugin: "places_classification",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.places_classification"),
               text: this.$t("modal.plugin.timeline_name"),
             },
           ],
