@@ -54,7 +54,7 @@ export const usePluginRunStore = defineStore('pluginRun', {
                 .get(`${config.API_LOCATION}/plugin/run/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceAll(res.data.entries)
+                        this.updateAll(res.data.entries)
                     }
                 })
         },
@@ -75,14 +75,16 @@ export const usePluginRunStore = defineStore('pluginRun', {
                 .get(`${config.API_LOCATION}/plugin/run/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceAll(res.data.entries)
+                        this.updateAll(res.data.entries)
                     }
                 })
         },
-        replaceAll(pluginRuns) {
-            this.pluginRuns = {};
-            this.pluginRunList = [];
+        updateAll(pluginRuns) {
             pluginRuns.forEach((e, i) => {
+
+                if (e.id in this.pluginRuns) {
+                    return;
+                }
                 this.pluginRuns[e.id] = e;
                 this.pluginRunList.push(e.id);
             });

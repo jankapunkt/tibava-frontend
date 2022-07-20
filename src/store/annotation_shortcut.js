@@ -37,7 +37,6 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
                 }
             }
 
-            console.log(`ANNOTATION_SHORTCUT_UPDATE ${JSON.stringify(params)}`);
             return axios
                 .post(`${config.API_LOCATION}/annotation/shortcut/update`, params)
                 .then((res) => {
@@ -65,7 +64,6 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
                     params.video_id = videoId;
                 }
             }
-            console.log(`annotationShortcut::listUpdate ${JSON.stringify(params)}`);
             return axios
                 .get(`${config.API_LOCATION}/annotation/shortcut/list`, {
                     params,

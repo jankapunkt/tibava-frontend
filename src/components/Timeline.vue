@@ -440,6 +440,7 @@ export default {
     },
 
     drawAnnotationTimeline(timeline, width, height) {
+      console.log("drawAnnotationTimeline")
       const timelineSegmentStore = useTimelineSegmentStore();
       const timelineSegmentAnnotationStore =
         useTimelineSegmentAnnotationStore();
@@ -515,6 +516,7 @@ export default {
       return drawnTimeline;
     },
     drawGraphicTimeline(timeline, width, height) {
+      console.log("drawGraphicTimeline")
       const pluginRunResultStore = usePluginRunResultStore();
       if ("plugin_run_result_id" in timeline) {
         const result = pluginRunResultStore.get(timeline.plugin_run_result_id);
@@ -798,7 +800,7 @@ export default {
       if (!this.enabled) {
         return;
       }
-
+      // TODO improve this part
       if ("container" in this.$refs && this.$refs.container) {
         if (this.$refs.container.clientWidth != this.containerWidth) {
           this.containerWidth = this.$refs.container.clientWidth;
@@ -841,17 +843,20 @@ export default {
         if (date <= this.lastTimestamp) {
           return
         }
-        if (date > latestTimestamp) {
-          latestTimestamp = date;
-        }
         console.log('Added')
         const timelineObject = this.getTimeline(timeline.id);
         if (!timelineObject) {
-          const timelineObject = this.drawTimeline(timeline)
-
-          this.timelinesContainer.addChild(timelineObject);
-          this.timelineObjects.push(timelineObject);
+          const newTimelineObject = this.drawTimeline(timeline)
+          if (!newTimelineObject) {
+            return
+          }
+          this.timelinesContainer.addChild(newTimelineObject);
+          this.timelineObjects.push(newTimelineObject);
           // we don't set x and y because we will move it at the end
+        }
+
+        if (date > latestTimestamp) {
+          latestTimestamp = date;
         }
       });
       // we have done all updates until this point
@@ -864,8 +869,10 @@ export default {
         if (timeline.type !== "R") {
           return
         }
-
         const timelineObject = this.getTimeline(timeline.id);
+        if (!timelineObject) {
+          return
+        }
 
         let redraw = false;
         if (timeline.visualization !== "C" && timelineObject instanceof ColorTimeline) {
@@ -878,17 +885,16 @@ export default {
           redraw = true;
         }
         if (redraw) {
-
           this.timelinesContainer.removeChild(timelineObject);
           const index = this.timelineObjects.indexOf(timelineObject);
           if (index > -1) {
             this.timelineObjects.splice(index, 1);
           }
 
-          const timelineObject = this.drawTimeline(timeline)
+          const newTimelineObject = this.drawTimeline(timeline)
 
-          this.timelinesContainer.addChild(timelineObject);
-          this.timelineObjects.push(timelineObject);
+          this.timelinesContainer.addChild(newTimelineObject);
+          this.timelineObjects.push(newTimelineObject);
         }
 
 
@@ -932,7 +938,7 @@ export default {
         e.time = this.time;
       });
     });
-    // this.draw();
+    this.draw();
   },
   components: {
     ModalRenameTimeline,

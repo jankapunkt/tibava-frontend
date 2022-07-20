@@ -202,7 +202,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 .get(`${config.API_LOCATION}/timeline/segment/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceStore(res.data.entries);
+                        this.updateStore(res.data.entries);
                     }
                 });
             // .catch((error) => {
@@ -247,28 +247,17 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             });
             this.updateTimeStore()
         },
-        replaceStore(timelineSegments) {
-            this.timelineSegmentList = [];
-            this.timelineSegments = {};
+        updateStore(timelineSegments) {
             timelineSegments = timelineSegments.sort((a, b) => {
                 return a.start - b.start;
             });
             timelineSegments.forEach((e, i) => {
+                if (e.id in this.timelineSegments) {
+                    return
+                }
                 this.timelineSegments[e.id] = e;
                 this.timelineSegmentList.push(e.id);
             });
-            this.clearSelection()
-            this.updateTimeStore()
-        },
-        // delete(this, timeline_id) {
-        //     let timeline_index = this.timelines.findIndex(e => e.id === timeline_id);
-        //     this.timelines.splice(timeline_index, 1);
-        // },
-
-        clear() {
-            this.timelineSegmentList = [];
-            this.timelineSegments = {};
-            this.clearSelection()
             this.updateTimeStore()
         },
         deleteTimeline(timeline_id) {

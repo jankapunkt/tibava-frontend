@@ -42,7 +42,6 @@ export const useAnnotationStore = defineStore('annotation', {
                 }
             }
 
-            console.log(`ANNOTATION_CREATE ${JSON.stringify(params)}`);
             return axios
                 .post(`${config.API_LOCATION}/annotation/create`, params)
                 .then((res) => {
@@ -69,7 +68,6 @@ export const useAnnotationStore = defineStore('annotation', {
             return axios
                 .post(`${config.API_LOCATION}/annotation/update`, params)
                 .then((res) => {
-                    console.log(res.data);
                     if (res.data.status === "ok") {
                         this.updateInStore([
                             {
@@ -119,12 +117,11 @@ export const useAnnotationStore = defineStore('annotation', {
                 }
             }
 
-            console.log(`Annotation::listUpdate ${JSON.stringify(params)}`);
             return axios
                 .get(`${config.API_LOCATION}/annotation/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceStore(res.data.entries);
+                        this.updateStore(res.data.entries);
                     }
                 });
             // .catch((error) => {
@@ -145,10 +142,11 @@ export const useAnnotationStore = defineStore('annotation', {
                 this.annotationList.push(e.id);
             });
         },
-        replaceStore(annotations) {
-            this.annotations = {};
-            this.annotationList = [];
+        updateStore(annotations) {
             annotations.forEach((e, i) => {
+                if (e.id in this.annotations) {
+                    return;
+                }
                 this.annotations[e.id] = e;
                 this.annotationList.push(e.id);
             });

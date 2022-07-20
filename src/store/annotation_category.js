@@ -66,7 +66,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             return axios.get(`${config.API_LOCATION}/annotation/category/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        this.replaceStore(res.data.entries);
+                        this.updateStore(res.data.entries);
                     }
                 })
             // .catch((error) => {
@@ -82,10 +82,11 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             });
         },
 
-        replaceStore(annotationCategories) {
-            this.annotationCategories = {}
-            this.annotationCategoryList = []
+        updateStore(annotationCategories) {
             annotationCategories.forEach((e, i) => {
+                if (e.id in this.annotationCategories) {
+                    return;
+                }
                 this.annotationCategories[e.id] = e
                 this.annotationCategoryList.push(e.id)
             });

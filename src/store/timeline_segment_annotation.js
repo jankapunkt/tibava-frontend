@@ -152,7 +152,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceStore(res.data.entries)
+                        this.updateStore(res.data.entries)
                     }
                 });
             // .catch((error) => {
@@ -180,10 +180,11 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             });
             this.updateTimeStore()
         },
-        replaceStore(timelineSegmentAnnotations) {
-            this.timelineSegmentAnnotations = {};
-            this.timelineSegmentAnnotationList = [];
+        updateStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((e, i) => {
+                if (e.id in this.timelineSegmentAnnotations) {
+                    return
+                }
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
             });

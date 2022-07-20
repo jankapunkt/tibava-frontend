@@ -90,7 +90,7 @@ export const useTimelineStore = defineStore('timeline', {
                 .get(`${config.API_LOCATION}/timeline/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceStore(res.data.entries);
+                        this.updateStore(res.data.entries);
                     }
                 });
             // .catch((error) => {
@@ -311,10 +311,11 @@ export const useTimelineStore = defineStore('timeline', {
             });
             this.updateVisibleStore();
         },
-        replaceStore(timelines) {
-            this.timelines = {};
-            this.timelineList = [];
+        updateStore(timelines) {
             timelines.forEach((e, i) => {
+                if (e.id in this.timelines) {
+                    return;
+                }
                 this.timelineListAdded.push([Date.now(), e.id])
                 this.timelines[e.id] = e;
                 this.timelineList.push(e.id);

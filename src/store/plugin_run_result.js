@@ -45,7 +45,7 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
             return axios.get(`${config.API_LOCATION}/plugin/run/result/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        this.replaceAll(res.data.entries);
+                        this.updateAll(res.data.entries);
                     }
                 })
             // .catch((error) => {
@@ -53,10 +53,11 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
             //   commit('error/update', info, { root: true });
             // });
         },
-        replaceAll(pluginRunResults) {
-            this.pluginRunResults = {};
-            this.pluginRunResultList = [];
+        updateAll(pluginRunResults) {
             pluginRunResults.forEach((e, i) => {
+                if (e.id in this.pluginRunResults) {
+                    return;
+                }
                 this.pluginRunResults[e.id] = e;
                 this.pluginRunResultList.push(e.id);
             });

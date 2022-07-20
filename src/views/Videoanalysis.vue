@@ -3,12 +3,7 @@
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
-          <v-card
-            class="d-flex flex-column flex-nowrap px-2"
-            elevation="2"
-            v-resize="onVideoResize"
-            ref="videoCard"
-          >
+          <v-card class="d-flex flex-column flex-nowrap px-2" elevation="2" v-resize="onVideoResize" ref="videoCard">
             <v-row>
               <v-card-title>
                 {{ playerStore.videoName }}
@@ -27,12 +22,7 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card
-            class="overflow-auto"
-            elevation="2"
-            ref="resultCard"
-            :height="resultCardHeight"
-          >
+          <v-card class="overflow-auto" elevation="2" ref="resultCard" :height="resultCardHeight">
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
@@ -42,12 +32,7 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
-                <ShotCard
-                  v-for="item in shots"
-                  v-bind:key="item.id"
-                  :shot="item"
-                  @seek="onTagetTimeChange"
-                />
+                <ShotCard v-for="item in shots" v-bind:key="item.id" :shot="item" @seek="onTagetTimeChange" />
               </v-tab-item>
               <!-- <v-tab-item>
                 <EntitiesCard
@@ -69,29 +54,14 @@
 
       <v-row class="ma-2">
         <v-col>
-          <v-card
-            class="d-flex flex-column flex-nowrap"
-            max-width="100%"
-            elevation="2"
-            scrollable="False"
-          >
+          <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
-              <Timeline
-                ref="timeline"
-                width="100%"
-                :selectedTimelineSegment="selectedTimelineSegment"
-                :selectedTimeline="selectedTimeline"
-                @copyTimeline="onCopyTimeline"
-                @renameTimeline="onRenameTimeline"
-                @changeTimelineVisualization="onChangeTimelineVisualization"
-                @deleteTimeline="onDeleteTimeline"
-                @annotateSegment="onAnnotateSegment"
-                @coloringSegment="onColoringSegment"
-                @deleteSegment="onDeleteSegment"
-                @addSelection="onAddSelection"
-                @select="onSelect"
-              >
+              <Timeline ref="timeline" width="100%" :selectedTimelineSegment="selectedTimelineSegment"
+                :selectedTimeline="selectedTimeline" @copyTimeline="onCopyTimeline" @renameTimeline="onRenameTimeline"
+                @changeTimelineVisualization="onChangeTimelineVisualization" @deleteTimeline="onDeleteTimeline"
+                @annotateSegment="onAnnotateSegment" @coloringSegment="onColoringSegment"
+                @deleteSegment="onDeleteSegment" @addSelection="onAddSelection" @select="onSelect">
               </Timeline>
             </v-flex>
           </v-card>
@@ -295,8 +265,8 @@ export default {
         this.annotationDialog.show = true;
       });
     },
-    onColoringSegment(id) {},
-    onDeleteSegment(id) {},
+    onColoringSegment(id) { },
+    onDeleteSegment(id) { },
 
     onAddSelection(segmentId) {
       const segmentPos = this.timelineStore.segmentPosition(segmentId);
@@ -370,6 +340,13 @@ export default {
       this.end = end;
       this.annotations = annotations;
     },
+
+    async fetchData() {
+      // Ask backend about all videos
+
+      await this.videoStore.fetch({ videoId: this.$route.params.id });
+      this.shotStore.buildShots();
+    },
   },
   computed: {
     duration() {
@@ -396,8 +373,16 @@ export default {
     // fetch the data when the view is created and the data is
     // already being observed
 
-    await this.videoStore.fetch({ videoId: this.$route.params.id });
-    this.shotStore.buildShots();
+
+    this.fetchData();
+
+
+    this.fetchTimer = setInterval(
+      function () {
+        this.fetchData();
+      }.bind(this),
+      5000
+    );
   },
   mounted() {
     this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
@@ -418,7 +403,7 @@ export default {
 </script>
 
 <style scoped>
-.logo > img {
+.logo>img {
   max-height: 56px;
 }
 
