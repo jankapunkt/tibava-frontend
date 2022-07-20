@@ -26,33 +26,66 @@
         "plugin": {
             "title": "Plugins",
             "close": "close",
-            "audio": {
-                "waveform": "Audio Waveform Analysis",
-                "frequency": "Audio Frequency Analysis"
+            "run": "Start Plugin",
+            "timeline_name": "Timeline Name",
+            "shot_timeline_name": "Shot Boundaries from Timeline",
+            "shot_timeline_hint": "*The annotations are created based on the shot boundaries of the selected timeline",
+            "fps": "Frames per Second (FPS)",
+            "audio_waveform": {
+                "plugin_name": "Audio Waveform Analysis",
+                "timeline_name": "Audio Waveform",
+                "sr": "Sampling Rate"
             },
-            "color_analysis": {
-                "name": "Color Analysis",
-                "slider": "Number of dominant colors",
-                "buttongroup": "Show dominant colors in:",
-                "singletimeline": "Single Timeline",
-                "multipletimelines": "Individual Timelines"
+            "audio_frequency": {
+                "plugin_name": "Audio Spectorgram Analysis",
+                "timeline_name": "Audio Spectogram",
+                "sr": "Sampling Rate",
+                "n_fft": "Length of the FFT (Fast Fourier Transform) window"
             },
             "clip": {
-                "probability": "Object Classification",
-                "search_term": "Search Term",
-                "fps": "FPS"
+                "plugin_name": "Object Classification",
+                "search_term": "Search Term"
             },
-            "places_classification": "Place Classification",
-            "facedetection": "Face Detection",
-            "faceemotion": "Face Emotion",
-            "facesize": "Face Size",
-            "run": "OK",
-            "shot_detection": "Shot Boundary Detection",
-            "shot_type_classification": "Shot Size",
-            "timeline_name": "Timeline Name",
-            "shot_timeline_name": "Timeline with Shot Boundaries",
-            "shot_timeline_hint": "The annotation will be based on the shot boundaries of this timeline",
-            "thumbnail": "Thumbnail Generation"
+            "color_analysis": {
+                "plugin_name": "Color Analysis",
+                "timeline_name": "Dominant Color(s)",
+                "slider": "Number of dominant color(s)",
+                "buttongroup": "Show dominant color(s) in:",
+                "singletimeline": "Single Timeline",
+                "multipletimelines": "Individual Timelines",
+                
+                "max_resolution": "Maximum Image Resolution",
+                "max_iter": "Maximum Number of Iterations for k-Means Clustering"
+            },
+            "facedetection": {
+                "plugin_name": "Face Detection",
+                "timeline_name": "Faces"
+            },
+            "faceemotion": {
+                "plugin_name": "Face Emotion Recognition",
+                "timeline_name": "Face Emotions",
+                "fps": "Frames per Second (FPS)",
+                "min_facesize": "Minimum Face Size [px]"
+            },
+            "facesize": {
+                "plugin_name": "Face Shot Size Analysis",
+                "timeline_name": "Face Shot Size"
+            },
+            "places_classification": {
+                "plugin_name": "Place Recognition",
+                "timeline_name": "Places"
+            },
+            "shot_detection": {
+                "plugin_name": "Shot Boundary Detection",
+                "timeline_name": "Shots"
+            },
+            "shot_type_classification": {
+                "plugin_name": "Shot Size Classification",
+                "timeline_name": "Shot Sizes"
+            },
+            "thumbnail": {
+                "plugin_name": "Thumbnail Generation"
+            }
         },
         "shortcut": {
             "title": "Shortcuts",

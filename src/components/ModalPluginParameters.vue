@@ -28,6 +28,7 @@
           :max="parameter.max"
           :step="parameter.step"
           :value="parameter.default"
+          :disabled="parameter.disabled"
           thumb-label="always"
         ></v-slider>
       </div>
