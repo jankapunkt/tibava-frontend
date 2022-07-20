@@ -8,18 +8,9 @@
           </v-col>
         </v-row>
 
-        <v-container
-          class="d-flex flex-wrap video-gallery align-content-center"
-        >
-          <v-card
-            elevation="2"
-            min-width="400px"
-            :loading="item.loading"
-            outlined
-            shaped
-            v-for="item in videos"
-            :key="item.id"
-          >
+        <v-container class="d-flex flex-wrap video-gallery align-content-center">
+          <v-card elevation="2" min-width="400px" :loading="item.loading" outlined shaped v-for="item in videos"
+            :key="item.id">
             <v-card-title>{{ item.name }}</v-card-title>
             <v-card-text>
               <div>Video ID: {{ item.id }}</div>
@@ -30,10 +21,10 @@
               <div>License: {{ item.license }}</div>
 
               <v-card-actions>
-                <v-btn outlined @click="show_video(item.id)">
+                <v-btn outlined @click="showVideo(item.id)">
                   <v-icon>{{ "mdi-movie-search-outline" }}</v-icon> Analyse
                 </v-btn>
-                <v-btn color="red" outlined @click="delete_video(item.id)">
+                <v-btn color="red" outlined @click="deleteVideo(item.id)">
                   <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
                 </v-btn>
               </v-card-actions>
@@ -62,10 +53,11 @@ export default {
     };
   },
   methods: {
-    delete_video(video_id) {
+    deleteVideo(video_id) {
+      console.log(video_id)
       this.videoStore.delete(video_id);
     },
-    show_video(video_id) {
+    showVideo(video_id) {
       router.push({ path: `/videoanalysis/${video_id}` });
     },
     async fetchData() {
@@ -124,7 +116,7 @@ export default {
 </script>
 
 <style>
-.video-gallery > * {
+.video-gallery>* {
   margin: 8px;
 }
 </style>

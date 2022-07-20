@@ -48,7 +48,7 @@ export const useVideoUploadStore = defineStore('videoUpload', {
                     console.log(res);
                     if (res.data.status === "ok") {
                         res.data.entries.forEach((entry) => {
-                            videoStore.add(entry);
+                            videoStore.addToStore(entry);
                         });
                     }
                     this.isUploading = false;

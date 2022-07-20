@@ -231,6 +231,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         },
         addToStore(timelineSegments) {
             timelineSegments.forEach((e, i) => {
+                this.timelineSegmentListAdded.push(e.id);
                 this.timelineSegments[e.id] = e;
                 this.timelineSegmentList.push(e.id);
             });
@@ -241,6 +242,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         },
         deleteFromStore(ids) {
             ids.forEach((id, i) => {
+                this.timelineSegmentListDeleted.push(id);
                 let index = this.timelineSegmentList.findIndex((f) => f === id);
                 this.timelineSegmentList.splice(index, 1);
                 delete this.timelineSegments[id];
@@ -255,6 +257,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 if (e.id in this.timelineSegments) {
                     return
                 }
+                this.timelineSegmentListAdded.push(e.id);
                 this.timelineSegments[e.id] = e;
                 this.timelineSegmentList.push(e.id);
             });
@@ -279,7 +282,6 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 for (var i = Math.floor(e.start); i < Math.ceil(e.end); i++) {
                     if (i in this.timelineSegmentByTime) {
                         this.timelineSegmentByTime[i].push(e.id)
-
                     }
                     else {
                         this.timelineSegmentByTime[i] = [e.id]

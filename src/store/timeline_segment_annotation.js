@@ -174,7 +174,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
         addToStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((e, i) => {
 
-                this.timelineSegmentAnnotationListAdded.push(id)
+                this.timelineSegmentAnnotationListAdded.push(e.id)
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
             });
@@ -185,6 +185,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 if (e.id in this.timelineSegmentAnnotations) {
                     return
                 }
+                this.timelineSegmentAnnotationListAdded.push(e.id)
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
             });

@@ -104,7 +104,9 @@ export const usePlayerStore = defineStore('player', {
                     if (res.data.status === "ok") {
                         // const playerStore = usePlayerStore();
                         this.video = res.data.entry;
-                        this.selectedTimeRange.end = this.videoDuration;
+                        if (this.selectedTimeRange.end <= 0) {
+                            this.selectedTimeRange.end = this.videoDuration;
+                        }
                     }
                 });
             // .catch((error) => {
