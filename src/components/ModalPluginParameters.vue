@@ -8,6 +8,18 @@
         :key="parameter.name"
       ></v-text-field>
 
+      <v-select
+        v-model="parameter.value"
+        :items="shot_timelines"
+        :label="parameter.text"
+        :hint="parameter.hint"
+        item-text="name"
+        item-value="id"
+        v-if="parameter.field == 'select_timeline' && shot_timelines.length > 0"
+        :key="parameter.name"
+        persistent-hint
+      ></v-select>
+
       <div v-if="parameter.field == 'slider'" :key="parameter.name">
         <v-slider
           v-model="parameter.value"
@@ -42,7 +54,25 @@
 
 
 <script>
+import { mapStores } from "pinia";
+import { useTimelineStore } from "../store/timeline";
 export default {
   props: ["parameters"],
+  computed: {
+    shot_timelines() {
+      var timelines = this.timelineStore.all.filter(
+        (timeline) => timeline.type == "A"
+      );
+
+      function getTimelineDict(timeline) {
+        console.log(timeline);
+        return { name: timeline.name, id: timeline.id };
+      }
+
+      timelines = timelines.map(getTimelineDict);
+      return timelines;
+    },
+    ...mapStores(useTimelineStore),
+  },
 };
 </script>

@@ -5,7 +5,11 @@
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" style="height: 40px; width: 100%; height: 100%">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                style="height: 40px; width: 100%; height: 100%"
+              >
                 <v-icon left>mdi-cog</v-icon>
                 {{ $t("modal.timeline.menu.title") }}
               </v-btn>
@@ -21,19 +25,33 @@
           </v-menu>
         </div>
 
-        <DraggableTree draggable="draggable" cross-tree="cross-tree" class="timelinetree" :data="timelineHierarchy"
-          :indent="25" :space="0" @change="change" @nodeOpenChanged="nodeOpenChanged">
+        <DraggableTree
+          draggable="draggable"
+          cross-tree="cross-tree"
+          class="timelinetree"
+          :data="timelineHierarchy"
+          :indent="25"
+          :space="0"
+          @change="change"
+          @nodeOpenChanged="nodeOpenChanged"
+        >
           <div slot-scope="{ data, store }">
             <template v-if="!data.isDragPlaceHolder">
-              <v-app-bar dense color="white" style="
+              <v-app-bar
+                dense
+                color="white"
+                style="
                   height: 50px;
                   margin-top: 4px;
                   margin-bottom: 4px;
                   width: 100%;
-                ">
-                <v-icon v-if="data.children && data.children.length" @click="store.toggleOpen(data)">{{ data.open ?
-                    "mdi-minus" : "mdi-plus"
-                }}</v-icon>
+                "
+              >
+                <v-icon
+                  v-if="data.children && data.children.length"
+                  @click="store.toggleOpen(data)"
+                  >{{ data.open ? "mdi-minus" : "mdi-plus" }}</v-icon
+                >
                 <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-app-bar-title v-bind="attrs" v-on="on">
@@ -55,7 +73,9 @@
                 <v-menu bottom right>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn icon small>
-                      <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
+                      <v-icon v-bind="attrs" v-on="on"
+                        >mdi-dots-vertical</v-icon
+                      >
                     </v-btn>
                   </template>
                   <v-list>
@@ -84,12 +104,24 @@
       </v-col>
     </v-row>
 
-    <v-tooltip top v-model="segmentContext.show" :position-x="segmentContext.x" :position-y="segmentContext.y" absolute
-      offset-y>
+    <v-tooltip
+      top
+      v-model="segmentContext.show"
+      :position-x="segmentContext.x"
+      :position-y="segmentContext.y"
+      absolute
+      offset-y
+    >
       <span>{{ segmentContext.label }}</span>
     </v-tooltip>
 
-    <v-menu v-model="segmentMenu.show" :position-x="segmentMenu.x" :position-y="segmentMenu.y - 10" absolute offset-y>
+    <v-menu
+      v-model="segmentMenu.show"
+      :position-x="segmentMenu.x"
+      :position-y="segmentMenu.y - 10"
+      absolute
+      offset-y
+    >
       <v-list>
         <v-list-item link v-on:click="onAnnotateSegment">
           <v-list-item-title>
@@ -126,7 +158,11 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-list-item v-if="selectedTimelineSegment.length > 1" link v-on:click="onMergeSegments">
+        <v-list-item
+          v-if="selectedTimelineSegment.length > 1"
+          link
+          v-on:click="onMergeSegments"
+        >
           <v-list-item-title>
             <v-icon left>{{ "mdi-merge" }}</v-icon>
             {{ $t("timelineSegment.merge") }}
@@ -426,7 +462,6 @@ export default {
       this.app.stage.addChild(this.timelinesContainer);
     },
     drawTimeline(timeline) {
-
       const width = this.timeToX(this.endTime) - this.timeToX(this.startTime);
       const height = this.timelineHeight;
       if (timeline.type == "A") {
@@ -434,13 +469,13 @@ export default {
       } else if (timeline.type == "R") {
         return this.drawGraphicTimeline(timeline, width, height);
       } else {
-        console.error(`Unknown timeline type ${timeline.type}`)
+        console.error(`Unknown timeline type ${timeline.type}`);
       }
-      return null
+      return null;
     },
 
     drawAnnotationTimeline(timeline, width, height) {
-      console.log("drawAnnotationTimeline")
+      console.log("drawAnnotationTimeline");
       const timelineSegmentStore = useTimelineSegmentStore();
       const timelineSegmentAnnotationStore =
         useTimelineSegmentAnnotationStore();
@@ -516,7 +551,7 @@ export default {
       return drawnTimeline;
     },
     drawGraphicTimeline(timeline, width, height) {
-      console.log("drawGraphicTimeline")
+      console.log("drawGraphicTimeline");
       const pluginRunResultStore = usePluginRunResultStore();
       if ("plugin_run_result_id" in timeline) {
         const result = pluginRunResultStore.get(timeline.plugin_run_result_id);
@@ -821,7 +856,7 @@ export default {
         const [date, id] = data;
 
         if (date <= this.lastTimestamp) {
-          return
+          return;
         }
         if (date > latestTimestamp) {
           latestTimestamp = date;
@@ -836,19 +871,18 @@ export default {
         }
       });
 
-
       this.timelinesAdded.forEach((data, i) => {
         const [date, timeline] = data;
 
         if (date <= this.lastTimestamp) {
-          return
+          return;
         }
-        console.log('Added')
+        console.log("Added");
         const timelineObject = this.getTimeline(timeline.id);
         if (!timelineObject) {
-          const newTimelineObject = this.drawTimeline(timeline)
+          const newTimelineObject = this.drawTimeline(timeline);
           if (!newTimelineObject) {
-            return
+            return;
           }
           this.timelinesContainer.addChild(newTimelineObject);
           this.timelineObjects.push(newTimelineObject);
@@ -867,21 +901,33 @@ export default {
       // check visualization
       this.timelines.forEach((timeline, i) => {
         if (timeline.type !== "R") {
-          return
+          return;
         }
         const timelineObject = this.getTimeline(timeline.id);
         if (!timelineObject) {
-          return
+          return;
         }
 
         let redraw = false;
-        if (timeline.visualization !== "C" && timelineObject instanceof ColorTimeline) {
+        if (
+          timeline.visualization !== "C" &&
+          timelineObject instanceof ColorTimeline
+        ) {
           redraw = true;
-        } else if (timeline.visualization !== "SC" && timelineObject instanceof ScalarColorTimeline) {
+        } else if (
+          timeline.visualization !== "SC" &&
+          timelineObject instanceof ScalarColorTimeline
+        ) {
           redraw = true;
-        } else if (timeline.visualization !== "SL" && timelineObject instanceof ScalarLineTimeline) {
+        } else if (
+          timeline.visualization !== "SL" &&
+          timelineObject instanceof ScalarLineTimeline
+        ) {
           redraw = true;
-        } else if (timeline.visualization !== "H" && timelineObject instanceof HistTimeline) {
+        } else if (
+          timeline.visualization !== "H" &&
+          timelineObject instanceof HistTimeline
+        ) {
           redraw = true;
         }
         if (redraw) {
@@ -891,29 +937,27 @@ export default {
             this.timelineObjects.splice(index, 1);
           }
 
-          const newTimelineObject = this.drawTimeline(timeline)
+          const newTimelineObject = this.drawTimeline(timeline);
 
           this.timelinesContainer.addChild(newTimelineObject);
           this.timelineObjects.push(newTimelineObject);
         }
-
-
-
       });
 
       // update order and visible of all objects
-      let skipped = 0
-      this.timelines.sort((a, b) => a.order - b.order).forEach((timeline, i) => {
-        const timelineObject = this.getTimeline(timeline.id);
-        if (timelineObject) {
-          timelineObject.y = this.computeTimelineY(i - skipped);
-          if (!timeline.visible) {
-            skipped += 1
+      let skipped = 0;
+      this.timelines
+        .sort((a, b) => a.order - b.order)
+        .forEach((timeline, i) => {
+          const timelineObject = this.getTimeline(timeline.id);
+          if (timelineObject) {
+            timelineObject.y = this.computeTimelineY(i - skipped);
+            if (!timeline.visible) {
+              skipped += 1;
+            }
+            timelineObject.visible = timeline.visible;
           }
-          timelineObject.visible = timeline.visible;
-        }
-      });
-
+        });
 
       // update all time position
       this.timelineObjects.forEach((e) => {
@@ -938,7 +982,7 @@ export default {
         e.time = this.time;
       });
     });
-    this.draw();
+    // this.draw();
   },
   components: {
     ModalRenameTimeline,

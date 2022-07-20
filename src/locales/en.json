@@ -50,6 +50,8 @@
             "shot_detection": "Shot Boundary Detection",
             "shot_type_classification": "Shot Size",
             "timeline_name": "Timeline Name",
+            "shot_timeline_name": "Timeline with Shot Boundaries",
+            "shot_timeline_hint": "The annotation will be based on the shot boundaries of this timeline",
             "thumbnail": "Thumbnail Generation"
         },
         "shortcut": {

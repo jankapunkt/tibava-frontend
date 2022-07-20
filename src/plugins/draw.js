@@ -6,13 +6,12 @@ import palette from "google-palette";
 
 var colors = palette("tol-dv", 101);
 
-
 export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-    0.587 * Math.pow(rgb[1], 2) +
-    0.114 * Math.pow(rgb[2], 2)
+      0.587 * Math.pow(rgb[1], 2) +
+      0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -81,10 +80,8 @@ export class AnnotationSegment extends PIXI.Container {
     color = 0xdddddd,
     selectedColor = 0xd99090,
     padding = 2,
-    gap = 2
-  }
-
-  ) {
+    gap = 2,
+  }) {
     super();
     this.pSegmentId = segmentId;
     this.pPadding = padding;
@@ -113,6 +110,7 @@ export class AnnotationSegment extends PIXI.Container {
       var badgeY = this.pGap;
       var badgeXIndex = 0;
       this.pSegment.annotations.forEach((a) => {
+        console.log(a);
         const text = new AnnotationBadge(
           badgeX,
           badgeY,
@@ -171,7 +169,6 @@ export class AnnotationSegment extends PIXI.Container {
     return this.pSegment;
   }
   set selected(value) {
-
     this.pSelected = value;
     this.pRect.clear();
     this.drawBox();
@@ -179,7 +176,15 @@ export class AnnotationSegment extends PIXI.Container {
 }
 
 export class Timeline extends PIXI.Container {
-  constructor({ timelineId, width, height, startTime = 0, endTime = 10, duration = 10, fill = 0xffffff }) {
+  constructor({
+    timelineId,
+    width,
+    height,
+    startTime = 0,
+    endTime = 10,
+    duration = 10,
+    fill = 0xffffff,
+  }) {
     super();
     this.pWidth = width;
     this.pHeight = height;
@@ -217,9 +222,8 @@ export class Timeline extends PIXI.Container {
   timeToX(time) {
     return this.timeScale * (time - this.pStartTime);
   }
-  scaleContainer() { }
-  selected({ selected = true, segment = null }) {
-  }
+  scaleContainer() {}
+  selected({ selected = true, segment = null }) {}
   get timeScale() {
     return this.pWidth / (this.pEndTime - this.pStartTime);
   }
@@ -331,9 +335,7 @@ export class ScalarColorTimeline extends Timeline {
   }
 
   renderGraph(renderer, resolution) {
-    const renderWidth = Math.ceil(
-      this.pDuration / resolution
-    );
+    const renderWidth = Math.ceil(this.pDuration / resolution);
 
     const brt = new PIXI.BaseRenderTexture(
       renderWidth,
@@ -348,13 +350,7 @@ export class ScalarColorTimeline extends Timeline {
     // fill with nothing
     let color = scalarToHex(0);
     colorRects.beginFill(color);
-    colorRects.drawRect(
-      0,
-      0,
-      renderWidth,
-      this.pHeight
-    );
-
+    colorRects.drawRect(0, 0, renderWidth, this.pHeight);
 
     this.pData.time.forEach((t, i) => {
       let color = scalarToHex(this.pData.y[i]);
@@ -362,7 +358,7 @@ export class ScalarColorTimeline extends Timeline {
       colorRects.drawRect(
         t / resolution,
         0,
-        (this.pData.delta_time) / resolution,
+        this.pData.delta_time / resolution,
         this.pHeight
       );
     });
@@ -373,9 +369,7 @@ export class ScalarColorTimeline extends Timeline {
 
   scaleContainer() {
     if (this.cRects) {
-      const width =
-        this.timeToX(this.pDuration) -
-        this.timeToX(0);
+      const width = this.timeToX(this.pDuration) - this.timeToX(0);
       const x = this.timeToX(0);
       this.cRects.x = x;
       this.cRects.width = width;
@@ -411,10 +405,7 @@ export class ScalarLineTimeline extends Timeline {
   }
 
   renderGraph(renderer, resolution) {
-    const renderWidth = Math.ceil(
-      this.pDuration / resolution
-    );
-
+    const renderWidth = Math.ceil(this.pDuration / resolution);
 
     const brt = new PIXI.BaseRenderTexture(
       renderWidth,
@@ -430,10 +421,15 @@ export class ScalarLineTimeline extends Timeline {
 
     this.pData.time.forEach((t, i) => {
       if (i == 0) {
-        path.moveTo(t / resolution, this.pHeight - this.pData.y[i] * this.pHeight
+        path.moveTo(
+          t / resolution,
+          this.pHeight - this.pData.y[i] * this.pHeight
         );
       }
-      path.lineTo(t / resolution, this.pHeight - this.pData.y[i] * this.pHeight);
+      path.lineTo(
+        t / resolution,
+        this.pHeight - this.pData.y[i] * this.pHeight
+      );
     });
 
     renderer.render(path, rt);
@@ -442,9 +438,7 @@ export class ScalarLineTimeline extends Timeline {
 
   scaleContainer() {
     if (this.path) {
-      const width =
-        this.timeToX(this.pDuration) -
-        this.timeToX(0);
+      const width = this.timeToX(this.pDuration) - this.timeToX(0);
       const x = this.timeToX(0);
       this.path.x = x;
       this.path.width = width;
@@ -522,18 +516,16 @@ export class HistTimeline extends Timeline {
 }
 
 export class AnnotationTimeline extends Timeline {
-  constructor(
-    {
-      timelineId,
-      width,
-      height,
-      startTime = 0,
-      endTime = 10,
-      duration = 10,
-      data = null,
-      fill = 0xffffff
-    }
-  ) {
+  constructor({
+    timelineId,
+    width,
+    height,
+    startTime = 0,
+    endTime = 10,
+    duration = 10,
+    data = null,
+    fill = 0xffffff,
+  }) {
     super({ timelineId, width, height, startTime, endTime, duration, fill });
     this.pTimeline = data;
     this.pSegmentList = [];
@@ -546,7 +538,12 @@ export class AnnotationTimeline extends Timeline {
         const width = this.timeToX(s.end) - this.timeToX(s.start);
         const height = this.pHeight;
 
-        let segmentE = new AnnotationSegment({ segmentId: s.id, data: s, width: width, height: height });
+        let segmentE = new AnnotationSegment({
+          segmentId: s.id,
+          data: s,
+          width: width,
+          height: height,
+        });
         segmentE.x = x;
         segmentE.interactive = true;
         segmentE.buttonMode = true;
@@ -602,8 +599,9 @@ export class AnnotationTimeline extends Timeline {
   }
   selected({ selected = true, segment = null }) {
     if (segment) {
-
-      this.pSegmentList.filter((e) => segment.id === e.segmentId).forEach((e) => e.selected = selected)
+      this.pSegmentList
+        .filter((e) => segment.id === e.segmentId)
+        .forEach((e) => (e.selected = selected));
     }
   }
   get segments() {

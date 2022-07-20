@@ -74,6 +74,7 @@
 import { mapStores } from "pinia";
 import { usePluginRunStore } from "@/store/plugin_run";
 import ModalPluginParameters from "./ModalPluginParameters.vue";
+// import { useTimelineStore } from "../store/timeline";
 
 export default {
   props: ["value"],
@@ -180,6 +181,14 @@ export default {
               name: "timeline",
               value: this.$t("modal.plugin.places_classification"),
               text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "select_timeline",
+              name: "shot_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.shot_timeline_name"),
+              hint: this.$t("modal.plugin.shot_timeline_hint"),
             },
           ],
           optional_parameters: [],
