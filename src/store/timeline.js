@@ -3,12 +3,15 @@ import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
 import { useTimelineSegmentStore } from '@/store/timeline_segment'
+import { usePlayerStore } from '@/store/player'
 
 export const useTimelineStore = defineStore('timeline', {
     state: () => {
         return {
             timelines: {},
             timelineList: [],
+            timelineListAdded: [],
+            timelineListDeleted: [],
         }
     },
     getters: {
@@ -21,6 +24,12 @@ export const useTimelineStore = defineStore('timeline', {
         },
         all(state) {
             return state.timelineList.map((id) => state.timelines[id]);
+        },
+        added(state) {
+            return state.timelineListAdded.map((data) => [data[0], state.timelines[data[1]]]);
+        },
+        deleted(state) {
+            return state.timelineListDeleted;
         },
         get(state) {
             return (id) => {
@@ -119,8 +128,6 @@ export const useTimelineStore = defineStore('timeline', {
             if (videoId) {
                 params.video_id = videoId;
             } else {
-
-
                 const playerStore = usePlayerStore();
                 const videoId = playerStore.videoId;
                 if (videoId) {
@@ -167,17 +174,12 @@ export const useTimelineStore = defineStore('timeline', {
                 id: timeline_id,
             };
 
+            // update own store
+            this.deleteFromStore([timeline_id])
 
-            let timeline_index = this.timelineList.findIndex(
-                (e) => e === timeline_id
-            );
-            this.timelineList.splice(timeline_index, 1);
-            delete this.timelines[timeline_id];
-            //TODO we don't need to send changes to the backend
-
+            // update all segments
             const timelineSegmentStore = useTimelineSegmentStore();
             timelineSegmentStore.deleteTimeline(timeline_id);
-
 
             return axios
                 .post(`${config.API_LOCATION}/timeline/delete`, params)
@@ -219,9 +221,6 @@ export const useTimelineStore = defineStore('timeline', {
                 id: timelineId,
                 visualization: visualization,
             };
-            console.log(timelineId);
-            console.log(params);
-
 
             const newTimelines = { ...this.timelines };
             newTimelines[timelineId].visualization = visualization;
@@ -295,8 +294,18 @@ export const useTimelineStore = defineStore('timeline', {
                     }
                 });
         },
+        deleteFromStore(ids) {
+            ids.forEach((id, i) => {
+                this.timelineListDeleted.push([Date.now(), id])
+                let index = this.timelineList.findIndex((f) => f === id);
+                this.timelineList.splice(index, 1);
+                delete this.timelines[id];
+            });
+            this.updateVisibleStore()
+        },
         addToStore(timelines) {
             timelines.forEach((e, i) => {
+                this.timelineListAdded.push([Date.now(), e.id])
                 this.timelines[e.id] = e;
                 this.timelineList.push(e.id);
             });
@@ -306,6 +315,7 @@ export const useTimelineStore = defineStore('timeline', {
             this.timelines = {};
             this.timelineList = [];
             timelines.forEach((e, i) => {
+                this.timelineListAdded.push([Date.now(), e.id])
                 this.timelines[e.id] = e;
                 this.timelineList.push(e.id);
             });

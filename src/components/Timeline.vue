@@ -5,11 +5,7 @@
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-bind="attrs"
-                v-on="on"
-                style="height: 40px; width: 100%; height: 100%"
-              >
+              <v-btn v-bind="attrs" v-on="on" style="height: 40px; width: 100%; height: 100%">
                 <v-icon left>mdi-cog</v-icon>
                 {{ $t("modal.timeline.menu.title") }}
               </v-btn>
@@ -25,33 +21,19 @@
           </v-menu>
         </div>
 
-        <DraggableTree
-          draggable="draggable"
-          cross-tree="cross-tree"
-          class="timelinetree"
-          :data="timelineHierarchy"
-          :indent="25"
-          :space="0"
-          @change="change"
-          @nodeOpenChanged="nodeOpenChanged"
-        >
+        <DraggableTree draggable="draggable" cross-tree="cross-tree" class="timelinetree" :data="timelineHierarchy"
+          :indent="25" :space="0" @change="change" @nodeOpenChanged="nodeOpenChanged">
           <div slot-scope="{ data, store }">
             <template v-if="!data.isDragPlaceHolder">
-              <v-app-bar
-                dense
-                color="white"
-                style="
+              <v-app-bar dense color="white" style="
                   height: 50px;
                   margin-top: 4px;
                   margin-bottom: 4px;
                   width: 100%;
-                "
-              >
-                <v-icon
-                  v-if="data.children && data.children.length"
-                  @click="store.toggleOpen(data)"
-                  >{{ data.open ? "mdi-minus" : "mdi-plus" }}</v-icon
-                >
+                ">
+                <v-icon v-if="data.children && data.children.length" @click="store.toggleOpen(data)">{{ data.open ?
+                    "mdi-minus" : "mdi-plus"
+                }}</v-icon>
                 <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-app-bar-title v-bind="attrs" v-on="on">
@@ -73,9 +55,7 @@
                 <v-menu bottom right>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn icon small>
-                      <v-icon v-bind="attrs" v-on="on"
-                        >mdi-dots-vertical</v-icon
-                      >
+                      <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
                     </v-btn>
                   </template>
                   <v-list>
@@ -92,8 +72,9 @@
                       <ModalDeleteTimeline :timeline="data.id" />
                     </v-list-item>
                   </v-list>
-                </v-menu> </v-app-bar
-            ></template>
+                </v-menu>
+              </v-app-bar>
+            </template>
           </div>
         </DraggableTree>
       </v-col>
@@ -103,24 +84,12 @@
       </v-col>
     </v-row>
 
-    <v-tooltip
-      top
-      v-model="segmentContext.show"
-      :position-x="segmentContext.x"
-      :position-y="segmentContext.y"
-      absolute
-      offset-y
-    >
+    <v-tooltip top v-model="segmentContext.show" :position-x="segmentContext.x" :position-y="segmentContext.y" absolute
+      offset-y>
       <span>{{ segmentContext.label }}</span>
     </v-tooltip>
 
-    <v-menu
-      v-model="segmentMenu.show"
-      :position-x="segmentMenu.x"
-      :position-y="segmentMenu.y - 10"
-      absolute
-      offset-y
-    >
+    <v-menu v-model="segmentMenu.show" :position-x="segmentMenu.x" :position-y="segmentMenu.y - 10" absolute offset-y>
       <v-list>
         <v-list-item link v-on:click="onAnnotateSegment">
           <v-list-item-title>
@@ -157,11 +126,7 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-list-item
-          v-if="selectedTimelineSegment.length > 1"
-          link
-          v-on:click="onMergeSegments"
-        >
+        <v-list-item v-if="selectedTimelineSegment.length > 1" link v-on:click="onMergeSegments">
           <v-list-item-title>
             <v-icon left>{{ "mdi-merge" }}</v-icon>
             {{ $t("timelineSegment.merge") }}
@@ -279,6 +244,9 @@ export default {
   },
   data() {
     return {
+      //disable event loop if not loaded
+      enabled: false,
+
       app: null,
       timelineObjects: [],
       timeScaleObjects: [],
@@ -292,8 +260,10 @@ export default {
       containerHeight: 100,
 
       // Some dialog show flags
-
       annotationDialogShow: false,
+
+      // Last updated timeline version
+      lastTimestamp: 0,
 
       // Context
       segmentMenu: {
@@ -315,8 +285,6 @@ export default {
         y: null,
         selected: null,
       },
-      // seek
-      targetTime: 0,
       //segment_list
       timelineSegments: [],
     };
@@ -444,15 +412,8 @@ export default {
           (this.gap + this.timelineHeight) * i +
           this.scaleHeight +
           2 * this.gap;
-        const width = this.timeToX(this.endTime) - x;
-        const height = this.timelineHeight;
 
-        let timeline = null;
-        if (e.type == "A") {
-          timeline = this.drawAnnotationTimeline(e, width, height);
-        } else if (e.type == "R") {
-          timeline = this.drawGraphicTimeline(e, width, height);
-        }
+        const timeline = this.drawTimeline(e);
 
         if (timeline) {
           timeline.x = x;
@@ -464,6 +425,20 @@ export default {
 
       this.app.stage.addChild(this.timelinesContainer);
     },
+    drawTimeline(timeline) {
+
+      const width = this.timeToX(this.endTime) - this.timeToX(this.startTime);
+      const height = this.timelineHeight;
+      if (timeline.type == "A") {
+        return this.drawAnnotationTimeline(timeline, width, height);
+      } else if (timeline.type == "R") {
+        return this.drawGraphicTimeline(timeline, width, height);
+      } else {
+        console.error(`Unknown timeline type ${timeline.type}`)
+      }
+      return null
+    },
+
     drawAnnotationTimeline(timeline, width, height) {
       const timelineSegmentStore = useTimelineSegmentStore();
       const timelineSegmentAnnotationStore =
@@ -676,9 +651,9 @@ export default {
       // this.$emit("annotateSegment", id);
     },
     onSplitSegment() {
-      this.timelineSegmentStroe.split({
-        timelineSegmentId: id,
-        time: this.targetTime,
+      this.timelineSegmentStore.split({
+        timelineSegmentId: this.segmentMenu.selected,
+        time: this.playerStore.targetTime,
       });
     },
     onMergeSegments() {
@@ -721,12 +696,6 @@ export default {
         });
       }
     },
-    onResize(event) {
-      this.$nextTick(() => {
-        this.draw();
-        this.$emit("resize");
-      });
-    },
   },
   computed: {
     duration() {
@@ -747,6 +716,14 @@ export default {
     },
     timelines() {
       let timelines = this.timelineStore.all;
+      return timelines;
+    },
+    timelinesAdded() {
+      let timelines = this.timelineStore.added;
+      return timelines;
+    },
+    timelinesDeleted() {
+      let timelines = this.timelineStore.deleted;
       return timelines;
     },
     selectedTimelineSegments() {
@@ -775,7 +752,7 @@ export default {
   watch: {
     isLoading(newValue, oldValue) {
       if (newValue === false) {
-        this.draw();
+        this.enabled = true;
       }
     },
     timelines(values) {
@@ -818,6 +795,10 @@ export default {
     });
 
     this.app.ticker.add(() => {
+      if (!this.enabled) {
+        return;
+      }
+
       if ("container" in this.$refs && this.$refs.container) {
         if (this.$refs.container.clientWidth != this.containerWidth) {
           this.containerWidth = this.$refs.container.clientWidth;
@@ -832,18 +813,101 @@ export default {
         }
       }
 
-      //update order of all objects
+      let latestTimestamp = -1;
+      // delete and add timelines
+      this.timelinesDeleted.forEach((data, i) => {
+        const [date, id] = data;
+
+        if (date <= this.lastTimestamp) {
+          return
+        }
+        if (date > latestTimestamp) {
+          latestTimestamp = date;
+        }
+        const timelineObject = this.getTimeline(id);
+        if (timelineObject) {
+          this.timelinesContainer.removeChild(timelineObject);
+          const index = this.timelineObjects.indexOf(timelineObject);
+          if (index > -1) {
+            this.timelineObjects.splice(index, 1);
+          }
+        }
+      });
+
+
+      this.timelinesAdded.forEach((data, i) => {
+        const [date, timeline] = data;
+
+        if (date <= this.lastTimestamp) {
+          return
+        }
+        if (date > latestTimestamp) {
+          latestTimestamp = date;
+        }
+        console.log('Added')
+        const timelineObject = this.getTimeline(timeline.id);
+        if (!timelineObject) {
+          const timelineObject = this.drawTimeline(timeline)
+
+          this.timelinesContainer.addChild(timelineObject);
+          this.timelineObjects.push(timelineObject);
+          // we don't set x and y because we will move it at the end
+        }
+      });
+      // we have done all updates until this point
+      if (latestTimestamp > 0) {
+        this.lastTimestamp = latestTimestamp;
+      }
+
+      // check visualization
+      this.timelines.forEach((timeline, i) => {
+        if (timeline.type !== "R") {
+          return
+        }
+
+        const timelineObject = this.getTimeline(timeline.id);
+
+        let redraw = false;
+        if (timeline.visualization !== "C" && timelineObject instanceof ColorTimeline) {
+          redraw = true;
+        } else if (timeline.visualization !== "SC" && timelineObject instanceof ScalarColorTimeline) {
+          redraw = true;
+        } else if (timeline.visualization !== "SL" && timelineObject instanceof ScalarLineTimeline) {
+          redraw = true;
+        } else if (timeline.visualization !== "H" && timelineObject instanceof HistTimeline) {
+          redraw = true;
+        }
+        if (redraw) {
+
+          this.timelinesContainer.removeChild(timelineObject);
+          const index = this.timelineObjects.indexOf(timelineObject);
+          if (index > -1) {
+            this.timelineObjects.splice(index, 1);
+          }
+
+          const timelineObject = this.drawTimeline(timeline)
+
+          this.timelinesContainer.addChild(timelineObject);
+          this.timelineObjects.push(timelineObject);
+        }
+
+
+
+      });
+
+      // update order and visible of all objects
       let skipped = 0
-      this.timelines.sort((a,b) => a.order-b.order).forEach((timeline, i) => {
+      this.timelines.sort((a, b) => a.order - b.order).forEach((timeline, i) => {
         const timelineObject = this.getTimeline(timeline.id);
         if (timelineObject) {
-          timelineObject.y = this.computeTimelineY(i-skipped);
-          if(!timeline.visible){
-            skipped+=1
+          timelineObject.y = this.computeTimelineY(i - skipped);
+          if (!timeline.visible) {
+            skipped += 1
           }
           timelineObject.visible = timeline.visible;
         }
       });
+
 
       // update all time position
       this.timelineObjects.forEach((e) => {
@@ -868,7 +932,7 @@ export default {
         e.time = this.time;
       });
     });
-    this.draw();
+    // this.draw();
   },
   components: {
     ModalRenameTimeline,

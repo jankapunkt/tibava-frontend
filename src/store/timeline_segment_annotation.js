@@ -14,6 +14,9 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             timelineSegmentAnnotations: {},
             timelineSegmentAnnotationByTime: {},
             timelineSegmentAnnotationList: [],
+
+            timelineSegmentAnnotationListAdded: [],
+            timelineSegmentAnnotationListDeleted: [],
         }
     },
     getters: {
@@ -159,6 +162,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
         },
         deleteFromStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((id, i) => {
+                this.timelineSegmentAnnotationListDeleted.push(id)
                 let index = this.timelineSegmentAnnotationList.findIndex(
                     (f) => f === id
                 );
@@ -169,6 +173,8 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
         },
         addToStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((e, i) => {
+
+                this.timelineSegmentAnnotationListAdded.push(id)
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
             });

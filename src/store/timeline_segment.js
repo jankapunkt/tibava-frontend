@@ -13,7 +13,10 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             timelineSegments: {},
             timelineSegmentList: [],
             timelineSegmentSelectedList: [],
-            timelineSegmentByTime: {}
+            timelineSegmentByTime: {},
+
+            timelineSegmentListAdded: [],
+            timelineSegmentListDeleted: [],
         }
     },
     getters: {
@@ -148,8 +151,8 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         );
                         timelineSegmentAnnotationStore.addToStore(res.data.timeline_segment_annotation_added
                         );
-                        this.delete(res.data.timeline_segment_deleted);
-                        this.add(res.data.timeline_segment_added);
+                        this.deleteFromStore(res.data.timeline_segment_deleted);
+                        this.addToStore(res.data.timeline_segment_added);
                     }
                 });
             // .catch((error) => {
@@ -171,8 +174,8 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         );
                         timelineSegmentAnnotationStore.addToStore(res.data.timeline_segment_annotation_added
                         );
-                        this.delete(res.data.timeline_segment_deleted);
-                        this.add(res.data.timeline_segment_added);
+                        this.deleteFromStore(res.data.timeline_segment_deleted);
+                        this.addToStore(res.data.timeline_segment_added);
                     }
                 });
             // .catch((error) => {
@@ -199,7 +202,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 .get(`${config.API_LOCATION}/timeline/segment/list`, { params })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceAll(res.data.entries);
+                        this.replaceStore(res.data.entries);
                     }
                 });
             // .catch((error) => {
@@ -226,7 +229,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                     });
             });
         },
-        add(timelineSegments) {
+        addToStore(timelineSegments) {
             timelineSegments.forEach((e, i) => {
                 this.timelineSegments[e.id] = e;
                 this.timelineSegmentList.push(e.id);
@@ -236,7 +239,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             });
             this.updateTimeStore()
         },
-        delete(ids) {
+        deleteFromStore(ids) {
             ids.forEach((id, i) => {
                 let index = this.timelineSegmentList.findIndex((f) => f === id);
                 this.timelineSegmentList.splice(index, 1);
@@ -244,7 +247,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             });
             this.updateTimeStore()
         },
-        replaceAll(timelineSegments) {
+        replaceStore(timelineSegments) {
             this.timelineSegmentList = [];
             this.timelineSegments = {};
             timelineSegments = timelineSegments.sort((a, b) => {
