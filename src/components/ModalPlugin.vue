@@ -97,10 +97,10 @@ export default {
           optional_parameters: [
             {
               field: "slider",
-              min: 4000,
-              max: 16000,
+              min: 1000,
+              max: 24000,
               value: 8000,
-              step: 4000,
+              step: 1000,
               name: "sr",
               text: this.$t("modal.plugin.audio_waveform.sr"),
             },
@@ -121,19 +121,19 @@ export default {
           optional_parameters: [
             {
               field: "slider",
-              min: 4000,
-              max: 16000,
+              min: 1000,
+              max: 24000,
               value: 8000,
-              step: 4000,
+              step: 1000,
               name: "sr",
               text: this.$t("modal.plugin.audio_frequency.sr"),
             },
             {
               field: "slider",
-              min: 128,
+              min: 64,
               max: 512,
               value: 256,
-              step: 128,
+              step: 64, // TODO: only valid for values with power of 2
               name: "n_fft",
               text: this.$t("modal.plugin.audio_frequency.n_fft"),
             },
@@ -294,6 +294,17 @@ export default {
         //       name: "timeline",
         //       value: this.$t("modal.plugin.facedetection.timeline_name"),
         //       text: this.$t("modal.plugin.timeline_name"),
+        //     },
+        //   ],
+        //   optional_parameters: [
+        //     {
+        //       field: "slider",
+        //       min: 1,
+        //       max: 10,
+        //       value: 2,
+        //       step: 1,
+        //       name: "fps",
+        //       text: this.$t("modal.plugin.fps"),
         //     },
         //   ],
         // },
