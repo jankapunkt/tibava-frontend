@@ -29,6 +29,8 @@
 
 <script>
 import Vue from "vue";
+import { mapStores } from "pinia";
+import { useTimelineStore } from "@/store/timeline";
 
 export default {
   props: ["timeline"],
@@ -38,6 +40,9 @@ export default {
       isSubmitting: false,
     };
   },
+  computed:{
+    ...mapStores(useTimelineStore)
+  },
   methods: {
     async submit() {
       if (this.isSubmitting) {
@@ -45,7 +50,7 @@ export default {
       }
       this.isSubmitting = true;
 
-      await this.$store.dispatch("timeline/delete", this.timeline);
+      await this.timelineStore.delete(this.timeline);
 
       this.isSubmitting = false;
       this.show = false;

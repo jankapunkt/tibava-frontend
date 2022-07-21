@@ -3,47 +3,26 @@
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
-          <v-card
-            class="d-flex flex-column flex-nowrap px-2"
-            elevation="2"
-            v-resize="onVideoResize"
-            ref="videoCard"
-          >
+          <v-card class="d-flex flex-column flex-nowrap px-2" elevation="2" v-resize="onVideoResize" ref="videoCard">
             <v-row>
               <v-card-title>
-                {{ $store.state.video.current.name }}
+                {{ playerStore.videoName }}
               </v-card-title>
             </v-row>
 
             <v-row class="flex-grow-1">
               <v-col>
-                <VideoPlayer
-                  :video="$store.state.video.current"
-                  :time="targetTime"
-                  @resize="onVideoResize"
-                  @timeUpdate="onTimeUpdate"
-                />
+                <VideoPlayer @resize="onVideoResize" />
               </v-col>
             </v-row>
             <v-row class="mb-2 px-4">
-              <TimeSelector
-                width="100%"
-                :duration="duration"
-                @resize="onVideoResize"
-                :endTime.sync="endTime"
-                :startTime.sync="startTime"
-              />
+              <TimeSelector width="100%" @resize="onVideoResize" />
             </v-row>
           </v-card>
         </v-col>
 
         <v-col cols="6">
-          <v-card
-            class="overflow-auto"
-            elevation="2"
-            ref="resultCard"
-            :height="resultCardHeight"
-          >
+          <v-card class="overflow-auto" elevation="2" ref="resultCard" :height="resultCardHeight">
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
@@ -53,12 +32,7 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
-                <ShotCard
-                  v-for="item in shots"
-                  v-bind:key="item.id"
-                  :shot="item"
-                  @seek="onTagetTimeChange"
-                />
+                <ShotCard v-for="item in shots" v-bind:key="item.id" :shot="item" @seek="onTagetTimeChange" />
               </v-tab-item>
               <!-- <v-tab-item>
                 <EntitiesCard
@@ -69,11 +43,7 @@
                 />
               </v-tab-item> -->
               <v-tab-item>
-                <CurrentEntitiesOverView
-                  :annotations="currentSegmentsAnnotations"
-                  :time="videoTime"
-                  @seek="onTimeUpdate"
-                />
+                <CurrentEntitiesOverView />
               </v-tab-item>
               <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item>
@@ -84,48 +54,15 @@
 
       <v-row class="ma-2">
         <v-col>
-          <v-card
-            class="d-flex flex-column flex-nowrap"
-            max-width="100%"
-            elevation="2"
-            scrollable="False"
-          >
+          <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
-              <Timeline
-                ref="timeline"
-                width="100%"
-                :duration="duration"
-                :time="videoTime"
-                :timelines="timelines"
-                :startTime="startTime"
-                :endTime="endTime"
-                :selectedTimelineSegment="selectedTimelineSegment"
-                :selectedTimeline="selectedTimeline"
-                @copyTimeline="onCopyTimeline"
-                @renameTimeline="onRenameTimeline"
-                @changeTimelineVisualization="onChangeTimelineVisualization"
-                @deleteTimeline="onDeleteTimeline"
-                @annotateSegment="onAnnotateSegment"
-                @coloringSegment="onColoringSegment"
-                @splitSegment="onSplitSegment"
-                @mergeSegments="onMergeSegments"
-                @mergeSegmentsLeft="onMergeSegmentsLeft"
-                @mergeSegmentsRight="onMergeSegmentsRight"
-                @deleteSegment="onDeleteSegment"
-                @update:time="onTagetTimeChange"
-                @addSelection="onAddSelection"
-                @select="onSelect"
-              >
+              <Timeline ref="timeline" width="100%" :selectedTimelineSegment="selectedTimelineSegment"
+                :selectedTimeline="selectedTimeline" @copyTimeline="onCopyTimeline" @renameTimeline="onRenameTimeline"
+                @changeTimelineVisualization="onChangeTimelineVisualization" @deleteTimeline="onDeleteTimeline"
+                @annotateSegment="onAnnotateSegment" @coloringSegment="onColoringSegment"
+                @deleteSegment="onDeleteSegment" @addSelection="onAddSelection" @select="onSelect">
               </Timeline>
-
-              <ModalTimelineSegmentAnnotate
-                :show.sync="annotationDialog.show"
-                :timelineSegment="annotationDialog.selectedTimelineSegment"
-                :annotations="annotations"
-                :annotationCategories="annotationCategories"
-              >
-              </ModalTimelineSegmentAnnotate>
             </v-flex>
           </v-card>
         </v-col>
@@ -139,12 +76,19 @@ import VideoPlayer from "@/components/VideoPlayer.vue";
 import ShotCard from "@/components/ShotCard.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
-import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
+
+import { mapStores } from "pinia";
+import { useVideoStore } from "@/store/video";
+import { usePlayerStore } from "@/store/player";
+import { useShotStore } from "@/store/shot";
+import { useTimelineStore } from "@/store/timeline";
+import { useTimelineSegmentStore } from "@/store/timeline_segment";
+import { useShortcutStore } from "@/store/shortcut";
 
 export default {
   data() {
@@ -273,7 +217,7 @@ export default {
       const keysString = Keyboard.generateKeysString(keys);
       if (this.shortcutAnnotationMap[keysString] != null) {
         this.shortcutAnnotationMap[keysString].forEach((annotationId) => {
-          this.$store.dispatch("timelineSegmentAnnotation/toggle", {
+          this.timelineSegmentAnnotationStroe.toggle({
             timelineSegmentId: this.cursor.id,
             annotationId: annotationId,
           });
@@ -293,40 +237,39 @@ export default {
       this.startTime = time;
     },
     onCopyTimeline(id) {
-      this.$store.dispatch("timeline/duplicate", id);
+      this.timelineStore.duplicate(id);
     },
     onRenameTimeline(id) {
-      this.$store.dispatch("timeline/rename", id);
+      this.timelineStore.rename(id);
     },
     onChangeTimelineVisualization(id) {
-      this.$store.dispatch("timeline/changevisualization", id);
+      this.timelineStore.changevisualization(id);
     },
     onTimelineSetParent(id) {
       console.log(id);
-      this.$store.dispatch("timeline/setparent", id);
+      this.timelineStore.setparent(id);
     },
     onTimelineSetCollapse(id) {
-      this.$store.dispatch("timeline/setcollapse", id);
+      this.timelineStore.setcollapse(id);
     },
     onTimelineSetOrder(id) {
-      this.$store.dispatch("timeline/setorder", id);
+      this.timelineStore.setorder(id);
     },
     onDeleteTimeline(id) {
-      this.$store.dispatch("timeline/delete", id);
+      this.timelineStore.delete(id);
     },
     onAnnotateSegment(id) {
       this.annotationDialog.selectedTimelineSegment =
-        this.$store.getters["timelineSegment/get"](id);
+        this.timelineSegmentStore.get(id);
       this.$nextTick(() => {
         this.annotationDialog.show = true;
       });
     },
-    onColoringSegment(id) {},
-    onDeleteSegment(id) {},
+    onColoringSegment(id) { },
+    onDeleteSegment(id) { },
 
     onAddSelection(segmentId) {
-      const segmentPos =
-        this.$store.getters["timeline/segmentPosition"](segmentId);
+      const segmentPos = this.timelineStore.segmentPosition(segmentId);
 
       const selection = {
         timeline: segmentPos.timeline,
@@ -341,8 +284,7 @@ export default {
       });
     },
     onSelect(segmentId) {
-      const segmentPos =
-        this.$store.getters["timeline/segmentPosition"](segmentId);
+      const segmentPos = this.timelineStore.segmentPosition(segmentId);
 
       const selection = {
         timeline: segmentPos.timeline,
@@ -359,60 +301,11 @@ export default {
 
     onSegmentSelected(id) {
       this.cursorSegment = id;
-      // this.$store.dispatch("timeline/delete", id);
-    },
-    onSplitSegment(id) {
-      this.$store.dispatch("timelineSegment/split", {
-        timelineSegmentId: id,
-        time: this.targetTime,
-      });
-    },
-    onMergeSegments(id) {
-      const timelineSegmentIds = this.selectedTimelineSegment.map((e) => {
-        return this.$store.getters["timeline/getSegmentByPosition"](
-          e.timeline,
-          e.segment
-        );
-      });
-      this.$store.dispatch("timelineSegment/merge", {
-        timelineSegmentIds: timelineSegmentIds,
-      });
-    },
-    onMergeSegmentsLeft() {
-      const selectedSegmentId = this.cursor.id;
-
-      const leftSegmentIdx = this.cursor.segment - 1;
-      const leftSegmentId = this.$store.getters[
-        "timeline/getSegmentByPosition"
-      ](this.cursor.timeline, leftSegmentIdx);
-
-      if (leftSegmentId == null) {
-        return;
-      }
-
-      this.$store.dispatch("timelineSegment/merge", {
-        timelineSegmentIds: [selectedSegmentId, leftSegmentId],
-      });
-    },
-    onMergeSegmentsRight() {
-      const selectedSegmentId = this.cursor.id;
-
-      const rightSegmentIdx = this.cursor.segment + 1;
-      const rightSegmentId = this.$store.getters[
-        "timeline/getSegmentByPosition"
-      ](this.cursor.timeline, rightSegmentIdx);
-
-      if (rightSegmentId == null) {
-        return;
-      }
-
-      this.$store.dispatch("timelineSegment/merge", {
-        timelineSegmentIds: [selectedSegmentId, rightSegmentId],
-      });
+      // this.timelineStroe.delete( id);
     },
     onAppendAnnotation(evt) {
       evt.preventDefault();
-      this.$store.dispatch("timeline/annotate", {
+      this.timelineStroe.annotate({
         segment_id: this.cursorSegment,
         annotation: this.addedAnnotation,
       });
@@ -447,288 +340,49 @@ export default {
       this.end = end;
       this.annotations = annotations;
     },
-    async fetch() {
-      await this.$store.dispatch("video/fetch", {
-        videoId: this.$route.params.id,
-      });
+
+    async fetchData() {
+      // Ask backend about all videos
+
+      await this.videoStore.fetch({ videoId: this.$route.params.id });
+      this.shotStore.buildShots();
     },
   },
   computed: {
     duration() {
-      let duration = this.$store.state.video.current.duration;
+      let duration = this.playerStore.videoDuration;
       return duration;
     },
-    annotationCategories() {
-      return this.$store.getters["annotationCategory/all"];
-    },
-    annotationsLut() {
-      return this.$store.state.annotation.annotations;
-    },
-    annotations() {
-      let annotations = this.$store.getters["annotation/all"];
-      annotations = annotations.map((e) => {
-        if ("category_id" in e) {
-          e["category"] = this.$store.getters["annotationCategory/get"](
-            e.category_id
-          );
-        }
-        return e;
-      });
-      return annotations;
-    },
-    shortcutAnnotationMap() {
-      const annotationShortcuts = this.$store.getters["annotationShortcut/all"];
-      const shortcuts = this.$store.getters["shortcut/all"];
-
-      let lutShortcuts = {};
-      shortcuts.forEach((e) => {
-        lutShortcuts[e.id] = e;
-      });
-
-      let shortcutAnnotationMap = {};
-      annotationShortcuts.forEach((e) => {
-        const keys = Keyboard.generateKeysString(
-          lutShortcuts[e.shortcut_id].keys
-        );
-        if (shortcutAnnotationMap[keys] == null) {
-          shortcutAnnotationMap[keys] = [];
-        }
-        shortcutAnnotationMap[keys].push(e.annotation_id);
-      });
-      return shortcutAnnotationMap;
-    },
     timelines() {
-      let timelines = this.$store.getters["timeline/forVideo"](
-        this.$route.params.id
-      );
-      timelines.forEach((e) => {
-        if (e.type == "A") {
-          let segments = this.$store.getters["timelineSegment/forTimeline"](
-            e.id
-          );
-          segments.forEach((s) => {
-            let annotations = this.$store.getters[
-              "timelineSegmentAnnotation/forTimelineSegment"
-            ](s.id);
-
-            annotations.forEach((a) => {
-              a.annotation = this.$store.getters["annotation/get"](
-                a.annotation_id
-              );
-            });
-
-            annotations.forEach((a) => {
-              a.category = this.$store.getters["annotationCategory/get"](
-                a.category_id
-              );
-            });
-            s.annotations = annotations;
-            if (annotations.length > 0) {
-            }
-          });
-          e.segments = segments;
-        }
-        if (e.type == "R" && "plugin_run_result_id" in e) {
-          const result = this.$store.getters["pluginRunResult/get"](
-            e.plugin_run_result_id
-          );
-          if (result) {
-            e.plugin = { data: result.data, type: result.type };
-          }
-        }
-      });
-
-      return timelines;
-    },
-    segmentsAnnotations() {
-      let segmentsAnnotations = [];
-      let timelines = this.$store.getters["timeline/forVideo"](
-        this.$route.params.id
-      );
-      let most_segments = null;
-      let timeline_name = null;
-      timelines.forEach((e) => {
-        let segments = this.$store.getters["timelineSegment/forTimeline"](e.id);
-        if (
-          most_segments == null ||
-          this.$store.getters["timelineSegment/forTimeline"](e.id).length <
-            segments.length
-        ) {
-          most_segments = segments;
-          timeline_name = e.name;
-        }
-      });
-      if (most_segments) {
-        let pos = 0;
-        most_segments.forEach((s) => {
-          let annotations = this.$store.getters[
-            "timelineSegmentAnnotation/forTimelineSegment"
-          ](s.id);
-          let annotations_simplified = [];
-          annotations.forEach((a) => {
-            let anno = this.$store.getters["annotation/get"](a.annotation_id);
-            let category = this.$store.getters["annotationCategory/get"](
-              anno.category_id
-            ).name;
-            var anno_info = new this.AnnotationInformation(
-              anno.id,
-              anno.name,
-              category,
-              anno.color,
-              s.start,
-              s.end,
-              timeline_name
-            );
-            annotations_simplified.push(anno_info);
-          });
-          if (annotations_simplified.length) {
-            var info_segment = new this.TimeSegments(
-              pos,
-              timeline_name,
-              s.start,
-              s.end,
-              annotations_simplified
-            );
-            segmentsAnnotations.push(info_segment);
-          }
-          pos = pos + 1;
-        });
-      }
-      return segmentsAnnotations;
-    },
-
-    currentSegmentsAnnotations() {
-      let current_annotations = [];
-      let current_second = Math.trunc(this.videoTime);
-      if (this.annotationsLUT) {
-        let annotations = this.annotationsLUT[current_second];
-        if (annotations) {
-          annotations.forEach((a) => {
-            if (a.start <= this.videoTime && a.end >= this.videoTime) {
-              current_annotations.push(a);
-            }
-          });
-        }
-      }
-      return current_annotations;
+      return this.timelineStore.forVideo(this.$route.params.id);
     },
     shots() {
-      let shotdetection = this.$store.getters["pluginRun/forVideo"](
-        this.$route.params.id
-      )
-        .filter((e) => {
-          return e.type == "shotdetection" && e.status == "D";
-        })
-        .map((e) => {
-          e.results = this.$store.getters["pluginRunResult/forPluginRun"](e.id);
-          return e;
-        })
-        .sort((a, b) => {
-          return new Date(b.date) - new Date(a.date);
-        });
-      if (!shotdetection.length) {
-        return [];
-      }
-
-      shotdetection = shotdetection.at(-1);
-      let results = [];
-      // if len(shotdetection)
-      if (
-        "results" in shotdetection &&
-        shotdetection.results.length > 0 &&
-        "data" in shotdetection.results[0]
-      ) {
-        // TODO ask for type SH
-        results = shotdetection.results[0].data.shots.map((e) => {
-          return {
-            // id: e.shot_id,
-            // start: e.start_time,
-            // end: e.end_time,
-            start: e.start,
-            end: e.end,
-          };
-        });
-      }
-
-      let thumbnail = this.$store.getters["pluginRun/forVideo"](
-        this.$route.params.id
-      )
-        .filter((e) => {
-          return e.type == "thumbnail" && e.status == "D";
-        })
-        .map((e) => {
-          e.results = this.$store.getters["pluginRunResult/forPluginRun"](e.id);
-          return e;
-        })
-        .sort((a, b) => {
-          return new Date(b.date) - new Date(a.date);
-        });
-
-      if (!thumbnail.length) {
-        return results;
-      }
-      thumbnail = thumbnail.at(-1);
-
-      // TODO this is not realy stable
-      //TODO localhost should be replaced
-      let thumbnail_dict = {};
-      if (
-        "results" in thumbnail &&
-        thumbnail.results.length > 0 &&
-        "data" in thumbnail.results[0]
-      ) {
-        thumbnail_dict = thumbnail.results[0].data.images.reduce(
-          (a, b) => (
-            (a[b.time] = `http://localhost/thumbnails/${b.id}.${b.ext}`), a
-          ),
-          {}
-        );
-      }
-      results = results.map((e) => {
-        let duration = e.end - e.start;
-
-        let start_thumb_time = 0;
-        let mid_thumb_time = 0;
-        let end_thumb_time = 0;
-
-        if (duration < 2) {
-          start_thumb_time = Math.ceil(e.start + duration / 2);
-          mid_thumb_time = Math.round(e.start + duration / 2);
-          end_thumb_time = Math.floor(e.start + duration / 2);
-        } else {
-          start_thumb_time = Math.ceil(e.start + duration / 5);
-          mid_thumb_time = Math.round(e.start + duration / 2);
-          end_thumb_time = Math.floor(e.start + (duration * 4) / 5);
-        }
-
-        if (start_thumb_time > mid_thumb_time) {
-          start_thumb_time = mid_thumb_time;
-        }
-
-        if (mid_thumb_time > end_thumb_time) {
-          end_thumb_time = mid_thumb_time;
-        }
-
-        return {
-          id: e.id,
-          start: e.start,
-          end: e.end,
-          thumbnails: [
-            thumbnail_dict[start_thumb_time],
-            thumbnail_dict[mid_thumb_time],
-            thumbnail_dict[end_thumb_time],
-          ],
-        };
-      });
-      return results;
+      return this.shotStore.shots;
     },
+
+    ...mapStores(
+      useVideoStore,
+      usePlayerStore,
+      useShotStore,
+      useTimelineStore,
+      useTimelineSegmentStore,
+      useShortcutStore
+    ),
   },
-  created() {
+  async created() {
     // fetch the data when the view is created and the data is
     // already being observed
-    // this.fetch_data();
-    // this.$store.dispatch('')
-    this.fetch();
+
+
+    this.fetchData();
+
+
+    this.fetchTimer = setInterval(
+      function () {
+        this.fetchData();
+      }.bind(this),
+      5000
+    );
   },
   mounted() {
     this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
@@ -737,58 +391,11 @@ export default {
 
     // });
   },
-  watch: {
-    // call again the method if the route changes
-    $route: "fetch",
-    currentTime() {
-      this.videoTime = this.currentTime;
-    },
-    segmentsAnnotations() {
-      let seconds = Math.trunc(this.duration);
-      let lut = {};
-      for (let i = 0; i <= seconds; i++) {
-        lut[i] = [];
-        let current_segments =
-          this.$store.getters["timelineSegment/forTime"](i);
-        current_segments.forEach((s) => {
-          let annotations = this.$store.getters[
-            "timelineSegmentAnnotation/forTimelineSegment"
-          ](s.id);
-          annotations.forEach((a) => {
-            let anno = this.$store.getters["annotation/get"](a.annotation_id);
-            let category = "";
-            if (anno.category_id) {
-              category = this.$store.getters["annotationCategory/get"](
-                anno.category_id
-              ).name;
-            }
-            var anno_info = new this.AnnotationInformation(
-              anno.id,
-              anno.name,
-              category,
-              anno.color,
-              s.start,
-              s.end
-            );
-            lut[i].push(anno_info);
-          });
-        });
-      }
-      this.annotationsLUT = lut;
-    },
-    duration: {
-      handler: function (newValue) {
-        this.endTime = newValue;
-      },
-      deep: true,
-    },
-  },
   components: {
     VideoPlayer,
     ShotCard,
     Timeline,
     TimeSelector,
-    ModalTimelineSegmentAnnotate,
     EntitiesCard,
     CurrentEntitiesOverView,
   },
@@ -796,7 +403,7 @@ export default {
 </script>
 
 <style scoped>
-.logo > img {
+.logo>img {
   max-height: 56px;
 }
 
@@ -807,6 +414,7 @@ export default {
 .timeline-bar {
   height: 80px;
 }
+
 .main:focus {
   outline: none;
 }

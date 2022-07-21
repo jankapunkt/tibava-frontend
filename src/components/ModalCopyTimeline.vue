@@ -41,6 +41,8 @@
 
 <script>
 import Vue from "vue";
+import { mapStores } from "pinia";
+import { useTimelineStore } from "@/store/timeline";
 
 export default {
   props: ["timeline"],
@@ -57,13 +59,14 @@ export default {
     name: {
       get() {
         const name =
-          this.$store.getters["timeline/get"](this.timeline).name + " (1)";
+          this.timelineStore.get(this.timeline).name + " (1)";
         return this.nameProxy === null ? name : this.nameProxy;
       },
       set(val) {
         this.nameProxy = val;
       },
     },
+    ...mapStores(useTimelineStore)
   },
   methods: {
     async submit() {
@@ -72,7 +75,7 @@ export default {
       }
       this.isSubmitting = true;
 
-      await this.$store.dispatch("timeline/duplicate", {
+      await this.timelineStore.duplicate({
         id: this.timeline,
         name: this.name,
         includeannotations: this.includeannotations,

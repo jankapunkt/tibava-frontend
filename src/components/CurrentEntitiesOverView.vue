@@ -31,10 +31,10 @@
                     white-space: nowrap;
                     text-overflow: ellipsis;
                   "
-                  >{{ item.entity_name }}</span
+                  >{{ item.name }}</span
                 ></template
               >
-              <span>{{ item.entity_name }}</span>
+              <span>{{ item.name }}</span>
             </v-tooltip>
           </v-progress-linear>
         </div>
@@ -47,13 +47,38 @@
 <script>
 import TimeMixin from "../mixins/time";
 
+import { mapStores } from "pinia";
+import { usePlayerStore } from "../store/player";
+import { useTimelineSegmentAnnotationStore } from "../store/timeline_segment_annotation";
+import { useAnnotationCategoryStore } from "../store/annotation_category";
+import { useAnnotationStore } from "../store/annotation";
+import { useTimelineSegmentStore } from "../store/timeline_segment";
+
+
+
 export default {
   mixins: [TimeMixin],
-  props: ["annotations", "time"],
+  
   methods: {
-    setVideoPlayerTime(time) {
-      this.$emit("seek", time);
-    },
   },
+  computed:{
+    annotations(){
+      const time = this.playerStore.currentTime;
+      const timeline_segment_annotations = this.timelineSegmentAnnotationStore.forTimeLUT(time)
+      return timeline_segment_annotations.map((e) => {
+          const timeline_segment = this.timelineSegmentStore.get(e.timeline_segment_id);
+          const annotation = this.annotationStore.get(e.annotation_id);
+          let category = null
+          if("category_id" in annotation){
+            category = this.annotationCategoryStore.get(annotation.category_id)
+          }
+          return { name: annotation.name, color:annotation.color, id:annotation.id, category: category, start:timeline_segment.start, end:timeline_segment.end }
+      })
+    },
+    time(){
+      return this.playerStore.currentTime;
+    },
+    ...mapStores(usePlayerStore, useAnnotationCategoryStore, useAnnotationStore, useTimelineSegmentAnnotationStore, useTimelineSegmentStore),
+  }
 };
 </script>

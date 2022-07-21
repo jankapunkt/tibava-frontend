@@ -8,18 +8,9 @@
           </v-col>
         </v-row>
 
-        <v-container
-          class="d-flex flex-wrap video-gallery align-content-center"
-        >
-          <v-card
-            elevation="2"
-            min-width="400px"
-            :loading="item.loading"
-            outlined
-            shaped
-            v-for="item in videos"
-            :key="item.id"
-          >
+        <v-container class="d-flex flex-wrap video-gallery align-content-center">
+          <v-card elevation="2" min-width="400px" :loading="item.loading" outlined shaped v-for="item in videos"
+            :key="item.id">
             <v-card-title>{{ item.name }}</v-card-title>
             <v-card-text>
               <div>Video ID: {{ item.id }}</div>
@@ -30,10 +21,10 @@
               <div>License: {{ item.license }}</div>
 
               <v-card-actions>
-                <v-btn outlined @click="show_video(item.id)">
+                <v-btn outlined @click="showVideo(item.id)">
                   <v-icon>{{ "mdi-movie-search-outline" }}</v-icon> Analyse
                 </v-btn>
-                <v-btn color="red" outlined @click="delete_video(item.id)">
+                <v-btn color="red" outlined @click="deleteVideo(item.id)">
                   <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
                 </v-btn>
               </v-card-actions>
@@ -48,8 +39,11 @@
 <script>
 import router from "../router";
 import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
-
 import TimeMixin from "../mixins/time";
+import { mapStores } from "pinia";
+import { useVideoStore } from "@/store/video.js";
+import { useUserStore } from "@/store/user.js";
+import { usePluginRunStore } from "@/store/plugin_run.js";
 
 export default {
   mixins: [TimeMixin],
@@ -59,33 +53,35 @@ export default {
     };
   },
   methods: {
-    delete_video(video_id) {
-      this.$store.dispatch("video/delete", video_id);
+    deleteVideo(video_id) {
+      console.log(video_id)
+      this.videoStore.delete(video_id);
     },
-    show_video(video_id) {
+    showVideo(video_id) {
       router.push({ path: `/videoanalysis/${video_id}` });
     },
     async fetchData() {
       // Ask backend about all videos
-      await this.$store.dispatch("video/listUpdate");
+      await this.videoStore.fetchAll();
 
-      await this.$store.dispatch("pluginRun/listUpdate", {
+      await this.pluginRunStore.fetchAll({
         addResults: false,
       });
     },
   },
   computed: {
     videos() {
-      let videos = this.$store.getters["video/all"];
-
+      let videos = this.videoStore.all;
+      console.log(videos);
       videos.forEach((v) => {
-        v.pluginRuns = this.$store.getters["pluginRun/forVideo"](v.id);
+        v.pluginRuns = this.pluginRunStore.fetchForVideo(v.id);
       });
-      videos.forEach((v) => {
-        v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);
-      });
+      // videos.forEach((v) => {
+      //   v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);
+      // });
       return videos;
     },
+    ...mapStores(useVideoStore, usePluginRunStore),
   },
   components: {
     ModalVideoUpload,
@@ -101,6 +97,17 @@ export default {
     );
   },
 
+  // TODO rwrite everything
+  beforeRouteEnter(to, from, next) {
+    next(() => {
+      const userStore = useUserStore();
+
+      const loggedIn = userStore.loggedIn;
+      if (!loggedIn && to.name !== "Login") {
+        return router.push({ path: `/login`, query: { redirect: to.path } });
+      }
+    });
+  },
   beforeRouteLeave(to, from, next) {
     clearInterval(this.fetchTimer);
     next(true);
@@ -109,7 +116,7 @@ export default {
 </script>
 
 <style>
-.video-gallery > * {
+.video-gallery>* {
   margin: 8px;
 }
 </style>

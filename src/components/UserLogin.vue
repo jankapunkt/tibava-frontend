@@ -63,6 +63,10 @@
 <script>
 import UserRegister from "@/components/UserRegister.vue";
 
+import { mapStores } from "pinia";
+import { useUserStore } from '@/store/user'
+
+
 export default {
   data() {
     return {
@@ -73,7 +77,7 @@ export default {
   },
   methods: {
     login() {
-      this.$store.dispatch("user/login", this.user);
+      this.userStore.login(this.user);
       this.dialog = false;
     },
     checkLength(value) {
@@ -105,6 +109,7 @@ export default {
 
       return true;
     },
+    ...mapStores(useUserStore)
   },
   watch: {
     dialog(value) {

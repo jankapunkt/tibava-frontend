@@ -86,6 +86,10 @@
 
 <script>
 import Vue from "vue";
+import { mapStores } from "pinia";
+import { useAnnotationShortcutStore } from "@/store/annotation_shortcut";
+import { useShortcutStore } from "@/store/shortcut";
+import { useAnnotationStore } from "@/store/annotation";
 
 export default {
   props: [],
@@ -98,22 +102,23 @@ export default {
     };
   },
   computed: {
-    video() {
-      const video = this.$store.getters["video/current"];
-      return video;
-    },
     annotations() {
-      const annotations = this.$store.getters["annotation/all"];
+      const annotations = this.annotationStore.all;
       return annotations;
     },
     annotationShortcuts() {
-      const annotationShortcuts = this.$store.getters["annotationShortcut/all"];
+      const annotationShortcuts = this.annotationShortcutStore.all;
       return annotationShortcuts;
     },
     shortcuts() {
-      const shortcuts = this.$store.getters["shortcut/all"];
+      const shortcuts = this.shortcutStore.all;
       return shortcuts;
     },
+    ...mapStores(
+      useAnnotationShortcutStore,
+      useShortcutStore,
+      useAnnotationStore
+    ),
   },
   methods: {
     onKeydown(index, event) {
@@ -146,7 +151,7 @@ export default {
         return { id: e.id, keys: e.keys };
       });
 
-      await this.$store.dispatch("annotationShortcut/update", {
+      await this.annotationShortcutStore.update({
         annotationShortcuts: shortcuts,
       });
 

@@ -1,12 +1,14 @@
 import Vue from 'vue';
-import axios from '../../plugins/axios';
-import config from '../../../app.config';
+import axios from '../plugins/axios';
+import config from '../../app.config';
+import { defineStore } from 'pinia'
 
-const api = {
-    namespaced: true,
-    state: {
-        pluginRunResults: {},
-        pluginRunResultList: [],
+export const usePluginRunResultStore = defineStore('pluginRunResult', {
+    state: () => {
+        return {
+            pluginRunResults: {},
+            pluginRunResultList: [],
+        }
     },
     getters: {
         get: (state) => (id) => {
@@ -23,16 +25,27 @@ const api = {
         },
     },
     actions: {
-
-        async list({ commit }, { videoId, addResults }) {
+        async fetchForVideo({ addResults = false, videoId = null }) {
             const params = {
-                video_id: videoId,
                 add_results: addResults,
             }
+
+            //use video id or take it from the current video
+            if (videoId) {
+                params.video_id = videoId;
+            } else {
+
+                const playerStore = usePlayerStore();
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
+                }
+            }
+
             return axios.get(`${config.API_LOCATION}/plugin/run/result/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        commit('update', res.data.entries);
+                        this.updateAll(res.data.entries);
                     }
                 })
             // .catch((error) => {
@@ -40,22 +53,14 @@ const api = {
             //   commit('error/update', info, { root: true });
             // });
         },
-    },
-    mutations: {
-        add(state, pluginRunResults) {
+        updateAll(pluginRunResults) {
             pluginRunResults.forEach((e, i) => {
-                state.pluginRunResults[e.id] = e
-                state.pluginRunResultList.push(e.id)
-            });
-        },
-        update(state, pluginRunResults) {
-            state.pluginRunResults = {}
-            state.pluginRunResultList = []
-            pluginRunResults.forEach((e, i) => {
-                state.pluginRunResults[e.id] = e
-                state.pluginRunResultList.push(e.id)
+                if (e.id in this.pluginRunResults) {
+                    return;
+                }
+                this.pluginRunResults[e.id] = e;
+                this.pluginRunResultList.push(e.id);
             });
         },
     },
-};
-export default api;
+})

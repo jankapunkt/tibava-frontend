@@ -41,6 +41,9 @@
 
 <script>
 import Vue from "vue";
+import { mapStores } from "pinia";
+import { useTimelineStore } from "@/store/timeline";
+import { usePluginRunResultStore } from "@/store/plugin_run_result"
 
 export default {
   props: ["timeline"],
@@ -56,10 +59,10 @@ export default {
   },
   computed: {
     timeline_type() {
-      const timeline = this.$store.getters["timeline/get"](this.timeline);
+      const timeline = this.timelineStore.get(this.timeline);
 
       if (timeline.type == "R" && "plugin_run_result_id" in timeline) {
-        const result = this.$store.getters["pluginRunResult/get"](
+        const result = this.pluginRunResultStore.get(
           timeline.plugin_run_result_id
         );
         if (result) {
@@ -70,7 +73,7 @@ export default {
     },
     visualization: {
       get() {
-        const timeline = this.$store.getters["timeline/get"](this.timeline);
+        const timeline = this.timelineStore.get(this.timeline);
         return this.visualization_proxy === null
           ? timeline.visualization
           : this.visualization_proxy;
@@ -79,6 +82,7 @@ export default {
         this.visualization_proxy = val;
       },
     },
+    ...mapStores(useTimelineStore, usePluginRunResultStore)
   },
   methods: {
     async submit() {
@@ -86,9 +90,7 @@ export default {
         return;
       }
       this.isSubmitting = true;
-      console.log(this.visualization_options[this.visualization_idx].value);
-      console.log(this.timeline);
-      await this.$store.dispatch("timeline/changevisualization", {
+      await this.timelineStore.changeVisualization({
         timelineId: this.timeline,
         visualization: this.visualization_options[this.visualization_idx].value,
       });

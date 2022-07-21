@@ -5,14 +5,13 @@ import palette from "google-palette";
 // import { magma, seismic, jet } from "./palette.js";
 
 var colors = palette("tol-dv", 101);
-// console.log(PIXI.utils.hex2string(scalarToHex(1.0, false)));
 
 export function hex2luminance(string) {
   const rgb = PIXI.utils.hex2rgb(string);
   return Math.sqrt(
     0.299 * Math.pow(rgb[0], 2) +
-    0.587 * Math.pow(rgb[1], 2) +
-    0.114 * Math.pow(rgb[2], 2)
+      0.587 * Math.pow(rgb[1], 2) +
+      0.114 * Math.pow(rgb[2], 2)
   );
 }
 
@@ -73,19 +72,21 @@ export class AnnotationBadge extends PIXI.Container {
 }
 
 export class AnnotationSegment extends PIXI.Container {
-  constructor(
-    segment,
+  constructor({
+    segmentId,
+    data,
     width,
     height,
     color = 0xdddddd,
     selectedColor = 0xd99090,
     padding = 2,
-    gap = 2
-  ) {
+    gap = 2,
+  }) {
     super();
+    this.pSegmentId = segmentId;
     this.pPadding = padding;
     this.pGap = gap;
-    this.pSegment = segment;
+    this.pSegment = data;
     this.pSelected = false;
     this.pSelectedColor = selectedColor;
     this.pColor = color;
@@ -109,6 +110,7 @@ export class AnnotationSegment extends PIXI.Container {
       var badgeY = this.pGap;
       var badgeXIndex = 0;
       this.pSegment.annotations.forEach((a) => {
+        console.log(a);
         const text = new AnnotationBadge(
           badgeX,
           badgeY,
@@ -160,6 +162,9 @@ export class AnnotationSegment extends PIXI.Container {
       }
     });
   }
+  get segmentId() {
+    return this.pSegmentId;
+  }
   get segment() {
     return this.pSegment;
   }
@@ -171,13 +176,22 @@ export class AnnotationSegment extends PIXI.Container {
 }
 
 export class Timeline extends PIXI.Container {
-  constructor(width, height, startTime = 0, endTime = 10, duration = 10, fill = 0xffffff) {
+  constructor({
+    timelineId,
+    width,
+    height,
+    startTime = 0,
+    endTime = 10,
+    duration = 10,
+    fill = 0xffffff,
+  }) {
     super();
     this.pWidth = width;
     this.pHeight = height;
     this.pStartTime = startTime;
     this.pEndTime = endTime;
     this.pDuration = duration;
+    this.pTimelineId = timelineId;
 
     // draw canvas
     this.pRect = new PIXI.Graphics()
@@ -208,9 +222,13 @@ export class Timeline extends PIXI.Container {
   timeToX(time) {
     return this.timeScale * (time - this.pStartTime);
   }
-  scaleContainer() { }
+  scaleContainer() {}
+  selected({ selected = true, segment = null }) {}
   get timeScale() {
     return this.pWidth / (this.pEndTime - this.pStartTime);
+  }
+  get timelineId() {
+    return this.pTimelineId;
   }
   set startTime(time) {
     this.pStartTime = time;
@@ -224,6 +242,7 @@ export class Timeline extends PIXI.Container {
 
 export class ColorTimeline extends Timeline {
   constructor({
+    timelineId,
     width = 10,
     height = 10,
     startTime = 0,
@@ -234,7 +253,7 @@ export class ColorTimeline extends Timeline {
     renderer = null,
     resolution = 0.01,
   }) {
-    super(width, height, startTime, endTime, duration, fill);
+    super({ timelineId, width, height, startTime, endTime, duration, fill });
 
     this.pData = data;
 
@@ -292,6 +311,7 @@ export class ColorTimeline extends Timeline {
 
 export class ScalarColorTimeline extends Timeline {
   constructor({
+    timelineId,
     width = 10,
     height = 10,
     startTime = 0,
@@ -302,7 +322,7 @@ export class ScalarColorTimeline extends Timeline {
     renderer = null,
     resolution = 0.01,
   }) {
-    super(width, height, startTime, endTime, duration, fill);
+    super({ timelineId, width, height, startTime, endTime, duration, fill });
 
     this.pData = data;
 
@@ -315,9 +335,7 @@ export class ScalarColorTimeline extends Timeline {
   }
 
   renderGraph(renderer, resolution) {
-    const renderWidth = Math.ceil(
-      this.pDuration / resolution
-    );
+    const renderWidth = Math.ceil(this.pDuration / resolution);
 
     const brt = new PIXI.BaseRenderTexture(
       renderWidth,
@@ -332,13 +350,7 @@ export class ScalarColorTimeline extends Timeline {
     // fill with nothing
     let color = scalarToHex(0);
     colorRects.beginFill(color);
-    colorRects.drawRect(
-      0,
-      0,
-      renderWidth,
-      this.pHeight
-    );
-
+    colorRects.drawRect(0, 0, renderWidth, this.pHeight);
 
     this.pData.time.forEach((t, i) => {
       let color = scalarToHex(this.pData.y[i]);
@@ -346,7 +358,7 @@ export class ScalarColorTimeline extends Timeline {
       colorRects.drawRect(
         t / resolution,
         0,
-        (this.pData.delta_time) / resolution,
+        this.pData.delta_time / resolution,
         this.pHeight
       );
     });
@@ -357,9 +369,7 @@ export class ScalarColorTimeline extends Timeline {
 
   scaleContainer() {
     if (this.cRects) {
-      const width =
-        this.timeToX(this.pDuration) -
-        this.timeToX(0);
+      const width = this.timeToX(this.pDuration) - this.timeToX(0);
       const x = this.timeToX(0);
       this.cRects.x = x;
       this.cRects.width = width;
@@ -369,6 +379,7 @@ export class ScalarColorTimeline extends Timeline {
 
 export class ScalarLineTimeline extends Timeline {
   constructor({
+    timelineId,
     width = 10,
     height = 10,
     startTime = 0,
@@ -379,7 +390,7 @@ export class ScalarLineTimeline extends Timeline {
     renderer = null,
     resolution = 0.01,
   }) {
-    super(width, height, startTime, endTime, duration, fill);
+    super({ timelineId, width, height, startTime, endTime, duration, fill });
 
     this.pData = data;
 
@@ -394,10 +405,7 @@ export class ScalarLineTimeline extends Timeline {
   }
 
   renderGraph(renderer, resolution) {
-    const renderWidth = Math.ceil(
-      this.pDuration / resolution
-    );
-
+    const renderWidth = Math.ceil(this.pDuration / resolution);
 
     const brt = new PIXI.BaseRenderTexture(
       renderWidth,
@@ -413,10 +421,15 @@ export class ScalarLineTimeline extends Timeline {
 
     this.pData.time.forEach((t, i) => {
       if (i == 0) {
-        path.moveTo(t / resolution, this.pHeight - this.pData.y[i] * this.pHeight
+        path.moveTo(
+          t / resolution,
+          this.pHeight - this.pData.y[i] * this.pHeight
         );
       }
-      path.lineTo(t / resolution, this.pHeight - this.pData.y[i] * this.pHeight);
+      path.lineTo(
+        t / resolution,
+        this.pHeight - this.pData.y[i] * this.pHeight
+      );
     });
 
     renderer.render(path, rt);
@@ -425,9 +438,7 @@ export class ScalarLineTimeline extends Timeline {
 
   scaleContainer() {
     if (this.path) {
-      const width =
-        this.timeToX(this.pDuration) -
-        this.timeToX(0);
+      const width = this.timeToX(this.pDuration) - this.timeToX(0);
       const x = this.timeToX(0);
       this.path.x = x;
       this.path.width = width;
@@ -437,6 +448,7 @@ export class ScalarLineTimeline extends Timeline {
 
 export class HistTimeline extends Timeline {
   constructor({
+    timelineId,
     width = 10,
     height = 10,
     startTime = 0,
@@ -447,7 +459,7 @@ export class HistTimeline extends Timeline {
     renderer = null,
     resolution = 0.1,
   }) {
-    super(width, height, startTime, endTime, duration, fill);
+    super({ timelineId, width, height, startTime, endTime, duration, fill });
 
     this.pData = data;
 
@@ -504,17 +516,18 @@ export class HistTimeline extends Timeline {
 }
 
 export class AnnotationTimeline extends Timeline {
-  constructor(
-    timeline,
+  constructor({
+    timelineId,
     width,
     height,
     startTime = 0,
     endTime = 10,
     duration = 10,
-    fill = 0xffffff
-  ) {
-    super(width, height, startTime, endTime, duration, fill);
-    this.pTimeline = timeline;
+    data = null,
+    fill = 0xffffff,
+  }) {
+    super({ timelineId, width, height, startTime, endTime, duration, fill });
+    this.pTimeline = data;
     this.pSegmentList = [];
 
     this.pSegments = new PIXI.Container();
@@ -525,7 +538,12 @@ export class AnnotationTimeline extends Timeline {
         const width = this.timeToX(s.end) - this.timeToX(s.start);
         const height = this.pHeight;
 
-        let segmentE = new AnnotationSegment(s, width, height);
+        let segmentE = new AnnotationSegment({
+          segmentId: s.id,
+          data: s,
+          width: width,
+          height: height,
+        });
         segmentE.x = x;
         segmentE.interactive = true;
         segmentE.buttonMode = true;
@@ -579,8 +597,12 @@ export class AnnotationTimeline extends Timeline {
       });
     }
   }
-  set selected(value) {
-    this.pSelected = value;
+  selected({ selected = true, segment = null }) {
+    if (segment) {
+      this.pSegmentList
+        .filter((e) => segment.id === e.segmentId)
+        .forEach((e) => (e.selected = selected));
+    }
   }
   get segments() {
     return this.pSegmentList;

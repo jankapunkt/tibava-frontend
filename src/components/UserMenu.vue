@@ -44,6 +44,11 @@
 import UserLogin from "@/components/UserLogin.vue";
 import UserAccount from "@/components/UserAccount.vue";
 import UserRegister from "@/components/UserRegister.vue";
+
+
+import { mapStores } from 'pinia'
+import { useUserStore } from "@/store/user"
+
 export default {
   data() {
     return {
@@ -52,8 +57,10 @@ export default {
   },
   computed: {
     loggedIn() {
-      return this.$store.state.user.loggedIn;
+      return this.userStore.loggedIn;
     },
+
+    ...mapStores(useUserStore)
   },
   components: {
     UserLogin,

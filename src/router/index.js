@@ -3,7 +3,8 @@ import VueRouter from 'vue-router';
 import Home from '@/views/Home.vue';
 import Login from '@/views/Login.vue';
 import Videoanalysis from '@/views/Videoanalysis.vue';
-import store from '@/store';
+
+import { useUserStore } from "@/store/user"
 
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -17,12 +18,4 @@ const router = new VueRouter({
   ],
 });
 
-router.beforeEach(async (to,from, next)=>{
-  const loggedIn = store.getters["user/loggedIn"];
-  console.log(loggedIn);
-  if(!loggedIn && to.name !== "Login" ){
-      return router.push({ path: `/login`,  query: { redirect: to.path }});
-  }
-  return next()
-})
 export default router;

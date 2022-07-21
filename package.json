@@ -9,20 +9,20 @@
   },
   "dependencies": {
     "@mdi/font": "^6.5.95",
+    "@vue/composition-api": "^1.6.2",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "google-palette": "^1.1.0",
     "paper": "^0.12.15",
-    "pixi": "^0.3.1",
+    "pinia": "^2.0.14",
+    "pinia-plugin-persistedstate": "^1.6.1",
     "pixi-filters": "^4.1.6",
     "pixi.js": "^6.2.2",
     "vue": "^2.6.11",
     "vue-draggable-nested-tree": "^3.0.0-beta2",
     "vue-i18n": "^8.26.8",
     "vue-router": "^3.5.3",
-    "vuetify": "^2.6.2",
-    "vuex": "^3.6.2",
-    "vuex-persistedstate": "^4.1.0"
+    "vuetify": "^2.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

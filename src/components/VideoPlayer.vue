@@ -12,7 +12,7 @@
         v-on:loadeddata="onLoadedData"
         v-on:canplay="onCanPlay"
         v-on:resize="onResize"
-        :src="video.url"
+        :src="playerStore.videoUrl"
       >
         <!-- <source :src="video.url" type="video/mp4" /> -->
       </video>
@@ -91,22 +91,13 @@
 <script>
 import TimeMixin from "../mixins/time";
 
+import { mapStores } from "pinia";
+import { usePlayerStore } from "@/store/player";
+
 export default {
   mixins: [TimeMixin],
-  model: {
-    prob: "time",
-    event: "timeUpdate",
-  },
-  props: ["video", "time"],
   data() {
     return {
-      playing: false,
-      currentTime: this.time,
-      duration: 0,
-      ended: false,
-      hiddenVolume: 1.0,
-      mute: false,
-      syncTime: true,
       currentSpeed: { title: "1.00", value: 1.0 },
       speeds: [
         { title: "0.25", value: 0.25 },
@@ -122,56 +113,43 @@ export default {
   },
   methods: {
     toggle() {
-      if (this.playing) {
-        this.$refs.video.pause();
-      } else {
-        this.$refs.video.play();
-      }
+      this.playerStore.togglePlaying();
     },
     toggleSyncTime() {
-      this.syncTime = !this.syncTime;
+      this.playerStore.toggleSyncTime();
     },
     deltaSeek(delta) {
+      this.playerStore.setCurrentTime(this.$refs.video.currentTime + delta)
       this.$refs.video.currentTime += delta;
     },
     onEnded() {
-      this.ended = true;
-      this.playing = false;
+      this.playerStore.setEnded(true);
+      this.playerStore.setPlaying(false);
     },
     onPause() {
-      this.playing = false;
+      this.playerStore.setPlaying(false);
     },
     onPlay() {
-      this.playing = true;
-      this.ended = false;
+      this.playerStore.setEnded(false);
+      this.playerStore.setPlaying(true);
     },
     onTimeUpdate(event) {
-      this.currentTime = event.srcElement.currentTime;
-      this.duration = event.srcElement.duration;
-      this.ended = event.srcElement.ended;
-      this.$emit("timeUpdate", this.currentTime);
+      this.playerStore.setCurrentTime(event.srcElement.currentTime);
+      this.playerStore.setEnded(event.srcElement.ended);
     },
     onSeek(percentage) {
-      this.$refs.video.currentTime = (this.duration * percentage) / 100;
+      const targetTime = (this.duration * percentage) / 100;
+      this.$refs.video.currentTime = targetTime;
     },
     onSpeedChange(idx) {
       this.currentSpeed = this.speeds[idx];
       this.$refs.video.playbackRate = this.currentSpeed.value;
     },
     onToggleVolume() {
-      this.mute = !this.mute;
-      if (this.mute) {
-        this.$refs.video.volume = 0.0;
-      } else {
-        this.$refs.video.volume = this.hiddenVolume;
-      }
+      this.playerStore.toggleMute();
     },
     onVolumeChange(volume) {
-      this.hiddenVolume = volume / 100;
-      if (this.hiddenVolume > 0) {
-        this.mute = false;
-      }
-      this.$refs.video.volume = this.hiddenVolume;
+      this.playerStore.setVolume(volume)
     },
     onLoadedData() {
       this.$emit("loadedData");
@@ -188,21 +166,49 @@ export default {
       if (this.duration <= 0) {
         return 0;
       }
-      return this.currentTime / this.duration;
+      return this.playerStore.currentTime / this.playerStore.video.duration;
     },
     volume() {
-      if (this.mute) {
-        return 0;
-      }
-      return Math.round(this.hiddenVolume * 100);
+      return this.playerStore.volume;
     },
+    ended() {
+      return this.playerStore.ended;
+    },
+    currentTime(){
+      return this.playerStore.currentTime
+    },
+    targetTime(){
+      return this.playerStore.targetTime
+    },
+    playing(){
+      return this.playerStore.playing
+    },
+    duration(){
+      return this.playerStore.videoDuration;
+    },
+    syncTime(){
+      return this.playerStore.syncTime;
+    },
+    ...mapStores(usePlayerStore),
   },
   watch: {
-    time() {
+    targetTime(targetTime) {
       if (this.syncTime) {
-        this.$refs.video.currentTime = this.time;
+        this.$refs.video.currentTime = targetTime;
       }
     },
+    playing(playing) {
+      if (playing) {
+        this.$refs.video.volume = this.volume/100;
+        this.$refs.video.play();
+      }
+      else{
+        this.$refs.video.pause();
+      }
+    },
+    volume(volume){
+      this.$refs.video.volume = volume/100;
+    }
   },
 };
 </script>

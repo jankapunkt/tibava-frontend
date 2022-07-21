@@ -153,8 +153,18 @@ function onlySpaces(str) {
   return /^\s*$/.test(str);
 }
 
+
+import { mapStores } from "pinia";
+import { useTimelineSegmentStore } from "@/store/timeline_segment";
+import { useAnnotationCategoryStore } from "../store/annotation_category";
+import { useAnnotationStore } from "../store/annotation";
+import { useTimelineSegmentAnnotationStore } from "../store/timeline_segment_annotation";
+
+
+
+
 export default {
-  props: ["timelineSegment", "annotations", "annotationCategories", "show"],
+  props: ["show"],
   data() {
     return {
       search: null,
@@ -187,6 +197,23 @@ export default {
     items() {
       return this.hiddenAnnotations;
     },
+    timelineSegments(){
+      return this.timelineSegmentStore.selected
+    }, 
+    annotations(){
+      let annotations = this.annotationStore.all;
+      annotations.map((e)=>{
+        if("category_id" in e){
+          e.category = this.annotationCategoryStore.get(e.category_id)
+        }
+        return e
+      })
+      return annotations
+    },
+    annotationCategories(){
+      return this.annotationCategoryStore.all;
+    },
+    ...mapStores(useTimelineSegmentStore, useAnnotationCategoryStore, useAnnotationStore, useTimelineSegmentAnnotationStore),
   },
   methods: {
     onDeleteItem(index) {
@@ -329,8 +356,9 @@ export default {
         return;
       }
       this.isSubmitting = true;
-      await this.$store.dispatch("timelineSegment/annotate", {
-        timelineSegmentId: this.timelineSegment.id,
+      // TODO
+      await this.timelineSegmentStore.annotate({
+        timelineSegmentId: this.timelineSegments[0].id,
         annotations: inputs,
       });
 
@@ -345,12 +373,20 @@ export default {
     show(newValue, oldValue) {
       if (newValue) {
         console.log("UPDATE");
-        this.inputs = JSON.parse(
-          JSON.stringify(
-            this.timelineSegment.annotations.map((e) => e.annotation)
-          )
-        );
-
+        const allAnnotations = 
+            this.timelineSegments.map((timelineSegment)=>{
+              return this.timelineSegmentAnnotationStore.forTimelineSegment(timelineSegment.id).map((a) => {
+                const annotation = this.annotationStore.get(a.annotation_id);
+                let category = null
+                if("category_id" in annotation){
+                  category = this.annotationCategoryStore.get(annotation.category_id)
+                }
+                return { name: annotation.name, color:annotation.color, id:annotation.id, category: category }
+              })
+            }
+            ).flat()
+          ;
+        this.inputs = [...new Set(allAnnotations)]
         this.hiddenAnnotations = JSON.parse(JSON.stringify(this.annotations));
 
         this.hiddenAnnotationCategories = JSON.parse(

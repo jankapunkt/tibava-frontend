@@ -66,6 +66,9 @@
 </template>
 
 <script>
+import { mapStores } from "pinia";
+import { useUserStore } from "@/store/user";
+
 export default {
   data() {
     return {
@@ -76,7 +79,7 @@ export default {
   },
   methods: {
     register() {
-      this.$store.dispatch("user/register", this.user);
+      this.userStore.register(this.user);
       this.dialog = false;
     },
     checkLength(value) {
@@ -108,6 +111,7 @@ export default {
 
       return true;
     },
+    ...mapStores(useUserStore),
   },
   watch: {
     dialog(value) {

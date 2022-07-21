@@ -81,6 +81,11 @@
 </template>
 
 <script>
+
+
+import { mapStores } from 'pinia'
+import { useVideoUploadStore } from "@/store/video_upload"
+
 export default {
   data() {
     return {
@@ -121,11 +126,13 @@ export default {
       return true;
     },
     isUploading() {
-      return this.$store.state.video.upload.isUploading;
+      return this.videoUploadStore.isUploading;
     },
     uploadingProgress() {
-      return this.$store.state.video.upload.progress;
+      return this.videoUploadStore.progress;
     },
+
+    ...mapStores(useVideoUploadStore)
   },
   methods: {
     async upload_video() {
@@ -134,7 +141,7 @@ export default {
         analyser: this.selected_analysers,
       };
 
-      await this.$store.dispatch("video/upload", params);
+      await this.videoUploadStore.upload(params);
       //   TODO wait until signal is fired
 
       this.dialog = false;

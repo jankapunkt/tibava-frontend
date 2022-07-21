@@ -5,9 +5,9 @@
         <span class="white--text text-h5">{{ initials }}</span>
       </v-avatar>
 
-      <h3 class="mt-5">{{ data.username }}</h3>
+      <h3 class="mt-5">{{ username }}</h3>
       <p class="text-caption clip mt-2 mb-0" style="max-width: 170px">
-        {{ data.email }}
+        {{ email }}
       </p>
       <p class="text-caption mb-0">
         <i>{{ joined }}</i>
@@ -29,21 +29,30 @@
 
 <script>
 import { repPlace } from "../plugins/helpers";
+
+import { mapStores } from "pinia";
+import { useUserStore } from "@/store/user";
 export default {
   methods: {
     async logout() {
-      const loggedOut = await this.$store.dispatch("user/logout");
+      const loggedOut = await this.userStore.logout();
       if (loggedOut) {
         this.$router.go("/");
       }
     },
   },
   computed: {
-    data() {
-      return this.$store.state.user.userData;
+    username() {
+      return this.userStore.username;
+    },
+    email() {
+      return this.userStore.email;
+    },
+    date() {
+      return this.userStore.date;
     },
     nDays() {
-      const date = new Date(this.data.date);
+      const date = new Date(this.date);
       const diffInMs = new Date() - date;
       return Math.round(diffInMs / (1000 * 60 * 60 * 24));
     },
@@ -52,8 +61,9 @@ export default {
       return repPlace({ n_days: this.nDays }, text);
     },
     initials() {
-      return this.data.username.slice(0, 2);
+      return this.username.slice(0, 2);
     },
+    ...mapStores(useUserStore),
   },
 };
 </script>

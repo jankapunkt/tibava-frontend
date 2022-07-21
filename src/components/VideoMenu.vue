@@ -1,5 +1,6 @@
 <template>
-  <v-menu v-model="menu" min-width="175" offset-y bottom left open-on-hover>
+  <v-menu v-model="menu" min-width="175" offset-y bottom left>
+    <!-- open-on-hover close-delay -->
     <template v-slot:activator="{ attrs, on: menu }">
       <v-btn icon v-bind="attrs" v-on="menu" class="ml-n2">
         <v-icon color="primary">mdi-menu</v-icon>
@@ -8,14 +9,24 @@
 
     <v-list class="pa-0">
       <v-list-item-group>
-        <v-list-item v-if="video.id" class="px-0">
-          <ModalExport @close="menu = false" />
+        <v-list-item v-if="videoId" class="px-0">
+          <!-- <ModalExport @close="menu = false" /> -->
+          <ModalExport />
         </v-list-item>
-        <v-list-item v-if="video.id" class="px-0">
+        <v-list-item v-if="videoId" class="px-0">
           <ModalPlugin @close="menu = false" />
+          <!-- <ModalPlugin/> -->
         </v-list-item>
-        <v-list-item v-if="video.id" class="px-0">
-          <ModalShortcut @close="menu = false" />
+
+        <!-- <v-list-item link v-on:click="onAnnotateSegment">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-pencil" }}</v-icon>
+            {{ $t("timelineSegment.annotate") }}
+          </v-list-item-title>
+        </v-list-item> -->
+        <v-list-item v-if="videoId" class="px-0">
+          <!-- <ModalShortcut @close="menu = false" /> -->
+          <ModalShortcut />
         </v-list-item>
       </v-list-item-group>
     </v-list>
@@ -27,6 +38,10 @@ import ModalExport from "@/components/ModalExport.vue";
 import ModalPlugin from "@/components/ModalPlugin.vue";
 import ModalShortcut from "@/components/ModalShortcut.vue";
 
+import { mapStores } from "pinia";
+import { useUserStore } from "@/store/user";
+import { usePlayerStore } from "@/store/player";
+
 export default {
   data() {
     return {
@@ -34,13 +49,15 @@ export default {
     };
   },
   computed: {
-    video() {
-      const video = this.$store.getters["video/current"];
-      return video;
+    videoId() {
+      const videoId = this.playerStore.videoId;
+      return videoId;
     },
     loggedIn() {
-      return this.$store.state.user.loggedIn;
+      return this.userStore.loggedIn;
     },
+
+    ...mapStores(useUserStore, usePlayerStore),
   },
   components: {
     ModalExport,
