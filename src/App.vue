@@ -2,11 +2,9 @@
   <v-app id="tibava">
     <v-app-bar app>
       <img :title="appName" src="./assets/logo_tib.svg" height="40" />
-      <v-toolbar-title style="padding-right: 50px"
-        >AV-Analytics</v-toolbar-title
-      >
+      <v-toolbar-title style="padding-right: 50px">AV-Analytics</v-toolbar-title>
 
-      <v-btn tile text class="ml-n2" href="/">
+      <v-btn tile text class="ml-n2" to="/">
         <v-icon left color="primary">mdi-movie</v-icon>
         Your Videos
       </v-btn>
