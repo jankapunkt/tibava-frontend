@@ -447,15 +447,10 @@ export default {
       const annotationCategoryStore = useAnnotationCategoryStore();
 
       let segments = timelineSegmentStore.forTimeline(timeline.id);
-      console.log(JSON.stringify(segments))
       segments.forEach((s) => {
         let annotations = timelineSegmentAnnotationStore.forTimelineSegment(
           s.id
         );
-        if (!annotations) {
-          console.log(timeline.name)
-          console.log(JSON.stringify(s))
-        }
         annotations.forEach((a) => {
           a.annotation = annotationStore.get(a.annotation_id);
         });
@@ -846,7 +841,6 @@ export default {
         if (date <= this.lastTimestamp) {
           return;
         }
-        console.log("Added");
         const timelineObject = this.getTimeline(timeline.id);
         if (!timelineObject) {
           const newTimelineObject = this.drawTimeline(timeline);

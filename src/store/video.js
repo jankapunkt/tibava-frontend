@@ -43,6 +43,7 @@ export const useVideoStore = defineStore("video", {
             includeAnnotation = true,
             includeAnalyser = true,
             includeShortcut = true,
+            addResults = true,
         }) {
             this.isLoading = true;
             let promises = [];
@@ -74,13 +75,13 @@ export const useVideoStore = defineStore("video", {
                 promises.push(
                     pluginRunStore.fetchForVideo({
                         videoId: videoId,
-                        addResults: true,
+                        addResults: addResults,
                     })
                 );
                 promises.push(
                     pluginRunResultStore.fetchForVideo({
                         videoId: videoId,
-                        addResults: true,
+                        addResults: addResults,
                     })
                 );
             }
