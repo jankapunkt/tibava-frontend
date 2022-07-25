@@ -30,3 +30,9 @@ export function scalarToHex(s, invert = false) {
     }
     return PIXI.utils.string2hex(colors[Math.round(s * 100)]);
 }
+
+export function resampleApprox({ data, targetSize = 1024 }) {
+    const stepsize = 2 ** Math.max(Math.ceil(Math.log2(data.length) - Math.log2(targetSize)), 0)
+    const filteredData = data.filter((e, i) => i % stepsize == 0)
+    return filteredData
+}

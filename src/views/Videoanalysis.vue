@@ -379,7 +379,7 @@ export default {
 
     this.fetchTimer = setInterval(
       function () {
-        this.fetchData({ addResults: false });
+        // this.fetchData({ addResults: false });
       }.bind(this),
       5000
     );

@@ -525,6 +525,7 @@ export default {
           timeline.plugin = { data: result.data, type: result.type };
         }
         if (timeline.visualization == "C") {
+          console.log(timeline.visualization)
           const drawnTimeline = new ColorTimeline({
             timelineId: timeline.id,
             width: width,
@@ -534,7 +535,6 @@ export default {
             duration: this.duration,
             data: timeline.plugin.data,
             renderer: this.app.renderer,
-            resolution: 0.1,
           });
           return drawnTimeline;
         }
@@ -548,7 +548,6 @@ export default {
             duration: this.duration,
             data: timeline.plugin.data,
             renderer: this.app.renderer,
-            resolution: 0.1,
           });
           return drawnTimeline;
         }
@@ -562,7 +561,6 @@ export default {
             duration: this.duration,
             data: timeline.plugin.data,
             renderer: this.app.renderer,
-            resolution: 0.1,
           });
           return drawnTimeline;
         }
@@ -576,7 +574,6 @@ export default {
             duration: this.duration,
             data: timeline.plugin.data,
             renderer: this.app.renderer,
-            resolution: 0.1,
           });
           return drawnTimeline;
         }

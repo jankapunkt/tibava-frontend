@@ -3,6 +3,8 @@ import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 
 import { Timeline } from "./timeline";
 
+import { resampleApprox, scalarToHex } from "./utils"
+
 export class ScalarColorTimeline extends Timeline {
     constructor({
         timelineId,
@@ -14,7 +16,8 @@ export class ScalarColorTimeline extends Timeline {
         data = null,
         fill = 0xffffff,
         renderer = null,
-        resolution = 0.01,
+        resolution = 2048,
+        oversampling = 4,
     }) {
         super({ timelineId, width, height, startTime, endTime, duration, fill });
 
@@ -23,20 +26,27 @@ export class ScalarColorTimeline extends Timeline {
         this.pDataMinTime = Math.min(...data.time);
         this.pDataMaxTime = Math.max(...data.time);
 
-        this.cRects = this.renderGraph(renderer, resolution);
+        this.pResolution = resolution
+        this.pOversampling = oversampling
+        this.pRenderer = renderer
+
+        this.cRects = this.renderGraph();
 
         this.addChild(this.cRects);
     }
 
-    renderGraph(renderer, resolution) {
-        const renderWidth = Math.ceil(this.pDuration / resolution);
+    renderGraph() {
+        const renderWidth = this.pResolution;
+        const r = renderWidth / this.pDuration
 
-        const brt = new PIXI.BaseRenderTexture(
-            renderWidth,
-            this.pHeight,
-            PIXI.SCALE_MODES.LINEAR,
-            1
-        );
+        const brt = new PIXI.BaseRenderTexture({
+            width: renderWidth,
+            height: this.pHeight,
+            // PIXI.SCALE_MODES.NEAREST,
+            scaleMode: PIXI.SCALE_MODES.LINEAR,
+
+            resolution: 1
+        });
         const rt = new PIXI.RenderTexture(brt);
 
         const sprite = new PIXI.Sprite(rt);
@@ -46,18 +56,23 @@ export class ScalarColorTimeline extends Timeline {
         colorRects.beginFill(color);
         colorRects.drawRect(0, 0, renderWidth, this.pHeight);
 
-        this.pData.time.forEach((t, i) => {
-            let color = scalarToHex(this.pData.y[i]);
+        const targetSize = this.pOversampling * this.pResolution
+        const y = resampleApprox({ data: this.pData.y, targetSize: targetSize })
+        const times = resampleApprox({ data: this.pData.time, targetSize: targetSize })
+
+        const deltaTime = this.pData.delta_time * this.pData.time.length / times.length
+        times.forEach((t, i) => {
+            let color = scalarToHex(y[i]);
             colorRects.beginFill(color);
             colorRects.drawRect(
-                t / resolution,
+                r * t,
                 0,
-                this.pData.delta_time / resolution,
+                r * deltaTime,
                 this.pHeight
             );
         });
 
-        renderer.render(colorRects, rt);
+        this.pRenderer.render(colorRects, rt);
         return sprite;
     }
 
