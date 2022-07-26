@@ -237,6 +237,14 @@ export default {
               ),
               text: this.$t("modal.plugin.timeline_name"),
             },
+            {
+              field: "select_timeline",
+              name: "shot_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.shot_timeline_name"),
+              hint: this.$t("modal.plugin.shot_timeline_hint"),
+            },
           ],
           optional_parameters: [
             {
@@ -319,6 +327,14 @@ export default {
               value: this.$t("modal.plugin.facesize.timeline_name"),
               text: this.$t("modal.plugin.timeline_name"),
             },
+            {
+              field: "select_timeline",
+              name: "shot_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.shot_timeline_name"),
+              hint: this.$t("modal.plugin.shot_timeline_hint"),
+            },
           ],
           optional_parameters: [
             {
@@ -342,6 +358,14 @@ export default {
               name: "timeline",
               value: this.$t("modal.plugin.faceemotion.timeline_name"),
               text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "select_timeline",
+              name: "shot_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.shot_timeline_name"),
+              hint: this.$t("modal.plugin.shot_timeline_hint"),
             },
           ],
           optional_parameters: [

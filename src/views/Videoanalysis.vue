@@ -341,10 +341,10 @@ export default {
       this.annotations = annotations;
     },
 
-    async fetchData() {
+    async fetchData({ addResults = true }) {
       // Ask backend about all videos
 
-      await this.videoStore.fetch({ videoId: this.$route.params.id });
+      await this.videoStore.fetch({ videoId: this.$route.params.id, addResults: addResults });
       this.shotStore.buildShots();
     },
   },
@@ -374,12 +374,12 @@ export default {
     // already being observed
 
 
-    this.fetchData();
+    this.fetchData({ addResults: true });
 
 
     this.fetchTimer = setInterval(
       function () {
-        this.fetchData();
+        // this.fetchData({ addResults: false });
       }.bind(this),
       5000
     );
