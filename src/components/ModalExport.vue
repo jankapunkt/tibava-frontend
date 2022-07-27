@@ -1,15 +1,15 @@
 <template>
-  <v-dialog v-model="show" max-width="1000">
-    <template v-slot:activator="{ on }">
+  <v-dialog v-model="show" max-width="1000" persistent @keydown.esc="$emit('update:show', false)">
+    <!-- <template v-slot:activator="{ on }">
       <v-btn v-on="on" text block large>
         {{ $t("modal.export.title") }}
       </v-btn>
-    </template>
+    </template> -->
     <v-card>
       <v-card-title class="mb-2">
         {{ $t("modal.export.title") }}
 
-        <v-btn icon @click.native="show = false" absolute top right>
+        <v-btn icon @click.native="$emit('update:show', false)" absolute top right>
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -34,7 +34,9 @@
         </v-row>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn @click="show = false">{{ $t("timelineSegment.close") }}</v-btn>
+        <v-btn @click="$emit('update:show', false)">
+          {{ $t("timelineSegment.close") }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -47,11 +49,11 @@ import { useVideoStore } from "@/store/video";
 
 export default {
   components: { AnnotationForm },
-  props: [],
+  props: [
+    "show"
+  ],
   data() {
-    return {
-      show: false,
-    };
+    return {};
   },
   computed: {
     ...mapStores(useVideoStore)
@@ -59,20 +61,13 @@ export default {
   methods: {
     async downloadCSV() {
       this.videoStore.exportCSV().then(() => {
-        this.show = false;
+        $emit('update:show', false)
       });
     },
     async downloadJson() {
       await this.videoStore.exportJson().then(() => {
-        this.show = false;
+        $emit('update:show', false)
       });
-    },
-  },
-  watch: {
-    show(value) {
-      if (value) {
-        this.$emit("close");
-      }
     },
   },
 };

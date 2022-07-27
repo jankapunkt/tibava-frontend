@@ -1,34 +1,39 @@
 <template>
-  <v-menu min-width="175" offset-y bottom left :close-on-content-click=true>
-    <!-- open-on-hover close-delay -->
-    <template v-slot:activator="{ attrs, on }">
-      <v-btn icon v-bind="attrs" v-on="on" class="ml-n2">
-        <v-icon color="primary">mdi-menu</v-icon>
-      </v-btn>
-    </template>
+  <div>
+    <v-menu min-width="175" offset-y bottom left>
+      <!-- open-on-hover close-delay -->
+      <template v-slot:activator="{ attrs, on }">
+        <v-btn icon v-bind="attrs" v-on="on" class="ml-n2">
+          <v-icon color="primary">mdi-menu</v-icon>
+        </v-btn>
+      </template>
 
-    <v-list class="pa-0">
-      <v-list-item v-if="videoId" class="px-0">
-        <!-- <ModalExport @close="menu = false" /> -->
-        <ModalExport />
-      </v-list-item>
-      <v-list-item v-if="videoId" class="px-0">
-        <!-- <ModalPlugin @close="menu = false" /> -->
-        <ModalPlugin/>
-      </v-list-item>
+      <v-list class="pa-0">
+        <v-list-item v-if="videoId" @click="showModalExport = true">
+          <v-list-item-title>{{ $t("modal.export.title") }}</v-list-item-title>
+        </v-list-item>
 
-      <!-- <v-list-item link v-on:click="onAnnotateSegment">
-        <v-list-item-title>
-          <v-icon left>{{ "mdi-pencil" }}</v-icon>
-          {{ $t("timelineSegment.annotate") }}
-        </v-list-item-title>
-      </v-list-item> -->
-      <v-list-item v-if="videoId" class="px-0">
-        <!-- <ModalShortcut @close="menu = false" /> -->
-        <ModalShortcut />
-      </v-list-item>
-    </v-list>
-  </v-menu>
+        <v-list-item v-if="videoId" @click="showModalPlugin = true">
+          <v-list-item-title>{{ $t("modal.plugin.title") }}</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item v-if="videoId" @click="showModalShortcut = true">
+          <v-list-item-title>{{ $t("modal.shortcut.title") }}</v-list-item-title>
+        </v-list-item>
+
+      </v-list>
+    </v-menu>
+
+    <ModalExport :show.sync="showModalExport">
+    </ModalExport>
+
+    <ModalPlugin :show.sync="showModalPlugin">
+    </ModalPlugin>
+
+    <ModalShortcut :show.sync="showModalShortcut">
+    </ModalShortcut>
+
+  </div>
 </template>
 
 <script>
@@ -43,7 +48,9 @@ import { usePlayerStore } from "@/store/player";
 export default {
   data() {
     return {
-      menu: false,
+      showModalExport: false,
+      showModalPlugin: false,
+      showModalShortcut: false,
     };
   },
   computed: {

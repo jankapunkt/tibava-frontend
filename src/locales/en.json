@@ -44,6 +44,7 @@
             },
             "clip": {
                 "plugin_name": "Object Classification",
+                "timeline_name": "Object Classification",
                 "search_term": "Search Term"
             },
             "color_analysis": {
