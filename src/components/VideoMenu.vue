@@ -1,34 +1,32 @@
 <template>
-  <v-menu v-model="menu" min-width="175" offset-y bottom left>
+  <v-menu min-width="175" offset-y bottom left :close-on-content-click=true>
     <!-- open-on-hover close-delay -->
-    <template v-slot:activator="{ attrs, on: menu }">
-      <v-btn icon v-bind="attrs" v-on="menu" class="ml-n2">
+    <template v-slot:activator="{ attrs, on }">
+      <v-btn icon v-bind="attrs" v-on="on" class="ml-n2">
         <v-icon color="primary">mdi-menu</v-icon>
       </v-btn>
     </template>
 
     <v-list class="pa-0">
-      <v-list-item-group>
-        <v-list-item v-if="videoId" class="px-0">
-          <!-- <ModalExport @close="menu = false" /> -->
-          <ModalExport />
-        </v-list-item>
-        <v-list-item v-if="videoId" class="px-0">
-          <ModalPlugin @close="menu = false" />
-          <!-- <ModalPlugin/> -->
-        </v-list-item>
+      <v-list-item v-if="videoId" class="px-0">
+        <!-- <ModalExport @close="menu = false" /> -->
+        <ModalExport />
+      </v-list-item>
+      <v-list-item v-if="videoId" class="px-0">
+        <!-- <ModalPlugin @close="menu = false" /> -->
+        <ModalPlugin/>
+      </v-list-item>
 
-        <!-- <v-list-item link v-on:click="onAnnotateSegment">
-          <v-list-item-title>
-            <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timelineSegment.annotate") }}
-          </v-list-item-title>
-        </v-list-item> -->
-        <v-list-item v-if="videoId" class="px-0">
-          <!-- <ModalShortcut @close="menu = false" /> -->
-          <ModalShortcut />
-        </v-list-item>
-      </v-list-item-group>
+      <!-- <v-list-item link v-on:click="onAnnotateSegment">
+        <v-list-item-title>
+          <v-icon left>{{ "mdi-pencil" }}</v-icon>
+          {{ $t("timelineSegment.annotate") }}
+        </v-list-item-title>
+      </v-list-item> -->
+      <v-list-item v-if="videoId" class="px-0">
+        <!-- <ModalShortcut @close="menu = false" /> -->
+        <ModalShortcut />
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>

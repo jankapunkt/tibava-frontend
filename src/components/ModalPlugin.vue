@@ -80,7 +80,7 @@ export default {
   props: ["value"],
   data() {
     return {
-      show: true,
+      show: false,
       plugins: [
         {
           name: this.$t("modal.plugin.audio_waveform.plugin_name"),
