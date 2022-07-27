@@ -3,6 +3,9 @@ import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
 
+
+import * as Keyboard from "../plugins/keyboard.js";
+
 export const useShortcutStore = defineStore('shortcut', {
     state: () => {
         return {
@@ -19,8 +22,10 @@ export const useShortcutStore = defineStore('shortcut', {
         get: (state) => (id) => {
             return state.shortcuts[id];
         },
-        getByKeys: (state) => (id) => {
-            return state.shortcuts[id];
+        getByKeys(state) {
+            return (id) => {
+                return state.shortcuts[id];
+            }
         },
     },
     actions: {

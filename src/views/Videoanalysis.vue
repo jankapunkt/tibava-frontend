@@ -57,16 +57,13 @@
           <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
-              <Timeline ref="timeline" width="100%" :selectedTimelineSegment="selectedTimelineSegment"
-                :selectedTimeline="selectedTimeline" @copyTimeline="onCopyTimeline" @renameTimeline="onRenameTimeline"
-                @changeTimelineVisualization="onChangeTimelineVisualization" @deleteTimeline="onDeleteTimeline"
-                @annotateSegment="onAnnotateSegment" @coloringSegment="onColoringSegment"
-                @deleteSegment="onDeleteSegment" @addSelection="onAddSelection" @select="onSelect">
+              <Timeline ref="timeline" width="100%">
               </Timeline>
             </v-flex>
           </v-card>
         </v-col>
       </v-row>
+      <ModalTimelineSegmentAnnotate :show.sync="annotationDialog.show" />
     </v-container>
   </v-main>
 </template>
@@ -78,6 +75,7 @@ import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
+import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -93,7 +91,6 @@ import { useShortcutStore } from "@/store/shortcut";
 export default {
   data() {
     return {
-      anotation_dialog: false,
       videoTime: 0,
       targetTime: 0,
       startTime: 0,
@@ -106,25 +103,10 @@ export default {
       //
       annotationDialog: {
         show: false,
-        selectedTimelineSegment: null,
       },
       // annotations: [],
       // annotationCategories: [],
       resultCardHeight: 69,
-
-      cursor: {
-        type: "segment",
-        segment: 0,
-        timeline: 0,
-      },
-      selectedTimelineSegment: [
-        {
-          type: "segment",
-          segment: 0,
-          timeline: 0,
-        },
-      ],
-      selectedTimeline: [],
     };
   },
   methods: {
@@ -148,58 +130,87 @@ export default {
       this.cursor = cursor;
     },
     onKeyDown(event) {
-      // handling cursor
-      let newCursor = {
-        type: this.cursor.type,
-        timeline: this.cursor.timeline,
-        segment: this.cursor.segment,
-      };
 
-      if (event.key == "ArrowDown") {
-        newCursor.timeline += 1;
-        event.preventDefault();
-      } else if (event.key == "ArrowUp") {
-        newCursor.timeline -= 1;
-        event.preventDefault();
-      } else if (event.key == "ArrowLeft") {
-        newCursor.segment -= 1;
-        event.preventDefault();
-      } else if (event.key == "ArrowRight") {
-        newCursor.segment += 1;
-        event.preventDefault();
-      } else if (event.key == "Enter") {
-        if (this.cursor.type === "segment") {
-          this.onAnnotateSegment(this.cursor.id);
-          event.preventDefault();
+      const lastSelectedTimeline = this.timelineStore.lastSelected
+      const lastSelectedTimelineSegment = this.timelineSegmentStore.lastSelected
+      console.log("Event")
+      if (!lastSelectedTimeline) {
+        console.log("No selection")
+        if (event.key == "ArrowDown" || event.key == "ArrowUp" || event.key == "ArrowLeft" || event.key == "ArrowRight") {
+          console.log("Key arrow")
+          const selectedTimeline = this.timelineStore.getNext(null)
+          this.timelineStore.addToSelection(selectedTimeline.id)
+          console.log(selectedTimeline)
+          const timelineSegments = this.timelineSegmentStore.forTimeline(selectedTimeline.id)
+          if (timelineSegments.length > 0) {
+            const selectedTimelineSegment = timelineSegments[0]
+            console.log(selectedTimelineSegment)
+            this.timelineSegmentStore.addToSelection(selectedTimelineSegment.id)
+          }
+          return
         }
       }
-      newCursor.timeline = Math.max(
-        Math.min(newCursor.timeline, this.timelines.length - 1),
-        0
-      );
 
-      newCursor.segment = Math.max(
-        Math.min(
-          newCursor.segment,
-          this.timelines[newCursor.timeline].segments.length - 1
-        ),
-        0
-      );
-
-      const newSegment =
-        this.timelines[newCursor.timeline].segments[newCursor.segment];
-
-      newCursor.id = newSegment.id;
-      if (
-        newCursor.timeline !== this.cursor.timeline ||
-        newCursor.segment !== this.cursor.segment
-      ) {
-        if (event.ctrlKey && newCursor.timeline === this.cursor.timeline) {
-          this.selectedTimelineSegment.push(newCursor);
-        } else {
-          this.selectedTimelineSegment = [newCursor];
+      if (event.key == "ArrowDown") {
+        const nextTimeline = this.timelineStore.getNext(lastSelectedTimeline.id)
+        if (!nextTimeline) {
+          return;
         }
-        this.setCursor(newCursor, true);
+        // delete old selection
+        if (!event.ctrlKey) {
+          this.timelineStore.clearSelection()
+          this.timelineSegmentStore.clearSelection()
+        }
+
+        this.timelineStore.addToSelection(nextTimeline.id)
+        const timelineSegments = this.timelineSegmentStore.forTimeline(nextTimeline.id)
+        if (timelineSegments.length > 0) {
+          const nextSelectedTimelineSegment = timelineSegments[0]
+          this.timelineSegmentStore.addToSelection(nextSelectedTimelineSegment.id)
+        }
+        event.preventDefault();
+      } else if (event.key == "ArrowUp") {
+        const nextTimeline = this.timelineStore.getPrevious(lastSelectedTimeline.id)
+        if (!nextTimeline) {
+          return;
+        }
+        // delete old selection
+        if (!event.ctrlKey) {
+          this.timelineStore.clearSelection()
+          this.timelineSegmentStore.clearSelection()
+        }
+
+        this.timelineStore.addToSelection(nextTimeline.id)
+        const timelineSegments = this.timelineSegmentStore.forTimeline(nextTimeline.id)
+        if (timelineSegments.length > 0) {
+          const nextSelectedTimelineSegment = timelineSegments[0]
+          this.timelineSegmentStore.addToSelection(nextSelectedTimelineSegment.id)
+        }
+        event.preventDefault();
+      } else if (event.key == "ArrowLeft") {
+
+        const nextTimelineSegment = this.timelineSegmentStore.getPreviousOnTimeline(lastSelectedTimelineSegment.id)
+        if (!nextTimelineSegment) {
+          return;
+        }
+        if (!event.ctrlKey) {
+          this.timelineSegmentStore.clearSelection()
+        }
+        this.timelineSegmentStore.addToSelection(nextTimelineSegment.id)
+        event.preventDefault();
+      } else if (event.key == "ArrowRight") {
+        const nextTimelineSegment = this.timelineSegmentStore.getNextOnTimeline(lastSelectedTimelineSegment.id)
+        if (!nextTimelineSegment) {
+          return;
+        }
+        if (!event.ctrlKey) {
+          this.timelineSegmentStore.clearSelection()
+        }
+        this.timelineSegmentStore.addToSelection(nextTimelineSegment.id)
+        event.preventDefault();
+      } else if (event.key == "Enter") {
+        this.onAnnotateSegment();
+        event.preventDefault();
       }
 
       // handling shortcut
@@ -217,7 +228,7 @@ export default {
       const keysString = Keyboard.generateKeysString(keys);
       if (this.shortcutAnnotationMap[keysString] != null) {
         this.shortcutAnnotationMap[keysString].forEach((annotationId) => {
-          this.timelineSegmentAnnotationStroe.toggle({
+          this.timelineSegmentAnnotationStore.toggle({
             timelineSegmentId: this.cursor.id,
             annotationId: annotationId,
           });
@@ -258,50 +269,13 @@ export default {
     onDeleteTimeline(id) {
       this.timelineStore.delete(id);
     },
-    onAnnotateSegment(id) {
-      this.annotationDialog.selectedTimelineSegment =
-        this.timelineSegmentStore.get(id);
-      this.$nextTick(() => {
-        this.annotationDialog.show = true;
-      });
-    },
-    onColoringSegment(id) { },
-    onDeleteSegment(id) { },
+    onAnnotateSegment() {
+      if (this.timelineSegmentStore.lastSelected) {
 
-    onAddSelection(segmentId) {
-      const segmentPos = this.timelineStore.segmentPosition(segmentId);
-
-      const selection = {
-        timeline: segmentPos.timeline,
-        segment: segmentPos.segment,
-      };
-      this.selectedTimelineSegment.push(selection);
-      this.setCursor({
-        type: "segment",
-        timeline: selection.timeline,
-        segment: selection.segment,
-        id: segmentId,
-      });
-    },
-    onSelect(segmentId) {
-      const segmentPos = this.timelineStore.segmentPosition(segmentId);
-
-      const selection = {
-        timeline: segmentPos.timeline,
-        segment: segmentPos.segment,
-      };
-      this.selectedTimelineSegment = [selection];
-      this.setCursor({
-        type: "segment",
-        timeline: selection.timeline,
-        segment: selection.segment,
-        id: segmentId,
-      });
-    },
-
-    onSegmentSelected(id) {
-      this.cursorSegment = id;
-      // this.timelineStroe.delete( id);
+        this.$nextTick(() => {
+          this.annotationDialog.show = true;
+        });
+      }
     },
     onAppendAnnotation(evt) {
       evt.preventDefault();
@@ -398,6 +372,7 @@ export default {
     TimeSelector,
     EntitiesCard,
     CurrentEntitiesOverView,
+    ModalTimelineSegmentAnnotate,
   },
 };
 </script>

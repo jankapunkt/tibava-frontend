@@ -10,6 +10,7 @@ export const useTimelineStore = defineStore('timeline', {
         return {
             timelines: {},
             timelineList: [],
+            timelineListSelected: [],
             timelineListAdded: [],
             timelineListDeleted: [],
             timelineListChanged: [],
@@ -74,8 +75,68 @@ export const useTimelineStore = defineStore('timeline', {
                 return result;
             }
         },
+
+
+        selected(state) {
+            return state.timelineListSelected.map((id) => state.timelines[id]);
+        },
+        lastSelected(state) {
+            if (state.timelineListSelected.length <= 0) {
+                return null
+            }
+            return state.timelineListSelected.map((id) => state.timelines[id])[state.timelineListSelected.length - 1];
+        },
+        getPrevious(state) {
+            return (id) => {
+                if (!id) {
+                    return this.all.sort((a, b) => a.order - b.order)[0]
+                }
+                const timeline = state.timelines[id]
+                const timelines = this.all.sort((a, b) => a.order - b.order).filter((e) => e.order < timeline.order)
+                if (timelines.length <= 0) {
+                    return null
+                }
+                return timelines[timelines.length - 1];
+            }
+        },
+        getNext(state) {
+            return (id) => {
+                if (!id) {
+                    return this.all.sort((a, b) => a.order - b.order)[0]
+                }
+                const timeline = state.timelines[id]
+                const timelines = this.all.sort((a, b) => a.order - b.order).filter((e) => e.order > timeline.order)
+                if (timelines.length <= 0) {
+                    return null
+                }
+                return timelines[0];
+            }
+        }
     },
     actions: {
+        clearSelection() {
+            this.timelineListSelected = []
+            // this.timelineSegmentList.forEach((id) => {
+            //     this.timelineSegments[id].selected = false;
+            // })
+        },
+        addToSelection(timelineId) {
+            this.timelineListSelected.push(timelineId)
+            // if (timelineId in this.timelineSegments) {
+            //     this.timelineSegments[timelineId].selected = true;
+            // }
+        },
+        removeFromSelection(timelineId) {
+
+            let segment_index = this.timelineListSelected.findIndex(
+                (f) => f === timelineId
+            );
+            this.timelineListSelected.splice(segment_index, 1);
+
+            // if (timelineSegmentId in this.timelineSegments) {
+            //     this.timelineSegments[timelineSegmentId].selected = false;
+            // }
+        },
         async fetchForVideo({ videoId = null }) {
             //use video id or take it from the current video
             let params = {};
@@ -103,10 +164,7 @@ export const useTimelineStore = defineStore('timeline', {
             // });
         },
 
-        async duplicate(
-            { commit },
-            { id, name = null, includeannotations = true }
-        ) {
+        async duplicate({ id, name = null, includeannotations = true }) {
             let params = {
                 id: id,
                 name: name,
@@ -116,7 +174,7 @@ export const useTimelineStore = defineStore('timeline', {
                 .post(`${config.API_LOCATION}/timeline/duplicate`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        commit("add", [res.data.entry]);
+                        this.addToStore([res.data.timeline_added]);
                     }
                 });
             // .catch((error) => {

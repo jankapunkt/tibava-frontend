@@ -13,7 +13,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         return {
             timelineSegments: {},
             timelineSegmentList: [],
-            timelineSegmentSelectedList: [],
+            timelineSegmentListSelected: [],
             timelineSegmentByTime: {},
 
             timelineSegmentListAdded: [],
@@ -28,7 +28,8 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             return (timeline_id) => {
                 return state.timelineSegmentList
                     .map((id) => state.timelineSegments[id])
-                    .filter((e) => e.timeline_id === timeline_id);
+                    .filter((e) => e.timeline_id === timeline_id)
+                    .sort((a, b) => a.start - b.start);
             }
         },
         forTime(state) {
@@ -44,8 +45,13 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             }
         },
         selected(state) {
-            return state.timelineSegmentSelectedList.map((id) => state.timelineSegments[id]);
-
+            return state.timelineSegmentListSelected.map((id) => state.timelineSegments[id]);
+        },
+        lastSelected(state) {
+            if (state.timelineSegmentListSelected.length <= 0) {
+                return null
+            }
+            return state.timelineSegmentListSelected.map((id) => state.timelineSegments[id])[state.timelineSegmentListSelected.length - 1];
         },
         forTimeLUT(state) {
             return (time) => {
@@ -85,23 +91,23 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
     },
     actions: {
         clearSelection() {
-            this.timelineSegmentSelectedList = []
+            this.timelineSegmentListSelected = []
             // this.timelineSegmentList.forEach((id) => {
             //     this.timelineSegments[id].selected = false;
             // })
         },
         addToSelection(timelineSegmentId) {
-            this.timelineSegmentSelectedList.push(timelineSegmentId)
+            this.timelineSegmentListSelected.push(timelineSegmentId)
             // if (timelineSegmentId in this.timelineSegments) {
             //     this.timelineSegments[timelineSegmentId].selected = true;
             // }
         },
         removeFromSelection(timelineSegmentId) {
 
-            let segment_index = this.timelineSegmentSelectedList.findIndex(
+            let segment_index = this.timelineSegmentListSelected.findIndex(
                 (f) => f === timelineSegmentId
             );
-            this.timelineSegmentSimelineSegmentList.splice(segment_index, 1);
+            this.timelineSegmentListSelected.splice(segment_index, 1);
 
             // if (timelineSegmentId in this.timelineSegments) {
             //     this.timelineSegments[timelineSegmentId].selected = false;

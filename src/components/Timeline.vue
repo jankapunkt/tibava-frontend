@@ -126,7 +126,7 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-list-item v-if="selectedTimelineSegment.length > 1" link v-on:click="onMergeSegments">
+        <v-list-item v-if="selectedTimelineSegments.length > 1" link v-on:click="onMergeSegments">
           <v-list-item-title>
             <v-icon left>{{ "mdi-merge" }}</v-icon>
             {{ $t("timelineSegment.merge") }}
@@ -175,14 +175,6 @@ import { usePluginRunResultStore } from "@/store/plugin_run_result";
 export default {
   mixins: [TimeMixin],
   props: {
-    selectedTimelineSegment: {
-      default: [],
-      type: Array,
-    },
-    selectedTimeline: {
-      default: [],
-      type: Array,
-    },
     headerWidth: {
       type: Number,
       default: 0,
