@@ -6,6 +6,7 @@ import { defineStore } from 'pinia'
 import { useTimelineSegmentAnnotationStore } from '@/store/timeline_segment_annotation'
 import { useAnnotationCategoryStore } from '@/store/annotation_category'
 import { useAnnotationStore } from '@/store/annotation'
+import { useTimelineStore } from '@/store/timeline'
 
 export const useTimelineSegmentStore = defineStore('timelineSegment', {
     state: () => {
@@ -129,6 +130,10 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                             res.data.annotation_category_added
                         );
                         annotationStore.addToStore(res.data.annotation_added);
+
+                        // let timeline know that something change
+                        const timelineStore = useTimelineStore();
+                        timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
                     }
                 });
             // .catch((error) => {
@@ -153,6 +158,10 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         );
                         this.deleteFromStore(res.data.timeline_segment_deleted);
                         this.addToStore(res.data.timeline_segment_added);
+
+                        // let timeline know that something change
+                        const timelineStore = useTimelineStore();
+                        timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
                     }
                 });
             // .catch((error) => {
@@ -176,6 +185,12 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         );
                         this.deleteFromStore(res.data.timeline_segment_deleted);
                         this.addToStore(res.data.timeline_segment_added);
+
+                        // let timeline know that something change
+                        const timelineStore = useTimelineStore();
+
+                        timelineIds = [...new Set(timelineSegmentIds.map(((id) => this.get(id).timeline_id)))];
+                        timelineStore.notifyChanges({ timelineIds: timelineIds })
                     }
                 });
             // .catch((error) => {

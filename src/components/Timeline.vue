@@ -525,7 +525,7 @@ export default {
           timeline.plugin = { data: result.data, type: result.type };
         }
         if (timeline.visualization == "C") {
-          console.log(timeline.visualization)
+          console.log(timeline.visualization);
           const drawnTimeline = new ColorTimeline({
             timelineId: timeline.id,
             width: width,
@@ -720,6 +720,10 @@ export default {
       let timelines = this.timelineStore.added;
       return timelines;
     },
+    timelinesChanged() {
+      let timelines = this.timelineStore.changed;
+      return timelines;
+    },
     timelinesDeleted() {
       let timelines = this.timelineStore.deleted;
       return timelines;
@@ -812,7 +816,7 @@ export default {
       }
 
       let latestTimestamp = -1;
-      // delete and add timelines
+      // handle timeline deletion
       this.timelinesDeleted.forEach((data, i) => {
         const [date, id] = data;
 
@@ -832,6 +836,7 @@ export default {
         }
       });
 
+      // handle timeline added
       this.timelinesAdded.forEach((data, i) => {
         const [date, timeline] = data;
 
@@ -848,6 +853,37 @@ export default {
           this.timelineObjects.push(newTimelineObject);
           // we don't set x and y because we will move it at the end
         }
+
+        if (date > latestTimestamp) {
+          latestTimestamp = date;
+        }
+      });
+
+      // handle timeline change
+      this.timelinesChanged.forEach((data, i) => {
+        const [date, timeline] = data;
+
+        if (date <= this.lastTimestamp) {
+          return;
+        }
+        const timelineObject = this.getTimeline(timeline.id);
+
+        if (timelineObject) {
+          this.timelinesContainer.removeChild(timelineObject);
+          const index = this.timelineObjects.indexOf(timelineObject);
+          if (index > -1) {
+            this.timelineObjects.splice(index, 1);
+          }
+        }
+
+        const newTimelineObject = this.drawTimeline(timeline);
+        if (!newTimelineObject) {
+          return;
+        }
+        this.timelinesContainer.addChild(newTimelineObject);
+        this.timelineObjects.push(newTimelineObject);
+        // we don't set x and y because we will move it at the end
+
 
         if (date > latestTimestamp) {
           latestTimestamp = date;

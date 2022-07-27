@@ -12,6 +12,7 @@ export const useTimelineStore = defineStore('timeline', {
             timelineList: [],
             timelineListAdded: [],
             timelineListDeleted: [],
+            timelineListChanged: [],
         }
     },
     getters: {
@@ -30,6 +31,9 @@ export const useTimelineStore = defineStore('timeline', {
         },
         deleted(state) {
             return state.timelineListDeleted;
+        },
+        changed(state) {
+            return state.timelineListChanged.map((data) => [data[0], state.timelines[data[1]]]);
         },
         get(state) {
             return (id) => {
@@ -293,6 +297,12 @@ export const useTimelineStore = defineStore('timeline', {
                         // commit("setorder", { order });
                     }
                 });
+        },
+        async notifyChanges({ timelineIds }) {
+            console.log({ timelineIds: timelineIds })
+            timelineIds.forEach((id, i) => {
+                this.timelineListChanged.push([Date.now(), id])
+            });
         },
         deleteFromStore(ids) {
             ids.forEach((id, i) => {

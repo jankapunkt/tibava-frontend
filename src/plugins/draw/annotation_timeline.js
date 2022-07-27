@@ -3,6 +3,8 @@ import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 
 import { Timeline } from "./timeline";
 
+import { hex2luminance } from "./utils"
+
 
 export class AnnotationBadge extends PIXI.Container {
     constructor(x, y, text, padding = 2, color = 0xffffff) {
