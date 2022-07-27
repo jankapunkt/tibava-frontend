@@ -84,8 +84,7 @@
       </v-col>
     </v-row>
 
-    <v-tooltip top v-model="segmentContext.show" :position-x="segmentContext.x" :position-y="segmentContext.y" absolute
-      offset-y>
+    <v-tooltip top v-model="segmentContext.show" :position-x="segmentContext.x" :position-y="segmentContext.y" absolute>
       <span>{{ segmentContext.label }}</span>
     </v-tooltip>
 
@@ -487,7 +486,7 @@ export default {
         if (ev.segment.segment.annotations.length > 0) {
           const tooltipPoint = {
             x: ev.event.data.global.x,
-            y: ev.segment.y,
+            y: ev.event.data.global.y,
           };
           const point = this.mapToGlobal(tooltipPoint);
           this.segmentContext.show = true;
