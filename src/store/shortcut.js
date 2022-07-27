@@ -3,6 +3,7 @@ import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
 
+import { useAnnotationShortcutStore } from '@/store/annotation_shortcut'
 
 import * as Keyboard from "../plugins/keyboard.js";
 
@@ -12,6 +13,7 @@ export const useShortcutStore = defineStore('shortcut', {
 
             shortcuts: {},
             shortcutList: [],
+            shortcutByKeys: {}
         }
     },
     getters: {
@@ -23,8 +25,11 @@ export const useShortcutStore = defineStore('shortcut', {
             return state.shortcuts[id];
         },
         getByKeys(state) {
-            return (id) => {
-                return state.shortcuts[id];
+            return (key) => {
+                if (key in state.shortcutByKeys) {
+                    return state.shortcutByKeys[key].map((id) => state.shortcuts[id]);
+                }
+                return []
             }
         },
     },
@@ -91,6 +96,21 @@ export const useShortcutStore = defineStore('shortcut', {
                 this.shortcuts[e.id] = e;
                 this.shortcutList.push(e.id);
             });
+            this.updateKeyStore()
         },
+
+        updateKeyStore() {
+            // const annotationShortcutStore = useAnnotationShortcutStore();
+            this.shortcutByKeys = {}
+            this.all.forEach((e) => {
+                const keys = Keyboard.generateKeysString(
+                    e.keys
+                );
+                if (this.shortcutByKeys[keys] == null) {
+                    this.shortcutByKeys[keys] = [];
+                }
+                this.shortcutByKeys[keys].push(e.id);
+            });
+        }
     },
 })

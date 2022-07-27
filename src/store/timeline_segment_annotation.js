@@ -4,6 +4,8 @@ import config from '../../app.config';
 import { defineStore } from 'pinia'
 
 
+import { useAnnotationCategoryStore } from "@/store/annotation_category";
+import { useAnnotationStore } from "@/store/annotation";
 import { useTimelineStore } from "@/store/timeline";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 
@@ -61,42 +63,6 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                         this.addToStore([res.data.entry])
                         timelineSegmentStore.addAnnotation([{ timelineSegmentId, entry: res.data.entry }])
                         return res.data.entry.id;
-                    }
-                });
-            // .catch((error) => {
-            //     const info = { date: Date(), error, origin: 'collection' };
-            //     commit('error/update', info, { root: true });
-            // });
-        },
-        async toggle({ timelineSegmentId, annotationId }) {
-            const params = {
-                timeline_segment_id: timelineSegmentId,
-                annotation_id: annotationId,
-            };
-
-
-            const annotationCategoryStore = useAnnotationCategoryStore()
-            const annotationStore = useAnnotationStore()
-
-            return axios
-                .post(
-                    `${config.API_LOCATION}/timeline/segment/annotation/toggle`,
-                    params
-                )
-                .then((res) => {
-                    if (res.data.status === "ok") {
-                        if ("annotation_added" in res.data) {
-                            annotationStore.add(res.data.annotation_added);
-                        }
-                        if ("annotation_category_added" in res.data) {
-                            annotationCategoryStore.add(res.data.annotation_category_added);
-                        }
-                        if ("timeline_segment_annotation_deleted" in res.data) {
-                            this.deleteFromStore(res.data.timeline_segment_annotation_deleted);
-                        }
-                        if ("timeline_segment_annotation_added" in res.data) {
-                            this.addToStore(res.data.timeline_segment_annotation_added);
-                        }
                     }
                 });
             // .catch((error) => {

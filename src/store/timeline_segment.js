@@ -147,6 +147,48 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             //     commit('error/update', info, { root: true });
             // });
         },
+
+        async toggle({ timelineSegmentId, annotationId }) {
+            const params = {
+                timeline_segment_id: timelineSegmentId,
+                annotation_id: annotationId,
+            };
+
+
+            const timelineSegmentAnnotationStore = useTimelineSegmentAnnotationStore();
+            const annotationCategoryStore = useAnnotationCategoryStore();
+            const annotationStore = useAnnotationStore();
+
+            return axios
+                .post(
+                    `${config.API_LOCATION}/timeline/segment/annotation/toggle`,
+                    params
+                )
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                        if ("annotation_added" in res.data) {
+                            annotationStore.addToStore(res.data.annotation_added);
+                        }
+                        if ("annotation_category_added" in res.data) {
+                            annotationCategoryStore.addToStore(res.data.annotation_category_added);
+                        }
+                        if ("timeline_segment_annotation_deleted" in res.data) {
+                            timelineSegmentAnnotationStore.deleteFromStore(res.data.timeline_segment_annotation_deleted);
+                        }
+                        if ("timeline_segment_annotation_added" in res.data) {
+                            timelineSegmentAnnotationStore.addToStore(res.data.timeline_segment_annotation_added);
+                        }
+
+                        // let timeline know that something change
+                        const timelineStore = useTimelineStore();
+                        timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
+                    }
+                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
+        },
         async split({ timelineSegmentId, time }) {
             const params = {
                 timeline_segment_id: timelineSegmentId,

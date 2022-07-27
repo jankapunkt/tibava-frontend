@@ -2,12 +2,15 @@ import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
+import { usePlayerStore } from '@/store/player'
+import { useShortcutStore } from './shortcut';
 
 export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
     state: () => {
         return {
             annotationShortcuts: {},
             annotationShortcutList: [],
+            annotationShortcutByKeys: {},
         }
     },
     getters: {
@@ -19,6 +22,18 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
         },
         get: (state) => (id) => {
             return state.annotationShortcuts[id];
+        },
+        forShortcut(state) {
+            return (shortcutId) => {
+                const annotationShortcuts = state.annotationShortcutList
+                    .map((id) => state.annotationShortcuts[id])
+                    .filter((e) => e.shortcut_id === shortcutId);
+
+                if (annotationShortcuts.length > 0) {
+                    return annotationShortcuts[0]
+                }
+                return null
+            }
         },
     },
     actions: {
@@ -42,7 +57,9 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
                 .then((res) => {
                     if (res.data.status === "ok") {
                         this.replaceAll(res.data.annotation_shortcuts);
-                        commit("shortcut/update", res.data.shortcuts, { root: true });
+
+                        const shortcutStore = useShortcutStore()
+                        shortcutStore.replaceAll(res.data.shortcuts);
                     }
                 });
             // .catch((error) => {
@@ -71,6 +88,7 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
                 .then((res) => {
                     if (res.data.status === "ok") {
                         this.replaceAll(res.data.entries);
+
                     }
                 });
             // .catch((error) => {
