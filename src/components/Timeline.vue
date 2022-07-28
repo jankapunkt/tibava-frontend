@@ -307,7 +307,7 @@ export default {
         collapse: !node.open,
       });
     },
-    change(node, targetTree, oldTree) {
+    async change(node, targetTree, oldTree) {
       // after drop, only when the node position changed
 
       // set new order of timelines
@@ -321,12 +321,12 @@ export default {
       }
 
       let order = timelineOrder(this.timelineHierarchy);
-      this.timelineStore.setOrder({
+      await this.timelineStore.setOrder({
         order: order,
       });
 
       // set new parent of node
-      this.timelineStore.setParent({
+      await this.timelineStore.setParent({
         timelineId: node.id,
         parentId: node.parent.id,
       });
