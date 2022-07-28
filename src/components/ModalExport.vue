@@ -61,12 +61,12 @@ export default {
   methods: {
     async downloadCSV() {
       this.videoStore.exportCSV().then(() => {
-        $emit('update:show', false)
+        this.$emit('update:show', false)
       });
     },
     async downloadJson() {
       await this.videoStore.exportJson().then(() => {
-        $emit('update:show', false)
+        this.$emit('update:show', false)
       });
     },
   },

@@ -134,7 +134,7 @@ export const useVideoStore = defineStore("video", {
             //     commit("error/update", info, { root: true });
             // });
         },
-        async exportCSV({ videoId }) {
+        async exportCSV(videoId = null) {
             if (this.isLoading) {
                 return
             }
@@ -148,9 +148,9 @@ export const useVideoStore = defineStore("video", {
             } else {
 
                 const playerStore = usePlayerStore();
-                const videoId = playerStore.videoId;
-                if (videoId) {
-                    params.video_id = videoId;
+                const currentVideoId = playerStore.videoId;
+                if (currentVideoId) {
+                    params.video_id = currentVideoId;
                 }
             }
             return axios
@@ -172,7 +172,7 @@ export const useVideoStore = defineStore("video", {
             //   commit('error/update', info, { root: true });
             // });
         },
-        async exportJson({ videoId }) {
+        async exportJson(videoId = null) {
             if (this.isLoading) {
                 return
             }
@@ -186,9 +186,9 @@ export const useVideoStore = defineStore("video", {
             } else {
 
                 const playerStore = usePlayerStore();
-                const videoId = playerStore.videoId;
-                if (videoId) {
-                    params.video_id = videoId;
+                const currentVideoId = playerStore.videoId;
+                if (currentVideoId) {
+                    params.video_id = currentVideoId;
                 }
             }
             return axios
