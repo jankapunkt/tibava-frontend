@@ -84,7 +84,6 @@ export class AnnotationSegment extends PIXI.Container {
             var badgeY = this.pGap;
             var badgeXIndex = 0;
             this.pSegment.annotations.forEach((a) => {
-                console.log(a);
                 const text = new AnnotationBadge(
                     badgeX,
                     badgeY,

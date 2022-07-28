@@ -118,18 +118,13 @@ export default {
 
       const lastSelectedTimeline = this.timelineStore.lastSelected
       const lastSelectedTimelineSegment = this.timelineSegmentStore.lastSelected
-      console.log("Event")
       if (!lastSelectedTimeline) {
-        console.log("No selection")
         if (event.key == "ArrowDown" || event.key == "ArrowUp" || event.key == "ArrowLeft" || event.key == "ArrowRight") {
-          console.log("Key arrow")
           const selectedTimeline = this.timelineStore.getNext(null)
           this.timelineStore.addToSelection(selectedTimeline.id)
-          console.log(selectedTimeline)
           const timelineSegments = this.timelineSegmentStore.forTimeline(selectedTimeline.id)
           if (timelineSegments.length > 0) {
             const selectedTimelineSegment = timelineSegments[0]
-            console.log(selectedTimelineSegment)
             this.timelineSegmentStore.addToSelection(selectedTimelineSegment.id)
           }
           return
@@ -217,21 +212,13 @@ export default {
 
       const keysString = Keyboard.generateKeysString(keys);
       const shortcuts = this.shortcutStore.getByKeys(keysString);
-      console.log(shortcuts)
-      console.log(lastSelectedTimelineSegment)
-      console.log(lastSelectedTimelineSegment && shortcuts.length > 0)
 
       if (shortcuts.length > 0) {
-        console.log("shortcut")
         shortcuts.forEach((shortcut) => {
-          console.log({ shortcut_id: shortcut.id })
           const annotationShortcut = this.annotationShortcutStore.forShortcut(shortcut.id)
 
-          console.log(annotationShortcut)
           if (annotationShortcut) {
-            console.log("annotationShortcut")
             if (lastSelectedTimelineSegment) {
-              console.log("lastSelectedTimelineSegment")
               this.timelineSegmentStore.toggle({
                 timelineSegmentId: lastSelectedTimelineSegment.id,
                 annotationId: annotationShortcut.annotation_id,

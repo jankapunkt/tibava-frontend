@@ -516,7 +516,6 @@ export default {
           timeline.plugin = { data: result.data, type: result.type };
         }
         if (timeline.visualization == "C") {
-          console.log(timeline.visualization);
           const drawnTimeline = new ColorTimeline({
             timelineId: timeline.id,
             width: width,

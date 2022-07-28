@@ -13,8 +13,5 @@ export function generateKeysString(keys) {
     keysString.push(key);
   });
 
-  console.log(keysString);
-
-  console.log(keysString.join("+"));
   return keysString.join("+");
 }
