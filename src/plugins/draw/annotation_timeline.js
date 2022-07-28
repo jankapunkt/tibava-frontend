@@ -159,6 +159,7 @@ export class AnnotationTimeline extends Timeline {
         duration = 10,
         data = null,
         fill = 0xffffff,
+        selected = null,
     }) {
         super({ timelineId, width, height, startTime, endTime, duration, fill });
         this.pTimeline = data;
@@ -219,6 +220,20 @@ export class AnnotationTimeline extends Timeline {
                 this.pSegmentList.push(segmentE);
             });
             this.addChild(this.pSegments);
+        }
+        if (selected) {
+            if (selected instanceof Array) {
+                selected.forEach((s) => this.selected({
+                    selected: true,
+                    segment: s
+                }))
+            }
+            else {
+                this.selected({
+                    selected: true,
+                    segment: selected
+                })
+            }
         }
     }
     scaleContainer() {

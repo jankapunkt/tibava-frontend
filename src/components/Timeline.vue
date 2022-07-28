@@ -431,6 +431,13 @@ export default {
 
     drawAnnotationTimeline(timeline, width, height) {
       console.log("drawAnnotationTimeline");
+
+      const selection = this.selectedTimelineSegments.filter(
+        (selectedTimelineSegment) =>
+          timeline.id ===
+          selectedTimelineSegment.timeline_id
+      );
+
       const timelineSegmentStore = useTimelineSegmentStore();
       const timelineSegmentAnnotationStore =
         useTimelineSegmentAnnotationStore();
@@ -461,6 +468,7 @@ export default {
         endTime: this.endTime,
         duration: this.duration,
         data: timeline,
+        selected: selection
       });
       drawnTimeline.on("segmentRightDown", (ev) => {
         const point = this.mapToGlobal(ev.event.data.global);
@@ -473,12 +481,12 @@ export default {
         });
       });
       drawnTimeline.on("segmentClick", (ev) => {
-        if (ev.event.data.originalEvent.ctrlKey) {
-          this.timelineSegmentStore.addToSelection(ev.segment.segment.id);
-        } else {
+        if (!ev.event.data.originalEvent.ctrlKey) {
           this.timelineSegmentStore.clearSelection();
-          this.timelineSegmentStore.addToSelection(ev.segment.segment.id);
+          this.timelineStore.clearSelection();
         }
+        this.timelineStore.addToSelection(timeline.id);
+        this.timelineSegmentStore.addToSelection(ev.segment.segment.id);
         const targetTime = this.xToTime(ev.event.data.global.x);
         this.playerStore.setTargetTime(targetTime);
       });
