@@ -11,6 +11,7 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
             annotationShortcuts: {},
             annotationShortcutList: [],
             annotationShortcutByKeys: {},
+            isLoading: false,
         }
     },
     getters: {
@@ -38,6 +39,11 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
     },
     actions: {
         async update({ annotationShortcuts, videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 annotation_shortcuts: annotationShortcuts,
             };
@@ -61,6 +67,9 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
                         const shortcutStore = useShortcutStore()
                         shortcutStore.replaceAll(res.data.shortcuts);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -68,6 +77,11 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
             // });
         },
         async fetchForVideo({ videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {};
 
             //use video id or take it from the current video
@@ -90,6 +104,9 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
                         this.replaceAll(res.data.entries);
 
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };

@@ -8,6 +8,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
         return {
             annotationCategories: {},
             annotationCategoryList: [],
+            isLoading: false,
         }
     },
     getters: {
@@ -20,6 +21,11 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
     },
     actions: {
         async create({ name, color, videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 name: name,
                 color: color
@@ -43,12 +49,20 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
                         return res.data.entry.id;
                     }
                 })
+                .finally(() => {
+                    this.isLoading = false;
+                })
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
             //     commit('error/update', info, { root: true });
             // });
         },
-        async fetchForVideo({ videoId = null }) {
+        async fetchForVideo({ videoId = null, clearStore = true }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {}
 
             //use video id or take it from the current video
@@ -68,6 +82,9 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
                     if (res.data.status === 'ok') {
                         this.updateStore(res.data.entries);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 })
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };

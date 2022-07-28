@@ -14,6 +14,7 @@ export const useTimelineStore = defineStore('timeline', {
             timelineListAdded: [],
             timelineListDeleted: [],
             timelineListChanged: [],
+            isLoading: false,
         }
     },
     getters: {
@@ -138,6 +139,11 @@ export const useTimelineStore = defineStore('timeline', {
             // }
         },
         async fetchForVideo({ videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             //use video id or take it from the current video
             let params = {};
             if (videoId) {
@@ -157,6 +163,9 @@ export const useTimelineStore = defineStore('timeline', {
                     if (res.data.status === "ok") {
                         this.updateStore(res.data.entries);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -165,6 +174,11 @@ export const useTimelineStore = defineStore('timeline', {
         },
 
         async duplicate({ id, name = null, includeannotations = true }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 id: id,
                 name: name,
@@ -176,6 +190,9 @@ export const useTimelineStore = defineStore('timeline', {
                     if (res.data.status === "ok") {
                         this.addToStore([res.data.timeline_added]);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'upload' };
@@ -183,6 +200,11 @@ export const useTimelineStore = defineStore('timeline', {
             // });
         },
         async create({ name, videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 name: name,
             };
@@ -206,6 +228,9 @@ export const useTimelineStore = defineStore('timeline', {
                         const timelineSegmentStore = useTimelineSegmentStore();
                         timelineSegmentStore.addToStore(res.data.timeline_segment_added);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'upload' };
@@ -213,6 +238,11 @@ export const useTimelineStore = defineStore('timeline', {
             // });
         },
         async importEAF(params) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const formData = new FormData();
 
             //use video id or take it from the current video
@@ -229,9 +259,17 @@ export const useTimelineStore = defineStore('timeline', {
                 {
                     headers: { "Content-Type": "multipart/form-data" },
                 }
-            );
+            )
+                .finally(() => {
+                    this.isLoading = false;
+                });
         },
         async delete(timeline_id) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 id: timeline_id,
             };
@@ -249,6 +287,9 @@ export const useTimelineStore = defineStore('timeline', {
                     if (res.data.status === "ok") {
                         // commit("delete", timeline_id);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -257,6 +298,11 @@ export const useTimelineStore = defineStore('timeline', {
         },
 
         async rename({ timelineId, name }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 id: timelineId,
                 name: name,
@@ -272,6 +318,9 @@ export const useTimelineStore = defineStore('timeline', {
                     if (res.data.status === "ok") {
                         // commit("rename", { timelineId, name });
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -279,6 +328,11 @@ export const useTimelineStore = defineStore('timeline', {
             // });
         },
         async changeVisualization({ timelineId, visualization }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 id: timelineId,
                 visualization: visualization,
@@ -294,9 +348,17 @@ export const useTimelineStore = defineStore('timeline', {
                     if (res.data.status === "ok") {
                         // commit("changevisualization", { timelineId, visualization });
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
         },
         async setParent({ timelineId, parentId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 timelineId: timelineId,
                 parentId: parentId,
@@ -316,9 +378,17 @@ export const useTimelineStore = defineStore('timeline', {
                     if (res.data.status === "ok") {
                         // commit("setParent", { timelineId, parentId });
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
         },
         async setCollapse({ timelineId, collapse }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 timelineId: timelineId,
                 collapse: collapse,
@@ -335,9 +405,17 @@ export const useTimelineStore = defineStore('timeline', {
                     if (res.data.status === "ok") {
                         // commit("setCollapse", { timelineId, collapse });
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
         },
         async setOrder({ order }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 order: order,
             };
@@ -354,6 +432,9 @@ export const useTimelineStore = defineStore('timeline', {
                     if (res.data.status === "ok") {
                         // commit("setorder", { order });
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
         },
         async notifyChanges({ timelineIds }) {

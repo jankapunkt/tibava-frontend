@@ -51,6 +51,8 @@ export const useVideoUploadStore = defineStore('videoUpload', {
                             videoStore.addToStore(entry);
                         });
                     }
+                })
+                .finally(() => {
                     this.isUploading = false;
                 })
             // .catch((error) => {

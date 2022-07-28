@@ -89,19 +89,33 @@ export const useVideoStore = defineStore("video", {
                 promises.push(shortcutStore.fetchForVideo({ videoId }));
                 promises.push(annotationShortcutStore.fetchForVideo({ videoId }));
             }
-            return Promise.all(promises).then(() => {
+            return Promise.all(promises).finally(() => {
                 console.log("Loading done!");
                 this.isLoading = false;
             });
         },
         async fetchAll() {
-            return axios.get(`${config.API_LOCATION}/video/list`).then((res) => {
-                if (res.data.status === "ok") {
-                    this.replaceStore(res.data.entries);
-                }
-            });
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
+            return axios.get(`${config.API_LOCATION}/video/list`)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                        this.replaceStore(res.data.entries);
+                    }
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         },
         async delete(video_id) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 id: video_id,
             };
@@ -112,12 +126,20 @@ export const useVideoStore = defineStore("video", {
                         this.deleteFromStore([video_id])
                     }
                 })
+                .finally(() => {
+                    this.isLoading = false;
+                });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: "collection" };
             //     commit("error/update", info, { root: true });
             // });
         },
         async exportCSV({ videoId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {};
             //use video id or take it from the current video
 
@@ -141,6 +163,9 @@ export const useVideoStore = defineStore("video", {
                         link.download = `${params.video_id}.csv`;
                         link.click();
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //   const info = { date: Date(), error, origin: 'collection' };
@@ -148,6 +173,11 @@ export const useVideoStore = defineStore("video", {
             // });
         },
         async exportJson({ videoId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {};
             //use video id or take it from the current video
 
@@ -171,6 +201,9 @@ export const useVideoStore = defineStore("video", {
                         link.download = `${params.video_id}.json`;
                         link.click();
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //   const info = { date: Date(), error, origin: 'collection' };

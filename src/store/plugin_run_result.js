@@ -8,6 +8,7 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
         return {
             pluginRunResults: {},
             pluginRunResultList: [],
+            isLoading: false,
         }
     },
     getters: {
@@ -26,6 +27,11 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
     },
     actions: {
         async fetchForVideo({ addResults = false, videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 add_results: addResults,
             }
@@ -48,6 +54,9 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
                         this.updateAll(res.data.entries);
                     }
                 })
+                .finally(() => {
+                    this.isLoading = false;
+                });
             // .catch((error) => {
             //   const info = { date: Date(), error, origin: 'collection' };
             //   commit('error/update', info, { root: true });

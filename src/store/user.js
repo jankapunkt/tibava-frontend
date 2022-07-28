@@ -30,11 +30,17 @@ export const useUserStore = defineStore('user', {
             username: null,
             date: null,
             email: null,
+            isLoading: false,
 
         }
     },
     actions: {
         async getCSRFToken() {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             return axios.get(`${config.API_LOCATION}/user/csrf`, {
                 withCredentials: true
             })
@@ -46,9 +52,17 @@ export const useUserStore = defineStore('user', {
                 })
                 .catch((error) => {
                     console.log(error);
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
         },
         async getUserData() {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             return axios.post(`${config.API_LOCATION}/user/get`)
                 .then((res) => {
                     if (res.data.status === 'ok') {
@@ -71,10 +85,18 @@ export const useUserStore = defineStore('user', {
                 })
                 .catch((error) => {
                     console.log(error);
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
         },
 
         async login(params) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             // commit('loading/update', true, { root: true });
             let info = { date: Date(), origin: 'login' };
             return axios.post(`${config.API_LOCATION}/user/login`, { params })
@@ -97,6 +119,9 @@ export const useUserStore = defineStore('user', {
                         return false;
                     }
                 })
+                .finally(() => {
+                    this.isLoading = false;
+                })
             // .catch((error) => {
             //     return false;
             //     // commit('error/update', { ...info, error }, { root: true });
@@ -106,6 +131,11 @@ export const useUserStore = defineStore('user', {
             // });
         },
         async logout() {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = { username: this.username };
             // commit('loading/update', true, { root: true });
             return axios.post(`${config.API_LOCATION}/user/logout`, { params })
@@ -118,6 +148,9 @@ export const useUserStore = defineStore('user', {
                         return true;
                     }
                 })
+                .finally(() => {
+                    this.isLoading = false;
+                })
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'logout' };
             //     commit('error/update', info, { root: true });
@@ -128,6 +161,11 @@ export const useUserStore = defineStore('user', {
             // });
         },
         async register(params) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             // commit('loading/update', true, { root: true });
             let info = { date: Date(), origin: 'register' };
             return axios.post(`${config.API_LOCATION}/user/register`, { params })
@@ -144,6 +182,9 @@ export const useUserStore = defineStore('user', {
                     } else {
                         commit('error/update', info, { root: true });
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 })
             // .catch((error) => {
             //     commit('error/update', { ...info, error }, { root: true });

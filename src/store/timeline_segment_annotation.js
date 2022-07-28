@@ -19,6 +19,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
 
             timelineSegmentAnnotationListAdded: [],
             timelineSegmentAnnotationListDeleted: [],
+            isLoading: false,
         }
     },
     getters: {
@@ -46,6 +47,11 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
     },
     actions: {
         async create({ timelineSegmentId, annotationId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 timeline_segment_id: timelineSegmentId,
                 annotation_id: annotationId,
@@ -64,6 +70,9 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                         timelineSegmentStore.addAnnotation([{ timelineSegmentId, entry: res.data.entry }])
                         return res.data.entry.id;
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -71,6 +80,11 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             // });
         },
         async delete(id) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 timeline_segment_annotation_id: id,
             };
@@ -94,6 +108,9 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                         });
                         timelineSegmentStore.deleteAnnotation([id]);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -101,6 +118,11 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             // });
         },
         async fetchForVideo({ videoId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {};
             if (videoId) {
                 params.video_id = videoId;
@@ -120,6 +142,9 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                     if (res.data.status === "ok") {
                         this.updateStore(res.data.entries)
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };

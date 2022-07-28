@@ -24,6 +24,7 @@ export const usePlayerStore = defineStore('player', {
                 start: 0,
                 end: 0,
             },
+            isLoading: false,
         }
     },
     getters: {
@@ -95,6 +96,11 @@ export const usePlayerStore = defineStore('player', {
         },
 
         async fetchVideo({ videoId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 id: videoId,
             };
@@ -108,6 +114,9 @@ export const usePlayerStore = defineStore('player', {
                             this.selectedTimeRange.end = this.videoDuration;
                         }
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //   const info = { date: Date(), error, origin: 'collection' };

@@ -8,6 +8,7 @@ export const useAnnotationStore = defineStore('annotation', {
         return {
             annotations: {},
             annotationList: [],
+            isLoading: false,
         }
     },
     getters: {
@@ -22,6 +23,11 @@ export const useAnnotationStore = defineStore('annotation', {
     actions: {
 
         async create({ name, color, categoryId, videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 name: name,
                 color: color,
@@ -49,13 +55,21 @@ export const useAnnotationStore = defineStore('annotation', {
                         this.addToStore([res.data.entry]);
                         return res.data.entry.id;
                     }
-                });
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                })
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
             //     commit('error/update', info, { root: true });
             // });
         },
         async change({ annotationId, name, color, categoryId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {
                 annotation_id: annotationId,
                 color: color,
@@ -79,6 +93,9 @@ export const useAnnotationStore = defineStore('annotation', {
                         ]);
                         // return res.data.entry.id;
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -102,6 +119,11 @@ export const useAnnotationStore = defineStore('annotation', {
         //         });
         // },
         async fetchForVideo({ videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {};
 
             //use video id or take it from the current video
@@ -123,6 +145,9 @@ export const useAnnotationStore = defineStore('annotation', {
                     if (res.data.status === "ok") {
                         this.updateStore(res.data.entries);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };

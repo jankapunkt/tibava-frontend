@@ -9,6 +9,7 @@ export const usePluginRunStore = defineStore('pluginRun', {
         return {
             pluginRuns: {},
             pluginRunList: [],
+            isLoading: false,
         }
     },
     getters: {
@@ -42,12 +43,19 @@ export const usePluginRunStore = defineStore('pluginRun', {
                         // commit('update', res.data.entries);
                     }
                 })
+                .finally(() => {
+                    this.isLoading = false;
+                });
             // .catch((error) => {
             //   const info = { date: Date(), error, origin: 'collection' };
             //   commit('error/update', info, { root: true });
             // });
         },
         async fetchAll({ addResults = false }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
 
             let params = { add_results: addResults };
             return axios
@@ -57,8 +65,16 @@ export const usePluginRunStore = defineStore('pluginRun', {
                         this.updateAll(res.data.entries)
                     }
                 })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         },
         async fetchForVideo({ addResults = false, videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = { add_results: addResults };
             if (videoId) {
                 params.video_id = videoId;
@@ -78,6 +94,9 @@ export const usePluginRunStore = defineStore('pluginRun', {
                         this.updateAll(res.data.entries)
                     }
                 })
+                .finally(() => {
+                    this.isLoading = false;
+                });
         },
         updateAll(pluginRuns) {
             pluginRuns.forEach((e, i) => {

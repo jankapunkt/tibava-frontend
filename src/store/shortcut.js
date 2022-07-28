@@ -13,7 +13,8 @@ export const useShortcutStore = defineStore('shortcut', {
 
             shortcuts: {},
             shortcutList: [],
-            shortcutByKeys: {}
+            shortcutByKeys: {},
+            isLoading: false,
         }
     },
     getters: {
@@ -35,6 +36,11 @@ export const useShortcutStore = defineStore('shortcut', {
     },
     actions: {
         async create({ key, videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 key: key,
             };
@@ -58,6 +64,9 @@ export const useShortcutStore = defineStore('shortcut', {
                         this.shortcutList.push(shortcut.id);
                         return res.data.entry.id;
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -65,6 +74,11 @@ export const useShortcutStore = defineStore('shortcut', {
             // });
         },
         async fetchForVideo({ videoId = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {};
 
             if (videoId) {
@@ -83,6 +97,9 @@ export const useShortcutStore = defineStore('shortcut', {
                     if (res.data.status === "ok") {
                         this.replaceAll(res.data.entries);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };

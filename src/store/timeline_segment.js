@@ -18,6 +18,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
 
             timelineSegmentListAdded: [],
             timelineSegmentListDeleted: [],
+            isLoading: false,
         }
     },
     getters: {
@@ -114,6 +115,11 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             // }
         },
         async annotate({ timelineSegmentId, annotations }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 timeline_segment_id: timelineSegmentId,
                 annotations: annotations,
@@ -141,6 +147,9 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         const timelineStore = useTimelineStore();
                         timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -149,6 +158,11 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         },
 
         async toggle({ timelineSegmentId, annotationId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 timeline_segment_id: timelineSegmentId,
                 annotation_id: annotationId,
@@ -183,6 +197,9 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         const timelineStore = useTimelineStore();
                         timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -190,6 +207,11 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             // });
         },
         async split({ timelineSegmentId, time }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 timeline_segment_id: timelineSegmentId,
                 time: time,
@@ -211,6 +233,9 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         const timelineStore = useTimelineStore();
                         timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -218,6 +243,11 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             // });
         },
         async merge({ timelineSegmentIds }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             const params = {
                 timeline_segment_ids: timelineSegmentIds,
             };
@@ -240,6 +270,9 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         timelineIds = [...new Set(timelineSegmentIds.map(((id) => this.get(id).timeline_id)))];
                         timelineStore.notifyChanges({ timelineIds: timelineIds })
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
@@ -247,6 +280,11 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             // });
         },
         async fetchForVideo({ timelineId, videoId }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
             let params = {};
             if (timelineId) {
                 params.timeline_id = timelineId;
@@ -267,6 +305,9 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                     if (res.data.status === "ok") {
                         this.updateStore(res.data.entries);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'collection' };
