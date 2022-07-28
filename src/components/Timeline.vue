@@ -300,9 +300,9 @@ export default {
         2 * this.gap
       );
     },
-    nodeOpenChanged(node) {
+    async nodeOpenChanged(node) {
       // on a node is closed or open(node)
-      this.timelineStore.setCollapse({
+      await this.timelineStore.setCollapse({
         timelineId: node.id,
         collapse: !node.open,
       });
