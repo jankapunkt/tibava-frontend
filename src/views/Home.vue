@@ -93,7 +93,7 @@ export default {
       function () {
         this.fetchData();
       }.bind(this),
-      1000
+      5000
     );
   },
 
