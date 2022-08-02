@@ -75,8 +75,6 @@ export const useShotStore = defineStore("shot", {
       }
       thumbnail = thumbnail.at(-1);
 
-      // TODO this is not realy stable
-      //TODO localhost should be replaced
       let thumbnail_dict = {};
       if (
         "results" in thumbnail &&
@@ -90,39 +88,29 @@ export const useShotStore = defineStore("shot", {
           {}
         );
       }
+
+      // console.log(thumbnail_dict);
+
       results = results.map((e, i) => {
-        let duration = e.end - e.start;
-
-        let start_thumb_time = 0;
-        let mid_thumb_time = 0;
-        let end_thumb_time = 0;
-
-        if (duration < 2) {
-          start_thumb_time = Math.ceil(e.start + duration / 2);
-          mid_thumb_time = Math.round(e.start + duration / 2);
-          end_thumb_time = Math.floor(e.start + duration / 2);
-        } else {
-          start_thumb_time = Math.ceil(e.start + duration / 5);
-          mid_thumb_time = Math.round(e.start + duration / 2);
-          end_thumb_time = Math.floor(e.start + (duration * 4) / 5);
-        }
-
-        if (start_thumb_time > mid_thumb_time) {
-          start_thumb_time = mid_thumb_time;
-        }
-
-        if (mid_thumb_time > end_thumb_time) {
-          end_thumb_time = mid_thumb_time;
-        }
+        const shot_thumbnails = new Map();
+        Object.keys(thumbnail_dict).forEach(function (key) {
+          if (parseFloat(key) >= e.start && parseFloat(key) <= e.end) {
+            shot_thumbnails.set(parseFloat(key), thumbnail_dict[key]);
+          }
+        });
+        const shot_thumbnails_sorted = new Map(
+          [...shot_thumbnails.entries()].sort()
+        );
+        const thumbnails = Array.from(shot_thumbnails_sorted.values());
 
         return {
           id: i + 1,
           start: e.start,
           end: e.end,
           thumbnails: [
-            thumbnail_dict[start_thumb_time],
-            thumbnail_dict[mid_thumb_time],
-            thumbnail_dict[end_thumb_time],
+            thumbnails[0],
+            thumbnails[Math.floor(thumbnails.length / 2)],
+            thumbnails[thumbnails.length - 1],
           ],
         };
       });
