@@ -72,10 +72,10 @@ export default {
   computed: {
     videos() {
       let videos = this.videoStore.all;
-      console.log(videos);
-      videos.forEach((v) => {
-        v.pluginRuns = this.pluginRunStore.fetchForVideo(v.id);
-      });
+      // console.log(videos);
+      // videos.forEach((v) => {
+      //   v.pluginRuns = this.pluginRunStore.fetchForVideo(v.id);
+      // });
       // videos.forEach((v) => {
       //   v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);
       // });
