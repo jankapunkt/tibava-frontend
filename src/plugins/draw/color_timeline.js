@@ -66,7 +66,7 @@ export class ColorTimeline extends Timeline {
     times.forEach((t, i) => {
       let color = PIXI.utils.rgb2hex(colors[i]);
       colorRects.beginFill(color);
-      //   colorRects.drawRect(r * t, 0, r * (t + deltaTime), this.pHeight);
+      // colorRects.drawRect(r * t, 0, r * (t + deltaTime), this.pHeight);
       colorRects.drawRect(
         Math.max(0, r * (t - deltaTime / 2)),
         0,
@@ -80,10 +80,21 @@ export class ColorTimeline extends Timeline {
   }
 
   scaleContainer() {
+    const targetSize = this.pOversampling * this.pResolution;
+
+    const times = resampleApprox({
+      data: this.pData.time,
+      targetSize: targetSize,
+    });
+
+    const deltaTime =
+      (this.pData.delta_time * this.pData.time.length) / times.length;
+
     if (this.cRects) {
       const width =
-        this.timeToX(this.pData.time[this.pData.time.length - 1]) -
-        this.timeToX(this.pData.time[0]);
+        this.timeToX(
+          this.pData.time[this.pData.time.length - 1] + deltaTime / 2
+        ) - this.timeToX(this.pData.time[0]);
       const x = this.timeToX(this.pData.time[0]);
       this.cRects.x = x;
       this.cRects.width = width;
