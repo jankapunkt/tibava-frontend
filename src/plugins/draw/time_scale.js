@@ -218,8 +218,14 @@ export class TimeScale extends PIXI.Container {
         this.pStartTime = time;
         this._scale();
     }
+    get startTime() {
+        return this.pStartTime;
+    }
     set endTime(time) {
         this.pEndTime = time;
         this._scale();
+    }
+    get endTime() {
+        return this.pEndTime;
     }
 }

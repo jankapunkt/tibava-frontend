@@ -60,12 +60,21 @@ export class TimeBar extends PIXI.Container {
         this.pStartTime = time;
         this.scaleSegment();
     }
+    get startTime() {
+        return this.pStartTime;
+    }
     set endTime(time) {
         this.pEndTime = time;
         this.scaleSegment();
     }
+    get endTime() {
+        return this.pEndTime;
+    }
     set time(time) {
         this.pTime = time;
         this.scaleSegment();
+    }
+    get time() {
+        return this.pTime;
     }
 }

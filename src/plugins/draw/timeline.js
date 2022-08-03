@@ -61,8 +61,15 @@ export class Timeline extends PIXI.Container {
         this.pStartTime = time;
         this.scaleContainer();
     }
+    get startTime() {
+        return this.pStartTime;
+    }
     set endTime(time) {
         this.pEndTime = time;
         this.scaleContainer();
     }
+    get endTime() {
+        return this.pEndTime;
+    }
+
 }

@@ -955,25 +955,45 @@ export default {
 
       // update all time position
       this.timelineObjects.forEach((e) => {
-        e.startTime = this.startTime;
+        if (e.startTime !== this.startTime) {
+          e.startTime = this.startTime;
+        }
       });
       this.timeScaleObjects.forEach((e) => {
-        e.startTime = this.startTime;
+        if (e.startTime !== this.startTime) {
+          e.startTime = this.startTime;
+        }
+
       });
       this.timeBarsObjects.forEach((e) => {
-        e.startTime = this.startTime;
+        if (e.startTime !== this.startTime) {
+          e.startTime = this.startTime;
+        }
+
       });
       this.timelineObjects.forEach((e) => {
-        e.endTime = this.endTime;
+        if (e.endTime !== this.endTime) {
+          e.endTime = this.endTime;
+        }
+
       });
       this.timeScaleObjects.forEach((e) => {
-        e.endTime = this.endTime;
+        if (e.endTime !== this.endTime) {
+          e.endTime = this.endTime;
+        }
+
       });
       this.timeBarsObjects.forEach((e) => {
-        e.endTime = this.endTime;
+        if (e.endTime !== this.endTime) {
+          e.endTime = this.endTime;
+        }
+
       });
       this.timeBarsObjects.forEach((e) => {
-        e.time = this.time;
+        if (e.time !== this.time) {
+          e.time = this.time;
+        }
+
       });
     });
     // this.draw();
