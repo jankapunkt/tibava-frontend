@@ -98,6 +98,10 @@ export const usePluginRunStore = defineStore('pluginRun', {
                     this.isLoading = false;
                 });
         },
+        clearStore() {
+            this.pluginRuns = {}
+            this.pluginRunList = []
+        },
         updateAll(pluginRuns) {
             pluginRuns.forEach((e, i) => {
 

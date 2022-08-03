@@ -113,6 +113,11 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
             //     commit('error/update', info, { root: true });
             // });
         },
+        clearStore() {
+            this.annotationShortcutByKeys = {}
+            this.annotationShortcuts = {}
+            this.annotationShortcutList = []
+        },
         replaceAll(annotationShortcuts) {
             this.annotationShortcuts = {};
             this.annotationShortcutList = [];

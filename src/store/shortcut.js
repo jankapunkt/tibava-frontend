@@ -106,6 +106,11 @@ export const useShortcutStore = defineStore('shortcut', {
             //     commit('error/update', info, { root: true });
             // });
         },
+        clearStore() {
+            this.shortcutByKeys = {}
+            this.shortcuts = {}
+            this.shortcutList = []
+        },
         replaceAll(shortcuts) {
             this.shortcuts = {};
             this.shortcutList = [];

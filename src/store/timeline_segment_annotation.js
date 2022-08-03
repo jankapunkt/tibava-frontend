@@ -151,6 +151,13 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             //     commit('error/update', info, { root: true });
             // });
         },
+        clearStore() {
+            this.timelineSegmentAnnotationByTime = {}
+            this.timelineSegmentAnnotationListAdded = []
+            this.timelineSegmentAnnotationListDeleted = []
+            this.timelineSegmentAnnotations = {}
+            this.timelineSegmentAnnotationList = []
+        },
         deleteFromStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((id, i) => {
                 this.timelineSegmentAnnotationListDeleted.push(id)

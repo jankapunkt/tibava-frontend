@@ -154,6 +154,10 @@ export const useAnnotationStore = defineStore('annotation', {
             //     commit('error/update', info, { root: true });
             // });
         },
+        clearStore() {
+            this.annotations = {}
+            this.annotationList = []
+        },
         updateInStore(annotations) {
             const newAnnotations = { ...this.annotations };
             annotations.forEach((e, i) => {

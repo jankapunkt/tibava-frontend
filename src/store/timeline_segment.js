@@ -314,6 +314,15 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             //     commit('error/update', info, { root: true });
             // });
         },
+        clearStore() {
+            this.timelineSegmentListSelected = []
+            this.timelineSegmentByTime = {}
+
+            this.timelineSegmentListAdded = []
+            this.timelineSegmentListDeleted = []
+            this.timelineSegments = {}
+            this.timelineSegmentList = []
+        },
         addAnnotation(annotations) {
             annotations.forEach((e) => {
                 this.timelineSegments[e.timelineSegmentId].annotation_ids.push(

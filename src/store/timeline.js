@@ -443,6 +443,14 @@ export const useTimelineStore = defineStore('timeline', {
                 this.timelineListChanged.push([Date.now(), id])
             });
         },
+        clearStore() {
+            this.timelineListSelected = []
+            this.timelineListAdded = []
+            this.timelineListDeleted = []
+            this.timelineListChanged = []
+            this.timelines = {}
+            this.timelineList = []
+        },
         deleteFromStore(ids) {
             ids.forEach((id, i) => {
                 this.timelineListDeleted.push([Date.now(), id])

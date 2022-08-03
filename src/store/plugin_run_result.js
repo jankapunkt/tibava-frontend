@@ -62,6 +62,10 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
             //   commit('error/update', info, { root: true });
             // });
         },
+        clearStore() {
+            this.pluginRunResults = {}
+            this.pluginRunResultList = []
+        },
         updateAll(pluginRunResults) {
             pluginRunResults.forEach((e, i) => {
                 if (e.id in this.pluginRunResults) {

@@ -61,10 +61,15 @@ export const useVideoStore = defineStore("video", {
 
             promises.push(playerStore.fetchVideo({ videoId }));
             if (includeAnnotation) {
+                annotationCategoryStore.clearStore()
+                annotationStore.clearStore()
                 promises.push(annotationCategoryStore.fetchForVideo({ videoId }));
                 promises.push(annotationStore.fetchForVideo({ videoId }));
             }
             if (includeTimeline) {
+                timelineStore.clearStore()
+                timelineSegmentStore.clearStore()
+                timelineSegmentAnnotationStore.clearStore()
                 promises.push(timelineStore.fetchForVideo({ videoId }));
                 promises.push(timelineSegmentStore.fetchForVideo({ videoId }));
                 promises.push(
@@ -72,6 +77,8 @@ export const useVideoStore = defineStore("video", {
                 );
             }
             if (includeAnalyser) {
+                pluginRunStore.clearStore()
+                pluginRunResultStore.clearStore()
                 promises.push(
                     pluginRunStore.fetchForVideo({
                         videoId: videoId,
@@ -86,6 +93,8 @@ export const useVideoStore = defineStore("video", {
                 );
             }
             if (includeShortcut) {
+                shortcutStore.clearStore()
+                annotationShortcutStore.clearStore()
                 promises.push(shortcutStore.fetchForVideo({ videoId }));
                 promises.push(annotationShortcutStore.fetchForVideo({ videoId }));
             }
@@ -209,6 +218,10 @@ export const useVideoStore = defineStore("video", {
             //   const info = { date: Date(), error, origin: 'collection' };
             //   commit('error/update', info, { root: true });
             // });
+        },
+        clearStore() {
+            this.videos = {}
+            this.videoList = []
         },
         deleteFromStore(ids) {
             ids.forEach((id, i) => {

@@ -92,6 +92,11 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             // });
         },
 
+
+        clearStore() {
+            this.annotationCategories = {}
+            this.annotationCategoryList = []
+        },
         addToStore(annotationCategories) {
             annotationCategories.forEach((e, i) => {
                 this.annotationCategories[e.id] = e

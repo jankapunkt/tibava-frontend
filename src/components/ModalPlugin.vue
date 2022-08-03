@@ -383,6 +383,7 @@ export default {
           icon: "mdi-image-multiple",
           plugin: "thumbnail",
           parameters: [],
+          optional_parameters: []
         },
         {
           name: this.$t("modal.plugin.clip.plugin_name"),
