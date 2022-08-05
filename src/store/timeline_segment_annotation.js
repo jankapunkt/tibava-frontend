@@ -174,9 +174,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                     let index = v.findIndex(
                         (f) => f === id
                     );
-                    console.log({ k: k, v: v, id: id, index: index })
                     if (index >= 0) {
-                        console.log(index)
                         v.splice(index, 1);
                         m.set(k, v)
                     }

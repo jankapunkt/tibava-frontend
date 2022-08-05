@@ -247,8 +247,6 @@ export default {
 
       timelineHierarchy: [],
 
-      canvasWidth: null,
-      canvasHeight: null,
       containerWidth: 100,
       containerHeight: 100,
 
@@ -392,7 +390,6 @@ export default {
       this.timeScaleObjects.push(timeline);
       this.app.stage.addChild(this.timeScalesContainer);
     },
-
     drawTimelines() {
       if (this.timelinesContainer) {
         this.app.stage.removeChild(this.timelinesContainer);
@@ -431,7 +428,6 @@ export default {
       }
       return null;
     },
-
     drawAnnotationTimeline(timeline, width, height) {
       console.log("drawAnnotationTimeline");
 
@@ -1028,7 +1024,7 @@ export default {
             timelineObject.visible = timeline.visible;
           }
         });
-      const rescale = true;
+      const rescale = false;
       // update all time position if there is something to update
       this.timelineObjects.forEach((e) => {
         if (e.startTime !== this.startTime || rescale) {

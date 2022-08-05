@@ -61,6 +61,8 @@ export class AnnotationTimeline extends Timeline {
     this.cSelectionRects = selectionRects
     this.pSelectionRectList = selectionRectList
     this.addChild(selectionRects)
+
+    this.scaleContainer();
     // this.pRect = null;
     // this._drawBox();
 

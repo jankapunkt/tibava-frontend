@@ -20,6 +20,8 @@ export class Timeline extends PIXI.Container {
         this.pDuration = duration;
         this.pTimelineId = timelineId;
 
+        console.log(this.timeScale)
+        console.log(this.timeToX(this.pEndTime))
         // draw canvas
         this.pRect = new PIXI.Graphics()
             .beginFill(fill)
@@ -53,7 +55,6 @@ export class Timeline extends PIXI.Container {
         return xPos / this.timeScale + this.pStartTime;
     }
     scaleContainer() { }
-    selected({ selected = true, segment = null }) { }
     get timeScale() {
         return this.pWidth / (this.pEndTime - this.pStartTime);
     }

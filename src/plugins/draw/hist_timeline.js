@@ -33,6 +33,8 @@ export class HistTimeline extends Timeline {
         this.cRects = this.renderGraph();
 
         this.addChild(this.cRects);
+
+        this.scaleContainer();
     }
 
     renderGraph() {

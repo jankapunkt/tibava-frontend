@@ -35,6 +35,8 @@ export class ScalarLineTimeline extends Timeline {
     // this.path.y = this.pHeight / 2;
 
     this.addChild(this.path);
+
+    this.scaleContainer();
   }
 
   renderGraph(renderer, resolution) {
