@@ -22,6 +22,7 @@ export const useShotStore = defineStore("shot", {
   },
   actions: {
     buildShots() {
+      return
       const pluginRunStore = usePluginRunStore();
       const pluginRunResultStore = usePluginRunResultStore();
       const playerStore = usePlayerStore();

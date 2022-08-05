@@ -84,8 +84,9 @@
       </v-col>
     </v-row>
 
-    <v-tooltip top v-model="segmentContext.show" :position-x="segmentContext.x" :position-y="segmentContext.y" absolute>
-      <span>{{ segmentContext.label }}</span>
+    <v-tooltip top v-model="timelineTooltip.show" :position-x="timelineTooltip.x" :position-y="timelineTooltip.y"
+      absolute>
+      <span>{{ timelineTooltip.label }}</span>
     </v-tooltip>
 
     <v-menu v-model="segmentMenu.show" :position-x="segmentMenu.x" :position-y="segmentMenu.y - 10" absolute offset-y>
@@ -156,6 +157,7 @@ import {
   TimeScale,
   TimeBar,
   HistTimeline,
+  generateFont,
 } from "../plugins/draw";
 
 import * as PIXI from "pixi.js";
@@ -263,12 +265,13 @@ export default {
         y: null,
         selected: null,
       },
-      segmentContext: {
+      timelineTooltip: {
         show: false,
         x: null,
         y: null,
         selected: null,
         label: null,
+        enabled: false,
       },
       menu: {
         show: false,
@@ -436,7 +439,7 @@ export default {
         (selectedTimelineSegment) =>
           timeline.id ===
           selectedTimelineSegment.timeline_id
-      );
+      ).map((s) => s.id);
 
       const timelineSegmentStore = useTimelineSegmentStore();
       const timelineSegmentAnnotationStore =
@@ -468,54 +471,116 @@ export default {
         endTime: this.endTime,
         duration: this.duration,
         data: timeline,
-        selected: selection
+        renderer: this.app.renderer,
+        segmentSelection: selection
       });
-      drawnTimeline.on("segmentRightDown", (ev) => {
-        const point = this.mapToGlobal(ev.event.data.global);
+      drawnTimeline.interactive = true;
+      drawnTimeline.buttonMode = true;
+      drawnTimeline.on("rightdown", (ev) => {
+        const point = this.mapToGlobal(ev.data.global);
+        const x = ev.data.getLocalPosition(drawnTimeline).x;
+        const segment = drawnTimeline.getSegmentOnPosition(x)
+
         this.segmentMenu.show = true;
         this.segmentMenu.x = point.x;
         this.segmentMenu.y = point.y;
-        this.segmentMenu.selected = ev.segment.segment.id;
+        this.segmentMenu.selected = segment.id;
         this.$nextTick(() => {
           this.showMenu = true;
         });
+        ev.stopPropagation();
       });
-      drawnTimeline.on("segmentClick", (ev) => {
-        if (!ev.event.data.originalEvent.ctrlKey) {
+      drawnTimeline.on("click", (ev) => {
+        const x = ev.data.getLocalPosition(drawnTimeline).x;
+        const segment = drawnTimeline.getSegmentOnPosition(x)
+        if (segment === null) {
+          return
+        }
+        if (!ev.data.originalEvent.ctrlKey) {
           this.timelineSegmentStore.clearSelection();
           this.timelineStore.clearSelection();
         }
         this.timelineStore.addToSelection(timeline.id);
-        this.timelineSegmentStore.addToSelection(ev.segment.segment.id);
-        const targetTime = this.xToTime(ev.event.data.global.x);
+        this.timelineSegmentStore.addToSelection(segment.id);
+        const targetTime = this.xToTime(ev.data.global.x);
         this.playerStore.setTargetTime(targetTime);
+        ev.stopPropagation();
       });
-      drawnTimeline.on("segmentOver", (ev) => {
-        if (ev.segment.segment.annotations.length > 0) {
+
+      drawnTimeline.on("pointerover", (ev) => {
+        this.timelineTooltip.enabled = true
+        const x = ev.data.getLocalPosition(drawnTimeline).x;
+        const segment = drawnTimeline.getSegmentOnPosition(x)
+        if (segment === null) {
+          return
+        }
+
+        if (segment.annotations.length > 0) {
           const tooltipPoint = {
-            x: ev.event.data.global.x,
-            y: ev.event.data.global.y,
+            x: ev.data.global.x,
+            y: ev.data.global.y,
           };
           const point = this.mapToGlobal(tooltipPoint);
-          this.segmentContext.show = true;
-          this.segmentContext.x = point.x;
-          this.segmentContext.y = point.y;
-          this.segmentContext.selected = ev.segment.segment.id;
+          this.timelineTooltip.show = true;
+          this.timelineTooltip.x = point.x;
+          this.timelineTooltip.y = point.y;
+          this.timelineTooltip.selected = segment.id;
 
-          const annotations = ev.segment.segment.annotations.map((e) => {
+          const annotations = segment.annotations.map((e) => {
             return e.annotation.name;
           });
-          this.segmentContext.label = annotations.join("; ");
+          this.timelineTooltip.label = annotations.join("; ");
         }
+        // ev.stopPropagation();
       });
-      drawnTimeline.on("segmentOut", (ev) => {
-        this.segmentContext.show = false;
+
+      drawnTimeline.on("pointerout", (ev) => {
+        this.timelineTooltip.enabled = false
+        this.timelineTooltip.show = false;
+        // ev.stopPropagation();
+      });
+      drawnTimeline.on("pointermove", (ev) => {
+        if (this.timelineTooltip.enabled) {
+          const localPosition = ev.data.getLocalPosition(drawnTimeline);
+          const x = localPosition.x;
+          if (localPosition.y < 0 || localPosition.y > drawnTimeline.height) {
+            return
+          }
+          const segment = drawnTimeline.getSegmentOnPosition(x)
+          if (segment === null) {
+            this.timelineTooltip.label = ""
+            this.timelineTooltip.show = false;
+            return
+          }
+          if (segment.annotations.length <= 0) {
+            this.timelineTooltip.label = ""
+            this.timelineTooltip.show = false;
+            return
+          }
+
+          this.timelineTooltip.show = true;
+          const tooltipPoint = {
+            x: ev.data.global.x,
+            y: ev.data.global.y,
+          };
+          const point = this.mapToGlobal(tooltipPoint);
+
+          this.timelineTooltip.x = point.x;
+          this.timelineTooltip.y = point.y;
+          const annotations = segment.annotations.map((e) => {
+            return e.annotation.name;
+          });
+          this.timelineTooltip.label = annotations.join("; ");
+        }
+        // ev.stopPropagation();
       });
       return drawnTimeline;
     },
     drawGraphicTimeline(timeline, width, height) {
       console.log("drawGraphicTimeline");
       const pluginRunResultStore = usePluginRunResultStore();
+
+      let drawnTimeline = null;
       if ("plugin_run_result_id" in timeline) {
         const result = pluginRunResultStore.get(timeline.plugin_run_result_id);
         if (result === undefined) {
@@ -524,7 +589,7 @@ export default {
           timeline.plugin = { data: result.data, type: result.type };
         }
         if (timeline.visualization == "C") {
-          const drawnTimeline = new ColorTimeline({
+          drawnTimeline = new ColorTimeline({
             timelineId: timeline.id,
             width: width,
             height: height,
@@ -534,10 +599,9 @@ export default {
             data: timeline.plugin.data,
             renderer: this.app.renderer,
           });
-          return drawnTimeline;
         }
         if (timeline.visualization == "SC") {
-          const drawnTimeline = new ScalarColorTimeline({
+          drawnTimeline = new ScalarColorTimeline({
             timelineId: timeline.id,
             width: width,
             height: height,
@@ -547,10 +611,9 @@ export default {
             data: timeline.plugin.data,
             renderer: this.app.renderer,
           });
-          return drawnTimeline;
         }
         if (timeline.visualization == "SL") {
-          const drawnTimeline = new ScalarLineTimeline({
+          drawnTimeline = new ScalarLineTimeline({
             timelineId: timeline.id,
             width: width,
             height: height,
@@ -560,10 +623,9 @@ export default {
             data: timeline.plugin.data,
             renderer: this.app.renderer,
           });
-          return drawnTimeline;
         }
         if (timeline.visualization == "H") {
-          const drawnTimeline = new HistTimeline({
+          drawnTimeline = new HistTimeline({
             timelineId: timeline.id,
             width: width,
             height: height,
@@ -573,12 +635,27 @@ export default {
             data: timeline.plugin.data,
             renderer: this.app.renderer,
           });
-          return drawnTimeline;
         }
       }
-      return null;
+      if (drawnTimeline) {
+
+        drawnTimeline.interactive = true;
+        drawnTimeline.buttonMode = true;
+        drawnTimeline.on("click", (ev) => {
+          const x = ev.data.getLocalPosition(drawnTimeline).x;
+          if (!ev.data.originalEvent.ctrlKey) {
+            this.timelineSegmentStore.clearSelection();
+            this.timelineStore.clearSelection();
+          }
+          this.timelineStore.addToSelection(timeline.id);
+          const targetTime = this.xToTime(ev.data.global.x);
+          this.playerStore.setTargetTime(targetTime);
+          ev.stopPropagation();
+        });
+      }
+      return drawnTimeline;
     },
-    drawSelection(selectedTimelineSegments) {
+    addSegmentSelection(selectedTimelineSegments) {
       if (
         selectedTimelineSegments &&
         selectedTimelineSegments.length > 0 &&
@@ -592,16 +669,14 @@ export default {
                 timelineObject.timelineId ===
                 selectedTimelineSegment.timeline_id
             )
+            .filter((timelineObject) => typeof timelineObject.addSegmentSelection === "function")
             .forEach((timelineObject) => {
-              timelineObject.selected({
-                selected: true,
-                segment: selectedTimelineSegment,
-              });
+              timelineObject.addSegmentSelection(selectedTimelineSegment.id);
             });
         });
       }
     },
-    removeSelection(selectedTimelineSegments) {
+    removeSegmentSelection(selectedTimelineSegments) {
       if (
         selectedTimelineSegments &&
         selectedTimelineSegments.length > 0 &&
@@ -615,11 +690,9 @@ export default {
                 timelineObject.timelineId ===
                 selectedTimelineSegment.timeline_id
             )
+            .filter((timelineObject) => typeof timelineObject.removeSegmentSelection === "function")
             .forEach((timelineObject) => {
-              timelineObject.selected({
-                selected: false,
-                segment: selectedTimelineSegment,
-              });
+              timelineObject.removeSegmentSelection(selectedTimelineSegment.id);
             });
         });
       }
@@ -775,8 +848,8 @@ export default {
       this.timelineHierarchy = findChildren(values, null);
     },
     selectedTimelineSegments(newSelection, oldSelection) {
-      this.removeSelection(oldSelection);
-      this.drawSelection(newSelection);
+      this.removeSegmentSelection(oldSelection);
+      this.addSegmentSelection(newSelection);
     },
   },
   mounted() {
@@ -793,6 +866,9 @@ export default {
     this.$refs.canvas.addEventListener("contextmenu", (e) => {
       e.preventDefault();
     });
+
+    // generate bitmapfont
+    generateFont();
 
     this.app.ticker.add(() => {
       if (!this.enabled) {
@@ -952,45 +1028,45 @@ export default {
             timelineObject.visible = timeline.visible;
           }
         });
-
-      // update all time position
+      const rescale = true;
+      // update all time position if there is something to update
       this.timelineObjects.forEach((e) => {
-        if (e.startTime !== this.startTime) {
+        if (e.startTime !== this.startTime || rescale) {
           e.startTime = this.startTime;
         }
       });
       this.timeScaleObjects.forEach((e) => {
-        if (e.startTime !== this.startTime) {
+        if (e.startTime !== this.startTime || rescale) {
           e.startTime = this.startTime;
         }
 
       });
       this.timeBarsObjects.forEach((e) => {
-        if (e.startTime !== this.startTime) {
+        if (e.startTime !== this.startTime || rescale) {
           e.startTime = this.startTime;
         }
 
       });
       this.timelineObjects.forEach((e) => {
-        if (e.endTime !== this.endTime) {
+        if (e.endTime !== this.endTime || rescale) {
           e.endTime = this.endTime;
         }
 
       });
       this.timeScaleObjects.forEach((e) => {
-        if (e.endTime !== this.endTime) {
+        if (e.endTime !== this.endTime || rescale) {
           e.endTime = this.endTime;
         }
 
       });
       this.timeBarsObjects.forEach((e) => {
-        if (e.endTime !== this.endTime) {
+        if (e.endTime !== this.endTime || rescale) {
           e.endTime = this.endTime;
         }
 
       });
       this.timeBarsObjects.forEach((e) => {
-        if (e.time !== this.time) {
+        if (e.time !== this.time || rescale) {
           e.time = this.time;
         }
 

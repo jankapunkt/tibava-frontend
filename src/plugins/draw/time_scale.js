@@ -13,17 +13,6 @@ export class TimeScale extends PIXI.Container {
         this.pStartTime = startTime;
         this.pEndTime = endTime;
 
-        PIXI.BitmapFont.from(
-            "scale_font",
-            {
-                fill: "#333333",
-                fontSize: 10,
-            },
-            {
-                chars: [["a", "z"], ["0", "9"], ["A", "Z"], " \\|/:.-^%$&*()!?"],
-                // fontWeight: 'bold',
-            }
-        );
 
         this.pRect = null;
         this._drawBox();
@@ -116,7 +105,7 @@ export class TimeScale extends PIXI.Container {
     }
     _drawTime(time, timeCode) {
         const x = this.timeToX(time);
-        const text = new PIXI.BitmapText(timeCode, { fontName: "scale_font" });
+        const text = new PIXI.BitmapText(timeCode, { fontName: "default_font" });
         text.x = x;
         text.y = 5;
         return text;

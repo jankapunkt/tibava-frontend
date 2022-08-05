@@ -5,147 +5,6 @@ import { Timeline } from "./timeline";
 
 import { hex2luminance } from "./utils";
 
-export class AnnotationBadge extends PIXI.Container {
-  constructor(x, y, text, padding = 2, color = 0xffffff) {
-    super();
-
-    const textColor = hex2luminance(color) > 0.5 ? 0x000000 : 0xffffff;
-
-    this.pText = new PIXI.Text(text, {
-      fill: textColor,
-      fontSize: 14,
-      // fontWeight: 'bold',
-    });
-
-    const textRect = new PIXI.Graphics();
-    textRect.beginFill(color);
-    textRect.drawRoundedRect(
-      0,
-      0,
-      this.pText.width + 2 * padding,
-      this.pText.height + 2 * padding,
-      2
-    );
-
-    // let shadow = new DropShadowFilter();
-    // shadow.color = 0x0000;
-    // shadow.distance = 2;
-    // shadow.alpha = 0.4;
-    // shadow.rotation = 90;
-    // shadow.blur = 1;
-    // textRect.filters = [shadow];
-
-    this.addChild(textRect);
-    textRect.addChild(this.pText);
-    this.pText.x = padding;
-    this.pText.y = padding;
-    this.x = x;
-    this.y = y;
-  }
-}
-
-export class AnnotationSegment extends PIXI.Container {
-  constructor({
-    segmentId,
-    data,
-    width,
-    height,
-    color = 0xdddddd,
-    selectedColor = 0xd99090,
-    padding = 2,
-    gap = 2,
-  }) {
-    super();
-    this.pSegmentId = segmentId;
-    this.pPadding = padding;
-    this.pGap = gap;
-    this.pSegment = data;
-    this.pSelected = false;
-    this.pSelectedColor = selectedColor;
-    this.pColor = color;
-
-    this.pWidth = width;
-    this.pHeight = height;
-
-    this.pRect = new PIXI.Graphics();
-    this.drawBox();
-
-    this.pMask = new PIXI.Graphics();
-    this.pMask.beginFill(0xffffff);
-    this.pMask.drawRoundedRect(0, 0, width, height, 1);
-    this.pRect.mask = this.pMask;
-    this.pRect.addChild(this.pMask);
-
-    this.addChild(this.pRect);
-    this.badges = [];
-    if (this.pSegment.annotations) {
-      var badgeX = this.pGap;
-      var badgeY = this.pGap;
-      var badgeXIndex = 0;
-      this.pSegment.annotations.forEach((a) => {
-        const text = new AnnotationBadge(
-          badgeX,
-          badgeY,
-          a.annotation.name,
-          padding,
-          PIXI.utils.string2hex(a.annotation.color)
-        );
-        badgeX += text.width + this.pGap;
-        if (badgeX > this.pRect.width && badgeXIndex > 0) {
-          badgeY += text.height + this.pGap;
-          badgeX = text.width + 2 * this.pGap;
-          text.x = this.pGap;
-          text.y = badgeY;
-          badgeXIndex = 1;
-        } else {
-          badgeXIndex += 1;
-        }
-        text.mask = this.pMask;
-        this.addChild(text);
-        this.badges.push(text);
-      });
-    }
-  }
-  drawBox() {
-    if (this.pSelected) {
-      this.pRect.lineStyle(2, this.pSelectedColor, 1);
-    }
-    this.pRect.beginFill(this.pColor);
-    this.pRect.drawRoundedRect(0, 0, this.pWidth, this.pHeight, 1);
-  }
-  set width(value) {
-    this.pRect.width = value;
-
-    var badgeX = this.pGap;
-    var badgeY = this.pGap;
-    var badgeXIndex = 0;
-    this.badges.forEach((e) => {
-      e.x = badgeX;
-      e.y = badgeY;
-      badgeX += e.width + this.pGap;
-      if (badgeX > this.pRect.width && badgeXIndex > 0) {
-        badgeY += e.height + this.pGap;
-        badgeX = e.width + 2 * this.pGap;
-        e.x = this.pGap;
-        e.y = badgeY;
-        badgeXIndex = 1;
-      } else {
-        badgeXIndex += 1;
-      }
-    });
-  }
-  get segmentId() {
-    return this.pSegmentId;
-  }
-  get segment() {
-    return this.pSegment;
-  }
-  set selected(value) {
-    this.pSelected = value;
-    this.pRect.clear();
-    this.drawBox();
-  }
-}
 
 export class AnnotationTimeline extends Timeline {
   constructor({
@@ -153,109 +12,240 @@ export class AnnotationTimeline extends Timeline {
     width,
     height,
     startTime = 0,
+    gap = 2,
     endTime = 10,
     duration = 10,
     data = null,
     fill = 0xffffff,
-    selected = null,
+    renderer = null,
+    resolution = 8192,
+    segmentSelection = null,
+    redrawScale = 4,
   }) {
     super({ timelineId, width, height, startTime, endTime, duration, fill });
-    this.pTimeline = data;
-    this.pSegmentList = [];
 
-    this.pSegments = new PIXI.Container();
+    this.pGap = gap;
+    this.pSelectedColor = 0xd99090;
+    this.pTimeline = data;
+    this.pSegments = {}
+    this.pTimeline.segments.forEach((s) => {
+      this.pSegments[s.id] = s
+    })
+
+
+    this.pResolution = resolution;
+    this.pRenderer = renderer;
+
+    if (segmentSelection) {
+      this.pSegmentSelection = segmentSelection;
+    }
+    else {
+      this.pSegmentSelection = [];
+    }
+
+    this.pRedrawScale = redrawScale;
+
+    this.pRenderedStart = 0;
+    this.pRenderedEnd = this.pDuration;
+
+    this.cSegments = this.renderSegments(this.pRenderedStart, this.pRenderedEnd);
+    this.addChild(this.cSegments);
+
+    this.cAnnotations = this.renderSegmentsAnnotations(this.pRenderedStart, this.pRenderedEnd);
+    this.addChild(this.cAnnotations);
+
+    this.cSelection = []
+
+
+    const { selectionRects, selectionRectList } = this.drawSelections()
+    this.cSelectionRects = selectionRects
+    this.pSelectionRectList = selectionRectList
+    this.addChild(selectionRects)
+    // this.pRect = null;
+    // this._drawBox();
+
+    // this.pBars_graphics = null;
+    // this._drawBars();
+  }
+
+  renderSegmentsAnnotations(start, end) {
+    const renderWidth = this.pResolution;
+    const r = renderWidth / (end - start);
+
+
+    const brt = new PIXI.BaseRenderTexture({
+      width: renderWidth,
+      height: this.pHeight,
+      // PIXI.SCALE_MODES.NEAREST,
+      scaleMode: PIXI.SCALE_MODES.LINEAR,
+
+      resolution: 1,
+    });
+    const rt = new PIXI.RenderTexture(brt);
+
+    const sprite = new PIXI.Sprite(rt);
+
+    let segmentRects = new PIXI.Graphics();
+
+
+    if (this.pTimeline.segments) {
+      this.pTimeline.segments.forEach((s, i) => {
+
+        const annotationLength = s.annotations.length;
+        if (annotationLength <= 0) {
+          return
+        }
+
+        const x = r * Math.max(s.start, start);
+        const width = r * (Math.min(s.end, end) - Math.max(s.start, start));
+        if (width < 0.1) {
+          return;
+        }
+        const height = this.pHeight;
+        const blockHeight = height / annotationLength;
+        s.annotations.forEach((a, j) => {
+          // if (width < 50) {
+
+          const color = PIXI.utils.string2hex(a.annotation.color)
+
+          segmentRects.beginFill(color);
+          segmentRects.drawRect(x, j * blockHeight + this.pGap / 2, width, blockHeight - this.pGap)
+          // }
+        });
+      });
+    }
+
+
+
+    this.pRenderer.render(segmentRects, rt);
+    return sprite;
+  }
+
+  renderSegments(start, end) {
+    const renderWidth = this.pResolution;
+    const r = renderWidth / (end - start);
+
     const colorOdd = 0xeeeeee;
     const colorEven = 0xdddddd;
+
+    const brt = new PIXI.BaseRenderTexture({
+      width: renderWidth,
+      height: this.pHeight,
+      // PIXI.SCALE_MODES.NEAREST,
+      scaleMode: PIXI.SCALE_MODES.LINEAR,
+
+      resolution: 1,
+    });
+    const rt = new PIXI.RenderTexture(brt);
+
+    const sprite = new PIXI.Sprite(rt);
+
+    let segmentRects = new PIXI.Graphics();
+
+
     if (this.pTimeline.segments) {
       this.pTimeline.segments.forEach((s, i) => {
-        const x = this.timeToX(s.start);
-        // const y = this.pY;
-        const width = this.timeToX(s.end) - this.timeToX(s.start);
+
+        const x = r * Math.max(s.start, start) - start;
+        const width = r * (Math.min(s.end, end) - Math.max(s.start, start));
+        if (width < 0.1) {
+          return;
+        }
         const height = this.pHeight;
-
-        let segmentE = new AnnotationSegment({
-          segmentId: s.id,
-          data: s,
-          color: i % 2 == 0 ? colorOdd : colorEven,
-          width: width,
-          height: height,
-        });
-        segmentE.x = x;
-        segmentE.interactive = true;
-        segmentE.buttonMode = true;
-        segmentE.on("rightdown", (ev) => {
-          this.emit("segmentRightDown", {
-            event: ev,
-            segment: segmentE,
-          });
-          ev.stopPropagation();
-        });
-
-        segmentE.on("click", (ev) => {
-          this.emit("segmentClick", {
-            event: ev,
-            segment: segmentE,
-          });
-          ev.stopPropagation();
-        });
-
-        segmentE.on("pointerover", (ev) => {
-          this.emit("segmentOver", {
-            event: ev,
-            segment: segmentE,
-          });
-          ev.stopPropagation();
-        });
-
-        segmentE.on("pointerout", (ev) => {
-          this.emit("segmentOut", {
-            event: ev,
-            segment: segmentE,
-          });
-          ev.stopPropagation();
-        });
-
-        segmentE.mask = this.pMask;
-
-        this.pSegments.addChild(segmentE);
-        this.pSegmentList.push(segmentE);
+        segmentRects.beginFill(i % 2 == 0 ? colorOdd : colorEven);
+        segmentRects.drawRect(x, 0, width, height)
       });
-      this.addChild(this.pSegments);
     }
-    if (selected) {
-      if (selected instanceof Array) {
-        selected.forEach((s) =>
-          this.selected({
-            selected: true,
-            segment: s,
-          })
-        );
-      } else {
-        this.selected({
-          selected: true,
-          segment: selected,
-        });
-      }
-    }
+
+
+
+    this.pRenderer.render(segmentRects, rt);
+    return sprite;
   }
+
+  drawSelections() {
+
+    const selectionRects = new PIXI.Graphics();
+    const selectionRectList = []
+    this.pSegmentSelection.map((segmentId) => this.pSegments[segmentId]).forEach((s) => {
+
+      const selectionRect = new PIXI.Graphics();
+
+
+      const x = this.timeToX(s.start);
+      // const y = this.pY;
+      const width = this.timeToX(s.end) - this.timeToX(s.start);
+      const height = this.pHeight;
+      selectionRect.lineStyle(2, this.pSelectedColor, 1);
+      selectionRect.drawRoundedRect(0, 0, width, height, 1);
+      selectionRect.x = x
+      selectionRects.addChild(selectionRect)
+      selectionRectList.push({ segment: s, object: selectionRect })
+    })
+    return { selectionRects, selectionRectList };
+  }
+
   scaleContainer() {
-    if (this.pTimeline.segments) {
-      this.pTimeline.segments.forEach((s, i) => {
-        const width = this.timeToX(s.end) - this.timeToX(s.start);
-        const x = this.timeToX(s.start);
-        this.pSegments.getChildAt(i).x = x;
-        this.pSegments.getChildAt(i).width = width;
-      });
+    if (this.cSegments) {
+      const scale = (this.pRenderedEnd - this.pRenderedStart) / (this.pEndTime - this.pStartTime)
+      // if (scale > this.pRedrawScale || this.pEndTime > this.pRenderedEnd || this.pStartTime < this.pRenderedStart) {
+      //   this.pRenderedStart = this.pStartTime;
+      //   this.pRenderedEnd = this.pEndTime;
+
+      //   this.cSegments.destroy()
+      //   this.cSegments = this.renderSegments(this.pRenderedStart, this.pRenderedEnd);
+      //   this.addChild(this.cSegments);
+
+      //   this.cAnnotations.destroy()
+      //   this.cAnnotations = this.renderSegmentsAnnotations(this.pRenderedStart, this.pRenderedEnd);
+
+      //   this.addChild(this.cAnnotations);
+      // }
+      // if ((this.pRenderedEnd - this.pRenderedStart))
+      const width = this.timeToX(this.pRenderedEnd) - this.timeToX(this.pRenderedStart);
+      const x = this.timeToX(this.pRenderedStart);
+      this.cSegments.x = x;
+      this.cSegments.width = width;
+      this.cAnnotations.x = x;
+      this.cAnnotations.width = width;
+
+      this.pSelectionRectList.forEach((s) => {
+        s.object.x = this.timeToX(s.segment.start)
+        s.object.width = this.timeToX(s.segment.end) - this.timeToX(s.segment.start)
+      })
     }
   }
-  selected({ selected = true, segment = null }) {
-    if (segment) {
-      this.pSegmentList
-        .filter((e) => segment.id === e.segmentId)
-        .forEach((e) => (e.selected = selected));
-    }
+
+  clearSegmentSelection() {
+    this.pSegmentSelection = []
   }
-  get segments() {
-    return this.pSegmentList;
+  addSegmentSelection(segmentId) {
+    this.pSegmentSelection.push(segmentId)
+    const { selectionRects, selectionRectList } = this.drawSelections()
+    this.cSelectionRects.destroy();
+    this.cSelectionRects = selectionRects
+    this.pSelectionRectList = selectionRectList
+    this.addChild(selectionRects)
+  }
+  removeSegmentSelection(segmentId) {
+    let index = this.pSegmentSelection.findIndex(
+      (f) => f === segmentId
+    );
+    this.pSegmentSelection.splice(index, 1);
+    const { selectionRects, selectionRectList } = this.drawSelections()
+    this.cSelectionRects.destroy();
+    this.cSelectionRects = selectionRects
+    this.pSelectionRectList = selectionRectList
+    this.addChild(selectionRects)
+  }
+  getSegmentOnPosition(xPos) {
+    const time = this.xToTime(xPos)
+    let result = null;
+    this.pTimeline.segments.forEach((s) => {
+      if (time > s.start && time < s.end) {
+        result = s;
+      }
+    });
+    return result
   }
 }

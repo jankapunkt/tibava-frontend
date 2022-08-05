@@ -167,7 +167,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 this.timelineSegmentAnnotationList.splice(index, 1);
                 delete this.timelineSegmentAnnotations[id];
             });
-            this.updateTimeStore()
+            // this.updateTimeStore()
         },
         addToStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((e, i) => {
@@ -176,7 +176,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
             });
-            this.updateTimeStore()
+            // this.updateTimeStore()
         },
         updateStore(timelineSegmentAnnotations) {
             timelineSegmentAnnotations.forEach((e, i) => {
@@ -187,7 +187,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
             });
-            this.updateTimeStore()
+            // this.updateTimeStore()
         },
         updateTimeStore() {
             const timelineSegmentStore = useTimelineSegmentStore()

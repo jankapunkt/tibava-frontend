@@ -49,6 +49,9 @@ export class Timeline extends PIXI.Container {
     timeToX(time) {
         return this.timeScale * (time - this.pStartTime);
     }
+    xToTime(xPos) {
+        return xPos / this.timeScale + this.pStartTime;
+    }
     scaleContainer() { }
     selected({ selected = true, segment = null }) { }
     get timeScale() {

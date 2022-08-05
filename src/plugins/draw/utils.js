@@ -36,3 +36,29 @@ export function resampleApprox({ data, targetSize = 1024 }) {
     const filteredData = data.filter((e, i) => i % stepsize == 0)
     return filteredData
 }
+
+export function generateFont() {
+
+    PIXI.BitmapFont.from(
+        "default_font",
+        {
+            fill: "#333333",
+            fontSize: 10,
+        },
+        {
+            chars: [["a", "z"], ["0", "9"], ["A", "Z"], " \\|/:.-^%$&*()!?"],
+            // fontWeight: 'bold',
+        }
+    );
+    PIXI.BitmapFont.from(
+        "default_white_font",
+        {
+            fill: "#FFFFFF",
+            fontSize: 10,
+        },
+        {
+            chars: [["a", "z"], ["0", "9"], ["A", "Z"], " \\|/:.-^%$&*()!?"],
+            // fontWeight: 'bold',
+        }
+    );
+}
