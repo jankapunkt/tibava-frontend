@@ -279,7 +279,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             //     commit('error/update', info, { root: true });
             // });
         },
-        async fetchForVideo({ timelineId, videoId }) {
+        async fetchForVideo({ timelineId, videoId, clear = true }) {
             if (this.isLoading) {
                 return
             }
@@ -298,6 +298,9 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 if (videoId) {
                     params.video_id = videoId;
                 }
+            }
+            if (clear) {
+                this.clearStore()
             }
             return axios
                 .get(`${config.API_LOCATION}/timeline/segment/list`, { params })

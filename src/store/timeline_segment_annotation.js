@@ -14,7 +14,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
     state: () => {
         return {
             timelineSegmentAnnotations: {},
-            timelineSegmentAnnotationByTime: {},
+            timelineSegmentAnnotationByTime: new Map(),
             timelineSegmentAnnotationList: [],
 
             timelineSegmentAnnotationListAdded: [],
@@ -35,8 +35,8 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
         },
         forTimeLUT: (state) => (time) => {
             const timeSecond = Math.round(time)
-            if (timeSecond in state.timelineSegmentAnnotationByTime) {
-                const timelineSegmentIds = state.timelineSegmentAnnotationByTime[timeSecond];
+            if (state.timelineSegmentAnnotationByTime.has(timeSecond)) {
+                const timelineSegmentIds = state.timelineSegmentAnnotationByTime.get(timeSecond);
                 return timelineSegmentIds.map((id) => {
                     return state.timelineSegmentAnnotations[id]
                 }
@@ -117,7 +117,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             //     commit('error/update', info, { root: true });
             // });
         },
-        async fetchForVideo({ videoId }) {
+        async fetchForVideo({ videoId, clear = true }) {
             if (this.isLoading) {
                 return
             }
@@ -133,6 +133,9 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 if (videoId) {
                     params.video_id = videoId;
                 }
+            }
+            if (clear) {
+                this.clearStore()
             }
             return axios
                 .get(`${config.API_LOCATION}/timeline/segment/annotation/list`, {
@@ -152,7 +155,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
             // });
         },
         clearStore() {
-            this.timelineSegmentAnnotationByTime = {}
+            this.timelineSegmentAnnotationByTime = new Map()
             this.timelineSegmentAnnotationListAdded = []
             this.timelineSegmentAnnotationListDeleted = []
             this.timelineSegmentAnnotations = {}
@@ -166,19 +169,46 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 );
                 this.timelineSegmentAnnotationList.splice(index, 1);
                 delete this.timelineSegmentAnnotations[id];
+
+                this.timelineSegmentAnnotationByTime.forEach((v, k, m) => {
+                    let index = v.findIndex(
+                        (f) => f === id
+                    );
+                    console.log({ k: k, v: v, id: id, index: index })
+                    if (index >= 0) {
+                        console.log(index)
+                        v.splice(index, 1);
+                        m.set(k, v)
+                    }
+                })
             });
-            // this.updateTimeStore()
         },
         addToStore(timelineSegmentAnnotations) {
-            timelineSegmentAnnotations.forEach((e, i) => {
+            const timelineSegmentStore = useTimelineSegmentStore()
 
+            timelineSegmentAnnotations.forEach((e, i) => {
                 this.timelineSegmentAnnotationListAdded.push(e.id)
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
+
+
+                const timelineSegment = timelineSegmentStore.get(e.timeline_segment_id)
+                if (timelineSegment) {
+                    for (var i = Math.floor(timelineSegment.start); i < Math.ceil(timelineSegment.end); i++) {
+                        if (this.timelineSegmentAnnotationByTime.has(i)) {
+                            var ids = this.timelineSegmentAnnotationByTime.get(i)
+                            ids.push(e.id)
+                            this.timelineSegmentAnnotationByTime.set(i, ids)
+                        }
+                        else {
+                            this.timelineSegmentAnnotationByTime.set(i, [e.id])
+                        }
+                    }
+                }
             });
-            // this.updateTimeStore()
         },
         updateStore(timelineSegmentAnnotations) {
+            const timelineSegmentStore = useTimelineSegmentStore()
             timelineSegmentAnnotations.forEach((e, i) => {
                 if (e.id in this.timelineSegmentAnnotations) {
                     return
@@ -186,24 +216,21 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 this.timelineSegmentAnnotationListAdded.push(e.id)
                 this.timelineSegmentAnnotations[e.id] = e;
                 this.timelineSegmentAnnotationList.push(e.id);
-            });
-            // this.updateTimeStore()
-        },
-        updateTimeStore() {
-            const timelineSegmentStore = useTimelineSegmentStore()
-            timelineSegmentStore.all.forEach((e) => {
-                for (var i = Math.floor(e.start); i < Math.ceil(e.end); i++) {
-                    if (i in this.timelineSegmentAnnotationByTime) {
-                        this.forTimelineSegment(e.id).forEach((timelineSegmentAnnotation) => {
-                            this.timelineSegmentAnnotationByTime[i].push(timelineSegmentAnnotation.id)
-                        })
-                    }
-                    else {
-                        this.timelineSegmentAnnotationByTime[i] =
-                            this.forTimelineSegment(e.id).map((timelineSegmentAnnotation) => timelineSegmentAnnotation.id)
+
+                const timelineSegment = timelineSegmentStore.get(e.timeline_segment_id)
+                if (timelineSegment) {
+                    for (var i = Math.floor(timelineSegment.start); i < Math.ceil(timelineSegment.end); i++) {
+                        if (this.timelineSegmentAnnotationByTime.has(i)) {
+                            var ids = this.timelineSegmentAnnotationByTime.get(i)
+                            ids.push(e.id)
+                            this.timelineSegmentAnnotationByTime.set(i, ids)
+                        }
+                        else {
+                            this.timelineSegmentAnnotationByTime.set(i, [e.id])
+                        }
                     }
                 }
-            })
-        }
+            });
+        },
     },
 })

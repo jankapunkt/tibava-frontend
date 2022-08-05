@@ -138,7 +138,7 @@ export const useTimelineStore = defineStore('timeline', {
             //     this.timelineSegments[timelineSegmentId].selected = false;
             // }
         },
-        async fetchForVideo({ videoId = null }) {
+        async fetchForVideo({ videoId = null, clear = true }) {
             if (this.isLoading) {
                 return
             }
@@ -156,6 +156,9 @@ export const useTimelineStore = defineStore('timeline', {
                 if (videoId) {
                     params.video_id = videoId;
                 }
+            }
+            if (clear) {
+                this.clearStore()
             }
             return axios
                 .get(`${config.API_LOCATION}/timeline/list`, { params })

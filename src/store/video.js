@@ -67,14 +67,14 @@ export const useVideoStore = defineStore("video", {
                 promises.push(annotationStore.fetchForVideo({ videoId }));
             }
             if (includeTimeline) {
-                timelineStore.clearStore()
-                timelineSegmentStore.clearStore()
-                timelineSegmentAnnotationStore.clearStore()
-                promises.push(timelineStore.fetchForVideo({ videoId }));
-                promises.push(timelineSegmentStore.fetchForVideo({ videoId }));
-                promises.push(
-                    timelineSegmentAnnotationStore.fetchForVideo({ videoId })
-                );
+                promises.push(timelineStore.fetchForVideo({ videoId })
+                    .then(() => {
+                        return timelineSegmentStore.fetchForVideo({ videoId })
+                    })
+                    .then(() => {
+                        return timelineSegmentAnnotationStore.fetchForVideo({ videoId })
+                    }));
+
             }
             if (includeAnalyser) {
                 pluginRunStore.clearStore()
