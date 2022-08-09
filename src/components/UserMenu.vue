@@ -1,13 +1,7 @@
 <template>
   <v-menu v-model="menu" min-width="175" offset-y bottom left open-on-hover>
     <template v-slot:activator="{ attrs, on: menu }">
-      <v-btn
-        icon
-        v-bind="attrs"
-        v-on="menu"
-        class="ml-n2"
-        :title="$t('user.menu.title')"
-      >
+      <v-btn icon v-bind="attrs" v-on="menu" class="ml-n2" :title="$t('user.menu.title')">
         <v-badge v-if="loggedIn" color="accent" dot>
           <v-icon color="primary">mdi-account-circle</v-icon>
         </v-badge>
@@ -17,16 +11,6 @@
 
     <UserAccount v-if="loggedIn" />
 
-    <v-list v-if="loggedIn" class="pa-0">
-      <!-- <v-list-item-group>
-        <v-list-item class="px-0">
-          <ModalCollectionUpload @close="menu = false" />
-        </v-list-item>
-        <v-list-item v-if="collections.length" class="px-0">
-          <ModalCollectionList @close="menu = false" />
-        </v-list-item>
-      </v-list-item-group> -->
-    </v-list>
     <v-list v-else class="pa-0">
       <v-list-item-group>
         <v-list-item class="px-0">
