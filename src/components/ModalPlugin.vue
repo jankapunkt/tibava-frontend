@@ -213,6 +213,44 @@ export default {
           ],
         },
         {
+          name: this.$t("modal.plugin.shot_density.plugin_name"),
+          icon: "mdi-sine-wave",
+          plugin: "shot_density",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.shot_density.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "select_timeline",
+              name: "shot_timeline_id",
+              text: this.$t("modal.plugin.shot_density.input_timeline"),
+            },
+          ],
+          optional_parameters: [
+            {
+              field: "slider",
+              min: 1,
+              max: 60,
+              value: 10,
+              step: 1,
+              name: "bandwidth",
+              text: this.$t("modal.plugin.shot_density.bandwidth"),
+            },
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 10,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.fps"),
+            },
+          ],
+        },
+        {
           name: this.$t("modal.plugin.shot_type_classification.plugin_name"),
           icon: "mdi-video-switch",
           plugin: "shot_type_classification",
@@ -336,29 +374,29 @@ export default {
             },
           ],
         },
-        {
-          name: this.$t("modal.plugin.aggregation.plugin_name"),
-          icon: "mdi-emoticon-happy-outline",
-          plugin: "scalar_aggregation",
-          parameters: [
-            {
-              field: "text_field",
-              name: "timeline",
-              value: this.$t("modal.plugin.aggregation.timeline_name"),
-              text: this.$t("modal.plugin.timeline_name"),
-            },
-            {
-              field: "select_scalar_timelines",
-              name: "timeline_ids",
-              // value: this.shot_timelines_names[0],
-              // items: this.shot_timelines_names,
-              text: this.$t("modal.plugin.scalar_timeline_name"),
-              hint: this.$t("modal.plugin.scalar_timeline_hint"),
-            },
-          ],
-          optional_parameters: [
-          ],
-        },
+        // {
+        //   name: this.$t("modal.plugin.aggregation.plugin_name"),
+        //   icon: "mdi-sigma",
+        //   plugin: "scalar_aggregation",
+        //   parameters: [
+        //     {
+        //       field: "text_field",
+        //       name: "timeline",
+        //       value: this.$t("modal.plugin.aggregation.timeline_name"),
+        //       text: this.$t("modal.plugin.timeline_name"),
+        //     },
+        //     {
+        //       field: "select_scalar_timelines",
+        //       name: "timeline_ids",
+        //       // value: this.shot_timelines_names[0],
+        //       // items: this.shot_timelines_names,
+        //       text: this.$t("modal.plugin.scalar_timeline_name"),
+        //       hint: this.$t("modal.plugin.scalar_timeline_hint"),
+        //     },
+        //   ],
+        //   optional_parameters: [
+        //   ],
+        // },
         {
           name: this.$t("modal.plugin.faceemotion.plugin_name"),
           icon: "mdi-emoticon-happy-outline",

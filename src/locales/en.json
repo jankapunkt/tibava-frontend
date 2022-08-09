@@ -30,15 +30,22 @@
             "timeline_name": "Timeline Name",
             "shot_timeline_name": "Shot Boundaries from Timeline",
             "shot_timeline_hint": "*The annotations are created based on the shot boundaries of the selected timeline",
+            "scalar_timeline_name": "Select Timelines",
+            "scalar_timeline_hint": "*The scalar values of the selected timelines will be aggregated",
             "fps": "Frames per Second (FPS)",
+            "aggregation": {
+                "plugin_name": "Aggregate Timelines",
+                "timeline_name": "Aggregated Timeline",
+                "aggregation_method": "Mean"
+            },
             "audio_waveform": {
                 "plugin_name": "Audio Waveform Analysis",
                 "timeline_name": "Audio Waveform",
                 "sr": "Sampling Rate"
             },
             "audio_frequency": {
-                "plugin_name": "Audio Spectorgram Analysis",
-                "timeline_name": "Audio Spectogram",
+                "plugin_name": "Audio Spectrorgram Analysis",
+                "timeline_name": "Audio Spectrogram",
                 "sr": "Sampling Rate",
                 "n_fft": "Length of the FFT (Fast Fourier Transform) window"
             },
@@ -79,6 +86,13 @@
             "shot_detection": {
                 "plugin_name": "Shot Boundary Detection",
                 "timeline_name": "Shots"
+            },
+            "shot_density": {
+                "plugin_name": "Shot Density",
+                "timeline_name": "Shot Density",
+                "input_timeline": "Select Timeline",
+                "kernel": "Gaussian",
+                "bandwidth": "Bandwidth"
             },
             "shot_type_classification": {
                 "plugin_name": "Shot Size Classification",
