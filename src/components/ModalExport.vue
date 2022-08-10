@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="show" max-width="1000" persistent @keydown.esc="$emit('update:show', false)">
+  <v-dialog
+    v-model="dialog"
+    max-width="1000"
+    persistent
+    @keydown.esc="$emit('update:show', false)"
+  >
     <!-- <template v-slot:activator="{ on }">
       <v-btn v-on="on" text block large>
         {{ $t("modal.export.title") }}
@@ -9,7 +14,7 @@
       <v-card-title class="mb-2">
         {{ $t("modal.export.title") }}
 
-        <v-btn icon @click.native="$emit('update:show', false)" absolute top right>
+        <v-btn icon @click="dialog = false" absolute top right>
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -34,7 +39,7 @@
         </v-row>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn @click="$emit('update:show', false)">
+        <v-btn @click="dialog = false">
           {{ $t("timelineSegment.close") }}
         </v-btn>
       </v-card-actions>
@@ -49,25 +54,35 @@ import { useVideoStore } from "@/store/video";
 
 export default {
   components: { AnnotationForm },
-  props: [
-    "show"
-  ],
+  props: ["value"],
   data() {
-    return {};
+    return {
+      dialog: false,
+    };
   },
   computed: {
-    ...mapStores(useVideoStore)
+    ...mapStores(useVideoStore),
   },
   methods: {
     async downloadCSV() {
       this.videoStore.exportCSV().then(() => {
-        this.$emit('update:show', false)
+        this.dialog = false;
       });
     },
     async downloadJson() {
       await this.videoStore.exportJson().then(() => {
-        this.$emit('update:show', false)
+        this.dialog = false;
       });
+    },
+  },
+  watch: {
+    dialog(value) {
+      this.$emit("input", value);
+    },
+    value(value) {
+      if (value) {
+        this.dialog = true;
+      }
     },
   },
 };

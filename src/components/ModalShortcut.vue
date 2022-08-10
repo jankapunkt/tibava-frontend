@@ -1,11 +1,15 @@
 <template>
-  <v-dialog v-model="show" max-width="1000" persistent @keydown.esc="$emit('update:show', false)">
-
+  <v-dialog
+    v-model="dialog"
+    max-width="1000"
+    persistent
+    @keydown.esc="dialog = false"
+  >
     <v-card>
       <v-card-title class="mb-2">
         {{ $t("modal.shortcut.title") }}
 
-        <v-btn icon @click.native="$emit('update:show', false)" absolute top right>
+        <v-btn icon @click="dialog = false" absolute top right>
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -23,18 +27,37 @@
               <tr v-for="(item, index) in items" :key="item.name">
                 <td>
                   <v-chip>
-                    <v-btn disable icon x-small :color="item.color" class="mr-1">
+                    <v-btn
+                      disable
+                      icon
+                      x-small
+                      :color="item.color"
+                      class="mr-1"
+                    >
                       <v-icon>{{ "mdi-palette" }}</v-icon>
                     </v-btn>
-                    <v-btn v-if="item.category" disable x-small :color="item.color" class="mr-1">
+                    <v-btn
+                      v-if="item.category"
+                      disable
+                      x-small
+                      :color="item.color"
+                      class="mr-1"
+                    >
                       {{ item.category.name }}
                     </v-btn>
                     <span>{{ item.name }}</span>
                   </v-chip>
                 </td>
                 <td>
-                  <v-text-field solo flat single-line hide-details @keydown="onKeydown(index, $event)"
-                    @click:append-outer="clear(index)" append-outer-icon="mdi-close">
+                  <v-text-field
+                    solo
+                    flat
+                    single-line
+                    hide-details
+                    @keydown="onKeydown(index, $event)"
+                    @click:append-outer="clear(index)"
+                    append-outer-icon="mdi-close"
+                  >
                     <template v-slot:prepend-inner>
                       <v-chip v-for="key in item.keys" :key="key.index">
                         <span>{{ key }}</span>
@@ -56,7 +79,7 @@
         <v-btn class="mr-4" @click="submit" :disable="isSubmitting">
           {{ $t("modal.shortcut.update") }}
         </v-btn>
-        <v-btn @click="$emit('update:show', false)">{{ $t("modal.shortcut.close") }}</v-btn>
+        <v-btn @click="dialog = false">{{ $t("modal.shortcut.close") }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -70,11 +93,10 @@ import { useShortcutStore } from "@/store/shortcut";
 import { useAnnotationStore } from "@/store/annotation";
 
 export default {
-  props: [
-    "value", "show"
-  ],
+  props: ["value"],
   data() {
     return {
+      dialog: false,
       isSubmitting: false,
       items: [],
     };
@@ -134,11 +156,11 @@ export default {
       });
 
       this.isSubmitting = false;
-      this.$emit('update:show', false);
+      this.dialog = false;
     },
   },
   watch: {
-    show(value) {
+    dialog(value) {
       if (value) {
         this.items = this.annotations;
 
@@ -163,7 +185,12 @@ export default {
             e.keys = shortcut.keys;
           }
         });
-        this.$emit("close");
+      }
+      this.$emit("input", value);
+    },
+    value(value) {
+      if (value) {
+        this.dialog = true;
       }
     },
   },

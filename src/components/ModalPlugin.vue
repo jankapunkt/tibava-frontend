@@ -1,11 +1,10 @@
 <template>
-  <v-dialog v-model="show" max-width="90%">
-
+  <v-dialog v-model="dialog" max-width="90%">
     <v-card>
       <v-card-title class="mb-2">
         {{ $t("modal.plugin.title") }}
 
-        <v-btn icon @click.native="$emit('update:show', false)" absolute top right>
+        <v-btn icon @click="dialog = false" absolute right>
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -22,17 +21,21 @@
                 <ModalPluginParameters :parameters="plugin.parameters">
                 </ModalPluginParameters>
 
-                <v-expansion-panels v-if="
-                  plugin.optional_parameters &&
-                  plugin.optional_parameters.length > 0
-                ">
+                <v-expansion-panels
+                  v-if="
+                    plugin.optional_parameters &&
+                    plugin.optional_parameters.length > 0
+                  "
+                >
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
                     </v-expansion-panel-header>
 
                     <v-expansion-panel-content>
-                      <ModalPluginParameters :parameters="plugin.optional_parameters">
+                      <ModalPluginParameters
+                        :parameters="plugin.optional_parameters"
+                      >
                       </ModalPluginParameters>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
@@ -40,20 +43,23 @@
               </v-card-text>
 
               <v-card-actions class="pt-0">
-                <v-btn @click="
-                  runPlugin(
-                    plugin.plugin,
-                    plugin.parameters,
-                    plugin.optional_parameters
-                  )
-                ">{{ $t("modal.plugin.run") }}</v-btn>
+                <v-btn
+                  @click="
+                    runPlugin(
+                      plugin.plugin,
+                      plugin.parameters,
+                      plugin.optional_parameters
+                    )
+                  "
+                  >{{ $t("modal.plugin.run") }}</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-tab-item>
         </v-tabs>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn @click="$emit('update:show', false)">{{ $t("modal.plugin.close") }}</v-btn>
+        <v-btn @click="dialog = false">{{ $t("modal.plugin.close") }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -66,9 +72,10 @@ import ModalPluginParameters from "./ModalPluginParameters.vue";
 // import { useTimelineStore } from "../store/timeline";
 
 export default {
-  props: ["show"],
+  props: ["value"],
   data() {
     return {
+      dialog: false,
       plugins: [
         {
           name: this.$t("modal.plugin.audio_waveform.plugin_name"),
@@ -392,8 +399,7 @@ export default {
               hint: this.$t("modal.plugin.scalar_timeline_hint"),
             },
           ],
-          optional_parameters: [
-          ],
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.faceemotion.plugin_name"),
@@ -442,7 +448,7 @@ export default {
           icon: "mdi-image-multiple",
           plugin: "thumbnail",
           parameters: [],
-          optional_parameters: []
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.clip.plugin_name"),
@@ -496,8 +502,18 @@ export default {
       this.pluginRunStore
         .submit({ plugin: plugin, parameters: parameters })
         .then(() => {
-          this.$emit('update:show', false);
+          this.show = false;
         });
+    },
+  },
+  watch: {
+    dialog(value) {
+      this.$emit("input", value);
+    },
+    value(value) {
+      if (value) {
+        this.dialog = true;
+      }
     },
   },
   components: { ModalPluginParameters },
