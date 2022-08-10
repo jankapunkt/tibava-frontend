@@ -39,6 +39,7 @@ export const useUserStore = defineStore('user', {
             if (this.isLoading) {
                 return
             }
+            console.log("getCSRFToken isLoading=true")
             this.isLoading = true
 
             return axios.get(`${config.API_LOCATION}/user/csrf`, {
@@ -54,6 +55,7 @@ export const useUserStore = defineStore('user', {
                     console.log(error);
                 })
                 .finally(() => {
+                    console.log("getCSRFToken isLoading=false")
                     this.isLoading = false;
                 });
         },
@@ -61,6 +63,7 @@ export const useUserStore = defineStore('user', {
             if (this.isLoading) {
                 return
             }
+            console.log("getUserData isLoading=true")
             this.isLoading = true
 
             return axios.post(`${config.API_LOCATION}/user/get`)
@@ -87,6 +90,7 @@ export const useUserStore = defineStore('user', {
                     console.log(error);
                 })
                 .finally(() => {
+                    console.log("getUserData isLoading=false")
                     this.isLoading = false;
                 });
         },
@@ -95,6 +99,7 @@ export const useUserStore = defineStore('user', {
             if (this.isLoading) {
                 return
             }
+            console.log("getUserData login=true")
             this.isLoading = true
 
             // commit('loading/update', true, { root: true });
@@ -120,6 +125,7 @@ export const useUserStore = defineStore('user', {
                     }
                 })
                 .finally(() => {
+                    console.log("login isLoading=false")
                     this.isLoading = false;
                 })
             // .catch((error) => {
@@ -131,7 +137,9 @@ export const useUserStore = defineStore('user', {
             // });
         },
         async logout() {
+            console.log("logout")
             if (this.isLoading) {
+                console.log("isLoading?")
                 return
             }
             this.isLoading = true
@@ -149,6 +157,7 @@ export const useUserStore = defineStore('user', {
                     }
                 })
                 .finally(() => {
+                    console.log("finally")
                     this.isLoading = false;
                 })
             // .catch((error) => {
@@ -194,5 +203,8 @@ export const useUserStore = defineStore('user', {
             // });
         },
     },
-    persist: true,
+    persist: {
+        
+        paths: ['loggedIn'],
+    },
 })

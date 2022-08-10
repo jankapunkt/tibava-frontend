@@ -24,13 +24,13 @@
       </v-list>
     </v-menu>
 
-    <ModalExport :show.sync="showModalExport">
+    <ModalExport v-model="showModalExport">
     </ModalExport>
 
-    <ModalPlugin :show.sync="showModalPlugin">
+    <ModalPlugin v-model="showModalPlugin">
     </ModalPlugin>
 
-    <ModalShortcut :show.sync="showModalShortcut">
+    <ModalShortcut v-model="showModalShortcut">
     </ModalShortcut>
 
   </div>

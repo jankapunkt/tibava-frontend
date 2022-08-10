@@ -1,11 +1,5 @@
 <template>
   <v-dialog v-model="dialog" max-width="350px">
-    <template v-slot:activator="{ on }">
-      <v-btn v-on="on" class="login" text block large>
-        {{ $t("user.login.title") }}
-      </v-btn>
-    </template>
-
     <v-card class="login">
       <v-card-title>
         {{ $t("user.login.title") }}
@@ -64,10 +58,10 @@
 import UserRegister from "@/components/UserRegister.vue";
 
 import { mapStores } from "pinia";
-import { useUserStore } from '@/store/user'
-
+import { useUserStore } from "@/store/user";
 
 export default {
+  props: ["value"],
   data() {
     return {
       user: {},
@@ -109,12 +103,15 @@ export default {
 
       return true;
     },
-    ...mapStores(useUserStore)
+    ...mapStores(useUserStore),
   },
   watch: {
     dialog(value) {
+      this.$emit("input", value);
+    },
+    value(value) {
       if (value) {
-        this.$emit("close");
+        this.dialog = true;
       }
     },
   },

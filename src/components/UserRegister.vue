@@ -1,11 +1,5 @@
 <template>
   <v-dialog v-model="dialog" max-width="350px">
-    <template v-slot:activator="{ on }">
-      <v-btn v-on="on" class="register" text block large>
-        {{ $t("user.register.title") }}
-      </v-btn>
-    </template>
-
     <v-card class="register">
       <v-card-title>
         {{ $t("user.register.title") }}
@@ -70,6 +64,7 @@ import { mapStores } from "pinia";
 import { useUserStore } from "@/store/user";
 
 export default {
+  props: ["value"],
   data() {
     return {
       user: {},
@@ -115,8 +110,11 @@ export default {
   },
   watch: {
     dialog(value) {
+      this.$emit("input", value);
+    },
+    value(value) {
       if (value) {
-        this.$emit("close");
+        this.dialog = true;
       }
     },
   },

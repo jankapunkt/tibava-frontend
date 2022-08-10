@@ -1,27 +1,36 @@
 <template>
-  <v-menu v-model="menu" min-width="175" offset-y bottom left open-on-hover>
-    <template v-slot:activator="{ attrs, on: menu }">
-      <v-btn icon v-bind="attrs" v-on="menu" class="ml-n2" :title="$t('user.menu.title')">
-        <v-badge v-if="loggedIn" color="accent" dot>
-          <v-icon color="primary">mdi-account-circle</v-icon>
-        </v-badge>
-        <v-icon v-else color="primary">mdi-account-circle</v-icon>
-      </v-btn>
-    </template>
+  <div>
+    <v-menu v-model="menu" min-width="175" offset-y bottom left>
+      <template v-slot:activator="{ attrs, on: menu }">
+        <v-btn icon v-bind="attrs" v-on="menu" class="ml-n2" :title="$t('user.menu.title')">
+          <v-badge v-if="loggedIn" color="accent" dot>
+            <v-icon color="primary">mdi-account-circle</v-icon>
+          </v-badge>
+          <v-icon v-else color="primary">mdi-account-circle</v-icon>
+        </v-btn>
+      </template>
 
-    <UserAccount v-if="loggedIn" />
+      <UserAccount v-if="loggedIn" />
 
-    <v-list v-else class="pa-0">
-      <v-list-item-group>
-        <v-list-item class="px-0">
-          <UserLogin @close="menu = false" />
+      <v-list v-else class="pa-0">
+
+        <v-list-item @click="showModalLogin = true">
+          <v-list-item-title>{{ $t("user.login.title") }}</v-list-item-title>
         </v-list-item>
-        <v-list-item class="px-0">
-          <UserRegister @close="menu = false" />
+
+        <v-list-item @click="showModalRegister = true">
+          <v-list-item-title>{{ $t("user.register.title") }}</v-list-item-title>
         </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-menu>
+      </v-list>
+    </v-menu>
+    <UserLogin v-model="showModalLogin">
+      <activator />
+    </UserLogin>
+    <UserRegister v-model="showModalRegister">
+
+      <activator />
+    </UserRegister>
+  </div>
 </template>
 
 <script>
@@ -37,6 +46,8 @@ export default {
   data() {
     return {
       menu: false,
+      showModalLogin: false,
+      showModalRegister: false,
     };
   },
   computed: {
