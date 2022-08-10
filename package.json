@@ -12,6 +12,8 @@
     "@vue/composition-api": "^1.6.2",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
+    "d3": "^7.6.1",
+    "d3-interpolate": "^3.0.1",
     "google-palette": "^1.1.0",
     "paper": "^0.12.15",
     "pinia": "^2.0.14",
