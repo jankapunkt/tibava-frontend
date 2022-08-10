@@ -374,29 +374,27 @@ export default {
             },
           ],
         },
-        // {
-        //   name: this.$t("modal.plugin.aggregation.plugin_name"),
-        //   icon: "mdi-sigma",
-        //   plugin: "scalar_aggregation",
-        //   parameters: [
-        //     {
-        //       field: "text_field",
-        //       name: "timeline",
-        //       value: this.$t("modal.plugin.aggregation.timeline_name"),
-        //       text: this.$t("modal.plugin.timeline_name"),
-        //     },
-        //     {
-        //       field: "select_scalar_timelines",
-        //       name: "timeline_ids",
-        //       // value: this.shot_timelines_names[0],
-        //       // items: this.shot_timelines_names,
-        //       text: this.$t("modal.plugin.scalar_timeline_name"),
-        //       hint: this.$t("modal.plugin.scalar_timeline_hint"),
-        //     },
-        //   ],
-        //   optional_parameters: [
-        //   ],
-        // },
+        {
+          name: this.$t("modal.plugin.aggregation.plugin_name"),
+          icon: "mdi-sigma",
+          plugin: "aggregate_scalar",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.aggregation.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "select_scalar_timelines",
+              name: "timeline_ids",
+              text: this.$t("modal.plugin.scalar_timeline_name"),
+              hint: this.$t("modal.plugin.scalar_timeline_hint"),
+            },
+          ],
+          optional_parameters: [
+          ],
+        },
         {
           name: this.$t("modal.plugin.faceemotion.plugin_name"),
           icon: "mdi-emoticon-happy-outline",
