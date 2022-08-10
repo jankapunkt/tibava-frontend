@@ -1,14 +1,13 @@
 import * as PIXI from "pixi.js";
 import * as d3 from "d3";
 
-// import { magma, seismic, jet } from "./palette.js";
-
 var colormaps = new Map([
   ["RdYlBu", d3.interpolateRdYlBu],
   ["RdYlGn", d3.interpolateRdYlGn],
   ["Blues", d3.interpolateBlues],
   ["Greens", d3.interpolateGreens],
   ["Reds", d3.interpolateReds],
+  ["TIBReds", d3.interpolateRgb("white", "rgb(174, 19, 19)")],
   ["Greys", d3.interpolateGreys],
   ["YlGnBu", d3.interpolateYlGnBu],
   ["YlOrRd", d3.interpolateYlOrRd],
@@ -32,7 +31,7 @@ export function linspace(startValue, stopValue, cardinality) {
   return arr;
 }
 
-export function scalarToHex(s, invert = false, colorPalette = "Reds") {
+export function scalarToHex(s, invert = false, colorPalette = "TIBReds") {
   // maps a scalar [0, 1] to a color value
   if (invert) {
     s = 1 - s;
@@ -40,7 +39,6 @@ export function scalarToHex(s, invert = false, colorPalette = "Reds") {
 
   const cm = colormaps.get(colorPalette);
   var color = cm(s);
-  //   var color = d3.interpolateRdYlGn(s);
   return PIXI.utils.string2hex(d3.color(color).formatHex());
 }
 
