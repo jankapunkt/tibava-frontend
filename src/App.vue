@@ -10,9 +10,10 @@
       </v-btn>
 
       <v-spacer></v-spacer>
-
+      <PluginMenu v-if="videoLoaded"/>
+      <AnnotationMenu v-if="videoLoaded"/>
+      <VideoMenu v-if="videoLoaded"/>
       <UserMenu />
-      <VideoMenu />
     </v-app-bar>
     <router-view />
   </v-app>
@@ -21,6 +22,12 @@
 <script>
 import UserMenu from "@/components/UserMenu.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
+import PluginMenu from "@/components/PluginMenu.vue";
+import AnnotationMenu from "@/components/AnnotationMenu.vue";
+
+import { mapStores } from 'pinia'
+import { useUserStore } from "@/store/user"
+import { usePlayerStore } from "@/store/player"
 
 export default {
   data() {
@@ -28,9 +35,21 @@ export default {
       appName: process.env.VUE_APP_NAME,
     };
   },
+  computed: {
+    loggedIn() {
+      return this.userStore.loggedIn;
+    },
+    videoLoaded() {
+      return this.playerStore.videoId !== null;
+    },
+
+    ...mapStores(useUserStore,usePlayerStore)
+  },
   components: {
     UserMenu,
     VideoMenu,
+    PluginMenu,
+    AnnotationMenu
   },
 };
 </script>

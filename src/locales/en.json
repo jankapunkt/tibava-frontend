@@ -16,7 +16,7 @@
     },
     "modal": {
         "export": {
-            "title": "Export",
+            "title": "Export Video",
             "csv": "Export as CSV",
             "json": "Export as JSON"
         },
@@ -61,7 +61,6 @@
                 "buttongroup": "Show dominant color(s) in:",
                 "singletimeline": "Single Timeline",
                 "multipletimelines": "Individual Timelines",
-                
                 "max_resolution": "Maximum Image Resolution",
                 "max_iter": "Maximum Number of Iterations for k-Means Clustering"
             },

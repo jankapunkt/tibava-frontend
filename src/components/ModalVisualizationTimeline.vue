@@ -61,7 +61,7 @@ export default {
     timeline_type() {
       const timeline = this.timelineStore.get(this.timeline);
 
-      if (timeline.type == "R" && "plugin_run_result_id" in timeline) {
+      if (timeline.type == "PLUGIN_RESULT" && "plugin_run_result_id" in timeline) {
         const result = this.pluginRunResultStore.get(
           timeline.plugin_run_result_id
         );
@@ -108,13 +108,13 @@ export default {
         console.log(this.timeline_type);
         console.log(this.visualization);
 
-        if (this.timeline_type == "S") {
+        if (this.timeline_type == "SCALAR") {
           this.visualization_options = [
-            { label: "Line Chart", value: "SL" }, // SL - SCALAR_LINE
-            { label: "Color Chart", value: "SC" }, // SC - SCALAR_COLOR
+            { label: "Line Chart", value: "SCALAR_LINE" }, // SL - SCALAR_LINE
+            { label: "Color Chart", value: "SCALAR_COLOR" }, // SC - SCALAR_COLOR
           ];
 
-          var visualization_lut = { SL: 0, SC: 1 };
+          var visualization_lut = { SCALAR_LINE: 0, SCALAR_COLOR: 1 };
         }
 
         // TODO other data types

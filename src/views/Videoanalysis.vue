@@ -3,7 +3,12 @@
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
-          <v-card class="d-flex flex-column flex-nowrap px-2" elevation="2" v-resize="onVideoResize" ref="videoCard">
+          <v-card
+            class="d-flex flex-column flex-nowrap px-2"
+            elevation="2"
+            v-resize="onVideoResize"
+            ref="videoCard"
+          >
             <v-row>
               <v-card-title>
                 {{ playerStore.videoName }}
@@ -22,7 +27,12 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card class="overflow-auto" elevation="2" ref="resultCard" :height="resultCardHeight">
+          <v-card
+            class="overflow-auto"
+            elevation="2"
+            ref="resultCard"
+            :height="resultCardHeight"
+          >
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
@@ -32,7 +42,12 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
-                <ShotCard v-for="item in shots" v-bind:key="item.id" :shot="item" @seek="onTagetTimeChange" />
+                <ShotCard
+                  v-for="item in shots"
+                  v-bind:key="item.id"
+                  :shot="item"
+                  @seek="onTagetTimeChange"
+                />
               </v-tab-item>
               <!-- <v-tab-item>
                 <EntitiesCard
@@ -54,11 +69,15 @@
 
       <v-row class="ma-2">
         <v-col>
-          <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
+          <v-card
+            class="d-flex flex-column flex-nowrap"
+            max-width="100%"
+            elevation="2"
+            scrollable="False"
+          >
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
-              <Timeline ref="timeline" width="100%">
-              </Timeline>
+              <Timeline ref="timeline" width="100%"> </Timeline>
             </v-flex>
           </v-card>
         </v-col>
@@ -89,10 +108,14 @@ import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
 import { useShortcutStore } from "@/store/shortcut";
 import { useAnnotationShortcutStore } from "../store/annotation_shortcut.js";
+import { usePluginRunStore } from "../store/plugin_run.js";
 
 export default {
   data() {
     return {
+      //timer
+      fetchPluginTimer: null,
+
       videoTime: 0,
       targetTime: 0,
       startTime: 0,
@@ -115,83 +138,109 @@ export default {
       this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
     },
     onKeyDown(event) {
-
-      const lastSelectedTimeline = this.timelineStore.lastSelected
-      const lastSelectedTimelineSegment = this.timelineSegmentStore.lastSelected
+      const lastSelectedTimeline = this.timelineStore.lastSelected;
+      const lastSelectedTimelineSegment =
+        this.timelineSegmentStore.lastSelected;
       if (!lastSelectedTimeline) {
-        if (event.key == "ArrowDown" || event.key == "ArrowUp" || event.key == "ArrowLeft" || event.key == "ArrowRight") {
-          const selectedTimeline = this.timelineStore.getNext(null)
-          this.timelineStore.addToSelection(selectedTimeline.id)
-          const timelineSegments = this.timelineSegmentStore.forTimeline(selectedTimeline.id)
+        if (
+          event.key == "ArrowDown" ||
+          event.key == "ArrowUp" ||
+          event.key == "ArrowLeft" ||
+          event.key == "ArrowRight"
+        ) {
+          const selectedTimeline = this.timelineStore.getNext(null);
+          this.timelineStore.addToSelection(selectedTimeline.id);
+          const timelineSegments = this.timelineSegmentStore.forTimeline(
+            selectedTimeline.id
+          );
           if (timelineSegments.length > 0) {
-            const selectedTimelineSegment = timelineSegments[0]
-            this.timelineSegmentStore.addToSelection(selectedTimelineSegment.id)
+            const selectedTimelineSegment = timelineSegments[0];
+            this.timelineSegmentStore.addToSelection(
+              selectedTimelineSegment.id
+            );
           }
-          return
+          return;
         }
       }
 
       if (event.key == "ArrowDown") {
-        const nextTimeline = this.timelineStore.getNext(lastSelectedTimeline.id)
+        const nextTimeline = this.timelineStore.getNext(
+          lastSelectedTimeline.id
+        );
         if (!nextTimeline) {
           return;
         }
         // delete old selection
         if (!event.ctrlKey) {
-          this.timelineStore.clearSelection()
-          this.timelineSegmentStore.clearSelection()
+          this.timelineStore.clearSelection();
+          this.timelineSegmentStore.clearSelection();
         }
 
-        this.timelineStore.addToSelection(nextTimeline.id)
-        const timelineSegments = this.timelineSegmentStore.forTimeline(nextTimeline.id)
+        this.timelineStore.addToSelection(nextTimeline.id);
+        const timelineSegments = this.timelineSegmentStore.forTimeline(
+          nextTimeline.id
+        );
         if (timelineSegments.length > 0) {
-          const nextSelectedTimelineSegment = timelineSegments[0]
-          this.timelineSegmentStore.addToSelection(nextSelectedTimelineSegment.id)
+          const nextSelectedTimelineSegment = timelineSegments[0];
+          this.timelineSegmentStore.addToSelection(
+            nextSelectedTimelineSegment.id
+          );
         }
         event.preventDefault();
       } else if (event.key == "ArrowUp") {
-        const nextTimeline = this.timelineStore.getPrevious(lastSelectedTimeline.id)
+        const nextTimeline = this.timelineStore.getPrevious(
+          lastSelectedTimeline.id
+        );
         if (!nextTimeline) {
           return;
         }
         // delete old selection
         if (!event.ctrlKey) {
-          this.timelineStore.clearSelection()
-          this.timelineSegmentStore.clearSelection()
+          this.timelineStore.clearSelection();
+          this.timelineSegmentStore.clearSelection();
         }
 
-        this.timelineStore.addToSelection(nextTimeline.id)
-        const timelineSegments = this.timelineSegmentStore.forTimeline(nextTimeline.id)
+        this.timelineStore.addToSelection(nextTimeline.id);
+        const timelineSegments = this.timelineSegmentStore.forTimeline(
+          nextTimeline.id
+        );
         if (timelineSegments.length > 0) {
-          const nextSelectedTimelineSegment = timelineSegments[0]
-          this.timelineSegmentStore.addToSelection(nextSelectedTimelineSegment.id)
+          const nextSelectedTimelineSegment = timelineSegments[0];
+          this.timelineSegmentStore.addToSelection(
+            nextSelectedTimelineSegment.id
+          );
         }
         event.preventDefault();
       } else if (event.key == "ArrowLeft") {
         if (!lastSelectedTimelineSegment) {
-          return
+          return;
         }
-        const nextTimelineSegment = this.timelineSegmentStore.getPreviousOnTimeline(lastSelectedTimelineSegment.id)
+        const nextTimelineSegment =
+          this.timelineSegmentStore.getPreviousOnTimeline(
+            lastSelectedTimelineSegment.id
+          );
         if (!nextTimelineSegment) {
           return;
         }
         if (!event.ctrlKey) {
-          this.timelineSegmentStore.clearSelection()
+          this.timelineSegmentStore.clearSelection();
         }
-        this.timelineSegmentStore.addToSelection(nextTimelineSegment.id)
+        this.timelineSegmentStore.addToSelection(nextTimelineSegment.id);
         event.preventDefault();
       } else if (event.key == "ArrowRight") {
         if (!lastSelectedTimelineSegment) {
-          return
+          return;
         }
-        const nextTimelineSegment = this.timelineSegmentStore.getNextOnTimeline(lastSelectedTimelineSegment.id)
+        const nextTimelineSegment = this.timelineSegmentStore.getNextOnTimeline(
+          lastSelectedTimelineSegment.id
+        );
         if (!nextTimelineSegment) {
           return;
         }
         if (!event.ctrlKey) {
-          this.timelineSegmentStore.clearSelection()
+          this.timelineSegmentStore.clearSelection();
         }
-        this.timelineSegmentStore.addToSelection(nextTimelineSegment.id)
+        this.timelineSegmentStore.addToSelection(nextTimelineSegment.id);
         event.preventDefault();
       } else if (event.key == "Enter") {
         this.onAnnotateSegment();
@@ -215,7 +264,9 @@ export default {
 
       if (shortcuts.length > 0) {
         shortcuts.forEach((shortcut) => {
-          const annotationShortcut = this.annotationShortcutStore.forShortcut(shortcut.id)
+          const annotationShortcut = this.annotationShortcutStore.forShortcut(
+            shortcut.id
+          );
 
           if (annotationShortcut) {
             if (lastSelectedTimelineSegment) {
@@ -224,18 +275,15 @@ export default {
                 annotationId: annotationShortcut.annotation_id,
               });
             }
-
           }
         });
       }
-
     },
     onTagetTimeChange(time) {
       this.targetTime = time;
     },
     onAnnotateSegment() {
       if (this.timelineSegmentStore.lastSelected) {
-
         this.$nextTick(() => {
           this.annotationDialog.show = true;
         });
@@ -245,11 +293,25 @@ export default {
     async fetchData({ addResults = true }) {
       // Ask backend about all videos
 
-      await this.videoStore.fetch({ videoId: this.$route.params.id, addResults: addResults });
+      await this.videoStore.fetch({
+        videoId: this.$route.params.id,
+        addResults: addResults,
+      });
       this.shotStore.buildShots();
+    },
+    async fetchPlugin({ addResults = true }) {
+      console.log("fetchPlugin");
+
+      await this.pluginRunStore.fetchUpdateForVideo({
+        videoId: this.$route.params.id,
+        addResults: addResults,
+      });
     },
   },
   computed: {
+    pluginInProgress() {
+      return this.pluginRunStore.pluginInProgress;
+    },
     duration() {
       let duration = this.playerStore.videoDuration;
       return duration;
@@ -263,6 +325,7 @@ export default {
 
     ...mapStores(
       useVideoStore,
+      usePluginRunStore,
       usePlayerStore,
       useShotStore,
       useTimelineStore,
@@ -276,9 +339,7 @@ export default {
     // fetch the data when the view is created and the data is
     // already being observed
 
-
     this.fetchData({ addResults: true });
-
 
     this.fetchTimer = setInterval(
       function () {
@@ -294,6 +355,7 @@ export default {
 
     // });
   },
+
   components: {
     VideoPlayer,
     ShotCard,
@@ -303,11 +365,33 @@ export default {
     CurrentEntitiesOverView,
     ModalTimelineSegmentAnnotate,
   },
+
+  watch: {
+    pluginInProgress(newState, oldState) {
+      if (newState) {
+        this.fetchPluginTimer = setInterval(
+          function () {
+            this.fetchPlugin({ addResults: false });
+          }.bind(this),
+          1000
+        );
+      }
+      if (!newState) {
+        clearInterval(this.fetchPluginTimer);
+      }
+    },
+  },
+
+  beforeRouteLeave(to, from, next) {
+    clearInterval(this.fetchPluginTimer);
+    this.playerStore.clearStore();
+    next(true);
+  },
 };
 </script>
 
 <style scoped>
-.logo>img {
+.logo > img {
   max-height: 56px;
 }
 

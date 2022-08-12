@@ -66,6 +66,13 @@ export const usePlayerStore = defineStore("player", {
     },
   },
   actions: {
+    clearStore() {
+      this.video = null;
+      this.currentTime = 0.0;
+      this.targetTime = 0.0;
+      this.playing = false;
+      this.ended = false;
+    },
     setSelectedTimeRangeStart(time) {
       this.selectedTimeRange.start = time;
     },

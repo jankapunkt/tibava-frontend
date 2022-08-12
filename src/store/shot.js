@@ -30,7 +30,7 @@ export const useShotStore = defineStore("shot", {
       let shotdetection = pluginRunStore
         .forVideo(playerStore.videoId)
         .filter((e) => {
-          return e.type == "shotdetection" && e.status == "D";
+          return e.type == "shotdetection" && e.status == "DONE";
         })
         .map((e) => {
           e.results = pluginRunResultStore.forPluginRun(e.id);
@@ -61,7 +61,7 @@ export const useShotStore = defineStore("shot", {
       let thumbnail = pluginRunStore
         .forVideo(playerStore.videoId)
         .filter((e) => {
-          return e.type == "thumbnail" && e.status == "D";
+          return e.type == "thumbnail" && e.status == "DONE";
         })
         .map((e) => {
           e.results = pluginRunResultStore.forPluginRun(e.id);

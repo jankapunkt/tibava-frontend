@@ -502,7 +502,7 @@ export default {
       this.pluginRunStore
         .submit({ plugin: plugin, parameters: parameters })
         .then(() => {
-          this.show = false;
+          this.dialog = false;
         });
     },
   },

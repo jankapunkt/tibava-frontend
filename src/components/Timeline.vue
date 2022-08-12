@@ -65,7 +65,7 @@
                     <v-list-item>
                       <ModalRenameTimeline :timeline="data.id" />
                     </v-list-item>
-                    <v-list-item v-if="data.type == 'R'">
+                    <v-list-item v-if="data.type == 'PLUGIN_RESULT'">
                       <ModalVisualizationTimeline :timeline="data.id" />
                     </v-list-item>
                     <v-list-item>
@@ -419,9 +419,10 @@ export default {
     drawTimeline(timeline) {
       const width = this.timeToX(this.endTime) - this.timeToX(this.startTime);
       const height = this.timelineHeight;
-      if (timeline.type == "A") {
+      if (timeline.type == "ANNOTATION") {
         return this.drawAnnotationTimeline(timeline, width, height);
-      } else if (timeline.type == "R") {
+      } else if (timeline.type == "PLUGIN_RESULT") {
+        console.log(timeline)
         return this.drawGraphicTimeline(timeline, width, height);
       } else {
         console.error(`Unknown timeline type ${timeline.type}`);
@@ -584,7 +585,7 @@ export default {
         } else {
           timeline.plugin = { data: result.data, type: result.type };
         }
-        if (timeline.visualization == "C") {
+        if (timeline.visualization == "COLOR") {
           drawnTimeline = new ColorTimeline({
             timelineId: timeline.id,
             width: width,
@@ -596,7 +597,7 @@ export default {
             renderer: this.app.renderer,
           });
         }
-        if (timeline.visualization == "SC") {
+        if (timeline.visualization == "SCALAR_COLOR") {
           drawnTimeline = new ScalarColorTimeline({
             timelineId: timeline.id,
             width: width,
@@ -608,7 +609,7 @@ export default {
             renderer: this.app.renderer,
           });
         }
-        if (timeline.visualization == "SL") {
+        if (timeline.visualization == "SCALAR_LINE") {
           drawnTimeline = new ScalarLineTimeline({
             timelineId: timeline.id,
             width: width,
@@ -620,7 +621,7 @@ export default {
             renderer: this.app.renderer,
           });
         }
-        if (timeline.visualization == "H") {
+        if (timeline.visualization == "HIST") {
           drawnTimeline = new HistTimeline({
             timelineId: timeline.id,
             width: width,
@@ -966,7 +967,7 @@ export default {
 
       // check visualization
       this.timelines.forEach((timeline, i) => {
-        if (timeline.type !== "R") {
+        if (timeline.type !== "PLUGIN_RESULT") {
           return;
         }
         const timelineObject = this.getTimeline(timeline.id);
@@ -976,22 +977,22 @@ export default {
 
         let redraw = false;
         if (
-          timeline.visualization !== "C" &&
+          timeline.visualization !== "COLOR" &&
           timelineObject instanceof ColorTimeline
         ) {
           redraw = true;
         } else if (
-          timeline.visualization !== "SC" &&
+          timeline.visualization !== "SCALAR_COLOR" &&
           timelineObject instanceof ScalarColorTimeline
         ) {
           redraw = true;
         } else if (
-          timeline.visualization !== "SL" &&
+          timeline.visualization !== "SCALAR_LINE" &&
           timelineObject instanceof ScalarLineTimeline
         ) {
           redraw = true;
         } else if (
-          timeline.visualization !== "H" &&
+          timeline.visualization !== "HIST" &&
           timelineObject instanceof HistTimeline
         ) {
           redraw = true;

@@ -77,7 +77,7 @@ export default {
   computed: {
     shot_timelines() {
       var timelines = this.timelineStore.all.filter(
-        (timeline) => timeline.type == "A"
+        (timeline) => timeline.type == "ANNOTATION"
       );
 
       function getTimelineDict(timeline) {
@@ -91,14 +91,14 @@ export default {
     scalar_timelines() {
       var timelines = this.timelineStore.all
         .filter(
-          (timeline) => timeline.type === "R"
+          (timeline) => timeline.type === "PLUGIN_RESULT"
         )
         .map((timeline) => {
           const result = this.pluginRunResultStore.get(timeline.plugin_run_result_id);
           if (result === undefined) {
             return null;
           } else {
-            if (result.type !== "S") {
+            if (result.type !== "SCALAR") {
               return null
             }
             timeline.plugin = { data: result.data, type: result.type };
