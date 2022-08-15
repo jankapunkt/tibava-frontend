@@ -5,7 +5,11 @@
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" style="height: 40px; width: 100%; height: 100%">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                style="height: 40px; width: 100%; height: 100%"
+              >
                 <v-icon left>mdi-cog</v-icon>
                 {{ $t("modal.timeline.menu.title") }}
               </v-btn>
@@ -21,19 +25,33 @@
           </v-menu>
         </div>
 
-        <DraggableTree draggable="draggable" cross-tree="cross-tree" class="timelinetree" :data="timelineHierarchy"
-          :indent="25" :space="0" @change="change" @nodeOpenChanged="nodeOpenChanged">
+        <DraggableTree
+          draggable="draggable"
+          cross-tree="cross-tree"
+          class="timelinetree"
+          :data="timelineHierarchy"
+          :indent="25"
+          :space="0"
+          @change="change"
+          @nodeOpenChanged="nodeOpenChanged"
+        >
           <div slot-scope="{ data, store }">
             <template v-if="!data.isDragPlaceHolder">
-              <v-app-bar dense color="white" style="
+              <v-app-bar
+                dense
+                color="white"
+                style="
                   height: 50px;
                   margin-top: 4px;
                   margin-bottom: 4px;
                   width: 100%;
-                ">
-                <v-icon v-if="data.children && data.children.length" @click="store.toggleOpen(data)">{{ data.open ?
-                    "mdi-minus" : "mdi-plus"
-                }}</v-icon>
+                "
+              >
+                <v-icon
+                  v-if="data.children && data.children.length"
+                  @click="store.toggleOpen(data)"
+                  >{{ data.open ? "mdi-minus" : "mdi-plus" }}</v-icon
+                >
                 <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-app-bar-title v-bind="attrs" v-on="on">
@@ -55,7 +73,9 @@
                 <v-menu bottom right>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn icon small>
-                      <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
+                      <v-icon v-bind="attrs" v-on="on"
+                        >mdi-dots-vertical</v-icon
+                      >
                     </v-btn>
                   </template>
                   <v-list>
@@ -84,12 +104,23 @@
       </v-col>
     </v-row>
 
-    <v-tooltip top v-model="timelineTooltip.show" :position-x="timelineTooltip.x" :position-y="timelineTooltip.y"
-      absolute>
+    <v-tooltip
+      top
+      v-model="timelineTooltip.show"
+      :position-x="timelineTooltip.x"
+      :position-y="timelineTooltip.y"
+      absolute
+    >
       <span>{{ timelineTooltip.label }}</span>
     </v-tooltip>
 
-    <v-menu v-model="segmentMenu.show" :position-x="segmentMenu.x" :position-y="segmentMenu.y - 10" absolute offset-y>
+    <v-menu
+      v-model="segmentMenu.show"
+      :position-x="segmentMenu.x"
+      :position-y="segmentMenu.y - 10"
+      absolute
+      offset-y
+    >
       <v-list>
         <v-list-item link v-on:click="onAnnotateSegment">
           <v-list-item-title>
@@ -126,7 +157,11 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-list-item v-if="selectedTimelineSegments.length > 1" link v-on:click="onMergeSegments">
+        <v-list-item
+          v-if="selectedTimelineSegments.length > 1"
+          link
+          v-on:click="onMergeSegments"
+        >
           <v-list-item-title>
             <v-icon left>{{ "mdi-merge" }}</v-icon>
             {{ $t("timelineSegment.merge") }}
@@ -422,7 +457,6 @@ export default {
       if (timeline.type == "ANNOTATION") {
         return this.drawAnnotationTimeline(timeline, width, height);
       } else if (timeline.type == "PLUGIN_RESULT") {
-        console.log(timeline)
         return this.drawGraphicTimeline(timeline, width, height);
       } else {
         console.error(`Unknown timeline type ${timeline.type}`);
@@ -432,11 +466,12 @@ export default {
     drawAnnotationTimeline(timeline, width, height) {
       console.log("drawAnnotationTimeline");
 
-      const selection = this.selectedTimelineSegments.filter(
-        (selectedTimelineSegment) =>
-          timeline.id ===
-          selectedTimelineSegment.timeline_id
-      ).map((s) => s.id);
+      const selection = this.selectedTimelineSegments
+        .filter(
+          (selectedTimelineSegment) =>
+            timeline.id === selectedTimelineSegment.timeline_id
+        )
+        .map((s) => s.id);
 
       const timelineSegmentStore = useTimelineSegmentStore();
       const timelineSegmentAnnotationStore =
@@ -469,14 +504,14 @@ export default {
         duration: this.duration,
         data: timeline,
         renderer: this.app.renderer,
-        segmentSelection: selection
+        segmentSelection: selection,
       });
       drawnTimeline.interactive = true;
       drawnTimeline.buttonMode = true;
       drawnTimeline.on("rightdown", (ev) => {
         const point = this.mapToGlobal(ev.data.global);
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        const segment = drawnTimeline.getSegmentOnPosition(x)
+        const segment = drawnTimeline.getSegmentOnPosition(x);
 
         this.segmentMenu.show = true;
         this.segmentMenu.x = point.x;
@@ -489,9 +524,9 @@ export default {
       });
       drawnTimeline.on("click", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        const segment = drawnTimeline.getSegmentOnPosition(x)
+        const segment = drawnTimeline.getSegmentOnPosition(x);
         if (segment === null) {
-          return
+          return;
         }
         if (!ev.data.originalEvent.ctrlKey) {
           this.timelineSegmentStore.clearSelection();
@@ -505,11 +540,11 @@ export default {
       });
 
       drawnTimeline.on("pointerover", (ev) => {
-        this.timelineTooltip.enabled = true
+        this.timelineTooltip.enabled = true;
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        const segment = drawnTimeline.getSegmentOnPosition(x)
+        const segment = drawnTimeline.getSegmentOnPosition(x);
         if (segment === null) {
-          return
+          return;
         }
 
         if (segment.annotations.length > 0) {
@@ -532,7 +567,7 @@ export default {
       });
 
       drawnTimeline.on("pointerout", (ev) => {
-        this.timelineTooltip.enabled = false
+        this.timelineTooltip.enabled = false;
         this.timelineTooltip.show = false;
         // ev.stopPropagation();
       });
@@ -541,18 +576,18 @@ export default {
           const localPosition = ev.data.getLocalPosition(drawnTimeline);
           const x = localPosition.x;
           if (localPosition.y < 0 || localPosition.y > drawnTimeline.height) {
-            return
+            return;
           }
-          const segment = drawnTimeline.getSegmentOnPosition(x)
+          const segment = drawnTimeline.getSegmentOnPosition(x);
           if (segment === null) {
-            this.timelineTooltip.label = ""
+            this.timelineTooltip.label = "";
             this.timelineTooltip.show = false;
-            return
+            return;
           }
           if (segment.annotations.length <= 0) {
-            this.timelineTooltip.label = ""
+            this.timelineTooltip.label = "";
             this.timelineTooltip.show = false;
-            return
+            return;
           }
 
           this.timelineTooltip.show = true;
@@ -635,7 +670,6 @@ export default {
         }
       }
       if (drawnTimeline) {
-
         drawnTimeline.interactive = true;
         drawnTimeline.buttonMode = true;
         drawnTimeline.on("click", (ev) => {
@@ -666,7 +700,10 @@ export default {
                 timelineObject.timelineId ===
                 selectedTimelineSegment.timeline_id
             )
-            .filter((timelineObject) => typeof timelineObject.addSegmentSelection === "function")
+            .filter(
+              (timelineObject) =>
+                typeof timelineObject.addSegmentSelection === "function"
+            )
             .forEach((timelineObject) => {
               timelineObject.addSegmentSelection(selectedTimelineSegment.id);
             });
@@ -687,7 +724,10 @@ export default {
                 timelineObject.timelineId ===
                 selectedTimelineSegment.timeline_id
             )
-            .filter((timelineObject) => typeof timelineObject.removeSegmentSelection === "function")
+            .filter(
+              (timelineObject) =>
+                typeof timelineObject.removeSegmentSelection === "function"
+            )
             .forEach((timelineObject) => {
               timelineObject.removeSegmentSelection(selectedTimelineSegment.id);
             });
@@ -955,7 +995,6 @@ export default {
         this.timelineObjects.push(newTimelineObject);
         // we don't set x and y because we will move it at the end
 
-
         if (date > latestTimestamp) {
           latestTimestamp = date;
         }
@@ -1036,37 +1075,31 @@ export default {
         if (e.startTime !== this.startTime || rescale) {
           e.startTime = this.startTime;
         }
-
       });
       this.timeBarsObjects.forEach((e) => {
         if (e.startTime !== this.startTime || rescale) {
           e.startTime = this.startTime;
         }
-
       });
       this.timelineObjects.forEach((e) => {
         if (e.endTime !== this.endTime || rescale) {
           e.endTime = this.endTime;
         }
-
       });
       this.timeScaleObjects.forEach((e) => {
         if (e.endTime !== this.endTime || rescale) {
           e.endTime = this.endTime;
         }
-
       });
       this.timeBarsObjects.forEach((e) => {
         if (e.endTime !== this.endTime || rescale) {
           e.endTime = this.endTime;
         }
-
       });
       this.timeBarsObjects.forEach((e) => {
         if (e.time !== this.time || rescale) {
           e.time = this.time;
         }
-
       });
     });
     // this.draw();

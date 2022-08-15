@@ -19,18 +19,29 @@
           <v-icon v-else color="primary">mdi-timer-sand-empty</v-icon>
         </v-btn>
       </template>
-      <v-list-item-content class="pa-0 pr-2 plugin-overview">
-        <v-list dense class="mt-2">
+      <v-list-item-content class="pa-0 plugin-overview">
+        <v-list dense class="mt-4">
           <template v-for="(pluginRun, i) in pluginRuns">
-            <v-list-item dense :key="pluginRun.id">
+            <v-list-item class="px-4" dense :key="pluginRun.id">
               <v-col class="pa-0 ma-0">
-                <dir>
-                  {{ pluginName(pluginRun.type) }}
-                </dir>
+                <div class="d-flex">
+                  <span class="text-overflow plugin-name">
+                    {{ pluginName(pluginRun.type) }}
+                  </span>
+                  <span class="ml-auto mr-2">
+                    ({{ pluginStatus(pluginRun.status) }})
+                  </span>
+                </div>
                 <v-progress-linear
-                  :value="100 * pluginRun.progress"
+                  :value="
+                    pluginRun.status !== 'ERROR'
+                      ? 100 * pluginRun.progress
+                      : 100
+                  "
                   :striped="pluginRun.status === 'ERROR'"
                   :color="progressColor(pluginRun.status)"
+                  :indeterminate="indeterminate(pluginRun.status)"
+                  height="5"
                 >
                 </v-progress-linear>
               </v-col>
@@ -87,6 +98,36 @@ export default {
       }
       return "yellow";
     },
+    indeterminate(status) {
+      if (status === "QUEUED") {
+        return true;
+      }
+      if (status === "WAITING") {
+        return true;
+      }
+      return false;
+    },
+    pluginStatus(status) {
+      if (status === "UNKNOWN") {
+        return this.$t("modal.plugin.status.unknown");
+      }
+      if (status === "ERROR") {
+        return this.$t("modal.plugin.status.error");
+      }
+      if (status === "DONE") {
+        return this.$t("modal.plugin.status.done");
+      }
+      if (status === "RUNNING") {
+        return this.$t("modal.plugin.status.running");
+      }
+      if (status === "QUEUED") {
+        return this.$t("modal.plugin.status.queued");
+      }
+      if (status === "WAITING") {
+        return this.$t("modal.plugin.status.waiting");
+      }
+      return status;
+    },
     pluginName(type) {
       if (type === "aggregate_scalar") {
         return this.$t("modal.plugin.aggregation.plugin_name");
@@ -136,7 +177,6 @@ export default {
     },
     pluginRuns() {
       const pluginRuns = this.pluginRunStore.forVideo(this.playerStore.videoId);
-      console.log(pluginRuns);
       return pluginRuns;
     },
 
@@ -171,6 +211,16 @@ export default {
   letter-spacing: 0.0892857143em;
   overflow: auto;
   /* border-bottom: 1px solid #f5f5f5; */
+}
+
+.text-overflow {
+  overflow: hidden;
+  white-space: nowrap; /* Don't forget this one */
+  text-overflow: ellipsis;
+}
+
+.plugin-name {
+  font-weight: bold;
 }
 
 .v-menu__content .plugin-overview .v-btn:not(.accent) {

@@ -24,6 +24,14 @@
             "title": "Analyse"
         },
         "plugin": {
+            "status": {
+                "unknown": "Unknown",
+                "error": "Error",
+                "done": "Done",
+                "running": "Running",
+                "queued": "Queued",
+                "waiting": "Waiting"
+            },
             "title": "Plugins",
             "close": "close",
             "run": "Start Plugin",
