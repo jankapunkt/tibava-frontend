@@ -3,7 +3,7 @@ import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 
 import { Timeline } from "./timeline";
 // import * as tf from '@tensorflow/tfjs';
-import { resampleApprox } from "./utils"
+import { resampleApprox, getMax, getMin } from "./utils"
 
 export class ScalarLineTimeline extends Timeline {
   constructor({
@@ -23,8 +23,8 @@ export class ScalarLineTimeline extends Timeline {
 
     this.pData = data;
 
-    this.pDataMinTime = Math.min(...data.time);
-    this.pDataMaxTime = Math.max(...data.time);
+    this.pDataMinTime = getMin(data.time);
+    this.pDataMaxTime = getMax(data.time);
 
     this.pResolution = resolution
     this.pOversampling = oversampling

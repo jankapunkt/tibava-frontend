@@ -176,7 +176,13 @@ export default {
       return this.userStore.loggedIn;
     },
     pluginRuns() {
-      const pluginRuns = this.pluginRunStore.forVideo(this.playerStore.videoId);
+      const pluginRuns = this.pluginRunStore
+        .forVideo(this.playerStore.videoId)
+        .map((e) => {
+          e.data = Date.parse(e.date);
+          return e;
+        })
+        .sort((a, b) => a - b);
       return pluginRuns;
     },
 

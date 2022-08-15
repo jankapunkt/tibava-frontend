@@ -18,10 +18,17 @@ export class ScalarColorTimeline extends Timeline {
     renderer = null,
     resolution = 2048,
     oversampling = 4,
+    colormap = null,
   }) {
     super({ timelineId, width, height, startTime, endTime, duration, fill });
 
     this.pData = data;
+    if (!colormap) {
+      this.pColormap = "TIBReds"
+    }
+    else {
+      this.pColormap = colormap;
+    }
 
     this.pDataMinTime = Math.min(...data.time);
     this.pDataMaxTime = Math.max(...data.time);
@@ -69,7 +76,7 @@ export class ScalarColorTimeline extends Timeline {
     const deltaTime =
       (this.pData.delta_time * this.pData.time.length) / times.length;
     times.forEach((t, i) => {
-      let color = scalarToHex(y[i]);
+      let color = scalarToHex(y[i], false, this.pColormap);
       colorRects.beginFill(color);
       // colorRects.drawRect(r * t, 0, r * deltaTime, this.pHeight);
       colorRects.drawRect(

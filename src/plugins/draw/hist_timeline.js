@@ -17,10 +17,18 @@ export class HistTimeline extends Timeline {
         renderer = null,
         resolution = 2048,
         oversampling = 4,
+        colormap = null
     }) {
         super({ timelineId, width, height, startTime, endTime, duration, fill });
 
         this.pData = data;
+        if (!colormap) {
+            this.pColormap = "TIBReds"
+        }
+        else {
+            this.pColormap = colormap;
+        }
+
 
         this.pDataMinTime = Math.min(...data.time);
         this.pDataMaxTime = Math.max(...data.time);
@@ -64,7 +72,7 @@ export class HistTimeline extends Timeline {
                 const num_hist = hist[i].length;
                 const startY = this.pHeight * (j / num_hist);
                 const stopY = this.pHeight * ((j + 1) / num_hist);
-                let color = scalarToHex(hist[i][j]);
+                let color = scalarToHex(hist[i][j], false, this.pColormap);
                 colorRects.beginFill(color);
                 colorRects.drawRect(r * (t + this.pData.delta_time), startY, r * t, stopY);
             });

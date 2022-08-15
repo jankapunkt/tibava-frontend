@@ -620,6 +620,8 @@ export default {
         } else {
           timeline.plugin = { data: result.data, type: result.type };
         }
+        console.log("##########");
+        console.log(timeline);
         if (timeline.visualization == "COLOR") {
           drawnTimeline = new ColorTimeline({
             timelineId: timeline.id,
@@ -642,6 +644,7 @@ export default {
             duration: this.duration,
             data: timeline.plugin.data,
             renderer: this.app.renderer,
+            colormap: timeline.colormap,
           });
         }
         if (timeline.visualization == "SCALAR_LINE") {
@@ -654,6 +657,7 @@ export default {
             duration: this.duration,
             data: timeline.plugin.data,
             renderer: this.app.renderer,
+            colormap: timeline.colormap,
           });
         }
         if (timeline.visualization == "HIST") {
@@ -666,6 +670,7 @@ export default {
             duration: this.duration,
             data: timeline.plugin.data,
             renderer: this.app.renderer,
+            colormap: timeline.colormap,
           });
         }
       }

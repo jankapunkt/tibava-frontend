@@ -15,16 +15,41 @@
         </v-btn>
       </v-card-title>
       <v-card-text>
-        <v-col cols="12" class="py-2">
-          <v-btn-toggle v-model="visualization_idx" borderless>
-            <v-btn
-              class="mr-4"
-              v-for="visualization_option in visualization_options"
-              :key="visualization_option.label"
-            >
-              {{ visualization_option.label }}
-            </v-btn>
-          </v-btn-toggle>
+        <v-col cols="12">
+          <v-row>
+            <v-btn-toggle v-model="visualization_idx" borderless>
+              <v-btn
+                class="mr-4"
+                v-for="visualization_option in visualization_options"
+                :key="visualization_option.label"
+              >
+                {{ visualization_option.label }}
+              </v-btn>
+            </v-btn-toggle>
+          </v-row>
+          <v-row>
+            <v-list class="color-map-list">
+              <v-subheader>
+                {{ $t("modal.timeline.visualization.color_map.title") }}
+              </v-subheader>
+              <v-list-item-group v-model="colormap_idx" color="primary">
+                <template v-for="(colormap, i) in colormap_options">
+                  <v-list-item :key="colormap.id">
+                    <div
+                      class="color-map"
+                      :style="{
+                        background: colormapBackground(colormap.value),
+                      }"
+                    ></div>
+                  </v-list-item>
+                  <v-divider
+                    :key="i"
+                    v-if="i < colormap_options.length - 1"
+                  ></v-divider>
+                </template>
+              </v-list-item-group>
+            </v-list>
+          </v-row>
         </v-col>
       </v-card-text>
       <v-card-actions class="pt-0">
@@ -43,7 +68,8 @@
 import Vue from "vue";
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
-import { usePluginRunResultStore } from "@/store/plugin_run_result"
+import { usePluginRunResultStore } from "@/store/plugin_run_result";
+import { scalarToRGB } from "@/plugins/draw/utils";
 
 export default {
   props: ["timeline"],
@@ -55,13 +81,19 @@ export default {
       visualization_proxy: null,
       visualization_options: [],
       items: [],
+      colormap_idx: null,
+      colormap_proxy: null,
+      colormap_options: [],
     };
   },
   computed: {
     timeline_type() {
       const timeline = this.timelineStore.get(this.timeline);
 
-      if (timeline.type == "PLUGIN_RESULT" && "plugin_run_result_id" in timeline) {
+      if (
+        timeline.type == "PLUGIN_RESULT" &&
+        "plugin_run_result_id" in timeline
+      ) {
         const result = this.pluginRunResultStore.get(
           timeline.plugin_run_result_id
         );
@@ -82,7 +114,18 @@ export default {
         this.visualization_proxy = val;
       },
     },
-    ...mapStores(useTimelineStore, usePluginRunResultStore)
+    colormap: {
+      get() {
+        const timeline = this.timelineStore.get(this.timeline);
+        return this.colormap_proxy === null
+          ? timeline.colormap
+          : this.colormap_proxy;
+      },
+      set(val) {
+        this.colormap_proxy = val;
+      },
+    },
+    ...mapStores(useTimelineStore, usePluginRunResultStore),
   },
   methods: {
     async submit() {
@@ -90,13 +133,29 @@ export default {
         return;
       }
       this.isSubmitting = true;
+
+      let visualization = this.visualization;
+      if (this.visualization_idx !== null) {
+        visualization =
+          this.visualization_options[this.visualization_idx].value;
+      }
+
       await this.timelineStore.changeVisualization({
         timelineId: this.timeline,
-        visualization: this.visualization_options[this.visualization_idx].value,
+        visualization: visualization,
+        colormap: this.colormap_options[this.colormap_idx].value,
       });
 
       this.isSubmitting = false;
       this.show = false;
+    },
+    colormapBackground(colormapName) {
+      const colorStops = Array.from(Array(10).keys())
+        .map((k) => k / 10)
+        .map((k) => `${scalarToRGB(k, false, colormapName)} ${k * 100}%`)
+        .join(",");
+      const cssString = `linear-gradient(90deg, ${colorStops})`;
+      return cssString;
     },
   },
   watch: {
@@ -104,24 +163,58 @@ export default {
       if (value) {
         this.nameProxy = null;
 
-        // S - SCALAR_DATA
-        console.log(this.timeline_type);
-        console.log(this.visualization);
-
         if (this.timeline_type == "SCALAR") {
           this.visualization_options = [
-            { label: "Line Chart", value: "SCALAR_LINE" }, // SL - SCALAR_LINE
-            { label: "Color Chart", value: "SCALAR_COLOR" }, // SC - SCALAR_COLOR
+            { label: "Line Chart", value: "SCALAR_LINE" },
+            { label: "Color Chart", value: "SCALAR_COLOR" },
           ];
 
           var visualization_lut = { SCALAR_LINE: 0, SCALAR_COLOR: 1 };
+          // TODO other data types
+
+          // preselect button with current visualization option
+          if (this.visualization in visualization_lut) {
+            this.visualization_idx = visualization_lut[this.visualization];
+          }
         }
 
-        // TODO other data types
+        if (this.timeline_type === "SCALAR" || this.timeline_type === "HIST") {
+          this.colormap_options = [
+            { value: "RdYlBu" },
+            { value: "RdYlGn" },
+            { value: "Blues" },
+            { value: "Greens" },
+            { value: "Reds" },
+            { value: "TIBReds" },
+            { value: "Greys" },
+            { value: "YlGnBu" },
+            { value: "Viridis" },
+            { value: "Plasma" },
+            { value: "YlOrRd" },
+          ];
 
-        // preselect button with current visualization option
-        if (this.visualization in visualization_lut) {
-          this.visualization_idx = visualization_lut[this.visualization];
+          var colormap_lut = {
+            RdYlBu: 0,
+            RdYlGn: 1,
+            Blues: 2,
+            Greens: 3,
+            Reds: 4,
+            TIBReds: 5,
+            Greys: 6,
+            YlGnBu: 7,
+            Viridis: 8,
+            Plasma: 9,
+            YlOrRd: 10,
+          };
+
+          // preselect button with current visualization option
+          if (this.colormap in colormap_lut) {
+            if (this.colormap) {
+              this.colormap_idx = colormap_lut[this.colormap];
+            } else {
+              this.colormap_idx = 0;
+            }
+          }
         }
 
         this.$emit("close");
@@ -130,6 +223,22 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.color-map {
+  width: 100%;
+  height: 100%;
+  min-width: 200px;
+  min-height: 30px;
+  border: 1px;
+  border-color: gray;
+  border-style: solid;
+}
+
+.color-map-list {
+  width: 100%;
+}
+</style>
 
 
 

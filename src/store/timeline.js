@@ -330,7 +330,7 @@ export const useTimelineStore = defineStore('timeline', {
             //     commit('error/update', info, { root: true });
             // });
         },
-        async changeVisualization({ timelineId, visualization }) {
+        async changeVisualization({ timelineId, visualization, colormap = null }) {
             if (this.isLoading) {
                 return
             }
@@ -339,10 +339,12 @@ export const useTimelineStore = defineStore('timeline', {
             let params = {
                 id: timelineId,
                 visualization: visualization,
+                colormap: colormap,
             };
 
             const newTimelines = { ...this.timelines };
             newTimelines[timelineId].visualization = visualization;
+            newTimelines[timelineId].colormap = colormap;
             Vue.set(this, "timelines", newTimelines);
 
             return axios
