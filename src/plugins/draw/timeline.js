@@ -20,6 +20,10 @@ export class Timeline extends PIXI.Container {
         this.pDuration = duration;
         this.pTimelineId = timelineId;
 
+        this.pRangeSelection = null
+
+        this.pRangeSelectedColor = 0xd99090;
+
         // console.log(this.timeScale)
         // console.log(this.timeToX(this.pEndTime))
         // draw canvas
@@ -42,6 +46,34 @@ export class Timeline extends PIXI.Container {
         shadow.blur = 1;
         this.pRect.filters = [shadow];
         super.addChild(this.pRect);
+    }
+
+    selectRange(start, end) {
+        if (this.pRangeSelection) {
+            this.pRangeSelection.destroy()
+            this.pRangeSelection = null;
+        }
+
+        const selectionRect = new PIXI.Graphics();
+
+        const x = this.timeToX(start);
+
+        const width = this.timeToX(end) - this.timeToX(start);
+        const height = this.pHeight;
+        selectionRect.lineStyle(2, this.pRangeSelectedColor, 1);
+
+        selectionRect.beginFill(this.pRangeSelectedColor, 0.2);
+        selectionRect.drawRoundedRect(0, 0, width, height, 1);
+        selectionRect.x = x
+
+        this.pRangeSelection = selectionRect;
+        this.addChild(selectionRect)
+    }
+    removeSelectRange() {
+        if (this.pRangeSelection) {
+            this.pRangeSelection.destroy()
+            this.pRangeSelection = null;
+        }
     }
 
     addChild(child) {

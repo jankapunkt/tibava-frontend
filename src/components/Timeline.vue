@@ -288,6 +288,14 @@ export default {
       // Some dialog show flags
       annotationDialogShow: false,
 
+      // selection
+      dragSelection: {
+        x: null,
+        start: null,
+        end: null,
+        dragging: false,
+      },
+
       // Last updated timeline version
       lastTimestamp: 0,
 
@@ -533,9 +541,77 @@ export default {
           this.timelineStore.clearSelection();
         }
         this.timelineStore.addToSelection(timeline.id);
-        this.timelineSegmentStore.addToSelection(segment.id);
+        if (segment) {
+          this.timelineSegmentStore.addToSelection(segment.id);
+        }
         const targetTime = this.xToTime(ev.data.global.x);
         this.playerStore.setTargetTime(targetTime);
+        ev.stopPropagation();
+      });
+
+      drawnTimeline.on("mousedown", (ev) => {
+        const x = ev.data.getLocalPosition(drawnTimeline).x;
+        const time = drawnTimeline.xToTime(x);
+        this.dragSelection.x = x;
+        this.dragSelection.start = time;
+        this.dragSelection.dragging = true;
+        console.log("mousedown");
+        ev.stopPropagation();
+      });
+      drawnTimeline.on("mousemove", (ev) => {
+        if (!this.dragSelection.dragging) {
+          return;
+        }
+        const x = ev.data.getLocalPosition(drawnTimeline).x;
+        if (Math.abs(x - this.dragSelection.x) < 2) {
+          return;
+        }
+        const segment = drawnTimeline.getSegmentOnPosition(x);
+        if (segment) {
+          // this.timelineSegmentStore.addToSelection(segment.id);
+        }
+        const time = drawnTimeline.xToTime(x);
+
+        this.dragSelection.end = time;
+
+        drawnTimeline.selectRange(
+          this.dragSelection.start,
+          this.dragSelection.end
+        );
+        console.log("mousemove");
+        ev.stopPropagation();
+      });
+
+      drawnTimeline.on("mouseup", (ev) => {
+        const x = ev.data.getLocalPosition(drawnTimeline).x;
+        this.dragSelection.dragging = false;
+        if (Math.abs(x - this.dragSelection.x) < 2) {
+          drawnTimeline.removeSelectRange();
+          return;
+        }
+        const time = drawnTimeline.xToTime(x);
+        this.dragSelection.end = time;
+        drawnTimeline.selectRange(
+          this.dragSelection.start,
+          this.dragSelection.end
+        );
+        console.log("mouseup");
+        ev.stopPropagation();
+      });
+      drawnTimeline.on("mouseupoutside", (ev) => {
+        const x = ev.data.getLocalPosition(drawnTimeline).x;
+        this.dragSelection.dragging = false;
+        if (Math.abs(x - this.dragSelection.x) < 2) {
+          drawnTimeline.removeSelectRange();
+          return;
+        }
+        const time = drawnTimeline.xToTime(x);
+        this.dragSelection.end = time;
+        drawnTimeline.selectRange(
+          this.dragSelection.start,
+          this.dragSelection.end
+        );
+        console.log("mouseup");
         ev.stopPropagation();
       });
 
