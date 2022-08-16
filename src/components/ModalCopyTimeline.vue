@@ -28,7 +28,7 @@
         </v-checkbox>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn class="mr-4" @click="submit" :disable="isSubmitting">
+        <v-btn class="mr-4" @click="submit" :disabled="isSubmitting">
           {{ $t("modal.timeline.duplicate.update") }}
         </v-btn>
         <v-btn @click="show = false">{{
@@ -58,15 +58,14 @@ export default {
   computed: {
     name: {
       get() {
-        const name =
-          this.timelineStore.get(this.timeline).name + " (1)";
+        const name = this.timelineStore.get(this.timeline).name + " (1)";
         return this.nameProxy === null ? name : this.nameProxy;
       },
       set(val) {
         this.nameProxy = val;
       },
     },
-    ...mapStores(useTimelineStore)
+    ...mapStores(useTimelineStore),
   },
   methods: {
     async submit() {

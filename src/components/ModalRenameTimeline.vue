@@ -22,7 +22,7 @@
         ></v-text-field>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn class="mr-4" @click="submit" :disable="isSubmitting">
+        <v-btn class="mr-4" @click="submit" :disabled="isSubmitting || !name">
           {{ $t("modal.timeline.rename.update") }}
         </v-btn>
         <v-btn @click="show = false">{{
@@ -58,7 +58,7 @@ export default {
         this.nameProxy = val;
       },
     },
-    ...mapStores(useTimelineStore)
+    ...mapStores(useTimelineStore),
   },
   methods: {
     async submit() {

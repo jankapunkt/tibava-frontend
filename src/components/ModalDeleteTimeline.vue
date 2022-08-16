@@ -16,7 +16,7 @@
       </v-card-title>
       <v-card-text> {{ $t("modal.timeline.delete.question") }}</v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn class="mr-4" @click="submit" :disable="isSubmitting">
+        <v-btn class="mr-4" @click="submit" :disabled="isSubmitting">
           {{ $t("modal.timeline.delete.yes") }}
         </v-btn>
         <v-btn @click="show = false">{{
@@ -40,8 +40,8 @@ export default {
       isSubmitting: false,
     };
   },
-  computed:{
-    ...mapStores(useTimelineStore)
+  computed: {
+    ...mapStores(useTimelineStore),
   },
   methods: {
     async submit() {

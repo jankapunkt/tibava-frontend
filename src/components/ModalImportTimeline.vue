@@ -41,7 +41,7 @@
         </v-row>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn class="mr-4" @click="submit" :disable="isSubmitting">
+        <v-btn class="mr-4" @click="submit" :disabled="isSubmitting">
           {{ $t("modal.timeline.import.update") }}
         </v-btn>
         <v-btn @click="show = false">{{
@@ -68,7 +68,7 @@ export default {
     };
   },
   computed: {
-    ...mapStores(useTimelineStore)
+    ...mapStores(useTimelineStore),
   },
   methods: {
     async submit() {
