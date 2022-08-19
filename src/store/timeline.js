@@ -347,6 +347,8 @@ export const useTimelineStore = defineStore('timeline', {
             newTimelines[timelineId].colormap = colormap;
             Vue.set(this, "timelines", newTimelines);
 
+            this.timelineListChanged.push([Date.now(), timelineId])
+
             return axios
                 .post(`${config.API_LOCATION}/timeline/changevisualization`, params)
                 .then((res) => {

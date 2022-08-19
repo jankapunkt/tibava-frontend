@@ -696,8 +696,6 @@ export default {
         } else {
           timeline.plugin = { data: result.data, type: result.type };
         }
-        console.log("##########");
-        console.log(timeline);
         if (timeline.visualization == "COLOR") {
           drawnTimeline = new ColorTimeline({
             timelineId: timeline.id,
@@ -1067,7 +1065,7 @@ export default {
             this.timelineObjects.splice(index, 1);
           }
         }
-
+        console.log(`Draw timeline (changed) ${timeline}`);
         const newTimelineObject = this.drawTimeline(timeline);
         if (!newTimelineObject) {
           return;
@@ -1085,51 +1083,51 @@ export default {
         this.lastTimestamp = latestTimestamp;
       }
 
-      // check visualization
-      this.timelines.forEach((timeline, i) => {
-        if (timeline.type !== "PLUGIN_RESULT") {
-          return;
-        }
-        const timelineObject = this.getTimeline(timeline.id);
-        if (!timelineObject) {
-          return;
-        }
+      // // check visualization
+      // this.timelines.forEach((timeline, i) => {
+      //   if (timeline.type !== "PLUGIN_RESULT") {
+      //     return;
+      //   }
+      //   const timelineObject = this.getTimeline(timeline.id);
+      //   if (!timelineObject) {
+      //     return;
+      //   }
 
-        let redraw = false;
-        if (
-          timeline.visualization !== "COLOR" &&
-          timelineObject instanceof ColorTimeline
-        ) {
-          redraw = true;
-        } else if (
-          timeline.visualization !== "SCALAR_COLOR" &&
-          timelineObject instanceof ScalarColorTimeline
-        ) {
-          redraw = true;
-        } else if (
-          timeline.visualization !== "SCALAR_LINE" &&
-          timelineObject instanceof ScalarLineTimeline
-        ) {
-          redraw = true;
-        } else if (
-          timeline.visualization !== "HIST" &&
-          timelineObject instanceof HistTimeline
-        ) {
-          redraw = true;
-        }
-        if (redraw) {
-          this.timelinesContainer.removeChild(timelineObject);
-          const index = this.timelineObjects.indexOf(timelineObject);
-          if (index > -1) {
-            this.timelineObjects.splice(index, 1);
-          }
+      //   let redraw = false;
+      //   if (
+      //     timeline.visualization !== "COLOR" &&
+      //     timelineObject instanceof ColorTimeline
+      //   ) {
+      //     redraw = true;
+      //   } else if (
+      //     timeline.visualization !== "SCALAR_COLOR" &&
+      //     timelineObject instanceof ScalarColorTimeline
+      //   ) {
+      //     redraw = true;
+      //   } else if (
+      //     timeline.visualization !== "SCALAR_LINE" &&
+      //     timelineObject instanceof ScalarLineTimeline
+      //   ) {
+      //     redraw = true;
+      //   } else if (
+      //     timeline.visualization !== "HIST" &&
+      //     timelineObject instanceof HistTimeline
+      //   ) {
+      //     redraw = true;
+      //   }
+      //   if (redraw) {
+      //     this.timelinesContainer.removeChild(timelineObject);
+      //     const index = this.timelineObjects.indexOf(timelineObject);
+      //     if (index > -1) {
+      //       this.timelineObjects.splice(index, 1);
+      //     }
 
-          const newTimelineObject = this.drawTimeline(timeline);
+      //     const newTimelineObject = this.drawTimeline(timeline);
 
-          this.timelinesContainer.addChild(newTimelineObject);
-          this.timelineObjects.push(newTimelineObject);
-        }
-      });
+      //     this.timelinesContainer.addChild(newTimelineObject);
+      //     this.timelineObjects.push(newTimelineObject);
+      //   }
+      // });
 
       // update order and visible of all objects
       let skipped = 0;
