@@ -64,8 +64,19 @@ export function scalarToHex(s, invert = false, colorPalette = "TIBReds") {
   return PIXI.utils.string2hex(d3.color(color).formatHex());
 }
 
-
 export function scalarToRGB(s, invert = false, colorPalette = "TIBReds") {
+  // maps a scalar [0, 1] to a color value
+  if (invert) {
+    s = 1 - s;
+  }
+
+  const cm = colormaps.get(colorPalette);
+  var color = cm(s);
+  color = d3.color(color).clamp()
+  return [color.r, color.g, color.b, color.opacity * 255];
+}
+
+export function scalarToString(s, invert = false, colorPalette = "TIBReds") {
   // maps a scalar [0, 1] to a color value
   if (invert) {
     s = 1 - s;

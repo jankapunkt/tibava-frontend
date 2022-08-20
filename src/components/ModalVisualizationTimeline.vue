@@ -69,7 +69,7 @@ import Vue from "vue";
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
 import { usePluginRunResultStore } from "@/store/plugin_run_result";
-import { scalarToRGB } from "@/plugins/draw/utils";
+import { scalarToString } from "@/plugins/draw/utils";
 
 export default {
   props: ["timeline"],
@@ -152,7 +152,7 @@ export default {
     colormapBackground(colormapName) {
       const colorStops = Array.from(Array(10).keys())
         .map((k) => k / 10)
-        .map((k) => `${scalarToRGB(k, false, colormapName)} ${k * 100}%`)
+        .map((k) => `${scalarToString(k, false, colormapName)} ${k * 100}%`)
         .join(",");
       const cssString = `linear-gradient(90deg, ${colorStops})`;
       return cssString;
