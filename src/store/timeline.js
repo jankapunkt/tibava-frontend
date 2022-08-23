@@ -249,9 +249,10 @@ export const useTimelineStore = defineStore('timeline', {
             const formData = new FormData();
 
             //use video id or take it from the current video
-            const video = this.getters["video/current"];
+            const playerStore = usePlayerStore();
+            const videoId = playerStore.videoId;
             formData.append("file", params.importfile);
-            formData.append("video_id", video.id);
+            formData.append("video_id", videoId);
 
             console.log(params);
             console.log(formData);
