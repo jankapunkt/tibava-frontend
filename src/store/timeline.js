@@ -14,6 +14,10 @@ export const useTimelineStore = defineStore('timeline', {
             timelineListAdded: [],
             timelineListDeleted: [],
             timelineListChanged: [],
+            timelineSelectedTimeRange: {
+                start: null,
+                end: null,
+            },
             isLoading: false,
         }
     },
@@ -115,8 +119,16 @@ export const useTimelineStore = defineStore('timeline', {
         }
     },
     actions: {
+        setSelectedTimeRangeStart(time) {
+            this.timelineListSelected.start = time;
+        },
+        setSelectedTimeRangeEnd(time) {
+            this.timelineListSelected.end = time;
+        },
         clearSelection() {
             this.timelineListSelected = []
+            this.timelineListSelected.start = null
+            this.timelineListSelected.end = null
             // this.timelineSegmentList.forEach((id) => {
             //     this.timelineSegments[id].selected = false;
             // })

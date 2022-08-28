@@ -5,7 +5,11 @@
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" style="height: 40px; width: 100%; height: 100%">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                style="height: 40px; width: 100%; height: 100%"
+              >
                 <v-icon left>mdi-cog</v-icon>
                 {{ $t("modal.timeline.menu.title") }}
               </v-btn>
@@ -21,19 +25,33 @@
           </v-menu>
         </div>
 
-        <DraggableTree draggable="draggable" cross-tree="cross-tree" class="timelinetree" :data="timelineHierarchy"
-          :indent="25" :space="0" @change="change" @nodeOpenChanged="nodeOpenChanged">
+        <DraggableTree
+          draggable="draggable"
+          cross-tree="cross-tree"
+          class="timelinetree"
+          :data="timelineHierarchy"
+          :indent="25"
+          :space="0"
+          @change="change"
+          @nodeOpenChanged="nodeOpenChanged"
+        >
           <div slot-scope="{ data, store }">
             <template v-if="!data.isDragPlaceHolder">
-              <v-app-bar dense color="white" style="
+              <v-app-bar
+                dense
+                color="white"
+                style="
                   height: 50px;
                   margin-top: 4px;
                   margin-bottom: 4px;
                   width: 100%;
-                ">
-                <v-icon v-if="data.children && data.children.length" @click="store.toggleOpen(data)">{{ data.open ?
-                    "mdi-minus" : "mdi-plus"
-                }}</v-icon>
+                "
+              >
+                <v-icon
+                  v-if="data.children && data.children.length"
+                  @click="store.toggleOpen(data)"
+                  >{{ data.open ? "mdi-minus" : "mdi-plus" }}</v-icon
+                >
                 <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-app-bar-title v-bind="attrs" v-on="on">
@@ -55,7 +73,9 @@
                 <v-menu bottom right>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn icon small>
-                      <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
+                      <v-icon v-bind="attrs" v-on="on"
+                        >mdi-dots-vertical</v-icon
+                      >
                     </v-btn>
                   </template>
                   <v-list>
@@ -84,29 +104,34 @@
       </v-col>
     </v-row>
 
-    <v-tooltip top v-model="timelineTooltip.show" :position-x="timelineTooltip.x" :position-y="timelineTooltip.y"
-      absolute>
+    <v-tooltip
+      top
+      v-model="timelineTooltip.show"
+      :position-x="timelineTooltip.x"
+      :position-y="timelineTooltip.y"
+      absolute
+    >
       <span>{{ timelineTooltip.label }}</span>
     </v-tooltip>
 
-    <v-menu v-model="segmentMenu.show" :position-x="segmentMenu.x" :position-y="segmentMenu.y - 10" absolute offset-y>
+    <v-menu
+      v-model="segmentMenu.show"
+      :position-x="segmentMenu.x"
+      :position-y="segmentMenu.y - 10"
+      absolute
+      offset-y
+    >
       <v-list>
-        <v-list-item link v-on:click="onAnnotateSegment">
-          <v-list-item-title>
-            <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timelineSegment.annotate") }}
-          </v-list-item-title>
-        </v-list-item>
         <v-list-item link v-on:click="onAnnotateSelection">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timelineSegment.annotate") }}
+            {{ $t("timelineSegment.annotate.selection") }}
           </v-list-item-title>
         </v-list-item>
         <v-list-item link v-on:click="onAnnotateSelectionRange">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timelineSegment.annotate") }}
+            {{ $t("timelineSegment.annotate.range") }}
           </v-list-item-title>
         </v-list-item>
 
@@ -126,13 +151,13 @@
         <v-list-item link v-on:click="onMergeSelection">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timelineSegment.annotate") }}
+            {{ $t("timelineSegment.merge.selection") }}
           </v-list-item-title>
         </v-list-item>
         <v-list-item link v-on:click="onMergeSelectionRange">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timelineSegment.annotate") }}
+            {{ $t("timelineSegment.merge.range") }}
           </v-list-item-title>
         </v-list-item>
 
@@ -150,7 +175,11 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-list-item v-if="selectedTimelineSegments.length > 1" link v-on:click="onMergeSegments">
+        <v-list-item
+          v-if="selectedTimelineSegments.length > 1"
+          link
+          v-on:click="onMergeSegments"
+        >
           <v-list-item-title>
             <v-icon left>{{ "mdi-merge" }}</v-icon>
             {{ $t("timelineSegment.merge") }}
@@ -337,10 +366,7 @@ export default {
       this.dragSelection.end = time;
 
       this.timeBarsObjects.forEach((e) => {
-        e.selectRange(
-          this.dragSelection.start,
-          this.dragSelection.end
-        );
+        e.selectRange(this.dragSelection.start, this.dragSelection.end);
       });
       console.log("mousemove");
       event.stopPropagation();
@@ -355,16 +381,11 @@ export default {
       }
       this.dragSelection.end = time;
       this.timeBarsObjects.forEach((e) => {
-        e.selectRange(
-          this.dragSelection.start,
-          this.dragSelection.end
-        );
+        e.selectRange(this.dragSelection.start, this.dragSelection.end);
       });
       console.log("mouseup");
       event.stopPropagation();
     },
-
-
 
     getTimeline(timelineId) {
       var founded = null;
@@ -593,22 +614,22 @@ export default {
       drawnTimeline.on("mousedown", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.startDraging(ev, x, time)
+        this.startDraging(ev, x, time);
       });
       drawnTimeline.on("mousemove", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.moveDraging(ev, x, time)
+        this.moveDraging(ev, x, time);
       });
       drawnTimeline.on("mouseup", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.endDraging(ev, x, time)
+        this.endDraging(ev, x, time);
       });
       drawnTimeline.on("mouseupoutside", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.endDraging(ev, x, time)
+        this.endDraging(ev, x, time);
       });
 
       drawnTimeline.on("pointerover", (ev) => {
@@ -831,10 +852,10 @@ export default {
       this.annotationDialogShow = true;
       // this.$emit("annotateSegment", id);
     },
-    onAnnotateSelection() { },
-    onAnnotateSelectionRange() { },
-    onMergeSelection() { },
-    onMergeSelectionRange() { },
+    onAnnotateSelection() {},
+    onAnnotateSelectionRange() {},
+    onMergeSelection() {},
+    onMergeSelectionRange() {},
     onSplitSegment() {
       this.timelineSegmentStore.split({
         timelineSegmentId: this.segmentMenu.selected,
@@ -1097,6 +1118,7 @@ export default {
             timelineObject.visible = timeline.visible;
           }
         });
+
       const rescale = false;
       // update all time position if there is something to update
       this.timelineObjects.forEach((e) => {
@@ -1132,6 +1154,13 @@ export default {
       this.timeBarsObjects.forEach((e) => {
         if (e.time !== this.time || rescale) {
           e.time = this.time;
+        }
+      });
+
+      // update height
+      this.timeBarsObjects.forEach((e) => {
+        if (e.height !== this.computedHeight || rescale) {
+          e.height = this.computedHeight;
         }
       });
     });

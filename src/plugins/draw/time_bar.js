@@ -11,36 +11,35 @@ export class TimeBar extends PIXI.Container {
         this.pTime = time;
         this.pStartTime = startTime;
         this.pEndTime = endTime;
+        this.pBar = null
 
         this.pRangeSelection = null
         this.pRangeSelectedColor = 0xd99090;
 
-        this.pMask = new PIXI.Graphics();
-        this.pMask.beginFill(0xffffff);
-        this.pMask.drawRoundedRect(0, 0, width, height, 5);
+        const bar = this.renderBar()
 
-        this.pMask.x = x;
-        this.pMask.y = y;
-        this.mask = this.pMask;
-        this.addChild(this.pMask);
 
+        const timeX = this.timeToX(time);
+        bar.x = timeX;
+        bar.y = 25;
+        this.pBar = bar
+        this.addChild(bar);
+
+    }
+    renderBar() {
         const handleWidth = 10;
         const handleHeight = 10;
 
-        const timeX = this.timeToX(time);
-        this.pCursor = new PIXI.Graphics()
+        const bar = new PIXI.Graphics()
             .lineStyle(1, 0xae1313, 1)
             .beginFill(0xae1313)
-            .moveTo(0, height)
+            .moveTo(0, this.pHeight - 25)
             .lineTo(0, handleHeight)
             .lineTo(handleWidth, 0)
             .lineTo(-handleWidth, 0)
             .lineTo(0, handleHeight)
             .closePath()
             .endFill();
-        this.pCursor.x = timeX;
-        this.pCursor.y = 25;
-        this.addChild(this.pCursor);
 
         let shadow = new DropShadowFilter();
         shadow.color = 0x0000;
@@ -48,7 +47,8 @@ export class TimeBar extends PIXI.Container {
         shadow.alpha = 0.4;
         shadow.rotation = 90;
         shadow.blur = 1;
-        this.pCursor.filters = [shadow];
+        bar.filters = [shadow];
+        return bar
     }
     get timeScale() {
         return this.pWidth / (this.pEndTime - this.pStartTime);
@@ -57,7 +57,7 @@ export class TimeBar extends PIXI.Container {
         return this.pX + this.timeScale * (time - this.pStartTime);
     }
     scaleSegment() {
-        this.pCursor.x = this.timeToX(this.pTime);
+        this.pBar.x = this.timeToX(this.pTime);
     }
     selectRange(start, end) {
         if (this.pRangeSelection) {
@@ -74,7 +74,7 @@ export class TimeBar extends PIXI.Container {
         selectionRect.lineStyle(2, this.pRangeSelectedColor, 1);
 
         selectionRect.beginFill(this.pRangeSelectedColor, 0.4);
-        selectionRect.drawRoundedRect(0, 25, width, height - 60, 1);
+        selectionRect.drawRoundedRect(0, 25, width, height - 25, 1);
         selectionRect.x = x
 
         this.pRangeSelection = selectionRect;
@@ -106,5 +106,28 @@ export class TimeBar extends PIXI.Container {
     }
     get time() {
         return this.pTime;
+    }
+    set height(height) {
+        if (height !== this.pHeight) {
+            console.log(height)
+            this.pHeight = height;
+            if (this.pBar !== null) {
+                this.pBar.destroy();
+                this.pBar = null;
+
+                const bar = this.renderBar()
+
+
+                const timeX = this.timeToX(this.time);
+                bar.x = timeX;
+                bar.y = 25;
+                this.pBar = bar
+                this.addChild(bar);
+            }
+        }
+
+    }
+    get height() {
+        return this.pHeight;
     }
 }
