@@ -21,7 +21,6 @@ export class Timeline extends PIXI.Container {
         this.pTimelineId = timelineId;
 
         this.pRangeSelection = null
-
         this.pRangeSelectedColor = 0xd99090;
 
         // console.log(this.timeScale)

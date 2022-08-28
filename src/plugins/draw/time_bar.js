@@ -12,6 +12,9 @@ export class TimeBar extends PIXI.Container {
         this.pStartTime = startTime;
         this.pEndTime = endTime;
 
+        this.pRangeSelection = null
+        this.pRangeSelectedColor = 0xd99090;
+
         this.pMask = new PIXI.Graphics();
         this.pMask.beginFill(0xffffff);
         this.pMask.drawRoundedRect(0, 0, width, height, 5);
@@ -55,6 +58,33 @@ export class TimeBar extends PIXI.Container {
     }
     scaleSegment() {
         this.pCursor.x = this.timeToX(this.pTime);
+    }
+    selectRange(start, end) {
+        if (this.pRangeSelection) {
+            this.pRangeSelection.destroy()
+            this.pRangeSelection = null;
+        }
+
+        const selectionRect = new PIXI.Graphics();
+
+        const x = this.timeToX(start);
+
+        const width = this.timeToX(end) - this.timeToX(start);
+        const height = this.pHeight;
+        selectionRect.lineStyle(2, this.pRangeSelectedColor, 1);
+
+        selectionRect.beginFill(this.pRangeSelectedColor, 0.4);
+        selectionRect.drawRoundedRect(0, 25, width, height - 60, 1);
+        selectionRect.x = x
+
+        this.pRangeSelection = selectionRect;
+        this.addChild(selectionRect)
+    }
+    removeSelectRange() {
+        if (this.pRangeSelection) {
+            this.pRangeSelection.destroy()
+            this.pRangeSelection = null;
+        }
     }
     set startTime(time) {
         this.pStartTime = time;

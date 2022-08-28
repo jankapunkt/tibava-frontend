@@ -5,11 +5,7 @@
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-bind="attrs"
-                v-on="on"
-                style="height: 40px; width: 100%; height: 100%"
-              >
+              <v-btn v-bind="attrs" v-on="on" style="height: 40px; width: 100%; height: 100%">
                 <v-icon left>mdi-cog</v-icon>
                 {{ $t("modal.timeline.menu.title") }}
               </v-btn>
@@ -25,33 +21,19 @@
           </v-menu>
         </div>
 
-        <DraggableTree
-          draggable="draggable"
-          cross-tree="cross-tree"
-          class="timelinetree"
-          :data="timelineHierarchy"
-          :indent="25"
-          :space="0"
-          @change="change"
-          @nodeOpenChanged="nodeOpenChanged"
-        >
+        <DraggableTree draggable="draggable" cross-tree="cross-tree" class="timelinetree" :data="timelineHierarchy"
+          :indent="25" :space="0" @change="change" @nodeOpenChanged="nodeOpenChanged">
           <div slot-scope="{ data, store }">
             <template v-if="!data.isDragPlaceHolder">
-              <v-app-bar
-                dense
-                color="white"
-                style="
+              <v-app-bar dense color="white" style="
                   height: 50px;
                   margin-top: 4px;
                   margin-bottom: 4px;
                   width: 100%;
-                "
-              >
-                <v-icon
-                  v-if="data.children && data.children.length"
-                  @click="store.toggleOpen(data)"
-                  >{{ data.open ? "mdi-minus" : "mdi-plus" }}</v-icon
-                >
+                ">
+                <v-icon v-if="data.children && data.children.length" @click="store.toggleOpen(data)">{{ data.open ?
+                    "mdi-minus" : "mdi-plus"
+                }}</v-icon>
                 <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-app-bar-title v-bind="attrs" v-on="on">
@@ -73,9 +55,7 @@
                 <v-menu bottom right>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn icon small>
-                      <v-icon v-bind="attrs" v-on="on"
-                        >mdi-dots-vertical</v-icon
-                      >
+                      <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
                     </v-btn>
                   </template>
                   <v-list>
@@ -104,25 +84,26 @@
       </v-col>
     </v-row>
 
-    <v-tooltip
-      top
-      v-model="timelineTooltip.show"
-      :position-x="timelineTooltip.x"
-      :position-y="timelineTooltip.y"
-      absolute
-    >
+    <v-tooltip top v-model="timelineTooltip.show" :position-x="timelineTooltip.x" :position-y="timelineTooltip.y"
+      absolute>
       <span>{{ timelineTooltip.label }}</span>
     </v-tooltip>
 
-    <v-menu
-      v-model="segmentMenu.show"
-      :position-x="segmentMenu.x"
-      :position-y="segmentMenu.y - 10"
-      absolute
-      offset-y
-    >
+    <v-menu v-model="segmentMenu.show" :position-x="segmentMenu.x" :position-y="segmentMenu.y - 10" absolute offset-y>
       <v-list>
         <v-list-item link v-on:click="onAnnotateSegment">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-pencil" }}</v-icon>
+            {{ $t("timelineSegment.annotate") }}
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item link v-on:click="onAnnotateSelection">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-pencil" }}</v-icon>
+            {{ $t("timelineSegment.annotate") }}
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item link v-on:click="onAnnotateSelectionRange">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
             {{ $t("timelineSegment.annotate") }}
@@ -142,6 +123,18 @@
             {{ $t("timelineSegment.split") }}
           </v-list-item-title>
         </v-list-item>
+        <v-list-item link v-on:click="onMergeSelection">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-pencil" }}</v-icon>
+            {{ $t("timelineSegment.annotate") }}
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item link v-on:click="onMergeSelectionRange">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-pencil" }}</v-icon>
+            {{ $t("timelineSegment.annotate") }}
+          </v-list-item-title>
+        </v-list-item>
 
         <v-list-item link v-on:click="onMergeSegmentsLeft">
           <v-list-item-title>
@@ -157,11 +150,7 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-list-item
-          v-if="selectedTimelineSegments.length > 1"
-          link
-          v-on:click="onMergeSegments"
-        >
+        <v-list-item v-if="selectedTimelineSegments.length > 1" link v-on:click="onMergeSegments">
           <v-list-item-title>
             <v-icon left>{{ "mdi-merge" }}</v-icon>
             {{ $t("timelineSegment.merge") }}
@@ -325,6 +314,58 @@ export default {
     };
   },
   methods: {
+    startDraging(event, x, time) {
+      this.dragSelection.x = x;
+      this.dragSelection.start = time;
+      this.dragSelection.dragging = true;
+      console.log("mousedown");
+      event.stopPropagation();
+    },
+    moveDraging(event, x, time) {
+      if (!this.dragSelection.dragging) {
+        return;
+      }
+      if (Math.abs(x - this.dragSelection.x) < 2) {
+        return;
+      }
+
+      // const segment = drawnTimeline.getSegmentOnPosition(x);
+      // if (segment) {
+      //   // this.timelineSegmentStore.addToSelection(segment.id);
+      // }
+
+      this.dragSelection.end = time;
+
+      this.timeBarsObjects.forEach((e) => {
+        e.selectRange(
+          this.dragSelection.start,
+          this.dragSelection.end
+        );
+      });
+      console.log("mousemove");
+      event.stopPropagation();
+    },
+    endDraging(event, x, time) {
+      this.dragSelection.dragging = false;
+      if (Math.abs(x - this.dragSelection.x) < 2) {
+        this.timeBarsObjects.forEach((e) => {
+          e.removeSelectRange();
+        });
+        return;
+      }
+      this.dragSelection.end = time;
+      this.timeBarsObjects.forEach((e) => {
+        e.selectRange(
+          this.dragSelection.start,
+          this.dragSelection.end
+        );
+      });
+      console.log("mouseup");
+      event.stopPropagation();
+    },
+
+
+
     getTimeline(timelineId) {
       var founded = null;
       this.timelineObjects.forEach((timelineObject) => {
@@ -552,67 +593,22 @@ export default {
       drawnTimeline.on("mousedown", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.dragSelection.x = x;
-        this.dragSelection.start = time;
-        this.dragSelection.dragging = true;
-        console.log("mousedown");
-        ev.stopPropagation();
+        this.startDraging(ev, x, time)
       });
       drawnTimeline.on("mousemove", (ev) => {
-        if (!this.dragSelection.dragging) {
-          return;
-        }
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        if (Math.abs(x - this.dragSelection.x) < 2) {
-          return;
-        }
-        const segment = drawnTimeline.getSegmentOnPosition(x);
-        if (segment) {
-          // this.timelineSegmentStore.addToSelection(segment.id);
-        }
         const time = drawnTimeline.xToTime(x);
-
-        this.dragSelection.end = time;
-
-        drawnTimeline.selectRange(
-          this.dragSelection.start,
-          this.dragSelection.end
-        );
-        console.log("mousemove");
-        ev.stopPropagation();
+        this.moveDraging(ev, x, time)
       });
-
       drawnTimeline.on("mouseup", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        this.dragSelection.dragging = false;
-        if (Math.abs(x - this.dragSelection.x) < 2) {
-          drawnTimeline.removeSelectRange();
-          return;
-        }
         const time = drawnTimeline.xToTime(x);
-        this.dragSelection.end = time;
-        drawnTimeline.selectRange(
-          this.dragSelection.start,
-          this.dragSelection.end
-        );
-        console.log("mouseup");
-        ev.stopPropagation();
+        this.endDraging(ev, x, time)
       });
       drawnTimeline.on("mouseupoutside", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        this.dragSelection.dragging = false;
-        if (Math.abs(x - this.dragSelection.x) < 2) {
-          drawnTimeline.removeSelectRange();
-          return;
-        }
         const time = drawnTimeline.xToTime(x);
-        this.dragSelection.end = time;
-        drawnTimeline.selectRange(
-          this.dragSelection.start,
-          this.dragSelection.end
-        );
-        console.log("mouseup");
-        ev.stopPropagation();
+        this.endDraging(ev, x, time)
       });
 
       drawnTimeline.on("pointerover", (ev) => {
@@ -835,6 +831,10 @@ export default {
       this.annotationDialogShow = true;
       // this.$emit("annotateSegment", id);
     },
+    onAnnotateSelection() { },
+    onAnnotateSelectionRange() { },
+    onMergeSelection() { },
+    onMergeSelectionRange() { },
     onSplitSegment() {
       this.timelineSegmentStore.split({
         timelineSegmentId: this.segmentMenu.selected,
@@ -1082,52 +1082,6 @@ export default {
       if (latestTimestamp > 0) {
         this.lastTimestamp = latestTimestamp;
       }
-
-      // // check visualization
-      // this.timelines.forEach((timeline, i) => {
-      //   if (timeline.type !== "PLUGIN_RESULT") {
-      //     return;
-      //   }
-      //   const timelineObject = this.getTimeline(timeline.id);
-      //   if (!timelineObject) {
-      //     return;
-      //   }
-
-      //   let redraw = false;
-      //   if (
-      //     timeline.visualization !== "COLOR" &&
-      //     timelineObject instanceof ColorTimeline
-      //   ) {
-      //     redraw = true;
-      //   } else if (
-      //     timeline.visualization !== "SCALAR_COLOR" &&
-      //     timelineObject instanceof ScalarColorTimeline
-      //   ) {
-      //     redraw = true;
-      //   } else if (
-      //     timeline.visualization !== "SCALAR_LINE" &&
-      //     timelineObject instanceof ScalarLineTimeline
-      //   ) {
-      //     redraw = true;
-      //   } else if (
-      //     timeline.visualization !== "HIST" &&
-      //     timelineObject instanceof HistTimeline
-      //   ) {
-      //     redraw = true;
-      //   }
-      //   if (redraw) {
-      //     this.timelinesContainer.removeChild(timelineObject);
-      //     const index = this.timelineObjects.indexOf(timelineObject);
-      //     if (index > -1) {
-      //       this.timelineObjects.splice(index, 1);
-      //     }
-
-      //     const newTimelineObject = this.drawTimeline(timeline);
-
-      //     this.timelinesContainer.addChild(newTimelineObject);
-      //     this.timelineObjects.push(newTimelineObject);
-      //   }
-      // });
 
       // update order and visible of all objects
       let skipped = 0;
