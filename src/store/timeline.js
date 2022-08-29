@@ -120,15 +120,17 @@ export const useTimelineStore = defineStore('timeline', {
     },
     actions: {
         setSelectedTimeRangeStart(time) {
-            this.timelineListSelected.start = time;
+            console.log(`Start ${time}`)
+            this.timelineSelectedTimeRange.start = time;
         },
         setSelectedTimeRangeEnd(time) {
-            this.timelineListSelected.end = time;
+            console.log(`End ${time}`)
+            this.timelineSelectedTimeRange.end = time;
         },
         clearSelection() {
             this.timelineListSelected = []
-            this.timelineListSelected.start = null
-            this.timelineListSelected.end = null
+            // this.timelineListSelected.start = null
+            // this.timelineListSelected.end = null
             // this.timelineSegmentList.forEach((id) => {
             //     this.timelineSegments[id].selected = false;
             // })

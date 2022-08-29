@@ -160,7 +160,14 @@ import { useAnnotationStore } from "../store/annotation";
 import { useTimelineSegmentAnnotationStore } from "../store/timeline_segment_annotation";
 
 export default {
-  props: ["show"],
+  props: {
+    show: {
+      default: false,
+    },
+    annotateRange: {
+      default: false,
+    },
+  },
   data() {
     return {
       search: null,

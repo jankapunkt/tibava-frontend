@@ -187,7 +187,10 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <ModalTimelineSegmentAnnotate :show.sync="annotationDialogShow" />
+    <ModalTimelineSegmentAnnotate
+      :show.sync="annotationDialog.show"
+      :annotate-range="annotationDialog.annotateRange"
+    />
   </div>
 </template>
 
@@ -304,7 +307,10 @@ export default {
       containerHeight: 100,
 
       // Some dialog show flags
-      annotationDialogShow: false,
+      annotationDialog: {
+        show: false,
+        annotateRange: false,
+      },
 
       // selection
       dragSelection: {
@@ -347,7 +353,9 @@ export default {
       this.dragSelection.x = x;
       this.dragSelection.start = time;
       this.dragSelection.dragging = true;
-      console.log("mousedown");
+
+      this.timelineStore.setSelectedTimeRangeStart(time);
+      this.timelineStore.setSelectedTimeRangeEnd(null);
       event.stopPropagation();
     },
     moveDraging(event, x, time) {
@@ -365,25 +373,19 @@ export default {
 
       this.dragSelection.end = time;
 
-      this.timeBarsObjects.forEach((e) => {
-        e.selectRange(this.dragSelection.start, this.dragSelection.end);
-      });
-      console.log("mousemove");
+      this.timelineStore.setSelectedTimeRangeEnd(time);
+
       event.stopPropagation();
     },
     endDraging(event, x, time) {
       this.dragSelection.dragging = false;
       if (Math.abs(x - this.dragSelection.x) < 2) {
-        this.timeBarsObjects.forEach((e) => {
-          e.removeSelectRange();
-        });
+        this.timelineStore.setSelectedTimeRangeEnd(null);
         return;
       }
       this.dragSelection.end = time;
-      this.timeBarsObjects.forEach((e) => {
-        e.selectRange(this.dragSelection.start, this.dragSelection.end);
-      });
-      console.log("mouseup");
+
+      this.timelineStore.setSelectedTimeRangeEnd(time);
       event.stopPropagation();
     },
 
@@ -847,13 +849,14 @@ export default {
 
       return { x: windowsX, y: windowsY };
     },
-    onAnnotateSegment() {
-      // let id = this.segmentMenu.selected;
-      this.annotationDialogShow = true;
-      // this.$emit("annotateSegment", id);
+    onAnnotateSelection() {
+      this.annotationDialog.show = true;
+      this.annotationDialog.annotateRange = false;
     },
-    onAnnotateSelection() {},
-    onAnnotateSelectionRange() {},
+    onAnnotateSelectionRange() {
+      this.annotationDialog.show = true;
+      this.annotationDialog.annotateRange = true;
+    },
     onMergeSelection() {},
     onMergeSelectionRange() {},
     onSplitSegment() {
@@ -1161,6 +1164,15 @@ export default {
       this.timeBarsObjects.forEach((e) => {
         if (e.height !== this.computedHeight || rescale) {
           e.height = this.computedHeight;
+        }
+      });
+      // update selection
+      this.timeBarsObjects.forEach((e) => {
+        const start = this.timelineStore.timelineSelectedTimeRange.start;
+        const end = this.timelineStore.timelineSelectedTimeRange.end;
+        if(e.selectedRangeStart !== start || e.selectedRangeEnd !== end){
+          e.selectedRangeStart = start;
+          e.selectedRangeEnd = end;
         }
       });
     });

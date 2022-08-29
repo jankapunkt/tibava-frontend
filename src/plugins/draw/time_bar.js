@@ -24,7 +24,6 @@ export class TimeBar extends PIXI.Container {
         bar.y = 25;
         this.pBar = bar
         this.addChild(bar);
-
     }
     renderBar() {
         const handleWidth = 10;
@@ -60,15 +59,21 @@ export class TimeBar extends PIXI.Container {
         this.pBar.x = this.timeToX(this.pTime);
     }
     selectRange(start, end) {
+        console.log('selectRange')
         if (this.pRangeSelection) {
             this.pRangeSelection.destroy()
             this.pRangeSelection = null;
         }
 
+        if (start === null || end === null) {
+            console.log('selectRange delete')
+            return
+        }
+
         const selectionRect = new PIXI.Graphics();
 
         const x = this.timeToX(start);
-
+        console.log(`Range ${start} ${end}`)
         const width = this.timeToX(end) - this.timeToX(start);
         const height = this.pHeight;
         selectionRect.lineStyle(2, this.pRangeSelectedColor, 1);
@@ -82,6 +87,7 @@ export class TimeBar extends PIXI.Container {
     }
     removeSelectRange() {
         if (this.pRangeSelection) {
+            console.log('removeSelectRange')
             this.pRangeSelection.destroy()
             this.pRangeSelection = null;
         }
@@ -117,7 +123,6 @@ export class TimeBar extends PIXI.Container {
 
                 const bar = this.renderBar()
 
-
                 const timeX = this.timeToX(this.time);
                 bar.x = timeX;
                 bar.y = 25;
@@ -129,5 +134,23 @@ export class TimeBar extends PIXI.Container {
     }
     get height() {
         return this.pHeight;
+    }
+    set selectedRangeStart(time) {
+        if (this.pSelectedRangeStart !== time) {
+            this.pSelectedRangeStart = time;
+            this.selectRange(this.pSelectedRangeStart, this.pSelectedRangeEnd)
+        }
+    }
+    get selectedRangeStart() {
+        return this.pSelectedRangeStart;
+    }
+    set selectedRangeEnd(time) {
+        if (this.pSelectedRangeEnd !== time) {
+            this.pSelectedRangeEnd = time;
+            this.selectRange(this.pSelectedRangeStart, this.pSelectedRangeEnd)
+        }
+    }
+    get selectedRangeEnd() {
+        return this.pSelectedRangeEnd;
     }
 }
