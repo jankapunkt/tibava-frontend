@@ -4,9 +4,15 @@
         "close": "Close",
         "update": "Update",
         "delete": "Delete",
-        "annotate": "Annotate",
+        "annotate": {
+            "selection": "Annotate selected segments",
+            "range": "Annotate selected range"
+        },
         "split": "Create Cut",
-        "merge": "Merge selected segements",
+        "merge": {
+            "selection": "Merge selected segements",
+            "range": "Merge selected range"
+        },
         "mergeleft": "Merge left segement",
         "mergeright": "Merge right segment",
         "color": "Color"
