@@ -22,6 +22,18 @@ export const useTimelineStore = defineStore('timeline', {
         }
     },
     getters: {
+        selectedTimeRangeStart(state) {
+            if (state.timelineSelectedTimeRange.start === null || state.timelineSelectedTimeRange.end === null) {
+                return null;
+            }
+            return Math.min(state.timelineSelectedTimeRange.start, state.timelineSelectedTimeRange.end)
+        },
+        selectedTimeRangeEnd(state) {
+            if (state.timelineSelectedTimeRange.start === null || state.timelineSelectedTimeRange.end === null) {
+                return null;
+            }
+            return Math.max(state.timelineSelectedTimeRange.start, state.timelineSelectedTimeRange.end)
+        },
         forVideo(state) {
             return (videoId) => {
                 return state.timelineList

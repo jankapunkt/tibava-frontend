@@ -190,6 +190,7 @@
     <ModalTimelineSegmentAnnotate
       :show.sync="annotationDialog.show"
       :annotate-range="annotationDialog.annotateRange"
+      :timeline-id="annotationDialog.timelineId"
     />
   </div>
 </template>
@@ -310,6 +311,8 @@ export default {
       annotationDialog: {
         show: false,
         annotateRange: false,
+        timelineId: null,
+        timelineSegmentId: null,
       },
 
       // selection
@@ -591,6 +594,8 @@ export default {
         this.segmentMenu.selected = segment.id;
         this.$nextTick(() => {
           this.showMenu = true;
+          this.annotationDialog.timelineId = timeline.id;
+          this.annotationDialog.timelineSegmentId = segment.id;
         });
         ev.stopPropagation();
       });
@@ -1170,7 +1175,7 @@ export default {
       this.timeBarsObjects.forEach((e) => {
         const start = this.timelineStore.timelineSelectedTimeRange.start;
         const end = this.timelineStore.timelineSelectedTimeRange.end;
-        if(e.selectedRangeStart !== start || e.selectedRangeEnd !== end){
+        if (e.selectedRangeStart !== start || e.selectedRangeEnd !== end) {
           e.selectedRangeStart = start;
           e.selectedRangeEnd = end;
         }

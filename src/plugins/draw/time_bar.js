@@ -59,21 +59,19 @@ export class TimeBar extends PIXI.Container {
         this.pBar.x = this.timeToX(this.pTime);
     }
     selectRange(start, end) {
-        console.log('selectRange')
         if (this.pRangeSelection) {
             this.pRangeSelection.destroy()
             this.pRangeSelection = null;
         }
 
         if (start === null || end === null) {
-            console.log('selectRange delete')
             return
         }
 
         const selectionRect = new PIXI.Graphics();
 
         const x = this.timeToX(start);
-        console.log(`Range ${start} ${end}`)
+
         const width = this.timeToX(end) - this.timeToX(start);
         const height = this.pHeight;
         selectionRect.lineStyle(2, this.pRangeSelectedColor, 1);
@@ -87,7 +85,6 @@ export class TimeBar extends PIXI.Container {
     }
     removeSelectRange() {
         if (this.pRangeSelection) {
-            console.log('removeSelectRange')
             this.pRangeSelection.destroy()
             this.pRangeSelection = null;
         }
@@ -115,7 +112,6 @@ export class TimeBar extends PIXI.Container {
     }
     set height(height) {
         if (height !== this.pHeight) {
-            console.log(height)
             this.pHeight = height;
             if (this.pBar !== null) {
                 this.pBar.destroy();
