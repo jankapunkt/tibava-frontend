@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" max-width="90%">
     <v-card>
       <v-card-title class="mb-2">
-        {{ $t("modal.plugin.title") }}
+        {{  $t("modal.plugin.title")  }}
 
         <v-btn icon @click="dialog = false" absolute right>
           <v-icon>mdi-close</v-icon>
@@ -11,31 +11,27 @@
       <v-card-text>
         <v-tabs vertical class="tabs-left">
           <v-tab v-for="plugin in plugins_sorted" :key="plugin.name">
-            <v-icon left> {{ plugin.icon }} </v-icon>
-            <span class="text-button">{{ plugin.name }}</span>
+            <v-icon left> {{  plugin.icon  }} </v-icon>
+            <span class="text-button">{{  plugin.name  }}</span>
           </v-tab>
           <v-tab-item v-for="plugin in plugins_sorted" :key="plugin.name">
             <v-card flat height="100%">
-              <v-card-title>{{ plugin.name }} </v-card-title>
+              <v-card-title>{{  plugin.name  }} </v-card-title>
               <v-card-text>
                 <ModalPluginParameters :parameters="plugin.parameters">
                 </ModalPluginParameters>
 
-                <v-expansion-panels
-                  v-if="
-                    plugin.optional_parameters &&
-                    plugin.optional_parameters.length > 0
-                  "
-                >
+                <v-expansion-panels v-if="
+                  plugin.optional_parameters &&
+                  plugin.optional_parameters.length > 0
+                ">
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
                     </v-expansion-panel-header>
 
                     <v-expansion-panel-content>
-                      <ModalPluginParameters
-                        :parameters="plugin.optional_parameters"
-                      >
+                      <ModalPluginParameters :parameters="plugin.optional_parameters">
                       </ModalPluginParameters>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
@@ -43,23 +39,20 @@
               </v-card-text>
 
               <v-card-actions class="pt-0">
-                <v-btn
-                  @click="
-                    runPlugin(
-                      plugin.plugin,
-                      plugin.parameters,
-                      plugin.optional_parameters
-                    )
-                  "
-                  >{{ $t("modal.plugin.run") }}</v-btn
-                >
+                <v-btn @click="
+                  runPlugin(
+                    plugin.plugin,
+                    plugin.parameters,
+                    plugin.optional_parameters
+                  )
+                ">{{  $t("modal.plugin.run")  }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-tab-item>
         </v-tabs>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn @click="dialog = false">{{ $t("modal.plugin.close") }}</v-btn>
+        <v-btn @click="dialog = false">{{  $t("modal.plugin.close")  }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -440,6 +433,37 @@ export default {
               name: "min_facesize",
               text: this.$t("modal.plugin.faceemotion.min_facesize"),
               disabled: true,
+            },
+          ],
+        },
+        {
+          name: this.$t("modal.plugin.face_identification.plugin_name"),
+          icon: "mdi-account-search",
+          plugin: "face_identification",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.face_identification.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "image_input",
+              file: null,
+              name: "query_images",
+              text: this.$t("modal.plugin.face_identification.query_images"),
+              hint: this.$t("modal.plugin.face_identification.query_images_hint"),
+            },
+          ],
+          optional_parameters: [
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 2,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.fps"),
             },
           ],
         },

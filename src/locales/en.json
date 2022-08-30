@@ -88,6 +88,12 @@
                 "fps": "Frames per Second (FPS)",
                 "min_facesize": "Minimum Face Size [px]"
             },
+            "face_identification": {
+                "plugin_name": "Face Identification",
+                "timeline_name": "Face Identification",
+                "query_images": "Select query image",
+                "query_images_hint": "*The image should ideally show only the person you want to search for"
+            },
             "facesize": {
                 "plugin_name": "Face Shot Size Analysis",
                 "timeline_name": "Face Shot Size"
