@@ -11,10 +11,10 @@
             clearable
             multiple
             autofocus
-            v-model="inputs"
-            :items="items"
+            v-model="annotations"
+            :items="allExistingAnnotations"
             :search-input.sync="search"
-            @change="onChange"
+            @change="onAnnotationChange"
             @keydown="onKeydown"
             item-text="name"
           >
@@ -108,9 +108,9 @@
                       <v-combobox
                         clearable
                         v-model="item.category"
-                        :items="categories"
+                        :items="annotationCategories"
                         flat
-                        @change="onCategoryChange(item)"
+                        @change="onAnnotationCategoryChange(item)"
                       >
                         <template v-slot:item="{ attrs, item }">
                           {{ item.name }}
@@ -154,49 +154,63 @@ function onlySpaces(str) {
 }
 
 import { mapStores } from "pinia";
+
+import { useTimelineStore } from "@/store/timeline";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { useAnnotationCategoryStore } from "../store/annotation_category";
 import { useAnnotationStore } from "../store/annotation";
 import { useTimelineSegmentAnnotationStore } from "../store/timeline_segment_annotation";
 
+function uniqueIdArray(l) {
+  let keys = {};
+  l.forEach((e) => {
+    keys[e.id] = e;
+  });
+
+  return Object.keys(keys).map((v) => keys[v]);
+}
+
 export default {
-  props: ["show"],
+  props: {
+    show: {
+      default: false,
+    },
+    annotateRange: {
+      default: false,
+    },
+    timelineId: {
+      default: null,
+    },
+  },
   data() {
     return {
       search: null,
-      inputs: [],
-      hiddenAnnotationCategories: [],
-      hiddenAnnotations: [],
       lastKey: null,
       isSubmitting: false,
+      annotationsProxy: null,
+      annotationCategoriesProxy: null,
     };
   },
   computed: {
-    categories() {
-      let newAnnotationCategories = this.inputs
-        .filter((e) => {
-          return e.category && !("id" in e.category);
-        })
-        .map((e) => {
-          return e.category;
-        });
+    allExistingAnnotationCategories() {
+      let annotationCategories = this.annotationCategoryStore.all;
 
-      let categories = this.hiddenAnnotationCategories.concat(
-        newAnnotationCategories
+      console.log(
+        `annotationCategories ${JSON.stringify(annotationCategories)}`
       );
-      categories = categories.filter(
-        (e, index, self) => self.findIndex((t) => t.name === e.name) === index
-      );
-
-      return categories;
+      return annotationCategories;
     },
-    items() {
-      return this.hiddenAnnotations;
+    annotationCategories: {
+      get() {
+        return this.annotationCategoriesProxy === null
+          ? this.allExistingAnnotationCategories
+          : this.annotationCategoriesProxy;
+      },
+      set(val) {
+        this.annotationCategoriesProxy = val;
+      },
     },
-    timelineSegments() {
-      return this.timelineSegmentStore.selected;
-    },
-    annotations() {
+    allExistingAnnotations() {
       let annotations = this.annotationStore.all;
       annotations.map((e) => {
         if ("category_id" in e) {
@@ -206,10 +220,62 @@ export default {
       });
       return annotations;
     },
-    annotationCategories() {
-      return this.annotationCategoryStore.all;
+    currentAnnotations() {
+      let annotations = [];
+      if (this.annotateRange && this.timelineId) {
+        const start = this.timelineStore.selectedTimeRangeStart;
+        const end = this.timelineStore.selectedTimeRangeEnd;
+        const timelineSegments = this.timelineSegmentStore.forTimelineTimeRange(
+          this.timelineId,
+          start,
+          end
+        );
+        console.log(timelineSegments);
+        annotations = timelineSegments
+          .map((s) => {
+            return this.timelineSegmentAnnotationStore
+              .forTimelineSegment(s.id)
+              .map((a) => {
+                const annotation = this.annotationStore.get(a.annotation_id);
+                let category = null;
+                if ("category_id" in annotation) {
+                  category = this.annotationCategoryStore.get(
+                    annotation.category_id
+                  );
+                }
+                return {
+                  name: annotation.name,
+                  color: annotation.color,
+                  id: annotation.id,
+                  category: category,
+                };
+              });
+          })
+          .flat();
+      } else {
+      }
+
+      annotations = uniqueIdArray(annotations);
+
+      console.log(annotations);
+      return annotations;
+    },
+    annotations: {
+      get() {
+        return this.annotationsProxy === null
+          ? this.currentAnnotations
+          : this.annotationsProxy;
+      },
+      set(val) {
+        console.log(`Set value ${JSON.stringify(val)}`);
+        this.annotationsProxy = val;
+      },
+    },
+    timelineSegments() {
+      return this.timelineSegmentStore.selected;
     },
     ...mapStores(
+      useTimelineStore,
       useTimelineSegmentStore,
       useAnnotationCategoryStore,
       useAnnotationStore,
@@ -218,7 +284,9 @@ export default {
   },
   methods: {
     onDeleteItem(index) {
-      this.inputs.splice(index, 1);
+      const annotations = [...this.annotations];
+      annotations.splice(index, 1);
+      this.annotationsProxy = annotations;
     },
     async onKeydown(event) {
       if (event.code === "Enter" && this.lastKey === "Enter") {
@@ -229,14 +297,14 @@ export default {
       }
       this.lastKey = event.code;
     },
-    onChange() {
+    onAnnotationChange() {
       if (this.isSubmitting) {
         return;
       }
       let inputs = [];
       let self = this;
       // split string annotations
-      this.inputs.forEach((e) => {
+      this.annotations.forEach((e) => {
         if (typeof e === "string") {
           //filter empty name and categories
           if (onlySpaces(e)) {
@@ -285,7 +353,7 @@ export default {
       //check if the name already exists
 
       inputs = inputs.map((e) => {
-        let existing = this.items.find((i) => {
+        let existing = this.allExistingAnnotations.find((i) => {
           if (e.category === i.category && e.name === i.name) {
             return true;
           } else if (!e.category && !i.category && e.name === i.name) {
@@ -339,12 +407,21 @@ export default {
       inputs = Object.keys(existing).map((e) => {
         return existing[e].element;
       });
-      this.inputs = inputs;
+      this.annotationsProxy = inputs;
     },
-    onCategoryChange(item) {
+    onAnnotationCategoryChange(item) {
       item.categoryMenu = false;
       if (typeof item.category === "string") {
+        console.log(item);
         // categoryNames;
+
+        const annotationCategories = [...this.annotationCategories];
+        annotationCategories.push({
+          name: item.category,
+          color: item.color,
+        });
+        this.annotationCategoriesProxy = annotationCategories;
+
         item.category = {
           name: item.category,
           color: item.color,
@@ -352,16 +429,25 @@ export default {
       }
     },
     async submit() {
-      let inputs = JSON.parse(JSON.stringify(this.inputs));
       if (this.isSubmitting) {
         return;
       }
       this.isSubmitting = true;
+
+      if (this.annotateRange) {
+        await this.timelineSegmentStore.annotateRange({
+          timelineId: this.timelineId,
+          annotations: this.annotations,
+        });
+      } else {
+        console.log(this.timelineSegments.map((e) => e.id));
+        await this.timelineSegmentStore.annotateSegments({
+          timelineSegmentIds: this.timelineSegments.map((e) => e.id),
+          annotations: this.annotations,
+        });
+      }
+
       // TODO
-      await this.timelineSegmentStore.annotate({
-        timelineSegmentId: this.timelineSegments[0].id,
-        annotations: inputs,
-      });
 
       this.isSubmitting = false;
       this.$emit("update:show", false);
@@ -373,34 +459,11 @@ export default {
   watch: {
     show(newValue, oldValue) {
       if (newValue) {
-        console.log("UPDATE");
-        const allAnnotations = this.timelineSegments
-          .map((timelineSegment) => {
-            return this.timelineSegmentAnnotationStore
-              .forTimelineSegment(timelineSegment.id)
-              .map((a) => {
-                const annotation = this.annotationStore.get(a.annotation_id);
-                let category = null;
-                if ("category_id" in annotation) {
-                  category = this.annotationCategoryStore.get(
-                    annotation.category_id
-                  );
-                }
-                return {
-                  name: annotation.name,
-                  color: annotation.color,
-                  id: annotation.id,
-                  category: category,
-                };
-              });
-          })
-          .flat();
-        this.inputs = [...new Set(allAnnotations)];
-        this.hiddenAnnotations = JSON.parse(JSON.stringify(this.annotations));
-
-        this.hiddenAnnotationCategories = JSON.parse(
-          JSON.stringify(this.annotationCategories)
-        );
+        this.search = null;
+        this.lastKey = null;
+        this.isSubmitting = false;
+        this.annotationsProxy = null;
+        this.annotationCategoriesProxy = null;
       }
     },
   },

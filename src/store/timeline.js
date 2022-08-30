@@ -14,10 +14,26 @@ export const useTimelineStore = defineStore('timeline', {
             timelineListAdded: [],
             timelineListDeleted: [],
             timelineListChanged: [],
+            timelineSelectedTimeRange: {
+                start: null,
+                end: null,
+            },
             isLoading: false,
         }
     },
     getters: {
+        selectedTimeRangeStart(state) {
+            if (state.timelineSelectedTimeRange.start === null || state.timelineSelectedTimeRange.end === null) {
+                return null;
+            }
+            return Math.min(state.timelineSelectedTimeRange.start, state.timelineSelectedTimeRange.end)
+        },
+        selectedTimeRangeEnd(state) {
+            if (state.timelineSelectedTimeRange.start === null || state.timelineSelectedTimeRange.end === null) {
+                return null;
+            }
+            return Math.max(state.timelineSelectedTimeRange.start, state.timelineSelectedTimeRange.end)
+        },
         forVideo(state) {
             return (videoId) => {
                 return state.timelineList
@@ -115,8 +131,18 @@ export const useTimelineStore = defineStore('timeline', {
         }
     },
     actions: {
+        setSelectedTimeRangeStart(time) {
+            console.log(`Start ${time}`)
+            this.timelineSelectedTimeRange.start = time;
+        },
+        setSelectedTimeRangeEnd(time) {
+            console.log(`End ${time}`)
+            this.timelineSelectedTimeRange.end = time;
+        },
         clearSelection() {
             this.timelineListSelected = []
+            // this.timelineListSelected.start = null
+            // this.timelineListSelected.end = null
             // this.timelineSegmentList.forEach((id) => {
             //     this.timelineSegments[id].selected = false;
             // })

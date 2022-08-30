@@ -122,10 +122,16 @@
       offset-y
     >
       <v-list>
-        <v-list-item link v-on:click="onAnnotateSegment">
+        <v-list-item link v-on:click="onAnnotateSelection">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
-            {{ $t("timelineSegment.annotate") }}
+            {{ $t("timelineSegment.annotate.selection") }}
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item link v-on:click="onAnnotateSelectionRange">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-pencil" }}</v-icon>
+            {{ $t("timelineSegment.annotate.range") }}
           </v-list-item-title>
         </v-list-item>
 
@@ -140,6 +146,18 @@
           <v-list-item-title>
             <v-icon left>{{ "mdi-content-cut" }}</v-icon>
             {{ $t("timelineSegment.split") }}
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item link v-on:click="onMergeSelection">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-pencil" }}</v-icon>
+            {{ $t("timelineSegment.merge.selection") }}
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item link v-on:click="onMergeSelectionRange">
+          <v-list-item-title>
+            <v-icon left>{{ "mdi-pencil" }}</v-icon>
+            {{ $t("timelineSegment.merge.range") }}
           </v-list-item-title>
         </v-list-item>
 
@@ -169,7 +187,11 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <ModalTimelineSegmentAnnotate :show.sync="annotationDialogShow" />
+    <ModalTimelineSegmentAnnotate
+      :show.sync="annotationDialog.show"
+      :annotate-range="annotationDialog.annotateRange"
+      :timeline-id="annotationDialog.timelineId"
+    />
   </div>
 </template>
 
@@ -286,7 +308,12 @@ export default {
       containerHeight: 100,
 
       // Some dialog show flags
-      annotationDialogShow: false,
+      annotationDialog: {
+        show: false,
+        annotateRange: false,
+        timelineId: null,
+        timelineSegmentId: null,
+      },
 
       // selection
       dragSelection: {
@@ -325,6 +352,46 @@ export default {
     };
   },
   methods: {
+    startDraging(event, x, time) {
+      this.dragSelection.x = x;
+      this.dragSelection.start = time;
+      this.dragSelection.dragging = true;
+
+      this.timelineStore.setSelectedTimeRangeStart(time);
+      this.timelineStore.setSelectedTimeRangeEnd(null);
+      event.stopPropagation();
+    },
+    moveDraging(event, x, time) {
+      if (!this.dragSelection.dragging) {
+        return;
+      }
+      if (Math.abs(x - this.dragSelection.x) < 2) {
+        return;
+      }
+
+      // const segment = drawnTimeline.getSegmentOnPosition(x);
+      // if (segment) {
+      //   // this.timelineSegmentStore.addToSelection(segment.id);
+      // }
+
+      this.dragSelection.end = time;
+
+      this.timelineStore.setSelectedTimeRangeEnd(time);
+
+      event.stopPropagation();
+    },
+    endDraging(event, x, time) {
+      this.dragSelection.dragging = false;
+      if (Math.abs(x - this.dragSelection.x) < 2) {
+        this.timelineStore.setSelectedTimeRangeEnd(null);
+        return;
+      }
+      this.dragSelection.end = time;
+
+      this.timelineStore.setSelectedTimeRangeEnd(time);
+      event.stopPropagation();
+    },
+
     getTimeline(timelineId) {
       var founded = null;
       this.timelineObjects.forEach((timelineObject) => {
@@ -527,6 +594,8 @@ export default {
         this.segmentMenu.selected = segment.id;
         this.$nextTick(() => {
           this.showMenu = true;
+          this.annotationDialog.timelineId = timeline.id;
+          this.annotationDialog.timelineSegmentId = segment.id;
         });
         ev.stopPropagation();
       });
@@ -552,67 +621,22 @@ export default {
       drawnTimeline.on("mousedown", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.dragSelection.x = x;
-        this.dragSelection.start = time;
-        this.dragSelection.dragging = true;
-        console.log("mousedown");
-        ev.stopPropagation();
+        this.startDraging(ev, x, time);
       });
       drawnTimeline.on("mousemove", (ev) => {
-        if (!this.dragSelection.dragging) {
-          return;
-        }
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        if (Math.abs(x - this.dragSelection.x) < 2) {
-          return;
-        }
-        const segment = drawnTimeline.getSegmentOnPosition(x);
-        if (segment) {
-          // this.timelineSegmentStore.addToSelection(segment.id);
-        }
         const time = drawnTimeline.xToTime(x);
-
-        this.dragSelection.end = time;
-
-        drawnTimeline.selectRange(
-          this.dragSelection.start,
-          this.dragSelection.end
-        );
-        console.log("mousemove");
-        ev.stopPropagation();
+        this.moveDraging(ev, x, time);
       });
-
       drawnTimeline.on("mouseup", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        this.dragSelection.dragging = false;
-        if (Math.abs(x - this.dragSelection.x) < 2) {
-          drawnTimeline.removeSelectRange();
-          return;
-        }
         const time = drawnTimeline.xToTime(x);
-        this.dragSelection.end = time;
-        drawnTimeline.selectRange(
-          this.dragSelection.start,
-          this.dragSelection.end
-        );
-        console.log("mouseup");
-        ev.stopPropagation();
+        this.endDraging(ev, x, time);
       });
       drawnTimeline.on("mouseupoutside", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        this.dragSelection.dragging = false;
-        if (Math.abs(x - this.dragSelection.x) < 2) {
-          drawnTimeline.removeSelectRange();
-          return;
-        }
         const time = drawnTimeline.xToTime(x);
-        this.dragSelection.end = time;
-        drawnTimeline.selectRange(
-          this.dragSelection.start,
-          this.dragSelection.end
-        );
-        console.log("mouseup");
-        ev.stopPropagation();
+        this.endDraging(ev, x, time);
       });
 
       drawnTimeline.on("pointerover", (ev) => {
@@ -830,11 +854,16 @@ export default {
 
       return { x: windowsX, y: windowsY };
     },
-    onAnnotateSegment() {
-      // let id = this.segmentMenu.selected;
-      this.annotationDialogShow = true;
-      // this.$emit("annotateSegment", id);
+    onAnnotateSelection() {
+      this.annotationDialog.show = true;
+      this.annotationDialog.annotateRange = false;
     },
+    onAnnotateSelectionRange() {
+      this.annotationDialog.show = true;
+      this.annotationDialog.annotateRange = true;
+    },
+    onMergeSelection() {},
+    onMergeSelectionRange() {},
     onSplitSegment() {
       this.timelineSegmentStore.split({
         timelineSegmentId: this.segmentMenu.selected,
@@ -1083,52 +1112,6 @@ export default {
         this.lastTimestamp = latestTimestamp;
       }
 
-      // // check visualization
-      // this.timelines.forEach((timeline, i) => {
-      //   if (timeline.type !== "PLUGIN_RESULT") {
-      //     return;
-      //   }
-      //   const timelineObject = this.getTimeline(timeline.id);
-      //   if (!timelineObject) {
-      //     return;
-      //   }
-
-      //   let redraw = false;
-      //   if (
-      //     timeline.visualization !== "COLOR" &&
-      //     timelineObject instanceof ColorTimeline
-      //   ) {
-      //     redraw = true;
-      //   } else if (
-      //     timeline.visualization !== "SCALAR_COLOR" &&
-      //     timelineObject instanceof ScalarColorTimeline
-      //   ) {
-      //     redraw = true;
-      //   } else if (
-      //     timeline.visualization !== "SCALAR_LINE" &&
-      //     timelineObject instanceof ScalarLineTimeline
-      //   ) {
-      //     redraw = true;
-      //   } else if (
-      //     timeline.visualization !== "HIST" &&
-      //     timelineObject instanceof HistTimeline
-      //   ) {
-      //     redraw = true;
-      //   }
-      //   if (redraw) {
-      //     this.timelinesContainer.removeChild(timelineObject);
-      //     const index = this.timelineObjects.indexOf(timelineObject);
-      //     if (index > -1) {
-      //       this.timelineObjects.splice(index, 1);
-      //     }
-
-      //     const newTimelineObject = this.drawTimeline(timeline);
-
-      //     this.timelinesContainer.addChild(newTimelineObject);
-      //     this.timelineObjects.push(newTimelineObject);
-      //   }
-      // });
-
       // update order and visible of all objects
       let skipped = 0;
       this.timelines
@@ -1143,6 +1126,7 @@ export default {
             timelineObject.visible = timeline.visible;
           }
         });
+
       const rescale = false;
       // update all time position if there is something to update
       this.timelineObjects.forEach((e) => {
@@ -1178,6 +1162,22 @@ export default {
       this.timeBarsObjects.forEach((e) => {
         if (e.time !== this.time || rescale) {
           e.time = this.time;
+        }
+      });
+
+      // update height
+      this.timeBarsObjects.forEach((e) => {
+        if (e.height !== this.computedHeight || rescale) {
+          e.height = this.computedHeight;
+        }
+      });
+      // update selection
+      this.timeBarsObjects.forEach((e) => {
+        const start = this.timelineStore.timelineSelectedTimeRange.start;
+        const end = this.timelineStore.timelineSelectedTimeRange.end;
+        if (e.selectedRangeStart !== start || e.selectedRangeEnd !== end) {
+          e.selectedRangeStart = start;
+          e.selectedRangeEnd = end;
         }
       });
     });

@@ -33,6 +33,16 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                     .sort((a, b) => a.start - b.start);
             }
         },
+        forTimelineTimeRange(state) {
+            return (timeline_id, start, end) => {
+                console.log(`${timeline_id}, ${start}, ${end}`)
+                return state.timelineSegmentList
+                    .map((id) => state.timelineSegments[id])
+                    .filter((e) => e.timeline_id === timeline_id)
+                    .filter((e) => Math.min(e.end, end) - Math.max(e.start, start) > 0)
+                    .sort((a, b) => a.start - b.start);
+            }
+        },
         forTime(state) {
             return (current_time) => {
                 return state.timelineSegmentList
@@ -114,14 +124,14 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
             //     this.timelineSegments[timelineSegmentId].selected = false;
             // }
         },
-        async annotate({ timelineSegmentId, annotations }) {
+        async annotateSegments({ timelineSegmentIds, annotations }) {
             if (this.isLoading) {
                 return
             }
             this.isLoading = true
 
             const params = {
-                timeline_segment_id: timelineSegmentId,
+                timeline_segment_ids: timelineSegmentIds,
                 annotations: annotations,
             };
 
@@ -145,7 +155,63 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
 
                         // let timeline know that something change
                         const timelineStore = useTimelineStore();
-                        timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
+                        timelineSegmentIds.forEach((e) => {
+                            timelineStore.notifyChanges({ timelineIds: [this.get(e).timeline_id] })
+                        });
+                    }
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
+        },
+        async annotateRange({ timelineId, annotations, start = null, end = null }) {
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+
+            if (!start) {
+                const timelineStore = useTimelineStore();
+                start = timelineStore.selectedTimeRangeStart;
+            }
+            if (!end) {
+                const timelineStore = useTimelineStore();
+                end = timelineStore.selectedTimeRangeEnd;
+            }
+            const params = {
+                timeline_id: timelineId,
+                annotations: annotations,
+                start: start,
+                end: end,
+            };
+
+            return axios
+                .post(`${config.API_LOCATION}/timeline/segment/annotate/range`, params)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                        const timelineSegmentAnnotationStore = useTimelineSegmentAnnotationStore();
+                        const annotationCategoryStore = useAnnotationCategoryStore();
+                        const annotationStore = useAnnotationStore();
+
+                        timelineSegmentAnnotationStore.deleteFromStore(res.data.timeline_segment_annotation_deleted
+                        );
+                        timelineSegmentAnnotationStore.addToStore(res.data.timeline_segment_annotation_added
+                        );
+
+                        annotationCategoryStore.addToStore(
+                            res.data.annotation_category_added
+                        );
+                        annotationStore.addToStore(res.data.annotation_added);
+
+                        this.deleteFromStore(res.data.timeline_segment_deleted);
+                        this.addToStore(res.data.timeline_segment_added);
+                        // let timeline know that something change
+                        const timelineStore = useTimelineStore();
+                        timelineStore.notifyChanges({ timelineIds: [timelineId] })
                     }
                 })
                 .finally(() => {

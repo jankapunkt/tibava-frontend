@@ -1,9 +1,19 @@
 <template>
   <v-container class="d-flex flex-column">
     <v-row class="video-container">
-      <video class="video-player" ref="video" v-on:timeupdate="onTimeUpdate" v-on:ended="onEnded" v-on:click="toggle"
-        v-on:play="onPlay" v-on:pause="onPause" v-on:loadeddata="onLoadedData" v-on:canplay="onCanPlay"
-        v-on:resize="onResize" :src="playerStore.videoUrl">
+      <video
+        class="video-player"
+        ref="video"
+        v-on:timeupdate="onTimeUpdate"
+        v-on:ended="onEnded"
+        v-on:click="toggle"
+        v-on:play="onPlay"
+        v-on:pause="onPause"
+        v-on:loadeddata="onLoadedData"
+        v-on:canplay="onCanPlay"
+        v-on:resize="onResize"
+        :src="playerStore.videoUrl"
+      >
         <!-- <source :src="video.url" type="video/mp4" /> -->
       </video>
     </v-row>
@@ -44,7 +54,7 @@
         <v-list>
           <v-list-item v-for="(item, index) in speeds" :key="index">
             <v-list-item-title v-on:click="onSpeedChange(index)">{{
-                item.title
+              item.title
             }}</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -58,11 +68,22 @@
         <v-icon v-else-if="volume > 0"> mdi-volume-low </v-icon>
         <v-icon v-else-if="volume == 0"> mdi-volume-mute </v-icon>
       </v-btn>
-      <v-slider :value="volume" @input="onVolumeChange" max="100" min="0" hide-details></v-slider>
+      <v-slider
+        :value="volume"
+        @input="onVolumeChange"
+        max="100"
+        min="0"
+        hide-details
+      ></v-slider>
     </v-row>
 
     <v-row>
-      <v-slider class="progress-bar" :value="100 * progress" v-on:change="onSeek" hide-details></v-slider>
+      <v-slider
+        class="progress-bar"
+        :value="100 * progress"
+        v-on:change="onSeek"
+        hide-details
+      ></v-slider>
     </v-row>
   </v-container>
 </template>
@@ -98,7 +119,7 @@ export default {
       this.playerStore.toggleSyncTime();
     },
     deltaSeek(delta) {
-      this.playerStore.setCurrentTime(this.$refs.video.currentTime + delta)
+      this.playerStore.setCurrentTime(this.$refs.video.currentTime + delta);
       this.$refs.video.currentTime += delta;
     },
     onEnded() {
@@ -128,7 +149,7 @@ export default {
       this.playerStore.toggleMute();
     },
     onVolumeChange(volume) {
-      this.playerStore.setVolume(volume)
+      this.playerStore.setVolume(volume);
     },
     onLoadedData() {
       this.$emit("loadedData");
@@ -154,13 +175,13 @@ export default {
       return this.playerStore.ended;
     },
     currentTime() {
-      return this.playerStore.currentTime
+      return this.playerStore.currentTime;
     },
     targetTime() {
-      return this.playerStore.targetTime
+      return this.playerStore.targetTime;
     },
     playing() {
-      return this.playerStore.playing
+      return this.playerStore.playing;
     },
     duration() {
       return this.playerStore.videoDuration;
@@ -172,8 +193,7 @@ export default {
   },
   watch: {
     targetTime(targetTime) {
-      console.log(this.playerStore.videoFPS)
-      const delta = 1 / this.playerStore.videoFPS // small delta to prevent showing a frame of the previous shot
+      const delta = 1 / this.playerStore.videoFPS; // small delta to prevent showing a frame of the previous shot
       if (this.syncTime) {
         this.$refs.video.currentTime = targetTime + delta;
       }
@@ -182,14 +202,13 @@ export default {
       if (playing) {
         this.$refs.video.volume = this.volume / 100;
         this.$refs.video.play();
-      }
-      else {
+      } else {
         this.$refs.video.pause();
       }
     },
     volume(volume) {
       this.$refs.video.volume = volume / 100;
-    }
+    },
   },
 };
 </script>
@@ -209,12 +228,12 @@ export default {
   /* max-width: 100%; */
 }
 
-.video-control>.progress-bar {
+.video-control > .progress-bar {
   margin-top: auto;
   margin-bottom: auto;
 }
 
-.video-control>.time-code {
+.video-control > .time-code {
   margin-top: auto;
   margin-bottom: auto;
 }
