@@ -148,7 +148,7 @@
             {{ $t("timelineSegment.split") }}
           </v-list-item-title>
         </v-list-item>
-        <v-list-item link v-on:click="onMergeSelection">
+        <!-- <v-list-item link v-on:click="onMergeSelection">
           <v-list-item-title>
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
             {{ $t("timelineSegment.merge.selection") }}
@@ -159,7 +159,7 @@
             <v-icon left>{{ "mdi-pencil" }}</v-icon>
             {{ $t("timelineSegment.merge.range") }}
           </v-list-item-title>
-        </v-list-item>
+        </v-list-item> -->
 
         <v-list-item link v-on:click="onMergeSegmentsLeft">
           <v-list-item-title>

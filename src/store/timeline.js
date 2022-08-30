@@ -201,7 +201,6 @@ export const useTimelineStore = defineStore('timeline', {
             //     commit('error/update', info, { root: true });
             // });
         },
-
         async duplicate({ id, name = null, includeannotations = true }) {
             if (this.isLoading) {
                 return
@@ -213,20 +212,25 @@ export const useTimelineStore = defineStore('timeline', {
                 name: name,
                 includeannotations: includeannotations,
             };
+            console.log("cccc")
             return axios
                 .post(`${config.API_LOCATION}/timeline/duplicate`, params)
                 .then((res) => {
+                    console.log("2")
                     if (res.data.status === "ok") {
                         this.addToStore([res.data.timeline_added]);
                     }
+                    console.log("1")
                 })
                 .finally(() => {
+                    console.log("2")
                     this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'upload' };
             //     commit('error/update', info, { root: true });
             // });
+            console.log("dddd")
         },
         async create({ name, videoId = null }) {
             if (this.isLoading) {
@@ -326,7 +330,6 @@ export const useTimelineStore = defineStore('timeline', {
             //     commit('error/update', info, { root: true });
             // });
         },
-
         async rename({ timelineId, name }) {
             if (this.isLoading) {
                 return
@@ -515,7 +518,7 @@ export const useTimelineStore = defineStore('timeline', {
         },
         updateVisibleStore() {
             const that = this;
-
+            // TODO this runs forever
             function parentCollapsed(e) {
                 if (!e.parent_id) {
                     return false;
