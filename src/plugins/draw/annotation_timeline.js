@@ -169,7 +169,7 @@ export class AnnotationTimeline extends Timeline {
 
     const selectionRects = new PIXI.Graphics();
     const selectionRectList = []
-    this.pSegmentSelection.map((segmentId) => this.pSegments[segmentId]).forEach((s) => {
+    this.pSegmentSelection.filter((segmentId) => segmentId in this.pSegments).map((segmentId) => this.pSegments[segmentId]).forEach((s) => {
 
       const selectionRect = new PIXI.Graphics();
 

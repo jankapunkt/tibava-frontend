@@ -3,7 +3,7 @@ import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 
 import { Timeline } from "./timeline";
 
-import { resampleApprox, scalarToHex } from "./utils";
+import { resampleApprox, scalarToHex, getMax, getMin } from "./utils";
 
 export class ScalarColorTimeline extends Timeline {
   constructor({
@@ -30,8 +30,9 @@ export class ScalarColorTimeline extends Timeline {
       this.pColormap = colormap;
     }
 
-    this.pDataMinTime = Math.min(...data.time);
-    this.pDataMaxTime = Math.max(...data.time);
+    this.pDataMinTime = getMin(data.time);
+    this.pDataMaxTime = getMax(data.time);
+
 
     this.pResolution = resolution;
     this.pOversampling = oversampling;

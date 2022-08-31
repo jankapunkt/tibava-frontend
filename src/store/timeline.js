@@ -132,11 +132,9 @@ export const useTimelineStore = defineStore('timeline', {
     },
     actions: {
         setSelectedTimeRangeStart(time) {
-            console.log(`Start ${time}`)
             this.timelineSelectedTimeRange.start = time;
         },
         setSelectedTimeRangeEnd(time) {
-            console.log(`End ${time}`)
             this.timelineSelectedTimeRange.end = time;
         },
         clearSelection() {
@@ -212,25 +210,23 @@ export const useTimelineStore = defineStore('timeline', {
                 name: name,
                 includeannotations: includeannotations,
             };
-            console.log("cccc")
+
             return axios
                 .post(`${config.API_LOCATION}/timeline/duplicate`, params)
                 .then((res) => {
-                    console.log("2")
                     if (res.data.status === "ok") {
                         this.addToStore([res.data.timeline_added]);
                     }
-                    console.log("1")
                 })
                 .finally(() => {
-                    console.log("2")
+
                     this.isLoading = false;
                 });
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: 'upload' };
             //     commit('error/update', info, { root: true });
             // });
-            console.log("dddd")
+
         },
         async create({ name, videoId = null }) {
             if (this.isLoading) {
@@ -283,9 +279,6 @@ export const useTimelineStore = defineStore('timeline', {
             const videoId = playerStore.videoId;
             formData.append("file", params.importfile);
             formData.append("video_id", videoId);
-
-            console.log(params);
-            console.log(formData);
 
             return axios.post(
                 `${config.API_LOCATION}/timeline/import/eaf`,
@@ -475,7 +468,7 @@ export const useTimelineStore = defineStore('timeline', {
                 });
         },
         async notifyChanges({ timelineIds }) {
-            console.log({ timelineIds: timelineIds })
+
             timelineIds.forEach((id, i) => {
                 this.timelineListChanged.push([Date.now(), id])
             });

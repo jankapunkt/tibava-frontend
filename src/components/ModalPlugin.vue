@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" max-width="90%">
     <v-card>
       <v-card-title class="mb-2">
-        {{  $t("modal.plugin.title")  }}
+        {{ $t("modal.plugin.title") }}
 
         <v-btn icon @click="dialog = false" absolute right>
           <v-icon>mdi-close</v-icon>
@@ -11,27 +11,31 @@
       <v-card-text>
         <v-tabs vertical class="tabs-left">
           <v-tab v-for="plugin in plugins_sorted" :key="plugin.name">
-            <v-icon left> {{  plugin.icon  }} </v-icon>
-            <span class="text-button">{{  plugin.name  }}</span>
+            <v-icon left> {{ plugin.icon }} </v-icon>
+            <span class="text-button">{{ plugin.name }}</span>
           </v-tab>
           <v-tab-item v-for="plugin in plugins_sorted" :key="plugin.name">
             <v-card flat height="100%">
-              <v-card-title>{{  plugin.name  }} </v-card-title>
+              <v-card-title>{{ plugin.name }} </v-card-title>
               <v-card-text>
                 <ModalPluginParameters :parameters="plugin.parameters">
                 </ModalPluginParameters>
 
-                <v-expansion-panels v-if="
-                  plugin.optional_parameters &&
-                  plugin.optional_parameters.length > 0
-                ">
+                <v-expansion-panels
+                  v-if="
+                    plugin.optional_parameters &&
+                    plugin.optional_parameters.length > 0
+                  "
+                >
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
                     </v-expansion-panel-header>
 
                     <v-expansion-panel-content>
-                      <ModalPluginParameters :parameters="plugin.optional_parameters">
+                      <ModalPluginParameters
+                        :parameters="plugin.optional_parameters"
+                      >
                       </ModalPluginParameters>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
@@ -39,20 +43,23 @@
               </v-card-text>
 
               <v-card-actions class="pt-0">
-                <v-btn @click="
-                  runPlugin(
-                    plugin.plugin,
-                    plugin.parameters,
-                    plugin.optional_parameters
-                  )
-                ">{{  $t("modal.plugin.run")  }}</v-btn>
+                <v-btn
+                  @click="
+                    runPlugin(
+                      plugin.plugin,
+                      plugin.parameters,
+                      plugin.optional_parameters
+                    )
+                  "
+                  >{{ $t("modal.plugin.run") }}</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-tab-item>
         </v-tabs>
       </v-card-text>
       <v-card-actions class="pt-0">
-        <v-btn @click="dialog = false">{{  $t("modal.plugin.close")  }}</v-btn>
+        <v-btn @click="dialog = false">{{ $t("modal.plugin.close") }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -452,7 +459,9 @@ export default {
               file: null,
               name: "query_images",
               text: this.$t("modal.plugin.face_identification.query_images"),
-              hint: this.$t("modal.plugin.face_identification.query_images_hint"),
+              hint: this.$t(
+                "modal.plugin.face_identification.query_images_hint"
+              ),
             },
           ],
           optional_parameters: [
@@ -521,7 +530,11 @@ export default {
     async runPlugin(plugin, parameters, optional_parameters) {
       parameters = parameters.concat(optional_parameters);
       parameters = parameters.map((e) => {
-        return { name: e.name, value: e.value };
+        if ("file" in e) {
+          return { name: e.name, file: e.file };
+        } else {
+          return { name: e.name, value: e.value };
+        }
       });
       this.pluginRunStore
         .submit({ plugin: plugin, parameters: parameters })

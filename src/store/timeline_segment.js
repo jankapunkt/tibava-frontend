@@ -286,6 +286,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 .post(`${config.API_LOCATION}/timeline/segment/split`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
+                        const timelineId = this.get(timelineSegmentId).timeline_id;
                         const timelineSegmentAnnotationStore = useTimelineSegmentAnnotationStore();
 
                         timelineSegmentAnnotationStore.deleteFromStore(res.data.timeline_segment_annotation_deleted
@@ -297,7 +298,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
 
                         // let timeline know that something change
                         const timelineStore = useTimelineStore();
-                        timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
+                        timelineStore.notifyChanges({ timelineIds: [timelineId] })
                     }
                 })
                 .finally(() => {
@@ -327,15 +328,16 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         );
                         timelineSegmentAnnotationStore.addToStore(res.data.timeline_segment_annotation_added
                         );
-                        this.deleteFromStore(res.data.timeline_segment_deleted);
-                        this.addToStore(res.data.timeline_segment_added);
 
-                        // let timeline know that something change
                         const timelineStore = useTimelineStore();
 
-                        timelineIds = [...new Set(timelineSegmentIds.map(((id) => this.get(id).timeline_id)))];
+                        const timelineIds = [...new Set(timelineSegmentIds.map(((id) => this.get(id).timeline_id)))];
                         timelineStore.notifyChanges({ timelineIds: timelineIds })
+
+                        this.deleteFromStore(res.data.timeline_segment_deleted);
+                        this.addToStore(res.data.timeline_segment_added);
                     }
+                    // let timeline know that something change
                 })
                 .finally(() => {
                     this.isLoading = false;
@@ -425,8 +427,13 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
         deleteFromStore(ids) {
             ids.forEach((id, i) => {
                 this.timelineSegmentListDeleted.push(id);
-                let index = this.timelineSegmentList.findIndex((f) => f === id);
+                // delete from selected
+                let index = this.timelineSegmentListSelected.findIndex((f) => f === id);
+                this.timelineSegmentListSelected.splice(index, 1);
+                // delete from store
+                index = this.timelineSegmentList.findIndex((f) => f === id);
                 this.timelineSegmentList.splice(index, 1);
+
                 delete this.timelineSegments[id];
             });
             this.updateTimeStore()
