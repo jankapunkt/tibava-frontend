@@ -446,7 +446,7 @@ export default {
         {
           name: this.$t("modal.plugin.face_identification.plugin_name"),
           icon: "mdi-account-search",
-          plugin: "face_identification",
+          plugin: "insightface_identification",
           parameters: [
             {
               field: "text_field",

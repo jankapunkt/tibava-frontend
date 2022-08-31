@@ -26,13 +26,17 @@ export const usePluginRunStore = defineStore("pluginRun", {
     async submit({ plugin, parameters = [], videoId = null }) {
       const formData = new FormData();
       formData.append("plugin", plugin);
+      let jsonParameters = []
       formData.append("parameters", JSON.stringify(parameters));
       parameters.forEach((p) => {
-        console.log(p)
         if ("file" in p) {
           formData.append(`file_${p.name}`, p.file);
         }
+        else {
+          jsonParameters.push(p);
+        }
       })
+      formData.append("parameters", JSON.stringify(jsonParameters));
 
       //use video id or take it from the current video
       let video_id = videoId;
