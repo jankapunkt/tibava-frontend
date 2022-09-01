@@ -74,24 +74,27 @@ export class ScalarColorTimeline extends Timeline {
       targetSize: targetSize,
     });
 
-    // const deltaTime =
-    //   (this.pData.delta_time * this.pData.time.length) / times.length;
+    const deltaTime =
+      (this.pData.delta_time * this.pData.time.length) / times.length;
     // console.log(deltaTime)
     // console.log(this.pData.delta_time)
     times.forEach((t, i) => {
       // if (i > 0) {
       //   return
       // }
+      // console.log('##############')
       // console.log(t)
       // console.log(y[i])
+      // console.log(this.pData.delta_time)
+      // console.log(deltaTime)
 
       let color = scalarToHex(y[i], false, this.pColormap);
       colorRects.beginFill(color);
       // colorRects.drawRect(r * t, 0, r * deltaTime, this.pHeight);
       colorRects.drawRect(
-        Math.max(0, r * (t - this.pData.delta_time / 2)),
+        Math.max(0, r * (t - deltaTime / 2)),
         0,
-        r * this.pData.delta_time,
+        r * deltaTime,
         this.pHeight
       );
 
@@ -104,20 +107,11 @@ export class ScalarColorTimeline extends Timeline {
   scaleContainer() {
     const targetSize = this.pOversampling * this.pResolution;
 
-    const times = resampleApprox({
-      data: this.pData.time,
-      targetSize: targetSize,
-    });
-
-    const deltaTime = this.pData.delta_time;
-    // (this.pData.delta_time * this.pData.time.length) / times.length;
-    // console.log(deltaTime)
-    // console.log(this.pData.delta_time)
 
     if (this.cRects) {
       const width =
         this.timeToX(this.pDuration) - this.timeToX(0);
-      const x = this.timeToX(0)//this.pData.time[0]);
+      const x = this.timeToX(0);
       this.cRects.x = x;
       this.cRects.width = width;
     }
