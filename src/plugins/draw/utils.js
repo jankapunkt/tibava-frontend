@@ -117,4 +117,26 @@ export function generateFont() {
       // fontWeight: 'bold',
     }
   );
+  PIXI.BitmapFont.from(
+    "large_font",
+    {
+      fill: "#333333",
+      fontSize: 20,
+    },
+    {
+      chars: [["a", "z"], ["0", "9"], ["A", "Z"], " \\|/:.-^%$&*()!?"],
+      // fontWeight: 'bold',
+    }
+  );
+  PIXI.BitmapFont.from(
+    "large_white_font",
+    {
+      fill: "#FFFFFF",
+      fontSize: 20,
+    },
+    {
+      chars: [["a", "z"], ["0", "9"], ["A", "Z"], " \\|/:.-^%$&*()!?"],
+      // fontWeight: 'bold',
+    }
+  );
 }

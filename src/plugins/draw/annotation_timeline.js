@@ -54,6 +54,11 @@ export class AnnotationTimeline extends Timeline {
     this.cAnnotations = this.renderSegmentsAnnotations(this.pRenderedStart, this.pRenderedEnd);
     this.addChild(this.cAnnotations);
 
+    this.pTextsObjects = {}
+    this.pTextsContainer = new PIXI.Container();
+    this.renderTexts();
+    this.addChild(this.pTextsContainer);
+
     this.cSelection = []
 
 
@@ -68,6 +73,61 @@ export class AnnotationTimeline extends Timeline {
 
     // this.pBars_graphics = null;
     // this._drawBars();
+  }
+
+  renderTexts() {
+    // let textContainer = new PIXI.Graphics();
+    // let text
+    if (this.pTimeline.segments) {
+      this.pTimeline.segments.forEach((s, i) => {
+
+        // check if we have to render something here
+        const annotationLength = s.annotations.length;
+        if (annotationLength <= 0) {
+          return
+        }
+
+        // check if the segment becomes to small
+        const width = this.timeToX(s.end) - this.timeToX(s.start);
+
+        // delete small annotations if exists
+        if (width < 10) {
+          console.log("delete")
+          return;
+        }
+        else {
+          //new annotation
+
+          const height = this.pHeight;
+          const blockHeight = height / annotationLength;
+          s.annotations.forEach((a, j) => {
+            if (!(a.id in this.pTextsObjects)) {
+              console.log("draw")
+              console.log(a)
+
+              let text = null;
+              const colorHex = PIXI.utils.string2hex(a.annotation.color);
+              console.log(a.annotation.color)
+              console.log(hex2luminance(colorHex))
+              if (hex2luminance(colorHex) < 0.5) {
+                console.log("white")
+                text = new PIXI.BitmapText(a.annotation.name, { fontName: "large_white_font" });
+              }
+              else {
+                console.log("dark")
+                text = new PIXI.BitmapText(a.annotation.name, { fontName: "large_font" });
+              }
+
+              const scale = (blockHeight - 2 * this.pGap) / text.height
+              text.scale.set(scale, scale);
+              text.x = this.timeToX(s.start) + 2
+              text.y = j * blockHeight + this.pGap
+              this.pTextsContainer.addChild(text)
+            }
+          });
+        }
+      });
+    }
   }
 
   renderSegmentsAnnotations(start, end) {
