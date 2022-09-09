@@ -234,7 +234,7 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                 annotation_id: annotationId,
             };
 
-
+            console.log(`timeline_segment::toggle start`)
             const timelineSegmentAnnotationStore = useTimelineSegmentAnnotationStore();
             const annotationCategoryStore = useAnnotationCategoryStore();
             const annotationStore = useAnnotationStore();
@@ -262,6 +262,8 @@ export const useTimelineSegmentStore = defineStore('timelineSegment', {
                         // let timeline know that something change
                         const timelineStore = useTimelineStore();
                         timelineStore.notifyChanges({ timelineIds: [this.get(timelineSegmentId).timeline_id] })
+
+                        console.log(`timeline_segment::toggle end`)
                     }
                 })
                 .finally(() => {

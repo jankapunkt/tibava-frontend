@@ -208,7 +208,7 @@ export const useTimelineStore = defineStore('timeline', {
             let params = {
                 id: id,
                 name: name,
-                includeannotations: includeannotations,
+                include_annotations: includeannotations,
             };
 
             return axios

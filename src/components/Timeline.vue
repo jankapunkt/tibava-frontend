@@ -5,11 +5,7 @@
         <div style="height: 40px; margin-top: 4px; margin-bottom: 4px">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-bind="attrs"
-                v-on="on"
-                style="height: 40px; width: 100%; height: 100%"
-              >
+              <v-btn v-bind="attrs" v-on="on" style="height: 40px; width: 100%; height: 100%">
                 <v-icon left>mdi-cog</v-icon>
                 {{ $t("modal.timeline.menu.title") }}
               </v-btn>
@@ -25,33 +21,19 @@
           </v-menu>
         </div>
 
-        <DraggableTree
-          draggable="draggable"
-          cross-tree="cross-tree"
-          class="timelinetree"
-          :data="timelineHierarchy"
-          :indent="25"
-          :space="0"
-          @change="change"
-          @nodeOpenChanged="nodeOpenChanged"
-        >
+        <DraggableTree draggable="draggable" cross-tree="cross-tree" class="timelinetree" :data="timelineHierarchy"
+          :indent="25" :space="0" @change="change" @nodeOpenChanged="nodeOpenChanged">
           <div slot-scope="{ data, store }">
             <template v-if="!data.isDragPlaceHolder">
-              <v-app-bar
-                dense
-                color="white"
-                style="
+              <v-app-bar dense color="white" style="
                   height: 50px;
                   margin-top: 4px;
                   margin-bottom: 4px;
                   width: 100%;
-                "
-              >
-                <v-icon
-                  v-if="data.children && data.children.length"
-                  @click="store.toggleOpen(data)"
-                  >{{ data.open ? "mdi-minus" : "mdi-plus" }}</v-icon
-                >
+                ">
+                <v-icon v-if="data.children && data.children.length" @click="store.toggleOpen(data)">{{ data.open ?
+                    "mdi-minus" : "mdi-plus"
+                }}</v-icon>
                 <!-- <v-tooltip top>
                   <template v-slot:activator="{ on, attrs }">
                     <v-app-bar-title v-bind="attrs" v-on="on">
@@ -73,9 +55,7 @@
                 <v-menu bottom right>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn icon small>
-                      <v-icon v-bind="attrs" v-on="on"
-                        >mdi-dots-vertical</v-icon
-                      >
+                      <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
                     </v-btn>
                   </template>
                   <v-list>
@@ -104,23 +84,12 @@
       </v-col>
     </v-row>
 
-    <v-tooltip
-      top
-      v-model="timelineTooltip.show"
-      :position-x="timelineTooltip.x"
-      :position-y="timelineTooltip.y"
-      absolute
-    >
+    <v-tooltip top v-model="timelineTooltip.show" :position-x="timelineTooltip.x" :position-y="timelineTooltip.y"
+      absolute>
       <span>{{ timelineTooltip.label }}</span>
     </v-tooltip>
 
-    <v-menu
-      v-model="segmentMenu.show"
-      :position-x="segmentMenu.x"
-      :position-y="segmentMenu.y - 10"
-      absolute
-      offset-y
-    >
+    <v-menu v-model="segmentMenu.show" :position-x="segmentMenu.x" :position-y="segmentMenu.y - 10" absolute offset-y>
       <v-list>
         <v-list-item link v-on:click="onAnnotateSelection">
           <v-list-item-title>
@@ -175,11 +144,7 @@
           </v-list-item-title>
         </v-list-item>
 
-        <v-list-item
-          v-if="selectedTimelineSegments.length > 1"
-          link
-          v-on:click="onMergeSegments"
-        >
+        <v-list-item v-if="selectedTimelineSegments.length > 1" link v-on:click="onMergeSegments">
           <v-list-item-title>
             <v-icon left>{{ "mdi-merge" }}</v-icon>
             {{ $t("timelineSegment.merge") }}
@@ -187,11 +152,8 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <ModalTimelineSegmentAnnotate
-      :show.sync="annotationDialog.show"
-      :annotate-range="annotationDialog.annotateRange"
-      :timeline-id="annotationDialog.timelineId"
-    />
+    <ModalTimelineSegmentAnnotate :show.sync="annotationDialog.show" :annotate-range="annotationDialog.annotateRange"
+      :timeline-id="annotationDialog.timelineId" />
   </div>
 </template>
 
@@ -862,8 +824,8 @@ export default {
       this.annotationDialog.show = true;
       this.annotationDialog.annotateRange = true;
     },
-    onMergeSelection() {},
-    onMergeSelectionRange() {},
+    onMergeSelection() { },
+    onMergeSelectionRange() { },
     onSplitSegment() {
       this.timelineSegmentStore.split({
         timelineSegmentId: this.segmentMenu.selected,

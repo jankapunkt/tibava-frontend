@@ -15,6 +15,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
         return {
             timelineSegmentAnnotations: {},
             timelineSegmentAnnotationByTime: new Map(),
+            timelineSegmentAnnotationBySegment: new Map(),
             timelineSegmentAnnotationList: [],
 
             timelineSegmentAnnotationListAdded: [],
@@ -28,21 +29,27 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 (id) => state.timelineSegmentAnnotations[id]
             );
         },
-        forTimelineSegment: (state) => (timelineSegmentId) => {
-            return state.timelineSegmentAnnotationList
-                .map((id) => state.timelineSegmentAnnotations[id])
-                .filter((e) => e.timeline_segment_id === timelineSegmentId);
+        forTimelineSegment(state) {
+            return (timelineSegmentId) => {
+                console.log(state)
+                if (!state.timelineSegmentAnnotationBySegment.has(timelineSegmentId)) {
+                    return []
+                }
+                const timelineSegmentIds = state.timelineSegmentAnnotationBySegment.get(timelineSegmentId);
+                return timelineSegmentIds.map((id) => {
+                    return state.timelineSegmentAnnotations[id]
+                });
+            }
         },
         forTimeLUT: (state) => (time) => {
             const timeSecond = Math.round(time)
-            if (state.timelineSegmentAnnotationByTime.has(timeSecond)) {
-                const timelineSegmentIds = state.timelineSegmentAnnotationByTime.get(timeSecond);
-                return timelineSegmentIds.map((id) => {
-                    return state.timelineSegmentAnnotations[id]
-                }
-                );
+            if (!state.timelineSegmentAnnotationByTime.has(timeSecond)) {
+                return []
             }
-            return []
+            const timelineSegmentIds = state.timelineSegmentAnnotationByTime.get(timeSecond);
+            return timelineSegmentIds.map((id) => {
+                return state.timelineSegmentAnnotations[id]
+            });
         }
     },
     actions: {
@@ -156,6 +163,7 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
         },
         clearStore() {
             this.timelineSegmentAnnotationByTime = new Map()
+            this.timelineSegmentAnnotationBySegment = new Map()
             this.timelineSegmentAnnotationListAdded = []
             this.timelineSegmentAnnotationListDeleted = []
             this.timelineSegmentAnnotations = {}
@@ -171,6 +179,16 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                 delete this.timelineSegmentAnnotations[id];
 
                 this.timelineSegmentAnnotationByTime.forEach((v, k, m) => {
+                    let index = v.findIndex(
+                        (f) => f === id
+                    );
+                    if (index >= 0) {
+                        v.splice(index, 1);
+                        m.set(k, v)
+                    }
+                })
+
+                this.timelineSegmentAnnotationBySegment.forEach((v, k, m) => {
                     let index = v.findIndex(
                         (f) => f === id
                     );
@@ -202,6 +220,16 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                             this.timelineSegmentAnnotationByTime.set(i, [e.id])
                         }
                     }
+
+
+                    if (this.timelineSegmentAnnotationBySegment.has(timelineSegment.id)) {
+                        var ids = this.timelineSegmentAnnotationBySegment.get(timelineSegment.id)
+                        ids.push(e.id)
+                        this.timelineSegmentAnnotationBySegment.set(timelineSegment.id, ids)
+                    }
+                    else {
+                        this.timelineSegmentAnnotationBySegment.set(timelineSegment.id, [e.id])
+                    }
                 }
             });
         },
@@ -226,6 +254,14 @@ export const useTimelineSegmentAnnotationStore = defineStore('timelineSegmentAnn
                         else {
                             this.timelineSegmentAnnotationByTime.set(i, [e.id])
                         }
+                    }
+                    if (this.timelineSegmentAnnotationBySegment.has(timelineSegment.id)) {
+                        var ids = this.timelineSegmentAnnotationBySegment.get(timelineSegment.id)
+                        ids.push(e.id)
+                        this.timelineSegmentAnnotationBySegment.set(timelineSegment.id, ids)
+                    }
+                    else {
+                        this.timelineSegmentAnnotationBySegment.set(timelineSegment.id, [e.id])
                     }
                 }
             });

@@ -54,10 +54,10 @@ export class AnnotationTimeline extends Timeline {
     this.cAnnotations = this.renderSegmentsAnnotations(this.pRenderedStart, this.pRenderedEnd);
     this.addChild(this.cAnnotations);
 
-    this.pTextsObjects = {}
-    this.pTextsContainer = new PIXI.Container();
-    this.renderTexts();
-    this.addChild(this.pTextsContainer);
+    // this.pTextsObjects = {}
+    // this.pTextsContainer = new PIXI.Container();
+    // this.renderTexts();
+    // this.addChild(this.pTextsContainer);
 
     this.cSelection = []
 
