@@ -21,21 +21,17 @@
                 <ModalPluginParameters :parameters="plugin.parameters">
                 </ModalPluginParameters>
 
-                <v-expansion-panels
-                  v-if="
-                    plugin.optional_parameters &&
-                    plugin.optional_parameters.length > 0
-                  "
-                >
+                <v-expansion-panels v-if="
+                  plugin.optional_parameters &&
+                  plugin.optional_parameters.length > 0
+                ">
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
                     </v-expansion-panel-header>
 
                     <v-expansion-panel-content>
-                      <ModalPluginParameters
-                        :parameters="plugin.optional_parameters"
-                      >
+                      <ModalPluginParameters :parameters="plugin.optional_parameters">
                       </ModalPluginParameters>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
@@ -43,16 +39,13 @@
               </v-card-text>
 
               <v-card-actions class="pt-0">
-                <v-btn
-                  @click="
-                    runPlugin(
-                      plugin.plugin,
-                      plugin.parameters,
-                      plugin.optional_parameters
-                    )
-                  "
-                  >{{ $t("modal.plugin.run") }}</v-btn
-                >
+                <v-btn @click="
+                  runPlugin(
+                    plugin.plugin,
+                    plugin.parameters,
+                    plugin.optional_parameters
+                  )
+                ">{{ $t("modal.plugin.run") }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-tab-item>
@@ -99,6 +92,30 @@ export default {
               name: "sr",
               text: this.$t("modal.plugin.audio_waveform.sr"),
             },
+          ],
+        },
+        {
+          name: this.$t("modal.plugin.audio_rms.plugin_name"),
+          icon: "mdi-waveform",
+          plugin: "audio_rms",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.audio_rms.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+          optional_parameters: [
+            // {
+            //   field: "slider",
+            //   min: 1000,
+            //   max: 24000,
+            //   value: 8000,
+            //   step: 1000,
+            //   name: "sr",
+            //   text: this.$t("modal.plugin.audio_waveform.sr"),
+            // },
           ],
         },
         {
@@ -192,6 +209,40 @@ export default {
               step: 5,
               name: "max_iter",
               text: this.$t("modal.plugin.color_analysis.max_iter"),
+            },
+          ],
+        },
+        {
+          name: this.$t("modal.plugin.color_brightness_analysis.plugin_name"),
+          icon: "mdi-palette",
+          plugin: "color_brightness_analysis",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.color_brightness_analysis.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            // {
+            //   field: "buttongroup",
+            //   text: this.$t("modal.plugin.color_brightness_analysis.buttongroup"),
+            //   name: "timeline_visualization",
+            //   value: 0,
+            //   buttons: [
+            //     this.$t("modal.plugin.color_brightness_analysis.singletimeline"),
+            //     this.$t("modal.plugin.color_brightness_analysis.multipletimelines"),
+            //   ],
+            // },
+          ],
+          optional_parameters: [
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 2,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.fps"),
             },
           ],
         },

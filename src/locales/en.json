@@ -57,6 +57,10 @@
                 "timeline_name": "Audio Waveform",
                 "sr": "Sampling Rate"
             },
+            "audio_rms": {
+                "plugin_name": "Audio RMS Analysis",
+                "timeline_name": "Audio RMS"
+            },
             "audio_frequency": {
                 "plugin_name": "Audio Spectrorgram Analysis",
                 "timeline_name": "Audio Spectrogram",
