@@ -495,6 +495,37 @@ export default {
           ],
         },
         {
+          name: this.$t("modal.plugin.shot_scalar_annotation.plugin_name"),
+          icon: "mdi-label-outline",
+          plugin: "shot_scalar_annotation",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.shot_scalar_annotation.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "select_timeline",
+              name: "shot_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.shot_timeline_name"),
+              hint: this.$t("modal.plugin.shot_timeline_hint"),
+            },
+            {
+              field: "select_scalar_timeline",
+              name: "scalar_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.scalar_timeline_name"),
+              hint: this.$t("modal.plugin.scalar_timeline_hint"),
+            },
+          ],
+          optional_parameters: [
+          ],
+        },
+        {
           name: this.$t("modal.plugin.face_identification.plugin_name"),
           icon: "mdi-account-search",
           plugin: "insightface_identification",

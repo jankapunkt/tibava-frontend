@@ -82,6 +82,10 @@
                 "max_resolution": "Maximum Image Resolution",
                 "max_iter": "Maximum Number of Iterations for k-Means Clustering"
             },
+            "color_brightness_analysis": {
+                "plugin_name": "Color Brightness Analysis",
+                "timeline_name": "Color Brightness"
+            },
             "facedetection": {
                 "plugin_name": "Face Detection",
                 "timeline_name": "Faces"
@@ -116,6 +120,10 @@
                 "input_timeline": "Select Timeline",
                 "kernel": "Gaussian",
                 "bandwidth": "Bandwidth"
+            },
+            "shot_scalar_annotation": {
+                "plugin_name": "Scalar Shot Annotation",
+                "timeline_name": "Scalar Shot Annotation"
             },
             "shot_type_classification": {
                 "plugin_name": "Shot Size Classification",

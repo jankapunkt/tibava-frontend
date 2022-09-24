@@ -13,6 +13,10 @@
         v-if="parameter.field == 'select_scalar_timelines' && scalar_timelines.length > 0" :key="parameter.name"
         multiple persistent-hint></v-select>
 
+      <v-select v-model="parameter.value" :items="scalar_timelines" :label="parameter.text" :hint="parameter.hint"
+        item-text="name" item-value="id"
+        v-if="parameter.field == 'select_scalar_timeline' && scalar_timelines.length > 0" :key="parameter.name"
+        persistent-hint></v-select>
       <div v-if="parameter.field == 'slider'" :key="parameter.name">
         <v-slider v-model="parameter.value" :label="parameter.text" :min="parameter.min" :max="parameter.max"
           :step="parameter.step" :value="parameter.default" :disabled="parameter.disabled" thumb-label="always">
@@ -21,11 +25,11 @@
 
       <div v-if="parameter.field == 'buttongroup'" :key="parameter.name">
         <p>
-          {{  parameter.text  }}
+          {{ parameter.text }}
         </p>
         <v-btn-toggle v-model="parameter.value" :label="parameter.text" tile group mandatory>
           <v-btn v-for="button in parameter.buttons" :key="button">
-            {{  button  }}
+            {{ button }}
           </v-btn>
         </v-btn-toggle>
       </div>
