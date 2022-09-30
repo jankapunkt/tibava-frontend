@@ -26,7 +26,8 @@
             "csv": {
                 "export_name": "CSV",
                 "timeline_merge": "Merge annotations",
-                "use_timestamps": "Use timestamps"
+                "use_timestamps": "Use timestamps",
+                "include_category": "Include category"
             },
             "json": {
                 "export_name": "JSON"

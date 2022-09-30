@@ -80,6 +80,12 @@ export default {
               value: true,
               text: this.$t("modal.export.csv.use_timestamps"),
             },
+            {
+              field: "checkbox",
+              name: "include_category",
+              value: true,
+              text: this.$t("modal.export.csv.include_category"),
+            },
           ],
         },
       ],
