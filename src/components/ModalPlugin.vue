@@ -18,34 +18,38 @@
             <v-card flat height="100%">
               <v-card-title>{{ plugin.name }} </v-card-title>
               <v-card-text>
-                <ModalPluginParameters :parameters="plugin.parameters">
-                </ModalPluginParameters>
+                <Parameters :parameters="plugin.parameters"> </Parameters>
 
-                <v-expansion-panels v-if="
-                  plugin.optional_parameters &&
-                  plugin.optional_parameters.length > 0
-                ">
+                <v-expansion-panels
+                  v-if="
+                    plugin.optional_parameters &&
+                    plugin.optional_parameters.length > 0
+                  "
+                >
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
                     </v-expansion-panel-header>
 
                     <v-expansion-panel-content>
-                      <ModalPluginParameters :parameters="plugin.optional_parameters">
-                      </ModalPluginParameters>
+                      <Parameters :parameters="plugin.optional_parameters">
+                      </Parameters>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
               </v-card-text>
 
               <v-card-actions class="pt-0">
-                <v-btn @click="
-                  runPlugin(
-                    plugin.plugin,
-                    plugin.parameters,
-                    plugin.optional_parameters
-                  )
-                ">{{ $t("modal.plugin.run") }}</v-btn>
+                <v-btn
+                  @click="
+                    runPlugin(
+                      plugin.plugin,
+                      plugin.parameters,
+                      plugin.optional_parameters
+                    )
+                  "
+                  >{{ $t("modal.plugin.run") }}</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-tab-item>
@@ -61,7 +65,7 @@
 <script>
 import { mapStores } from "pinia";
 import { usePluginRunStore } from "@/store/plugin_run";
-import ModalPluginParameters from "./ModalPluginParameters.vue";
+import Parameters from "./Parameters.vue";
 // import { useTimelineStore } from "../store/timeline";
 
 export default {
@@ -220,7 +224,9 @@ export default {
             {
               field: "text_field",
               name: "timeline",
-              value: this.$t("modal.plugin.color_brightness_analysis.timeline_name"),
+              value: this.$t(
+                "modal.plugin.color_brightness_analysis.timeline_name"
+              ),
               text: this.$t("modal.plugin.timeline_name"),
             },
             // {
@@ -502,7 +508,9 @@ export default {
             {
               field: "text_field",
               name: "timeline",
-              value: this.$t("modal.plugin.shot_scalar_annotation.timeline_name"),
+              value: this.$t(
+                "modal.plugin.shot_scalar_annotation.timeline_name"
+              ),
               text: this.$t("modal.plugin.timeline_name"),
             },
             {
@@ -522,8 +530,7 @@ export default {
               hint: this.$t("modal.plugin.scalar_timeline_hint"),
             },
           ],
-          optional_parameters: [
-          ],
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.face_identification.plugin_name"),
@@ -599,10 +606,6 @@ export default {
     };
   },
   computed: {
-    // plugins() {
-    //   return []; //this._plugins;
-    // },
-
     plugins_sorted() {
       return this.plugins.sort((a, b) => a.name.localeCompare(b.name));
     },
@@ -635,7 +638,7 @@ export default {
       }
     },
   },
-  components: { ModalPluginParameters },
+  components: { Parameters },
 };
 </script>
 

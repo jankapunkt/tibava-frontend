@@ -143,33 +143,49 @@ export const useVideoStore = defineStore("video", {
             //     commit("error/update", info, { root: true });
             // });
         },
-        async exportCSV(videoId = null) {
+        async export({ format, parameters = [], videoId = null }) {
             if (this.isLoading) {
                 return
             }
             this.isLoading = true
 
-            let params = {};
+            const formData = new FormData();
+            formData.append("format", format);
+            let jsonParameters = []
+            // formData.append("parameters", JSON.stringify(parameters));
+            parameters.forEach((p) => {
+                if ("file" in p) {
+                    formData.append(`file_${p.name}`, p.file);
+                }
+                else {
+                    jsonParameters.push(p);
+                }
+            })
+            formData.append("parameters", JSON.stringify(jsonParameters));
+
             //use video id or take it from the current video
-
+            let video_id = videoId;
             if (videoId) {
-                params.video_id = videoId;
+                video_id = videoId;
             } else {
-
                 const playerStore = usePlayerStore();
-                const currentVideoId = playerStore.videoId;
-                if (currentVideoId) {
-                    params.video_id = currentVideoId;
+                const video = playerStore.videoId;
+                if (video) {
+                    video_id = video;
                 }
             }
+            formData.append("video_id", video_id);
+            console.log(formData)
             return axios
-                .get(`${config.API_LOCATION}/video/export/csv`, { params })
+                .post(`${config.API_LOCATION}/video/export`, formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        let blob = new Blob([res.data.file], { type: "text/csv" });
+                        let blob = new Blob([res.data.file], { type: `text/${res.data.extension}` });
                         let link = document.createElement("a");
                         link.href = window.URL.createObjectURL(blob);
-                        link.download = `${params.video_id}.csv`;
+                        link.download = `${video_id}.${res.data.extension}`;
                         link.click();
                     }
                 })
@@ -181,44 +197,44 @@ export const useVideoStore = defineStore("video", {
             //   commit('error/update', info, { root: true });
             // });
         },
-        async exportJson(videoId = null) {
-            if (this.isLoading) {
-                return
-            }
-            this.isLoading = true
+        // async exportJson(videoId = null) {
+        //     if (this.isLoading) {
+        //         return
+        //     }
+        //     this.isLoading = true
 
-            let params = {};
-            //use video id or take it from the current video
+        //     let params = {};
+        //     //use video id or take it from the current video
 
-            if (videoId) {
-                params.video_id = videoId;
-            } else {
+        //     if (videoId) {
+        //         params.video_id = videoId;
+        //     } else {
 
-                const playerStore = usePlayerStore();
-                const currentVideoId = playerStore.videoId;
-                if (currentVideoId) {
-                    params.video_id = currentVideoId;
-                }
-            }
-            return axios
-                .get(`${config.API_LOCATION}/video/export/json`, { params })
-                .then((res) => {
-                    if (res.data.status === "ok") {
-                        let blob = new Blob([res.data.file], { type: "text/json" });
-                        let link = document.createElement("a");
-                        link.href = window.URL.createObjectURL(blob);
-                        link.download = `${params.video_id}.json`;
-                        link.click();
-                    }
-                })
-                .finally(() => {
-                    this.isLoading = false;
-                });
-            // .catch((error) => {
-            //   const info = { date: Date(), error, origin: 'collection' };
-            //   commit('error/update', info, { root: true });
-            // });
-        },
+        //         const playerStore = usePlayerStore();
+        //         const currentVideoId = playerStore.videoId;
+        //         if (currentVideoId) {
+        //             params.video_id = currentVideoId;
+        //         }
+        //     }
+        //     return axios
+        //         .get(`${config.API_LOCATION}/video/export/json`, { params })
+        //         .then((res) => {
+        //             if (res.data.status === "ok") {
+        //                 let blob = new Blob([res.data.file], { type: "text/json" });
+        //                 let link = document.createElement("a");
+        //                 link.href = window.URL.createObjectURL(blob);
+        //                 link.download = `${params.video_id}.json`;
+        //                 link.click();
+        //             }
+        //         })
+        //         .finally(() => {
+        //             this.isLoading = false;
+        //         });
+        //     // .catch((error) => {
+        //     //   const info = { date: Date(), error, origin: 'collection' };
+        //     //   commit('error/update', info, { root: true });
+        //     // });
+        // },
         clearStore() {
             this.videos = {}
             this.videoList = []

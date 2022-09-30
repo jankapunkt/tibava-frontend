@@ -23,8 +23,19 @@
     "modal": {
         "export": {
             "title": "Export Video",
-            "csv": "Export as CSV",
-            "json": "Export as JSON"
+            "csv": {
+                "export_name": "CSV",
+                "timeline_merge": "Merge annotations",
+                "use_timestamps": "Use timestamps"
+            },
+            "json": {
+                "export_name": "JSON"
+            },
+            "elan": {
+                "export_name": "ELAN"
+            },
+            "export": "export",
+            "close": "close"
         },
         "analyse": {
             "title": "Analyse"

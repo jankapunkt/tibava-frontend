@@ -153,11 +153,11 @@ export const usePluginRunStore = defineStore("pluginRun", {
           newPluginRuns[e.id] = e;
           Vue.set(this, "pluginRuns", newPluginRuns);
 
-          if (e.status !== "DONE") {
-            console.log("set");
-            console.log(e);
-            console.log(this.pluginRuns[e.id]);
-          }
+          // if (e.status !== "DONE") {
+          //   console.log("set");
+          //   console.log(e);
+          //   console.log(this.pluginRuns[e.id]);
+          // }
           return;
         }
 
