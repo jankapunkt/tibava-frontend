@@ -82,6 +82,12 @@ export default {
             },
             {
               field: "checkbox",
+              name: "use_seconds",
+              value: true,
+              text: this.$t("modal.export.csv.use_seconds"),
+            },
+            {
+              field: "checkbox",
               name: "include_category",
               value: true,
               text: this.$t("modal.export.csv.include_category"),
