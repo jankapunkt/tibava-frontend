@@ -455,6 +455,18 @@ export default {
               text: this.$t("modal.plugin.scalar_timeline_name"),
               hint: this.$t("modal.plugin.scalar_timeline_hint"),
             },
+            {
+              field: "buttongroup",
+              text: this.$t("modal.plugin.aggregation.method"),
+              name: "aggregation",
+              value: 0,
+              buttons: [
+                this.$t("modal.plugin.aggregation.logical_or"),
+                this.$t("modal.plugin.aggregation.logical_and"),
+                this.$t("modal.plugin.aggregation.mean"),
+                this.$t("modal.plugin.aggregation.prod"),
+              ],
+            },
           ],
           optional_parameters: [],
         },

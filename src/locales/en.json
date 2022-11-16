@@ -63,7 +63,11 @@
             "aggregation": {
                 "plugin_name": "Aggregate Timelines",
                 "timeline_name": "Aggregated Timeline",
-                "aggregation_method": "Mean"
+                "method": "Aggregation Method",
+                "logical_or": "Logical Or",
+                "logical_and": "Logical And",
+                "mean": "Mean",
+                "prod": "Product"
             },
             "audio_waveform": {
                 "plugin_name": "Audio Waveform Analysis",
