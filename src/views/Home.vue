@@ -8,9 +8,18 @@
           </v-col>
         </v-row>
 
-        <v-container class="d-flex flex-wrap video-gallery align-content-center">
-          <v-card elevation="2" min-width="400px" :loading="item.loading" outlined shaped v-for="item in videos"
-            :key="item.id">
+        <v-container
+          class="d-flex flex-wrap video-gallery align-content-center"
+        >
+          <v-card
+            elevation="2"
+            width="400px"
+            :loading="item.loading"
+            outlined
+            shaped
+            v-for="item in videos"
+            :key="item.id"
+          >
             <v-card-title>{{ item.name }}</v-card-title>
             <v-card-text>
               <div>Video ID: {{ item.id }}</div>
@@ -54,7 +63,7 @@ export default {
   },
   methods: {
     deleteVideo(video_id) {
-      console.log(video_id)
+      console.log(video_id);
       this.videoStore.delete(video_id);
     },
     showVideo(video_id) {
@@ -116,7 +125,14 @@ export default {
 </script>
 
 <style>
-.video-gallery>* {
+.v-card__title {
+  display: block !important;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+}
+.video-gallery > * {
   margin: 8px;
 }
 </style>
