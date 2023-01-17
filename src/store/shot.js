@@ -22,11 +22,11 @@ export const useShotStore = defineStore("shot", {
   },
   actions: {
     buildShots() {
-      return
       const pluginRunStore = usePluginRunStore();
       const pluginRunResultStore = usePluginRunResultStore();
       const playerStore = usePlayerStore();
 
+      // selection of timeline to be used for the thumbnails
       let shotdetection = pluginRunStore
         .forVideo(playerStore.videoId)
         .filter((e) => {
@@ -42,22 +42,9 @@ export const useShotStore = defineStore("shot", {
       if (!shotdetection.length) {
         return [];
       }
+      shotdetection = shotdetection.at(-1); // use latest shotdetection
 
-      shotdetection = shotdetection.at(-1);
-      let results = [];
-      if (
-        "results" in shotdetection &&
-        shotdetection.results.length > 0 &&
-        "data" in shotdetection.results[0]
-      ) {
-        results = shotdetection.results[0].data.shots.map((e) => {
-          return {
-            start: e.start,
-            end: e.end,
-          };
-        });
-      }
-
+      // selection of thumbnails to be used
       let thumbnail = pluginRunStore
         .forVideo(playerStore.videoId)
         .filter((e) => {
@@ -74,47 +61,61 @@ export const useShotStore = defineStore("shot", {
       if (!thumbnail.length) {
         return results;
       }
-      thumbnail = thumbnail.at(-1);
+      thumbnail = thumbnail.at(-1); // use latest thumbnails
 
-      let thumbnail_dict = {};
+      // get start and end times for each shot
+      let results = [];
+      if (
+        "results" in shotdetection &&
+        shotdetection.results.length > 0 &&
+        "data" in shotdetection.results[0]
+      ) {
+        results = shotdetection.results[0].data.shots.map((e) => {
+          return {
+            start: e.start,
+            end: e.end,
+          };
+        });
+      }
+
+      // create thumbnail dict indicating the thumbnail for a specific time
+      let thumbnail_list = [];
+      let delta_time = 0.2;
       if (
         "results" in thumbnail &&
         thumbnail.results.length > 0 &&
         "data" in thumbnail.results[0]
       ) {
-        thumbnail_dict = thumbnail.results[0].data.images.reduce(
-          (a, b) => (
-            (a[b.time] = config.THUMBNAIL_LOCATION + `/${b.id}.${b.ext}`), a
-          ),
-          {}
-        );
+        delta_time = thumbnail.results[0].data.images[0].delta_time;
+        thumbnail_list = thumbnail.results[0].data.images.map((e) => {
+          return (
+            config.THUMBNAIL_LOCATION +
+            `/${e.id.substr(0, 2)}/${e.id.substr(2, 2)}/${e.id}.${e.ext}`
+          );
+        });
       }
 
-      // console.log(thumbnail_dict);
-
+      // assign thumbnails to shots
       results = results.map((e, i) => {
-        const shot_thumbnails = new Map();
-        Object.keys(thumbnail_dict).forEach(function (key) {
-          if (parseFloat(key) >= e.start && parseFloat(key) <= e.end) {
-            shot_thumbnails.set(parseFloat(key), thumbnail_dict[key]);
-          }
-        });
-        const shot_thumbnails_sorted = new Map(
-          [...shot_thumbnails.entries()].sort()
-        );
-        const thumbnails = Array.from(shot_thumbnails_sorted.values());
-
         return {
           id: i + 1,
           start: e.start,
           end: e.end,
           thumbnails: [
-            thumbnails[0],
-            thumbnails[Math.floor(thumbnails.length / 2)],
-            thumbnails[thumbnails.length - 1],
+            thumbnail_list[
+              Math.min(
+                Math.ceil(e.start / delta_time),
+                thumbnail_list.length - 1
+              )
+            ],
+            thumbnail_list[
+              Math.round((e.start + (e.end - e.start) / 2) / delta_time)
+            ],
+            thumbnail_list[Math.floor(e.end / delta_time)],
           ],
         };
       });
+
       this.shots = results;
     },
   },
