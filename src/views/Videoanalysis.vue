@@ -3,12 +3,7 @@
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
-          <v-card
-            class="d-flex flex-column flex-nowrap px-2"
-            elevation="2"
-            v-resize="onVideoResize"
-            ref="videoCard"
-          >
+          <v-card class="d-flex flex-column flex-nowrap px-2" elevation="2" v-resize="onVideoResize" ref="videoCard">
             <v-row>
               <v-card-title>
                 {{ playerStore.videoName }}
@@ -27,12 +22,7 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card
-            class="overflow-auto"
-            elevation="2"
-            ref="resultCard"
-            :height="resultCardHeight"
-          >
+          <v-card class="overflow-auto" elevation="2" ref="resultCard" :height="resultCardHeight">
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
@@ -42,12 +32,16 @@
               <v-tab disabled>Scenes</v-tab>
 
               <v-tab-item>
-                <ShotCard
-                  v-for="item in shots"
-                  v-bind:key="item.id"
-                  :shot="item"
-                  @seek="onTagetTimeChange"
-                />
+                <!-- <v-row class="mx-2">
+                  <v-col px-2>
+                    <v-select v-model="selectedTimeline" @change="updateShots"
+                      hint="Select timeline for which the shots are displayed" :items="timelines" item-text="name"
+                      item-value="id" label="Select timeline for shots" persistent-hint return-object
+                      single-line></v-select>
+                  </v-col>
+                </v-row> -->
+
+                <ShotCard v-for="item in shots" v-bind:key="item.id" :shot="item" @seek="onTagetTimeChange" />
               </v-tab-item>
               <!-- <v-tab-item>
                 <EntitiesCard
@@ -69,12 +63,7 @@
 
       <v-row class="ma-2">
         <v-col>
-          <v-card
-            class="d-flex flex-column flex-nowrap"
-            max-width="100%"
-            elevation="2"
-            scrollable="False"
-          >
+          <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
               <Timeline ref="timeline" width="100%"> </Timeline>
@@ -116,6 +105,7 @@ export default {
       //timer
       fetchPluginTimer: null,
 
+      selectedTimelineProxy: null,
       videoTime: 0,
       targetTime: 0,
       startTime: 0,
@@ -289,7 +279,9 @@ export default {
         });
       }
     },
-
+    updateShots() {
+      console.log(this.selectedTimeline);
+    },
     async fetchData({ addResults = true }) {
       // Ask backend about all videos
 
@@ -319,8 +311,19 @@ export default {
     timelines() {
       return this.timelineStore.forVideo(this.$route.params.id);
     },
+    timelineNames() {
+      return this.timelines.map((e) => e.name);
+    },
     shots() {
       return this.shotStore.shots;
+    },
+    selectedTimeline: {
+      get() {
+        return this.selectedTimelineProxy === null ? this.timelines[0] : this.selectedTimelineProxy;
+      },
+      set(val) {
+        this.selectedTimelineProxy = val;
+      },
     },
 
     ...mapStores(
@@ -391,7 +394,7 @@ export default {
 </script>
 
 <style scoped>
-.logo > img {
+.logo>img {
   max-height: 56px;
 }
 

@@ -15,16 +15,10 @@
         </v-btn>
       </v-card-title>
       <v-card-text>
-        <v-text-field
-          :label="$t('modal.timeline.duplicate.name')"
-          prepend-icon="mdi-pencil"
-          v-model="name"
-        ></v-text-field>
+        <v-text-field :label="$t('modal.timeline.duplicate.name')" prepend-icon="mdi-pencil"
+          v-model="name"></v-text-field>
 
-        <v-checkbox
-          v-model="includeannotations"
-          :label="$t('modal.timeline.duplicate.includeannotations')"
-        >
+        <v-checkbox v-model="includeannotations" :label="$t('modal.timeline.duplicate.includeannotations')">
         </v-checkbox>
       </v-card-text>
       <v-card-actions class="pt-0">
@@ -74,13 +68,13 @@ export default {
       }
       this.isSubmitting = true;
 
-      console.log("AAA");
+      // console.log("AAA");
       await this.timelineStore.duplicate({
         id: this.timeline,
         name: this.name,
         includeannotations: this.includeannotations,
       });
-      console.log("BBB");
+      // console.log("BBB");
       this.isSubmitting = false;
       this.show = false;
     },

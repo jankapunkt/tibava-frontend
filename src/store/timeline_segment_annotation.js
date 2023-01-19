@@ -1,11 +1,6 @@
-import Vue from "vue";
 import axios from "../plugins/axios";
 import config from "../../app.config";
 import { defineStore } from "pinia";
-
-import { useAnnotationCategoryStore } from "@/store/annotation_category";
-import { useAnnotationStore } from "@/store/annotation";
-import { useTimelineStore } from "@/store/timeline";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 
 export const useTimelineSegmentAnnotationStore = defineStore(
