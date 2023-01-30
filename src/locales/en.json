@@ -89,6 +89,11 @@
                 "timeline_name": "Object Classification",
                 "search_term": "Search Term"
             },
+            "x_clip": {
+                "plugin_name": "Action Classification",
+                "timeline_name": "Action Classification",
+                "search_term": "Search Term"
+            },
             "color_analysis": {
                 "plugin_name": "Color Analysis",
                 "timeline_name": "Dominant Color(s)",

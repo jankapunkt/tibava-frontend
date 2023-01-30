@@ -614,6 +614,36 @@ export default {
             },
           ],
         },
+        {
+          name: this.$t("modal.plugin.x_clip.plugin_name"),
+          icon: "mdi-eye",
+          plugin: "x_clip",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.x_clip.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "text_field",
+              name: "search_term",
+              value: "",
+              text: this.$t("modal.plugin.x_clip.search_term"),
+            },
+          ],
+          optional_parameters: [
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 2,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.fps"),
+            },
+          ],
+        },
       ],
     };
   },
