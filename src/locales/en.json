@@ -78,6 +78,10 @@
                 "plugin_name": "Audio RMS Analysis",
                 "timeline_name": "Audio RMS"
             },
+            "whisper": {
+                "plugin_name": "Speech Recognition (Whisper)",
+                "timeline_name": "Speech Recognition"
+            },
             "audio_frequency": {
                 "plugin_name": "Audio Spectrorgram Analysis",
                 "timeline_name": "Audio Spectrogram",

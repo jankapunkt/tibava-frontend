@@ -75,6 +75,20 @@ export default {
       dialog: false,
       plugins: [
         {
+          name: this.$t("modal.plugin.whisper.plugin_name"),
+          icon: "mdi-waveform",
+          plugin: "whisper",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.whisper.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+          ],
+          optional_parameters: [],
+        },
+        {
           name: this.$t("modal.plugin.audio_waveform.plugin_name"),
           icon: "mdi-waveform",
           plugin: "audio_amp",
