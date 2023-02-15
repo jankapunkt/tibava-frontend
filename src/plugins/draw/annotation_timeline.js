@@ -54,10 +54,10 @@ export class AnnotationTimeline extends Timeline {
     this.cAnnotations = this.renderSegmentsAnnotations(this.pRenderedStart, this.pRenderedEnd);
     this.addChild(this.cAnnotations);
 
-    // this.pTextsObjects = {}
-    // this.pTextsContainer = new PIXI.Container();
-    // this.renderTexts();
-    // this.addChild(this.pTextsContainer);
+    this.pTextsObjects = []
+    this.pTextsContainer = new PIXI.Container();
+    this.drawSegmentsAnnotationsTexts();
+    this.addChild(this.pTextsContainer);
 
     this.cSelection = []
 
@@ -75,7 +75,8 @@ export class AnnotationTimeline extends Timeline {
     // this._drawBars();
   }
 
-  renderTexts() {
+  drawSegmentsAnnotationsTexts() {
+    console.log("drawSegmentsAnnotationsTexts")
     // let textContainer = new PIXI.Graphics();
     // let text
     if (this.pTimeline.segments) {
@@ -87,45 +88,79 @@ export class AnnotationTimeline extends Timeline {
           return
         }
 
+        if (s.end < this.pStartTime || s.start > this.pEndTime) {
+          console.log("skip")
+          return;
+        }
+
         // check if the segment becomes to small
         const width = this.timeToX(s.end) - this.timeToX(s.start);
 
         // delete small annotations if exists
-        if (width < 10) {
+        if (width < 20) {
           console.log("delete")
           return;
         }
-        else {
-          //new annotation
+        console.log("draw text")
+        //new annotation
 
-          const height = this.pHeight;
-          const blockHeight = height / annotationLength;
-          s.annotations.forEach((a, j) => {
-            if (!(a.id in this.pTextsObjects)) {
-              console.log("draw")
-              console.log(a)
+        const height = this.pHeight;
+        const blockHeight = height / 2;
+        s.annotations.forEach((a, j) => {
+          if (!(a.id in this.pTextsObjects)) {
+            console.log("draw text" + a.annotation.name)
+            // console.log(a)
 
-              let text = null;
-              const colorHex = PIXI.utils.string2hex(a.annotation.color);
-              console.log(a.annotation.color)
-              console.log(hex2luminance(colorHex))
-              if (hex2luminance(colorHex) < 0.5) {
-                console.log("white")
-                text = new PIXI.BitmapText(a.annotation.name, { fontName: "large_white_font" });
-              }
-              else {
-                console.log("dark")
-                text = new PIXI.BitmapText(a.annotation.name, { fontName: "large_font" });
-              }
+            let text = null;
+            const colorHex = PIXI.utils.string2hex(a.annotation.color);
+            // console.log(a.annotation.color)
+            // console.log(hex2luminance(colorHex))
 
-              const scale = (blockHeight - 2 * this.pGap) / text.height
-              text.scale.set(scale, scale);
-              text.x = this.timeToX(s.start) + 2
-              text.y = j * blockHeight + this.pGap
-              this.pTextsContainer.addChild(text)
-            }
-          });
-        }
+            const textColor = hex2luminance(colorHex) > 0.5 ? 0x000000 : 0xffffff;
+
+            text = new PIXI.Text(a.annotation.name, {
+              fill: textColor,
+              fontSize: 48,
+              // fontWeight: 'bold',
+            });
+            // if (hex2luminance(colorHex) < 0.5) {
+            //   // console.log("white")
+            //   text = new PIXI.Text(a.annotation.name, {
+            //     fontSize: 35
+            //   });
+            // }
+            // else {
+            //   // console.log("dark")
+            //   text = new PIXI.Text(a.annotation.name, { fontSize: 35 });
+            // }
+
+            const scale = (blockHeight - 2 * this.pGap) / text.height
+            text.scale.set(scale, scale);
+            // text.x = this.timeToX(s.start) + 2
+            // text.y = j * blockHeight + this.pGap
+
+            let rect = new PIXI.Graphics();
+            rect.drawRoundedRect(0, 0, width - 4, this.pHeight - 4, 1);
+
+            let mask = new PIXI.Graphics();
+            mask.beginFill(0xffffff);
+            mask.drawRoundedRect(0, 0, width - 4, this.pHeight - 4, 1);
+            rect.mask = mask;
+            rect.addChild(mask);
+            rect.addChild(text)
+            // rect.drawRoundedRect(0, 0, width, this.pHeight, 5);
+            rect.x = this.timeToX(s.start) + 2
+            rect.y = j * blockHeight + this.pGap
+            // text.mask = mask;
+            // text.addChild(mask)
+
+            // rect.addChild(mask);
+            this.pTextsContainer.addChild(rect)
+            // this.pTextsContainer.addChild(rect)
+            this.pTextsObjects.push(rect)
+          }
+        });
+
       });
     }
   }
@@ -250,6 +285,12 @@ export class AnnotationTimeline extends Timeline {
   scaleContainer() {
     if (this.cSegments) {
       const scale = (this.pRenderedEnd - this.pRenderedStart) / (this.pEndTime - this.pStartTime)
+
+      this.pTextsObjects.forEach((e) =>
+        e.destroy()
+      )
+      this.pTextsObjects = []
+      this.drawSegmentsAnnotationsTexts()
       // if (scale > this.pRedrawScale || this.pEndTime > this.pRenderedEnd || this.pStartTime < this.pRenderedStart) {
       //   this.pRenderedStart = this.pStartTime;
       //   this.pRenderedEnd = this.pEndTime;

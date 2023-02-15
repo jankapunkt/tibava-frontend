@@ -3,20 +3,22 @@
     <v-menu v-model="menu" min-width="175" offset-y bottom left>
       <template v-slot:activator="{ attrs, on: menu }">
         <v-btn
-          icon
+          tile
+          text
           v-bind="attrs"
           v-on="menu"
           class="ml-n2"
           :title="$t('plugin.menu.title')"
         >
+          <v-icon color="primary">mdi-timer-sand-empty</v-icon>
           <v-badge
             v-if="pluginRuns.length > 0"
             color="accent"
             :content="pluginRuns.length"
           >
-            <v-icon color="primary">mdi-timer-sand-empty</v-icon>
+            Pipelines
           </v-badge>
-          <v-icon v-else color="primary">mdi-timer-sand-empty</v-icon>
+          <span v-else> </span>
         </v-btn>
       </template>
       <v-list-item-content class="pa-0 plugin-overview">

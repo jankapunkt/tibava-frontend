@@ -3,23 +3,22 @@
     <v-menu min-width="175" offset-y bottom left>
       <!-- open-on-hover close-delay -->
       <template v-slot:activator="{ attrs, on }">
-        <v-btn icon v-bind="attrs" v-on="on" class="ml-n2">
+        <v-btn tile text v-bind="attrs" v-on="on" class="ml-n2">
           <v-icon color="primary">mdi-label-multiple-outline</v-icon>
+          Shortcuts
         </v-btn>
       </template>
 
       <v-list class="pa-0">
-
         <v-list-item v-if="videoId" @click="showModalShortcut = true">
-          <v-list-item-title>{{ $t("modal.shortcut.title") }}</v-list-item-title>
+          <v-list-item-title>{{
+            $t("modal.shortcut.title")
+          }}</v-list-item-title>
         </v-list-item>
-
       </v-list>
     </v-menu>
 
-    <ModalShortcut v-model="showModalShortcut">
-    </ModalShortcut>
-
+    <ModalShortcut v-model="showModalShortcut"> </ModalShortcut>
   </div>
 </template>
 

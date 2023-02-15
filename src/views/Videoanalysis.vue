@@ -3,7 +3,12 @@
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
-          <v-card class="d-flex flex-column flex-nowrap px-2" elevation="2" v-resize="onVideoResize" ref="videoCard">
+          <v-card
+            class="d-flex flex-column flex-nowrap px-2"
+            elevation="2"
+            v-resize="onVideoResize"
+            ref="videoCard"
+          >
             <v-row>
               <v-card-title>
                 {{ playerStore.videoName }}
@@ -22,14 +27,19 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card class="overflow-auto" elevation="2" ref="resultCard" :height="resultCardHeight">
+          <v-card
+            class="overflow-auto"
+            elevation="2"
+            ref="resultCard"
+            :height="resultCardHeight"
+          >
             <v-tabs centered>
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
               <v-tab>Annotations</v-tab>
               <!-- <v-tab>Current Entities</v-tab> -->
-              <v-tab disabled>Persons</v-tab>
-              <v-tab disabled>Scenes</v-tab>
+              <!-- <v-tab disabled>Persons</v-tab>
+              <v-tab disabled>Scenes</v-tab> -->
 
               <v-tab-item>
                 <!-- <v-row class="mx-2">
@@ -41,7 +51,12 @@
                   </v-col>
                 </v-row> -->
 
-                <ShotCard v-for="item in shots" v-bind:key="item.id" :shot="item" @seek="onTagetTimeChange" />
+                <ShotCard
+                  v-for="item in shots"
+                  v-bind:key="item.id"
+                  :shot="item"
+                  @seek="onTagetTimeChange"
+                />
               </v-tab-item>
               <!-- <v-tab-item>
                 <EntitiesCard
@@ -54,8 +69,8 @@
               <v-tab-item>
                 <CurrentEntitiesOverView />
               </v-tab-item>
-              <v-tab-item> PERSONS </v-tab-item>
-              <v-tab-item> SCENES </v-tab-item>
+              <!-- <v-tab-item> PERSONS </v-tab-item>
+              <v-tab-item> SCENES </v-tab-item> -->
             </v-tabs>
           </v-card>
         </v-col>
@@ -63,7 +78,12 @@
 
       <v-row class="ma-2">
         <v-col>
-          <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
+          <v-card
+            class="d-flex flex-column flex-nowrap"
+            max-width="100%"
+            elevation="2"
+            scrollable="False"
+          >
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
               <Timeline ref="timeline" width="100%"> </Timeline>
@@ -319,7 +339,9 @@ export default {
     },
     selectedTimeline: {
       get() {
-        return this.selectedTimelineProxy === null ? this.timelines[0] : this.selectedTimelineProxy;
+        return this.selectedTimelineProxy === null
+          ? this.timelines[0]
+          : this.selectedTimelineProxy;
       },
       set(val) {
         this.selectedTimelineProxy = val;
@@ -394,7 +416,7 @@ export default {
 </script>
 
 <style scoped>
-.logo>img {
+.logo > img {
   max-height: 56px;
 }
 

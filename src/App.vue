@@ -2,17 +2,19 @@
   <v-app id="tibava">
     <v-app-bar app>
       <img :title="appName" src="./assets/logo_tib.svg" height="40" />
-      <v-toolbar-title style="padding-right: 50px">AV-Analytics</v-toolbar-title>
+      <v-toolbar-title style="padding-right: 50px"
+        >AV-Analytics</v-toolbar-title
+      >
 
       <v-btn tile text class="ml-n2" to="/">
         <v-icon left color="primary">mdi-movie</v-icon>
-        Your Videos
+        Videos
       </v-btn>
 
       <v-spacer></v-spacer>
-      <PluginMenu v-if="videoLoaded"/>
-      <AnnotationMenu v-if="videoLoaded"/>
-      <VideoMenu v-if="videoLoaded"/>
+      <PluginMenu v-if="videoLoaded" />
+      <AnnotationMenu v-if="videoLoaded" />
+      <VideoMenu v-if="videoLoaded" />
       <UserMenu />
     </v-app-bar>
     <router-view />
@@ -25,9 +27,9 @@ import VideoMenu from "@/components/VideoMenu.vue";
 import PluginMenu from "@/components/PluginMenu.vue";
 import AnnotationMenu from "@/components/AnnotationMenu.vue";
 
-import { mapStores } from 'pinia'
-import { useUserStore } from "@/store/user"
-import { usePlayerStore } from "@/store/player"
+import { mapStores } from "pinia";
+import { useUserStore } from "@/store/user";
+import { usePlayerStore } from "@/store/player";
 
 export default {
   data() {
@@ -43,13 +45,13 @@ export default {
       return this.playerStore.videoId !== null;
     },
 
-    ...mapStores(useUserStore,usePlayerStore)
+    ...mapStores(useUserStore, usePlayerStore),
   },
   components: {
     UserMenu,
     VideoMenu,
     PluginMenu,
-    AnnotationMenu
+    AnnotationMenu,
   },
 };
 </script>
