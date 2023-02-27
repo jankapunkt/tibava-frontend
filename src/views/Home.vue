@@ -109,9 +109,12 @@ export default {
   // TODO rwrite everything
   beforeRouteEnter(to, from, next) {
     next(() => {
+      console.log("NEXT");
       const userStore = useUserStore();
 
       const loggedIn = userStore.loggedIn;
+
+      console.log(loggedIn);
       if (!loggedIn && to.name !== "Login") {
         return router.push({ path: `/login`, query: { redirect: to.path } });
       }

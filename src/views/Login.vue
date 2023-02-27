@@ -2,7 +2,16 @@
   <v-app>
     <v-main>
       <v-container class="py-8 px-6" fluid>
-        <v-row justify="space-around">
+        <v-col justify="space-around">
+          <v-card class="welcome">
+            <v-card-title>
+              {{ $t("welcome.title") }}
+            </v-card-title>
+
+            <v-card-text>
+              {{ $t("welcome.text") }}
+            </v-card-text>
+          </v-card>
           <v-card class="login">
             <v-card-title>
               {{ $t("user.login.title") }}
@@ -51,7 +60,7 @@
               <UserRegister @close="dialog = false" />.
             </div>
           </v-card>
-        </v-row>
+        </v-col>
       </v-container>
     </v-main>
   </v-app>
@@ -128,6 +137,9 @@ export default {
 </script>
 
 <style>
+.welcome {
+  margin-bottom: 10px;
+}
 .video-gallery > * {
   margin: 8px;
 }

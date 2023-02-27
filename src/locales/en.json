@@ -1,4 +1,8 @@
 {
+    "welcome": {
+        "title": "Welcome",
+        "text": "Welcome to the TIB-AV Analysis Tool. If you do not have an account, you can use the user 'demouser' with the password 'demouser' to view some prepared videos. Please note that the uploaded videos and annotations of this user will be reset periodically."
+    },
     "timelineSegment": {
         "title": "Title",
         "close": "Close",

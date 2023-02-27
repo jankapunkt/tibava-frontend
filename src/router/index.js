@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '@/views/Home.vue';
 import Login from '@/views/Login.vue';
-import Videoanalysis from '@/views/Videoanalysis.vue';
+import VideoAnalysis from '@/views/VideoAnalysis.vue';
 
 import { useUserStore } from "@/store/user"
 
@@ -13,7 +13,7 @@ const router = new VueRouter({
   routes: [
     { path: '/', name: 'Home', component: Home },
     { path: '/login', name: 'Login', component: Login },
-    { path: '/videoanalysis/:id', name: 'Videoanalysis', component: Videoanalysis },
+    { path: '/videoanalysis/:id', name: 'VideoAnalysis', component: VideoAnalysis },
     // { path: '*', name: 'NotFound', component: NotFound },
   ],
 });
