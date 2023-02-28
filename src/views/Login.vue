@@ -9,7 +9,16 @@
             </v-card-title>
 
             <v-card-text>
-              {{ $t("welcome.text") }}
+              <p v-html="$t('welcome.text')"></p>
+
+              <div class="text-h5">{{ $t("welcome.demo_title") }}</div>
+              <p v-html="$t('welcome.demo_text')"></p>
+
+              <div class="text-h5">{{ $t("welcome.login_title") }}</div>
+              <p v-html="$t('welcome.login_text')"></p>
+
+              <div class="text-h5">{{ $t("welcome.format_title") }}</div>
+              <p v-html="$t('welcome.format_text')"></p>
             </v-card-text>
           </v-card>
           <v-card class="login">
@@ -148,6 +157,11 @@ export default {
   margin-bottom: 10px;
 }
 .video-gallery > * {
-  margin: 8px;
+  margin: 10px;
+}
+.welcome .text-h5 {
+  margin-bottom: 8px;
+  margin-top: 5px;
+  font-size: 1.2rem !important;
 }
 </style>
