@@ -57,7 +57,13 @@
 
             <div class="grey--text px-6 pb-6" style="text-align: center">
               {{ $t("user.login.text") }}
-              <UserRegister @close="dialog = false" />.
+              <a @click="showModalRegister = true">
+                {{ $t("user.register.title") }}
+              </a>
+
+              <UserRegister v-model="showModalRegister">
+                <activator />
+              </UserRegister>
             </div>
           </v-card>
         </v-col>
@@ -80,6 +86,7 @@ export default {
         password: null,
       },
 
+      showModalRegister: false,
       showPassword: false,
     };
   },
