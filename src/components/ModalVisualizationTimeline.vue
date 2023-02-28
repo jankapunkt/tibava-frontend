@@ -84,6 +84,7 @@ export default {
       colormap_idx: null,
       colormap_proxy: null,
       colormap_options: [],
+      colormap_default: "TIBReds",
     };
   },
   computed: {
@@ -139,11 +140,20 @@ export default {
         visualization =
           this.visualization_options[this.visualization_idx].value;
       }
+      console.log(this.colormap_idx);
+      console.log(this.colormap_options);
+      let colormap = null;
+      if (this.colormap_idx === null) {
+        colormap = this.colormap_default;
+      } else {
+        colormap = this.colormap_options[this.colormap_idx].value;
+      }
+      console.log(colormap);
 
       await this.timelineStore.changeVisualization({
         timelineId: this.timeline,
         visualization: visualization,
-        colormap: this.colormap_options[this.colormap_idx].value,
+        colormap: colormap,
       });
 
       this.isSubmitting = false;
