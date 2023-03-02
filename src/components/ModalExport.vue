@@ -94,6 +94,12 @@ export default {
             },
           ],
         },
+        {
+          name: this.$t("modal.export.elan.export_name"),
+          icon: "mdi-file",
+          export: "elan",
+          parameters: [],
+        },
       ],
     };
   },
