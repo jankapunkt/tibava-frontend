@@ -200,29 +200,34 @@ export const useTimelineSegmentStore = defineStore("timelineSegment", {
         end: end,
       };
 
+      console.log("#######################")
       return axios
         .post(`${config.API_LOCATION}/timeline/segment/annotate/range`, params)
         .then((res) => {
           if (res.data.status === "ok") {
+            console.log("###################++++++")
             const timelineSegmentAnnotationStore =
               useTimelineSegmentAnnotationStore();
             const annotationCategoryStore = useAnnotationCategoryStore();
             const annotationStore = useAnnotationStore();
 
-            timelineSegmentAnnotationStore.deleteFromStore(
-              res.data.timeline_segment_annotation_deleted
-            );
-            timelineSegmentAnnotationStore.addToStore(
-              res.data.timeline_segment_annotation_added
-            );
+            this.deleteFromStore(res.data.timeline_segment_deleted);
+            this.addToStore(res.data.timeline_segment_added);
 
             annotationCategoryStore.addToStore(
               res.data.annotation_category_added
             );
             annotationStore.addToStore(res.data.annotation_added);
 
-            this.deleteFromStore(res.data.timeline_segment_deleted);
-            this.addToStore(res.data.timeline_segment_added);
+            timelineSegmentAnnotationStore.deleteFromStore(
+              res.data.timeline_segment_annotation_deleted
+            );
+            console.log("res.data.timeline_segment_annotation_added")
+            console.log(JSON.stringify(res.data.timeline_segment_annotation_added))
+            timelineSegmentAnnotationStore.addToStore(
+              res.data.timeline_segment_annotation_added
+            );
+
             // let timeline know that something change
             const timelineStore = useTimelineStore();
             timelineStore.notifyChanges({ timelineIds: [timelineId] });

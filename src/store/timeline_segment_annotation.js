@@ -26,7 +26,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       },
       forTimelineSegment(state) {
         return (timelineSegmentId) => {
-          // console.log(state)
+          console.log('QUERY')
           if (
             !state.timelineSegmentAnnotationBySegment.has(timelineSegmentId)
           ) {
@@ -34,6 +34,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
           }
           const timelineSegmentIds =
             state.timelineSegmentAnnotationBySegment.get(timelineSegmentId);
+          console.log(timelineSegmentIds)
           return timelineSegmentIds.map((id) => {
             return state.timelineSegmentAnnotations[id];
           });
@@ -196,6 +197,8 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       },
       addToStore(timelineSegmentAnnotations) {
         const timelineSegmentStore = useTimelineSegmentStore();
+        console.log('+w+wür+wqrüwq+rüwq+ü')
+        console.log(JSON.stringify(timelineSegmentAnnotations))
 
         timelineSegmentAnnotations.forEach((e, i) => {
           this.timelineSegmentAnnotationListAdded.push(e.id);
@@ -235,6 +238,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
               this.timelineSegmentAnnotationBySegment.set(timelineSegment.id, [
                 e.id,
               ]);
+              console.log("ADD_TO_CACHE")
             }
           }
         });
