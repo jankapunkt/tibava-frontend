@@ -33,6 +33,15 @@
                 <v-btn outlined @click="showVideo(item.id)">
                   <v-icon>{{ "mdi-movie-search-outline" }}</v-icon> Analyse
                 </v-btn>
+                <!-- <ModalVideoRename :video="item.id" /> -->
+                <ModalVideoRename :video="item.id">
+                  <template v-slot:activator="on">
+                    <v-btn outlined v-on="on">
+                      <v-icon left>{{ "mdi-pencil" }}</v-icon>
+                      {{ $t("modal.video.rename.link") }}
+                    </v-btn>
+                  </template>
+                </ModalVideoRename>
                 <v-btn color="red" outlined @click="deleteVideo(item.id)">
                   <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
                 </v-btn>
@@ -48,6 +57,7 @@
 <script>
 import router from "../router";
 import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
+import ModalVideoRename from "@/components/ModalVideoRename.vue";
 import TimeMixin from "../mixins/time";
 import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video.js";
@@ -94,6 +104,7 @@ export default {
   },
   components: {
     ModalVideoUpload,
+    ModalVideoRename,
   },
   mounted() {
     this.fetchData();

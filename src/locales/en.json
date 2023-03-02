@@ -37,6 +37,11 @@
         "search": "Search"
     },
     "modal": {
+        "video": {
+            "rename": {
+                "link": "Rename"
+            }
+        },
         "export": {
             "title": "Export Annotations",
             "csv": {
