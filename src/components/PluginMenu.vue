@@ -12,13 +12,15 @@
         >
           <v-icon color="primary">mdi-timer-sand-empty</v-icon>
           <v-badge
-            v-if="pluginRuns.length > 0"
+            v-if="numRunningPlugins > 0"
             color="accent"
-            :content="pluginRuns.length"
+            :content="numRunningPlugins"
           >
-            Pipelines
+            {{ $t("plugin.menu.title") }}
           </v-badge>
-          <span v-else> </span>
+          <span v-else>
+            {{ $t("plugin.menu.title") }}
+          </span>
         </v-btn>
       </template>
       <v-list-item-content class="pa-0 plugin-overview">
@@ -186,6 +188,11 @@ export default {
         })
         .sort((a, b) => a - b);
       return pluginRuns;
+    },
+    numRunningPlugins() {
+      return this.pluginRuns.filter((e) => {
+        return e.status !== "DONE" && e.status !== "ERROR";
+      }).length;
     },
 
     ...mapStores(usePlayerStore, usePluginRunStore, usePluginRunResultStore),

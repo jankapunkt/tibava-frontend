@@ -9,6 +9,12 @@
         "format_title": "Video File Support",
         "format_text": "Please note that TIB-AV-A currently only supports the analysis of <span style='font-weight: bold;'>mp4 video files</span> to avoid long processing times due to transcoding videos on our server."
     },
+    "plugin": {
+        "menu": {
+            "title": "Pipelines",
+            "new": "New"
+        }
+    },
     "timelineSegment": {
         "title": "Title",
         "close": "Close",
@@ -32,7 +38,7 @@
     },
     "modal": {
         "export": {
-            "title": "Export Video",
+            "title": "Export Annotations",
             "csv": {
                 "export_name": "CSV",
                 "timeline_merge": "Merge annotations",
