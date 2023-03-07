@@ -12,9 +12,19 @@
               <p v-html="$t('welcome.text')"></p>
 
               <div class="text-h5">{{ $t("welcome.demo_title") }}</div>
-              <p v-html="$t('welcome.demo_text')"></p>
+
+              <p>
+                <video controls>
+                  <source
+                    width="10%"
+                    src="https://tib.eu/cloud/s/sMmqWqWYict3Zpb/download/TIB-AV-A_Einfuehrung_2.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </p>
 
               <div class="text-h5">{{ $t("welcome.login_title") }}</div>
+
               <p v-html="$t('welcome.login_text')"></p>
 
               <div class="text-h5">{{ $t("welcome.format_title") }}</div>
@@ -153,6 +163,14 @@ export default {
 </script>
 
 <style>
+.welcome video {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1920px;
+  width: 100%;
+  height: auto;
+  display: block;
+}
 .welcome {
   margin-bottom: 10px;
 }
