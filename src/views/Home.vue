@@ -15,8 +15,6 @@
             elevation="2"
             width="400px"
             :loading="item.loading"
-            outlined
-            shaped
             v-for="item in videos"
             :key="item.id"
           >
@@ -29,11 +27,10 @@
               </div>
               <div>License: {{ item.license }}</div>
 
-              <v-card-actions>
+              <v-card-actions class="actions">
                 <v-btn outlined @click="showVideo(item.id)">
                   <v-icon>{{ "mdi-movie-search-outline" }}</v-icon> Analyse
                 </v-btn>
-                <!-- <ModalVideoRename :video="item.id" /> -->
                 <ModalVideoRename :video="item.id">
                   <template v-slot:activator="on">
                     <v-btn outlined v-on="on">
@@ -42,6 +39,7 @@
                     </v-btn>
                   </template>
                 </ModalVideoRename>
+                <!-- <ModalVideoRename :video="item.id" /> -->
                 <v-btn color="red" outlined @click="deleteVideo(item.id)">
                   <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
                 </v-btn>
@@ -148,5 +146,11 @@ export default {
 }
 .video-gallery > * {
   margin: 8px;
+}
+.video-gallery > * {
+  margin: 8px;
+}
+.actions > .v-btn:not(:first-child) {
+  margin-left: 8px !important;
 }
 </style>

@@ -39,7 +39,11 @@
     "modal": {
         "video": {
             "rename": {
-                "link": "Rename"
+                "title": "Rename Video",
+                "link": "Rename",
+                "name": "Video Name",
+                "update": "Rename",
+                "close": "Close"
             }
         },
         "export": {

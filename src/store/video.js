@@ -119,6 +119,36 @@ export const useVideoStore = defineStore("video", {
                     this.isLoading = false;
                 });
         },
+        async rename({ videoId, name }) {
+            if (this.isLoading) {
+                return;
+            }
+            this.isLoading = true;
+
+            let params = {
+                id: videoId,
+                name: name,
+            };
+
+            const newVideos = { ...this.videos };
+            newVideos[videoId].name = name;
+            Vue.set(this, "videos", newVideos);
+
+            return axios
+                .post(`${config.API_LOCATION}/video/rename`, params)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                        // commit("rename", { videoId, name });
+                    }
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+            // .catch((error) => {
+            //     const info = { date: Date(), error, origin: 'collection' };
+            //     commit('error/update', info, { root: true });
+            // });
+        },
         async delete(video_id) {
             if (this.isLoading) {
                 return
