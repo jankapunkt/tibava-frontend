@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
+import { usePlayerStore } from "@/store/player";
 
 export const usePluginRunResultStore = defineStore('pluginRunResult', {
     state: () => {
@@ -26,7 +27,8 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
         },
     },
     actions: {
-        async fetchForVideo({ addResults = false, videoId = null }) {
+        async fetchForVideo({ addResults = false, videoId = null, pluginRunId = null }) {
+            console.log("pluginRunResult::fetchForVideo")
             if (this.isLoading) {
                 return
             }
@@ -46,6 +48,10 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
                 if (videoId) {
                     params.video_id = videoId;
                 }
+            }
+
+            if (pluginRunId) {
+                params.plugin_run_id = pluginRunId;
             }
 
             return axios.get(`${config.API_LOCATION}/plugin/run/result/list`, { params })
@@ -71,6 +77,7 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
                 if (e.id in this.pluginRunResults) {
                     return;
                 }
+                console.log(e.id)
                 this.pluginRunResults[e.id] = e;
                 this.pluginRunResultList.push(e.id);
             });

@@ -311,13 +311,14 @@ export default {
       });
       this.shotStore.buildShots();
     },
-    async fetchPlugin({ addResults = true }) {
-      console.log("fetchPlugin");
+    async fetchPlugin() {
+      // console.log("fetchPlugin");
 
-      await this.pluginRunStore.fetchUpdateForVideo({
+      let updateState = await this.pluginRunStore.fetchForVideo({
         videoId: this.$route.params.id,
-        addResults: addResults,
+        fetchResults: true,
       });
+      // console.log(updateState);
     },
   },
   computed: {
