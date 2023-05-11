@@ -193,6 +193,15 @@
             "close": "Close"
         },
         "timeline": {
+            "export_result": {
+                "link": "Export Data",
+                "close": "Close",
+                "title": "Export Timeline Data",
+                "export": "Export",
+                "csv": {
+                    "export_name": "CSV"
+                }
+            },
             "menu": {
                 "title": "Options"
             },

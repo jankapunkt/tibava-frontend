@@ -88,6 +88,9 @@
                     <v-list-item v-if="data.type == 'PLUGIN_RESULT'">
                       <ModalVisualizationTimeline :timeline="data.id" />
                     </v-list-item>
+                    <v-list-item v-if="data.type == 'PLUGIN_RESULT'">
+                      <ModalExportResult :timeline="data.id" />
+                    </v-list-item>
                     <v-list-item>
                       <ModalDeleteTimeline :timeline="data.id" />
                     </v-list-item>
@@ -201,6 +204,7 @@ import { DraggableTree } from "vue-draggable-nested-tree";
 import ModalRenameTimeline from "@/components/ModalRenameTimeline.vue";
 import ModalCopyTimeline from "@/components/ModalCopyTimeline.vue";
 import ModalDeleteTimeline from "@/components/ModalDeleteTimeline.vue";
+import ModalExportResult from "@/components/ModalExportResult.vue";
 import ModalCreateTimeline from "@/components/ModalCreateTimeline.vue";
 import ModalVisualizationTimeline from "@/components/ModalVisualizationTimeline.vue";
 import ModalImportTimeline from "@/components/ModalImportTimeline.vue";
@@ -1189,6 +1193,7 @@ export default {
     ModalRenameTimeline,
     ModalCopyTimeline,
     ModalDeleteTimeline,
+    ModalExportResult,
     ModalCreateTimeline,
     ModalVisualizationTimeline,
     ModalImportTimeline,
