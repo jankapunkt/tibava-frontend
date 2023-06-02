@@ -98,7 +98,24 @@ export default {
           name: this.$t("modal.export.elan.export_name"),
           icon: "mdi-file",
           export: "elan",
-          parameters: [],
+          parameters: [
+            {
+              field: "select_timeline",
+              name: "shot_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.shot_timeline_name"),
+              hint: this.$t("modal.plugin.shot_timeline_hint"),
+            },
+            {
+              field: "select_scalar_timeline",
+              name: "scalar_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.scalar_timeline_name"),
+              hint: this.$t("modal.plugin.scalar_timeline_hint"),
+            },
+          ],
         },
       ],
     };
