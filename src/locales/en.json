@@ -92,6 +92,8 @@
                 "logical_or": "Logical Or",
                 "logical_and": "Logical And",
                 "mean": "Mean",
+                "max": "Maximum",
+                "min": "Minimum",
                 "prod": "Product"
             },
             "audio_waveform": {

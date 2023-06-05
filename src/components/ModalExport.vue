@@ -107,6 +107,17 @@ export default {
               text: this.$t("modal.plugin.shot_timeline_name"),
               hint: this.$t("modal.plugin.shot_timeline_hint"),
             },
+            {
+              field: "buttongroup",
+              text: this.$t("modal.plugin.aggregation.method"),
+              name: "aggregation",
+              value: 0,
+              buttons: [
+                this.$t("modal.plugin.aggregation.max"),
+                this.$t("modal.plugin.aggregation.min"),
+                this.$t("modal.plugin.aggregation.mean"),
+              ],
+            },
           ],
         },
       ],
