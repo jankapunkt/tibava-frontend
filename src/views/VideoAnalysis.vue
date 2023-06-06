@@ -37,6 +37,7 @@
               <v-tabs-slider />
               <v-tab>Shots</v-tab>
               <v-tab>Annotations</v-tab>
+              <v-tab>Transcript</v-tab>
               <!-- <v-tab>Current Entities</v-tab> -->
               <!-- <v-tab disabled>Persons</v-tab>
               <v-tab disabled>Scenes</v-tab> -->
@@ -71,6 +72,16 @@
               </v-tab-item>
               <!-- <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item> -->
+              <v-tab-item>
+                <!-- {{ transcripts }} -->
+                <TranscriptCard
+                  v-for="item in transcripts"
+                  v-bind:key="item.id"
+                  :transcript="item"
+                  @seek="onTagetTimeChange"
+                />
+              </v-tab-item> 
+
             </v-tabs>
           </v-card>
         </v-col>
@@ -99,6 +110,7 @@
 <script>
 import VideoPlayer from "@/components/VideoPlayer.vue";
 import ShotCard from "@/components/ShotCard.vue";
+import TranscriptCard from "@/components/TranscriptCard.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
@@ -338,6 +350,9 @@ export default {
     shots() {
       return this.shotStore.shots;
     },
+    transcripts() {
+      return this.timelineSegmentAnnotationStore.transcriptSegments;
+    },
     selectedTimeline: {
       get() {
         return this.selectedTimelineProxy === null
@@ -385,6 +400,7 @@ export default {
   components: {
     VideoPlayer,
     ShotCard,
+    TranscriptCard,
     Timeline,
     TimeSelector,
     EntitiesCard,

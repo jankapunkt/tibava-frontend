@@ -2,6 +2,7 @@ import axios from "../plugins/axios";
 import config from "../../app.config";
 import { defineStore } from "pinia";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
+import { useAnnotationCategoryStore } from "@/store/annotation_category";
 
 export const useTimelineSegmentAnnotationStore = defineStore(
   "timelineSegmentAnnotation",
@@ -24,6 +25,28 @@ export const useTimelineSegmentAnnotationStore = defineStore(
           (id) => state.timelineSegmentAnnotations[id]
         );
       },
+      transcriptSegments(state) {
+        const annotation_cats = useAnnotationCategoryStore();
+        const segmentStore = useTimelineSegmentStore();
+        return state.timelineSegmentAnnotationList.map(
+          (id, i) => {
+            const segment_annotation = state.timelineSegmentAnnotations[id];
+            console.log(segment_annotation);
+            const segment = segmentStore.get(segment_annotation.timeline_segment_id);
+            const cat = annotation_cats.get(segment_annotation.annotation.category_id);
+            return {id: i + 1, category: cat, name: segment_annotation.annotation.name, start: segment.start, end: segment.end};
+          }
+        ).filter(
+          (segment) => segment.category && segment.category.name === "Transcript"
+          ).sort(
+            (a, b) => a.start > b.start
+            ).map(
+              (segment, i) => {
+                segment.id = i + 1;
+                return segment;
+              }
+              );;
+      },
       forTimelineSegment(state) {
         return (timelineSegmentId) => {
           console.log('QUERY')
@@ -34,7 +57,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
           }
           const timelineSegmentIds =
             state.timelineSegmentAnnotationBySegment.get(timelineSegmentId);
-          console.log(timelineSegmentIds)
+          // console.log(timelineSegmentIds)
           return timelineSegmentIds.map((id) => {
             return state.timelineSegmentAnnotations[id];
           });
@@ -197,8 +220,8 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       },
       addToStore(timelineSegmentAnnotations) {
         const timelineSegmentStore = useTimelineSegmentStore();
-        console.log('+w+wür+wqrüwq+rüwq+ü')
-        console.log(JSON.stringify(timelineSegmentAnnotations))
+        // console.log('+w+wür+wqrüwq+rüwq+ü')
+        // console.log(JSON.stringify(timelineSegmentAnnotations))
 
         timelineSegmentAnnotations.forEach((e, i) => {
           this.timelineSegmentAnnotationListAdded.push(e.id);

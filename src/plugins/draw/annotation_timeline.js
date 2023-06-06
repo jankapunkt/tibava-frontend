@@ -101,14 +101,13 @@ export class AnnotationTimeline extends Timeline {
           console.log("delete")
           return;
         }
-        console.log("draw text")
         //new annotation
 
         const height = this.pHeight;
         const blockHeight = Math.min(height / 2, height / s.annotations.length);
         s.annotations.forEach((a, j) => {
           if (!(a.id in this.pTextsObjects)) {
-            console.log("draw text" + a.annotation.name)
+            // console.log("draw text" + a.annotation.name)
             // console.log(a)
 
             let text = null;
