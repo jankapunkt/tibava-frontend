@@ -1,46 +1,7 @@
 <template>
   <v-card class="d-flex flex-column pa-2 ma-4" elevation="4" v-on:click="setVideoPlayerTime(transcript.start)">
-    <v-card-title class="px-2 py-1">Chunk {{ transcript.id }}</v-card-title>
-    <v-row justify="center" class="px-2 py-0">
-      <v-col cols="8">
-        <v-list-item three-line>
-          <v-list-item-content min-width>
-            <!-- <div class="text-overline mb-4">Shot {{ shot.id }}</div> -->
-            <v-list-item-subtitle>Begin: {{ get_timecode(transcript.start) }}</v-list-item-subtitle>
-            <v-list-item-subtitle>End: {{ get_timecode(transcript.end) }}</v-list-item-subtitle>
-            <!-- <v-list-item-subtitle>Duration:{{ get_timecode(transcript.end - transcript.start) }}</v-list-item-subtitle> -->
-          </v-list-item-content>
-        </v-list-item>
-      </v-col>
-      <span>{{transcript.name}}</span>
-
-      <!-- <div v-for="(item, i) in annotations" :key="i" class="my-2">
-          <v-progress-linear
-            :color="item.color"
-            color="#d99090"
-            height="30"
-            rounded
-            :value="((time - item.start) / (item.end - item.start)) * 100"
-          >
-            <v-tooltip top>
-              <template v-slot:activator="{ on, attrs }">
-                <span
-                  v-bind="attrs"
-                  v-on="on"
-                  class="mx-2"
-                  style="
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                  "
-                  >{{ item.name }}</span
-                ></template
-              >
-              <span>{{ item.name }}</span>
-            </v-tooltip>
-          </v-progress-linear>
-        </div> -->
-    </v-row>
+    <span style="color:rgb(0, 0, 0); margin-bottom:0.2cm">{{ get_timecode(transcript.start) }}</span>
+    <span>{{transcript.name}}</span>
   </v-card>
 </template>
 

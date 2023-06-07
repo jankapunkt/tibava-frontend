@@ -77,7 +77,7 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
                 if (e.id in this.pluginRunResults) {
                     return;
                 }
-                console.log(e.id)
+                // console.log(e.id)
                 this.pluginRunResults[e.id] = e;
                 this.pluginRunResultList.push(e.id);
             });
