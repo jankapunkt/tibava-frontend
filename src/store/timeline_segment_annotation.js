@@ -3,6 +3,7 @@ import config from "../../app.config";
 import { defineStore } from "pinia";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { useAnnotationCategoryStore } from "@/store/annotation_category";
+import { useAnnotationStore } from "@/store/annotation";
 
 export const useTimelineSegmentAnnotationStore = defineStore(
   "timelineSegmentAnnotation",
@@ -26,26 +27,46 @@ export const useTimelineSegmentAnnotationStore = defineStore(
         );
       },
       transcriptSegments(state) {
-        const annotation_cats = useAnnotationCategoryStore();
+        const annotationCatygoryStore = useAnnotationCategoryStore();
         const segmentStore = useTimelineSegmentStore();
+        const annotationStore = useAnnotationStore();
         return state.timelineSegmentAnnotationList.map(
           (id, i) => {
             const segment_annotation = state.timelineSegmentAnnotations[id];
-            console.log(segment_annotation);
-            const segment = segmentStore.get(segment_annotation.timeline_segment_id);
-            const cat = annotation_cats.get(segment_annotation.annotation.category_id);
-            return {id: i + 1, category: cat, name: segment_annotation.annotation.name, start: segment.start, end: segment.end};
+            console.log(JSON.stringify(segment_annotation));
+
+            let segment = null;
+            let start = 0;
+            let end = 0;
+            if (segment_annotation.timeline_segment_id) {
+              segment = segmentStore.get(segment_annotation.timeline_segment_id);
+              start = segment.start;
+              end = segment.end;
+            }
+            let annotation = null;
+            if (segment_annotation.annotation_id) {
+              annotation = annotationStore.get(segment_annotation.annotation_id);
+            }
+            let cat = null;
+            if (annotation) {
+              cat = annotationCatygoryStore.get(annotation.category_id);
+            }
+            let name = '';
+            if (annotation) {
+              name = annotation.name;
+            }
+            return { id: i + 1, category: cat, name: name, start: start, end: end };
           }
         ).filter(
           (segment) => segment.category && segment.category.name === "Transcript"
-          ).sort(
-            (a, b) => a.start > b.start
-            ).map(
-              (segment, i) => {
-                segment.id = i + 1;
-                return segment;
-              }
-              );;
+        ).sort(
+          (a, b) => a.start > b.start
+        ).map(
+          (segment, i) => {
+            segment.id = i + 1;
+            return segment;
+          }
+        );
       },
       forTimelineSegment(state) {
         return (timelineSegmentId) => {
