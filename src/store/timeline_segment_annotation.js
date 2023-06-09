@@ -33,7 +33,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
         return state.timelineSegmentAnnotationList.map(
           (id, i) => {
             const segment_annotation = state.timelineSegmentAnnotations[id];
-            console.log(JSON.stringify(segment_annotation));
+            // console.log(JSON.stringify(segment_annotation));
 
             let segment = null;
             let start = 0;

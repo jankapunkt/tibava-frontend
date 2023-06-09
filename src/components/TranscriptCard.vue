@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-card
-    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4', { highlighted: isHighlighted }]"
+    :class="[{'child-container':true}, 'd-flex', 'flex-column', 'pa-2', 'ma-4', { highlighted: isHighlighted }]"
+    ref="highlightedChild"
+    class="child-container"
     elevation="4"
     v-on:click="setVideoPlayerTime(transcript.start)"
     >
@@ -16,11 +18,16 @@ import TimeMixin from "../mixins/time";
 
 import { mapStores } from "pinia";
 import { usePlayerStore } from "@/store/player";
-import { useTimelineSegmentAnnotationStore } from "../store/timeline_segment_annotation";
 
 export default {
   mixins: [TimeMixin],
   props: ["transcript"],
+  data () {
+    return {
+      // this variable ensures that the signal to scroll is only emitted once 
+      emitted: false
+    }
+  },
   methods: {
     setVideoPlayerTime(time) {
       this.playerStore.setTargetTime(time);
@@ -29,12 +36,21 @@ export default {
   computed: {
     isHighlighted() {
       const cur_time = this.playerStore.currentTime;
-      return this.transcript.start <= cur_time && this.transcript.end > cur_time;
+      if (this.transcript.start <= cur_time && this.transcript.end > cur_time){
+        if(!this.emitted){
+          console.log("child emit");
+          this.$emit('childHighlighted', this.child);
+        }
+        this.emitted = true;
+        return true
+      }
+      this.emitted = false;
+      return false;
     },
     time(){
       return this.playerStore.currentTime;
     },
-    ...mapStores(usePlayerStore, useTimelineSegmentAnnotationStore),
+    ...mapStores(usePlayerStore),
   }
 };
 </script>

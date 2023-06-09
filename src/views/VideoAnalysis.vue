@@ -73,13 +73,7 @@
               <!-- <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item> -->
               <v-tab-item>
-                <!-- {{ transcripts }} -->
-                <TranscriptCard
-                  v-for="item in transcripts"
-                  v-bind:key="item.id"
-                  :transcript="item"
-                  @seek="onTagetTimeChange"
-                />
+                <TranscriptOverview @seek="onTagetTimeChange"/>
               </v-tab-item> 
 
             </v-tabs>
@@ -110,7 +104,7 @@
 <script>
 import VideoPlayer from "@/components/VideoPlayer.vue";
 import ShotCard from "@/components/ShotCard.vue";
-import TranscriptCard from "@/components/TranscriptCard.vue";
+import TranscriptOverview from "@/components/TranscriptOverview.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
@@ -350,9 +344,6 @@ export default {
     shots() {
       return this.shotStore.shots;
     },
-    transcripts() {
-      return this.timelineSegmentAnnotationStore.transcriptSegments;
-    },
     selectedTimeline: {
       get() {
         return this.selectedTimelineProxy === null
@@ -400,7 +391,7 @@ export default {
   components: {
     VideoPlayer,
     ShotCard,
-    TranscriptCard,
+    TranscriptOverview,
     Timeline,
     TimeSelector,
     EntitiesCard,
