@@ -56,7 +56,7 @@
                   v-for="item in shots"
                   v-bind:key="item.id"
                   :shot="item"
-                  @seek="onTagetTimeChange"
+                  @seek="onTargetTimeChange"
                 />
               </v-tab-item>
               <!-- <v-tab-item>
@@ -64,16 +64,16 @@
                   v-for="item in segmentsAnnotations"
                   v-bind:key="item.id"
                   :segment="item"
-                  @seek="onTagetTimeChange"
+                  @seek="onTargetTimeChange"
                 />
               </v-tab-item> -->
               <v-tab-item>
-                <CurrentEntitiesOverView />
+                <CurrentEntitiesOverView/>
               </v-tab-item>
               <!-- <v-tab-item> PERSONS </v-tab-item>
               <v-tab-item> SCENES </v-tab-item> -->
               <v-tab-item>
-                <TranscriptOverview @seek="onTagetTimeChange"/>
+                <TranscriptOverview @seek="onTargetTimeChange"/>
               </v-tab-item> 
 
             </v-tabs>
@@ -295,7 +295,7 @@ export default {
         });
       }
     },
-    onTagetTimeChange(time) {
+    onTargetTimeChange(time) {
       this.targetTime = time;
     },
     onAnnotateSegment() {

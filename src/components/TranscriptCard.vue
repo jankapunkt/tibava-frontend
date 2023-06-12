@@ -1,5 +1,4 @@
 <template>
-  <div>
     <v-card
     :class="[{'child-container':true}, 'd-flex', 'flex-column', 'pa-2', 'ma-4', { highlighted: isHighlighted }]"
     ref="highlightedChild"
@@ -10,7 +9,6 @@
       <span style="color:rgb(0, 0, 0); margin-bottom:0.2cm">{{ get_timecode(transcript.start) }}</span>
       <span>{{transcript.name}}</span>
     </v-card>
-  </div>
 </template>
 
 <script>

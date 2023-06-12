@@ -1,20 +1,17 @@
 <template>
-  <v-container>
     <v-virtual-scroll 
       ref="parentContainer" 
       :class="[{'parent-container':true}, 'd-flex', 'flex-column', 'pa-2', 'ma-4']"
       :items="transcripts" 
-      height="500" item-height="160" 
+      height="500" item-height="160"  
     >
-      <template v-slot:default="{ item }">
-          <TranscriptCard 
-            :transcript="item"
-            ref="highlightedChild"
-            @childHighlighted="scrollToHighlightedChild"
-          />
+    <template v-slot:default="{ item }">
+        <TranscriptCard 
+        :transcript="item"
+        @childHighlighted="scrollToHighlightedChild(item.id)" 
+        />
       </template>
     </v-virtual-scroll>
-  </v-container>
 </template>
 
 <script>
@@ -27,10 +24,14 @@ export default {
     TranscriptCard,
   },
   methods: {
-    scrollToHighlightedChild(child) {
-      console.log("here");
-      // if(child.highlighted)
-      //   this.$refs.parentContainer.scrollTop = child.offsetTop;
+    scrollToHighlightedChild(childRef) {
+      // console.log(this.$children[0].$children)
+      const childElement = this.$refs.parentContainer.$refs[0];
+      // console.log(childElement);
+      if (childElement) {
+        console.log("please scroll")
+        childElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
     },
   computed: {
@@ -38,6 +39,9 @@ export default {
       return this.timelineSegmentAnnotationStore.transcriptSegments;
     },
     ...mapStores(useTimelineSegmentAnnotationStore),
+  },
+  components: {
+    TranscriptCard
   }
 };
 </script>
