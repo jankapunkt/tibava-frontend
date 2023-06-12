@@ -1,14 +1,15 @@
 <template>
     <v-virtual-scroll 
       ref="parentContainer" 
-      :class="[{'parent-container':true}, 'd-flex', 'flex-column', 'pa-2', 'ma-4']"
+      :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
       :items="transcripts" 
       height="500" item-height="160"  
     >
     <template v-slot:default="{ item }">
         <TranscriptCard 
         :transcript="item"
-        @childHighlighted="scrollToHighlightedChild(item.id)" 
+        :ref="`childContainer-${item.id}`"
+        @childHighlighted="scrollToHighlightedChild" 
         />
       </template>
     </v-virtual-scroll>
@@ -24,13 +25,12 @@ export default {
     TranscriptCard,
   },
   methods: {
-    scrollToHighlightedChild(childRef) {
-      // console.log(this.$children[0].$children)
-      const childElement = this.$refs.parentContainer.$refs[0];
-      // console.log(childElement);
-      if (childElement) {
-        console.log("please scroll")
-        childElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollToHighlightedChild(childID) {
+      const parentContainer = this.$refs.parentContainer;
+      const childContainer = this.$refs[`childContainer-${childID}`];
+      
+      if (parentContainer && childContainer) {
+        childContainer.$el.scrollIntoView({ behavior: 'smooth', block: 'center'});
       }
     }
     },
@@ -45,11 +45,3 @@ export default {
   }
 };
 </script>
-
-
-<style scoped>
-/* Customize the vertical space between items */
-.v-list-item {
-  margin-top: 8px; /* Adjust the value as per your requirement */
-}
-</style>

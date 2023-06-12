@@ -1,8 +1,6 @@
 <template>
     <v-card
-    :class="[{'child-container':true}, 'd-flex', 'flex-column', 'pa-2', 'ma-4', { highlighted: isHighlighted }]"
-    ref="highlightedChild"
-    class="child-container"
+    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4', { highlighted: isHighlighted }]"
     elevation="4"
     v-on:click="setVideoPlayerTime(transcript.start)"
     >
@@ -36,8 +34,7 @@ export default {
       const cur_time = this.playerStore.currentTime;
       if (this.transcript.start <= cur_time && this.transcript.end > cur_time){
         if(!this.emitted){
-          console.log("child emit");
-          this.$emit('childHighlighted', this.child);
+          this.$emit('childHighlighted', this.transcript.id);
         }
         this.emitted = true;
         return true
