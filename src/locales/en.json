@@ -48,9 +48,15 @@
         },
         "export": {
             "title": "Export Annotations",
-            "csv": {
-                "export_name": "CSV",
+            "merged_csv": {
+                "export_name": "Merged CSV",
                 "timeline_merge": "Merge annotations",
+                "use_timestamps": "Use timestamps",
+                "use_seconds": "Use seconds",
+                "include_category": "Include category"
+            },
+            "individual_csv": {
+                "export_name": "Individual CSVs",
                 "use_timestamps": "Use timestamps",
                 "use_seconds": "Use seconds",
                 "include_category": "Include category"
