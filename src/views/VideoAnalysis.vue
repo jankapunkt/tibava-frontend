@@ -301,7 +301,6 @@ export default {
         videoId: this.$route.params.id,
         addResults: addResults,
       });
-      this.shotStore.buildShots();
     },
     async fetchPlugin() {
       // console.log("fetchPlugin");
