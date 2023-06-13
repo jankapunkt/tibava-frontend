@@ -43,21 +43,7 @@
               <v-tab disabled>Scenes</v-tab> -->
 
               <v-tab-item>
-                <!-- <v-row class="mx-2">
-                  <v-col px-2>
-                    <v-select v-model="selectedTimeline" @change="updateShots"
-                      hint="Select timeline for which the shots are displayed" :items="timelines" item-text="name"
-                      item-value="id" label="Select timeline for shots" persistent-hint return-object
-                      single-line></v-select>
-                  </v-col>
-                </v-row> -->
-
-                <ShotCard
-                  v-for="item in shots"
-                  v-bind:key="item.id"
-                  :shot="item"
-                  @seek="onTargetTimeChange"
-                />
+                <ShotsOverview @seek="onTargetTimeChange"/>
               </v-tab-item>
               <!-- <v-tab-item>
                 <EntitiesCard
@@ -103,13 +89,13 @@
 
 <script>
 import VideoPlayer from "@/components/VideoPlayer.vue";
-import ShotCard from "@/components/ShotCard.vue";
 import TranscriptOverview from "@/components/TranscriptOverview.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
+import ShotsOverview from "../components/ShotsOverview.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -117,11 +103,11 @@ import * as Keyboard from "../plugins/keyboard.js";
 import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video";
 import { usePlayerStore } from "@/store/player";
-import { useShotStore } from "@/store/shot";
 import { useTimelineStore } from "@/store/timeline";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
 import { useShortcutStore } from "@/store/shortcut";
+import { useShotStore } from "@/store/shot";
 import { useAnnotationShortcutStore } from "../store/annotation_shortcut.js";
 import { usePluginRunStore } from "../store/plugin_run.js";
 
@@ -341,9 +327,6 @@ export default {
     timelineNames() {
       return this.timelines.map((e) => e.name);
     },
-    shots() {
-      return this.shotStore.shots;
-    },
     selectedTimeline: {
       get() {
         return this.selectedTimelineProxy === null
@@ -390,14 +373,14 @@ export default {
 
   components: {
     VideoPlayer,
-    ShotCard,
     TranscriptOverview,
     Timeline,
     TimeSelector,
     EntitiesCard,
     CurrentEntitiesOverView,
     ModalTimelineSegmentAnnotate,
-  },
+    ShotsOverview
+},
 
   watch: {
     pluginInProgress(newState, oldState) {

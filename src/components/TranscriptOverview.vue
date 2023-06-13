@@ -20,10 +20,6 @@ import { mapStores } from "pinia";
 import TranscriptCard from "@/components/TranscriptCard.vue";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
 export default {
-  props: ["transcript"],
-  components: {
-    TranscriptCard,
-  },
   methods: {
     scrollToHighlightedChild(childID) {
       const parentContainer = this.$refs.parentContainer;
@@ -33,7 +29,7 @@ export default {
         childContainer.$el.scrollIntoView({ behavior: 'smooth', block: 'center'});
       }
     }
-    },
+  },
   computed: {
     transcripts() {
       return this.timelineSegmentAnnotationStore.transcriptSegments;
