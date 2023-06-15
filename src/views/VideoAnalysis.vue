@@ -107,7 +107,6 @@ import { useTimelineStore } from "@/store/timeline";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
 import { useShortcutStore } from "@/store/shortcut";
-import { useShotStore } from "@/store/shot";
 import { useAnnotationShortcutStore } from "../store/annotation_shortcut.js";
 import { usePluginRunStore } from "../store/plugin_run.js";
 
@@ -291,11 +290,9 @@ export default {
         });
       }
     },
-    updateShots() {
-      console.log(this.selectedTimeline);
-    },
     async fetchData({ addResults = true }) {
-      // Ask backend about all videos
+      // Ask backend about all videos+
+      console.log("fetchData");
 
       await this.videoStore.fetch({
         videoId: this.$route.params.id,
@@ -303,13 +300,12 @@ export default {
       });
     },
     async fetchPlugin() {
-      // console.log("fetchPlugin");
+      console.log("fetchPlugin");
 
       let updateState = await this.pluginRunStore.fetchForVideo({
         videoId: this.$route.params.id,
         fetchResults: true,
       });
-      // console.log(updateState);
     },
   },
   computed: {
@@ -341,7 +337,6 @@ export default {
       useVideoStore,
       usePluginRunStore,
       usePlayerStore,
-      useShotStore,
       useTimelineStore,
       useTimelineSegmentStore,
       useTimelineSegmentAnnotationStore,

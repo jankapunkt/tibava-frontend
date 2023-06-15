@@ -70,7 +70,6 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       },
       forTimelineSegment(state) {
         return (timelineSegmentId) => {
-          console.log('QUERY')
           if (
             !state.timelineSegmentAnnotationBySegment.has(timelineSegmentId)
           ) {
