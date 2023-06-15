@@ -3,7 +3,7 @@
     ref="parentContainer"
     :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
     :items="shots" 
-    item-height="160"
+    item-height="160" :bench="shotsLength"
     >
     <template v-slot:default="{ item }">
         <ShotCard
@@ -19,7 +19,7 @@
 import { mapStores } from "pinia";
 import ShotCard from "@/components/ShotCard.vue";
 import { useShotStore } from "@/store/shot";
-export default {
+export default {  
   methods: {
     scrollToHighlightedChild(childID) {
       const parentContainer = this.$refs.parentContainer;
@@ -31,6 +31,9 @@ export default {
     }
   },
   computed: {
+    shotsLength(){
+      return this.shots.length;
+    },
     shots() {
       return this.shotStore.shots;
     },

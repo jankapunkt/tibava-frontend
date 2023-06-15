@@ -54,7 +54,7 @@ export default {
     isHighlighted() {
       const cur_time = this.playerStore.currentTime;
       if (this.shot.start <= cur_time && this.shot.end > cur_time){
-        if(!this.emitted){
+        if(!this.emitted && this.syncTime){
           this.$emit('childHighlighted', this.shot.id);
         }
         this.emitted = true;
@@ -62,6 +62,9 @@ export default {
       }
       this.emitted = false;
       return false;
+    },
+    syncTime() {
+      return this.playerStore.syncTime;
     },
     ...mapStores(usePlayerStore),
   }

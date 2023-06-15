@@ -11,6 +11,7 @@ import { useAnnotationCategoryStore } from "./annotation_category";
 import { useTimelineStore } from "./timeline";
 import { useTimelineSegmentStore } from "./timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "./timeline_segment_annotation";
+import { useShotStore} from "./shot"
 
 import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
@@ -58,6 +59,7 @@ export const useVideoStore = defineStore("video", {
             const pluginRunResultStore = usePluginRunResultStore();
             const shortcutStore = useShortcutStore();
             const annotationShortcutStore = useAnnotationShortcutStore();
+            const shotStore = useShotStore();
 
             promises.push(playerStore.fetchVideo({ videoId }));
             if (includeAnnotation) {

@@ -95,7 +95,7 @@ import TimeSelector from "@/components/TimeSelector.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
-import ShotsOverview from "../components/ShotsOverview.vue";
+import ShotsOverview from "@/components/ShotsOverview.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -292,7 +292,6 @@ export default {
     },
     async fetchData({ addResults = true }) {
       // Ask backend about all videos+
-      console.log("fetchData");
 
       await this.videoStore.fetch({
         videoId: this.$route.params.id,
@@ -300,7 +299,6 @@ export default {
       });
     },
     async fetchPlugin() {
-      console.log("fetchPlugin");
 
       let updateState = await this.pluginRunStore.fetchForVideo({
         videoId: this.$route.params.id,

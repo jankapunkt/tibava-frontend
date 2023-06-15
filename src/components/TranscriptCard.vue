@@ -33,7 +33,7 @@ export default {
     isHighlighted() {
       const cur_time = this.playerStore.currentTime;
       if (this.transcript.start <= cur_time && this.transcript.end > cur_time){
-        if(!this.emitted){
+        if(!this.emitted && this.syncTime){
           this.$emit('childHighlighted', this.transcript.id);
         }
         this.emitted = true;
@@ -44,6 +44,9 @@ export default {
     },
     time(){
       return this.playerStore.currentTime;
+    },
+    syncTime() {
+      return this.playerStore.syncTime;
     },
     ...mapStores(usePlayerStore),
   }

@@ -6,11 +6,6 @@ import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
 
 export const useShotStore = defineStore("shot", {
-  state: () => {
-    return {
-      // shots: [],
-    };
-  },
   getters: {
     shots (state) {
       const pluginRunStore = usePluginRunStore();
