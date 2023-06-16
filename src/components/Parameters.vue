@@ -94,6 +94,18 @@
         </v-file-input>
       </div>
 
+      <div v-if="parameter.field == 'csv_input'" :key="parameter.name">
+        <v-file-input
+          v-model="parameter.file"
+          :label="parameter.text"
+          :hint="parameter.hint"
+          persistent-hint
+          filled
+          prepend-icon=" mdi-file-delimited-outline"
+        >
+        </v-file-input>
+      </div>
+
       <div v-if="parameter.field == 'checkbox'" :key="parameter.name">
         <v-checkbox
           v-model="parameter.value"

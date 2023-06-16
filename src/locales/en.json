@@ -126,6 +126,12 @@
                 "timeline_name": "Object Classification",
                 "search_term": "Search Term"
             },
+            "clip_ontology": {
+                "plugin_name": "Object Ontology Classification",
+                "timeline_name": "Object Ontology Classification",
+                "concepts": "Object Ontology Concepts",
+                "concepts_hint": "CSV file with timeline name and search term in each row"
+            },
             "x_clip": {
                 "plugin_name": "Action Classification",
                 "timeline_name": "Action Classification",
