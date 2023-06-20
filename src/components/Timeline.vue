@@ -1006,7 +1006,7 @@ export default {
       width: this.containerWidth,
       height: this.containerHeight,
       // antialias: true,
-      backgroundAlpha: true,
+      backgroundAlpha: 0.0,
       view: this.$refs.canvas,
       resizeTo: this.$refs.canvas,
     });

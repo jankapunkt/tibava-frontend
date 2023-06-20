@@ -2,11 +2,27 @@
     <v-card
     :class="['d-flex', 'flex-column', 'pa-2', 'ma-4', { highlighted: isHighlighted }]"
     elevation="4"
+    height="120"
     v-on:click="setVideoPlayerTime(transcript.start)"
     >
       <span style="color:rgb(0, 0, 0); margin-bottom:0.2cm">{{ get_timecode(transcript.start) }}</span>
+      <v-tooltip top>
+      <template v-slot:activator="{ on, attrs }">
+        <span
+          v-bind="attrs"
+          v-on="on"
+          class="mx-0"
+          style="
+            overflow: hidden;
+          "
+          >{{ transcript.name }}</span
+        ></template
+      >
+      
       <span>{{transcript.name}}</span>
+    </v-tooltip>
     </v-card>
+
 </template>
 
 <script>
@@ -56,5 +72,8 @@ export default {
 <style>
   .highlighted {
     background-color: rgba(43, 24, 27, 0.287) !important
+  }
+  .v-tooltip__content {
+  max-width: 400px; /* Set your desired maximum width */
   }
 </style> 

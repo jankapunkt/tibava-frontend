@@ -3,7 +3,7 @@
     ref="parentContainer"
     :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
     :items="transcripts"
-    item-height="160"
+    item-height="140"
   >
     <template v-slot:default="{ item }">
       <TranscriptCard
