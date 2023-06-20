@@ -26,7 +26,7 @@ export default {
       const childContainer = this.$refs[`childContainer-${childID}`];
 
       if (parentContainer && childContainer) {
-        // childContainer.$el.scrollIntoView({ behavior: 'smooth', block: 'center'});
+        childContainer.$el.scrollIntoView({ behavior: 'auto', block: 'center'});
       }
     },
   },
