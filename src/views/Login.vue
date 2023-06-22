@@ -31,60 +31,6 @@
               <p v-html="$t('welcome.format_text')"></p>
             </v-card-text>
           </v-card>
-          <v-card class="login">
-            <v-card-title>
-              {{ $t("user.login.title") }}
-            </v-card-title>
-
-            <v-card-text>
-              <v-text-field
-                v-model="user.name"
-                :placeholder="$t('user.name')"
-                prepend-icon="mdi-account"
-                counter="50"
-                :rules="[checkLength]"
-                clearable
-              ></v-text-field>
-
-              <v-text-field
-                v-model="user.password"
-                :append-icon="
-                  showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
-                "
-                :placeholder="$t('user.password')"
-                prepend-icon="mdi-lock"
-                @click:append="showPassword = !showPassword"
-                :type="showPassword ? 'text' : 'password'"
-                counter="50"
-                :rules="[checkLength]"
-                clearable
-              ></v-text-field>
-            </v-card-text>
-
-            <v-card-actions class="px-6 pt-2">
-              <v-btn
-                @click="login"
-                :disabled="disabled"
-                color="accent"
-                block
-                rounded
-                depressed
-              >
-                {{ $t("user.login.title") }}
-              </v-btn>
-            </v-card-actions>
-
-            <div class="grey--text px-6 pb-6" style="text-align: center">
-              {{ $t("user.login.text") }}
-              <a @click="showModalRegister = true">
-                {{ $t("user.register.title") }}
-              </a>
-
-              <UserRegister v-model="showModalRegister">
-                <activator />
-              </UserRegister>
-            </div>
-          </v-card>
         </v-col>
       </v-container>
     </v-main>

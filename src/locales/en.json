@@ -4,8 +4,8 @@
         "text": "Welcome to the TIB AV-Analytics (TIB-AV-A) video analysis platform for scholarly video analysis and film science.",
         "demo_title": "Video Demonstration",
         "demo_text": "We are currently preparing a video that demonstrates the features of TIB-AV-A and explains how to use it to simplify the onboarding process. It is expected to be available by March 3 at the latest.",
-        "login_title": "Demo User",
-        "login_text": "If you do not have an account yet, you can use the user 'demouser' with the password 'demouser' to analyze pre-calculated videos. Please be aware that the uploaded videos and annotations of this user will be reset periodically.",
+        "login_title": "Need an account?",
+        "login_text": "If you do not have an account yet, you can request one by writing an E-Mail to firstname.lastname@tib.eu with a short explanation of your intended usecase. Alternatively, you can try out TIB-AV-A using the account 'demouser' with the password 'demouser' to analyze pre-calculated videos. Please be aware that the uploaded videos and annotations of this user will be reset periodically.",
         "format_title": "Video File Support",
         "format_text": "Please note that TIB-AV-A currently only supports the analysis of <span style='font-weight: bold;'>mp4 video files</span> to avoid long processing times due to transcoding videos on our server."
     },
