@@ -3,7 +3,7 @@
     ref="parentContainer"
     :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
     :items="shots"
-    item-height="130"
+    item-height="160"
     :bench="shotsLength"
   >
     <template v-slot:default="{ item }">
