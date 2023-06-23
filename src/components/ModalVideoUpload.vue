@@ -1,5 +1,6 @@
 <template>
   <v-dialog v-model="dialog" max-width="1000">
+    
     <template v-slot:activator="{ on, attrs }">
       <v-btn color="primary" v-bind="attrs" v-on="on"
         >Upload new video<v-icon right>{{ "mdi-plus-circle" }}</v-icon></v-btn
@@ -34,7 +35,6 @@
             <v-list-item-group v-model="selected_analysers" multiple>
               <template v-for="item in analysers">
                 <v-list-item
-                  :key="item.model"
                   :value="item.model"
                   :disabled="item.disabled"
                 >
@@ -85,6 +85,7 @@
 
 import { mapStores } from 'pinia'
 import { useVideoUploadStore } from "@/store/video_upload"
+import { useUserStore } from "@/store/user"
 
 export default {
   data() {
@@ -130,9 +131,11 @@ export default {
     },
     uploadingProgress() {
       return this.videoUploadStore.progress;
+    },    
+    allowance() {
+      return this.userStore.allowance;
     },
-
-    ...mapStores(useVideoUploadStore)
+    ...mapStores(useVideoUploadStore, useUserStore)
   },
   methods: {
     async upload_video() {

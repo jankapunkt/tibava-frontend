@@ -31,7 +31,7 @@ export const useUserStore = defineStore('user', {
             date: null,
             email: null,
             isLoading: false,
-
+            allowance: null,
         }
     },
     actions: {
@@ -74,12 +74,16 @@ export const useUserStore = defineStore('user', {
                         if ("date" in res.data.data) {
                             this.date = res.data.data.date;
                         }
+                        if ("allowance" in res.data.data) {
+                            this.allowance = res.data.data.allowance;
+                        }
                         this.loggedIn = true;
                     }
                     else {
                         this.username = null;
                         this.email = null;
                         this.loggedIn = false;
+                        this.allowance = 0;
                     }
                 })
                 .catch((error) => {
@@ -108,6 +112,9 @@ export const useUserStore = defineStore('user', {
                         }
                         if ("date" in res.data.data) {
                             this.date = res.data.data.date;
+                        }
+                        if ("allowance" in res.data.data) {
+                            this.allowance = res.data.data.allowance;
                         }
                         this.loggedIn = true;
                         return true;
@@ -142,6 +149,7 @@ export const useUserStore = defineStore('user', {
                         this.username = null;
                         this.email = null;
                         this.date = null;
+                        this.allowance = 0;
                         this.loggedIn = false;
                         return true;
                     }
