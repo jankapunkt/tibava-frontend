@@ -14,11 +14,11 @@
           class="mx-0"
           style="
             overflow: hidden;
-          "
-          >{{ transcript.name }}</span
+          ">
+          {{ transcript.name }}
+          </span
         ></template
       >
-      
       <span>{{transcript.name}}</span>
     </v-tooltip>
     </v-card>

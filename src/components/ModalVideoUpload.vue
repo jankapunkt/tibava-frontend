@@ -1,11 +1,21 @@
 <template>
+  <v-card :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" 
+          style="
+            text-align: center;
+          "
+          flat color="transparent"
+          width="300">
+          <v-text v-if="!canUpload" class="red--text">You have uploaded the maximum amount of videos that you are allowed to. If you require more, please contact TODO.</v-text>
+          <v-text v-if="canUpload">Videos uploaded: {{ num_videos }} / {{  allowance }}</v-text>
   <v-dialog v-model="dialog" max-width="1000">
-    
-    <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" v-bind="attrs" v-on="on"
-        >Upload new video<v-icon right>{{ "mdi-plus-circle" }}</v-icon></v-btn
-      >
-    </template>
+      <template v-slot:activator="{on, attrs}">
+        <v-btn 
+        :disabled="!canUpload" 
+        color="primary" v-bind="attrs" v-on="on"
+        >
+        Upload new video<v-icon right>{{ "mdi-plus-circle" }}</v-icon>
+        </v-btn>
+      </template>
     <v-card>
       <v-toolbar color="primary" dark>Upload new video</v-toolbar>
       <v-card-text>
@@ -78,6 +88,7 @@
       </v-card-text>
     </v-card>
   </v-dialog>
+</v-card>
 </template>
 
 <script>
@@ -86,6 +97,7 @@
 import { mapStores } from 'pinia'
 import { useVideoUploadStore } from "@/store/video_upload"
 import { useUserStore } from "@/store/user"
+import { useVideoStore } from "@/store/video"
 
 export default {
   data() {
@@ -116,10 +128,13 @@ export default {
       selected_analysers: ["shotdetection"],
       licenses: ["CC-BY-0", "CC-BY-2"],
       checkbox: false,
-      dialog: false,
+      dialog: false
     };
   },
   computed: {
+    canUpload(){
+      return this.userStore.allowance > this.videoStore.all.length;
+    },
     disabled() {
       if (this.checkbox) {
         return false;
@@ -135,7 +150,10 @@ export default {
     allowance() {
       return this.userStore.allowance;
     },
-    ...mapStores(useVideoUploadStore, useUserStore)
+    num_videos() {
+      return this.videoStore.all.length;
+    },
+    ...mapStores(useVideoUploadStore, useUserStore, useVideoStore)
   },
   methods: {
     async upload_video() {
