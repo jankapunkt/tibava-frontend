@@ -6,7 +6,9 @@
           flat color="transparent"
           width="300">
           <v-text v-if="!canUpload" class="red--text">You have uploaded the maximum amount of videos that you are allowed to. If you require more, please contact TODO.</v-text>
-          <v-text v-if="canUpload">Videos uploaded: {{ num_videos }} / {{  allowance }}</v-text>
+          <v-text v-if="canUpload">Videos uploaded: {{ num_videos }} out of {{  allowance }}</v-text>
+          <v-text v-if="canUpload">Maximum file size: {{ max_size }}</v-text>
+
   <v-dialog v-model="dialog" max-width="1000">
       <template v-slot:activator="{on, attrs}">
         <v-btn 
@@ -152,6 +154,16 @@ export default {
     },
     num_videos() {
       return this.videoStore.all.length;
+    },
+    max_size() {
+      var size = this.userStore.max_video_size;
+      var extension_id = 0;
+      var extensions = [" B", " kB", " MB", " GB"]
+      while (size > 1024){
+        size = size / 1024;
+        extension_id++;
+      }
+      return size + extensions[extension_id];
     },
     ...mapStores(useVideoUploadStore, useUserStore, useVideoStore)
   },
