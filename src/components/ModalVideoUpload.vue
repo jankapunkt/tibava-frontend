@@ -4,12 +4,9 @@
             text-align: center;
           "
           flat color="transparent"
-          width="300">
-          <v-text v-if="!canUpload" class="red--text">You have uploaded the maximum amount of videos that you are allowed to. If you require more, please contact TODO.</v-text>
-          <v-text v-if="canUpload">Videos uploaded: {{ num_videos }} out of {{  allowance }}</v-text>
-          <v-text v-if="canUpload">Maximum file size: {{ max_size }}</v-text>
-
-  <v-dialog v-model="dialog" max-width="1000">
+          width="300"
+          >
+    <v-dialog v-model="dialog" max-width="1000">
       <template v-slot:activator="{on, attrs}">
         <v-btn 
         :disabled="!canUpload" 
@@ -22,12 +19,12 @@
       <v-toolbar color="primary" dark>Upload new video</v-toolbar>
       <v-card-text>
         <v-form>
-          <v-text-field
+          <span
             v-model="video.title"
             :counter="120"
             label="Video title"
             required
-          ></v-text-field>
+          ></span>
           <v-select
             v-model="video.license"
             :items="licenses"
@@ -36,7 +33,8 @@
           ></v-select>
           <v-file-input
             v-model="video.file"
-            label="Select a video file [mp4, mkv, avi]"
+            :rules="[validateFile]"
+            label="Select a video file [mp4]"
             filled
             prepend-icon="mdi-movie-filter"
           ></v-file-input>
@@ -90,6 +88,11 @@
       </v-card-text>
     </v-card>
   </v-dialog>
+  <span v-if="!canUpload" class="red--text">You have uploaded the maximum amount of videos that you are allowed to. If you require more, please contact TODO.</span>
+  <span v-if="canUpload">Videos uploaded: {{ num_videos }} out of {{  allowance }}</span>
+  <span v-if="canUpload">Maximum file size: {{ max_size_in_words }}</span>
+
+
 </v-card>
 </template>
 
@@ -130,7 +133,8 @@ export default {
       selected_analysers: ["shotdetection"],
       licenses: ["CC-BY-0", "CC-BY-2"],
       checkbox: false,
-      dialog: false
+      dialog: false,
+      file_valid: false,
     };
   },
   computed: {
@@ -138,7 +142,7 @@ export default {
       return this.userStore.allowance > this.videoStore.all.length;
     },
     disabled() {
-      if (this.checkbox) {
+      if (this.checkbox && this.file_valid) {
         return false;
       }
       return true;
@@ -155,7 +159,7 @@ export default {
     num_videos() {
       return this.videoStore.all.length;
     },
-    max_size() {
+    max_size_in_words() {
       var size = this.userStore.max_video_size;
       var extension_id = 0;
       var extensions = [" B", " kB", " MB", " GB"]
@@ -165,9 +169,29 @@ export default {
       }
       return size + extensions[extension_id];
     },
+    max_size() {
+      return this.userStore.max_video_size;
+    },
     ...mapStores(useVideoUploadStore, useUserStore, useVideoStore)
   },
   methods: {
+    validateFile(file) {
+      if (!file){
+        this.file_valid = false;
+        return 'Please select a file.';
+      }
+      if (file.size > this.max_size) {
+        this.file_valid = false;
+        return 'File exceeds your maximum file size of ' + this.max_size_in_words;
+      }
+      if (!file.name.endsWith(".mp4")){
+        this.file_valid = false;
+        return 'File is not in the .mp4 format.'
+      }
+
+      this.file_valid = true;
+      return true;
+    },
     async upload_video() {
       const params = {
         video: this.video,
@@ -178,6 +202,7 @@ export default {
       //   TODO wait until signal is fired
 
       this.dialog = false;
+      this.file_valid = false;
     },
   },
 };
