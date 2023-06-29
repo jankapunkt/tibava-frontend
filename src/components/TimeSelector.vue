@@ -91,11 +91,27 @@ export default {
       }
       this.scope.activate();
       this.scaleLayer = new paper.Layer();
-      let numberOfMainTime = 9;
-      let numberOfOtherTime = 10 * (numberOfMainTime - 1) + 1;
-      let timestemps = this.linspace(0, this.duration, numberOfMainTime);
+      
+      // determine optimal scaling
+      const timeline_options = [30, 60, 150, 300, 600];
+      var time_interval_length_in_seconds = this.duration / 10;
+      var diff = 9999999;
+      var best_option = 30;
+
+      for (const option of timeline_options) {
+        if (Math.abs(time_interval_length_in_seconds - option) < diff)
+        {
+          diff = Math.abs(time_interval_length_in_seconds - option);
+          best_option = option;
+        }
+      }
+      time_interval_length_in_seconds = best_option;
+      
+      let mainTimeStrokes = parseInt(this.duration / time_interval_length_in_seconds) + 1;
+      let minorTimeStrokes = 4;
+      let timestamps = this.linspace(0, mainTimeStrokes, time_interval_length_in_seconds);
       let mainStrokes = [];
-      timestemps.forEach((time, index) => {
+      timestamps.forEach((time, index) => {
         let path = new paper.Path();
 
         let x = this.timeToX(time);
@@ -106,12 +122,12 @@ export default {
       this.mainStrokes.strokeColor = "black";
       this.mainStrokes.strokeWidth = 2;
 
-      timestemps.pop();
+      timestamps.pop();
       let textList = [];
-      timestemps.forEach((time, index) => {
+      timestamps.forEach((time, index) => {
         let x = this.timeToX(time);
         let text = new paper.PointText(new paper.Point(x, 50));
-        text.content = this.get_timecode(time, 2);
+        text.content = this.get_timecode(time, 0);
         textList.push(text);
       });
       this.textGroup = new paper.Group(textList);
@@ -121,9 +137,9 @@ export default {
         fillColor: "black",
       };
 
-      let otherTimestemps = this.linspace(0, this.duration, numberOfOtherTime);
+      let otherTimestamps = this.linspace(0, mainTimeStrokes * minorTimeStrokes, time_interval_length_in_seconds/minorTimeStrokes);
       let otherStrokes = [];
-      otherTimestemps.forEach((time, index) => {
+      otherTimestamps.forEach((time, index) => {
         let path = new paper.Path();
 
         let x = this.timeToX(time);
@@ -227,10 +243,9 @@ export default {
       };
     },
 
-    linspace(startValue, stopValue, cardinality) {
+    linspace(startValue, stopValue, step) {
       var arr = [];
-      var step = (stopValue - startValue) / (cardinality - 1);
-      for (var i = 0; i < cardinality; i++) {
+      for (var i = 0; i <= stopValue; i++) {
         arr.push(startValue + step * i);
       }
       return arr;
@@ -275,7 +290,7 @@ export default {
       this.draw();
     },
     duration(){
-      this.hiddenStartTime =this.startTime
+      this.hiddenStartTime = this.startTime
       this.hiddenEndTime = this.endTime
       this.draw();
     },

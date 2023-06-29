@@ -33,36 +33,30 @@
             ref="resultCard"
             :height="resultCardHeight"
           >
-            <v-tabs centered>
-              <v-tabs-slider />
-              <v-tab>Shots</v-tab>
-              <v-tab>Annotations</v-tab>
-              <v-tab>Transcript</v-tab>
-              <!-- <v-tab>Current Entities</v-tab> -->
-              <!-- <v-tab disabled>Persons</v-tab>
-              <v-tab disabled>Scenes</v-tab> -->
-
+            <div class="sticky-tabs-bar">
+              <v-tabs v-model="tab" centered>
+                <v-tabs-slider />
+                <v-tab>Shots</v-tab>
+                <v-tab>Annotations</v-tab>
+                <v-tab>Transcript</v-tab>
+                <!-- <v-tab>Current Entities</v-tab> -->
+                <!-- <v-tab disabled>Persons</v-tab>
+                <v-tab disabled>Scenes</v-tab> -->
+              </v-tabs>
+            </div>
+            <v-tabs-items v-model="tab">
               <v-tab-item>
                 <ShotsOverview @seek="onTargetTimeChange"/>
               </v-tab-item>
-              <!-- <v-tab-item>
-                <EntitiesCard
-                  v-for="item in segmentsAnnotations"
-                  v-bind:key="item.id"
-                  :segment="item"
-                  @seek="onTargetTimeChange"
-                />
-              </v-tab-item> -->
+                
               <v-tab-item>
                 <CurrentEntitiesOverView/>
               </v-tab-item>
-              <!-- <v-tab-item> PERSONS </v-tab-item>
-              <v-tab-item> SCENES </v-tab-item> -->
+                
               <v-tab-item>
                 <TranscriptOverview @seek="onTargetTimeChange"/>
               </v-tab-item> 
-
-            </v-tabs>
+            </v-tabs-items>
           </v-card>
         </v-col>
       </v-row>
@@ -121,6 +115,7 @@ export default {
       targetTime: 0,
       startTime: 0,
       endTime: 0,
+      tab: null,
       addedAnnotation: null,
       labels: [],
       selectedLabel: null,
@@ -401,6 +396,13 @@ export default {
 <style scoped>
 .logo > img {
   max-height: 56px;
+}
+
+.sticky-tabs-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: white; /* Adjust the background color if needed */
 }
 
 .card-title {
