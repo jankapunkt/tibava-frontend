@@ -39,6 +39,7 @@
                 <v-tab>Shots</v-tab>
                 <v-tab>Annotations</v-tab>
                 <v-tab>Transcript</v-tab>
+                <v-tab>Word Cloud</v-tab>
                 <!-- <v-tab>Current Entities</v-tab> -->
                 <!-- <v-tab disabled>Persons</v-tab>
                 <v-tab disabled>Scenes</v-tab> -->
@@ -55,7 +56,11 @@
                 
               <v-tab-item>
                 <TranscriptOverview @seek="onTargetTimeChange"/>
-              </v-tab-item> 
+              </v-tab-item>
+              
+              <v-tab-item>
+                <WordcloudCard />
+              </v-tab-item>
             </v-tabs-items>
           </v-card>
         </v-col>
@@ -90,6 +95,7 @@ import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 import ShotsOverview from "@/components/ShotsOverview.vue";
+import WordcloudCard from "@/components/WordcloudCard.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -366,7 +372,8 @@ export default {
     EntitiesCard,
     CurrentEntitiesOverView,
     ModalTimelineSegmentAnnotate,
-    ShotsOverview
+    ShotsOverview,
+    WordcloudCard
 },
 
   watch: {

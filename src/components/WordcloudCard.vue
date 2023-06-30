@@ -1,6 +1,8 @@
 <template>
-  <v-card>
-    <span style="color:rgb(0, 0, 0); margin-bottom:0.5cm">{{ get_timecode(transcript.start, 0) }}</span>
+  <v-card
+    :items="transcripts"
+    width ="500"
+    height="500">
     <div ref="wordcloudContainer" class="wordcloud-container"></div>
   </v-card>
 </template>
@@ -10,14 +12,12 @@ import TimeMixin from "../mixins/time";
 import * as d3 from 'd3';
 import cloud from 'd3-cloud';
 import { mapStores } from "pinia";
-import { usePlayerStore } from "@/store/player";
+import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
 
 export default {
   mixins: [TimeMixin],
-  props: ["transcript"],
   data() {
     return {
-      emitted: false,
       layout: null,
     };
   },
@@ -27,17 +27,20 @@ export default {
     });
   },
   methods: {
-    setVideoPlayerTime(time) {
-      this.playerStore.setTargetTime(time);
-    },
     createWordCloud() {
-      const words = this.transcript.name.split(" ").map(word => ({
+      const all_words = [];
+      for (var transcript of this.transcripts){
+        for (var word of transcript.name.split(" ")){
+          all_words.push(word);
+        }
+      }
+      const words = all_words.map(word => ({
         text: word,
       }));
-      console.log(">>>>>>>>>>>");
-      console.log(words);
+      // console.log(">>>>>>>>>>>");
+      // console.log(words);
       this.layout = cloud()
-        .size([500, 140])
+        .size([500, 500])
         .words(words)
         .padding(10)
         .fontSize(30)
@@ -62,34 +65,10 @@ export default {
 }
   },
   computed: {
-    isHighlighted() {
-      const cur_time = this.playerStore.currentTime;
-      if (this.transcript.start <= cur_time && this.transcript.end > cur_time) {
-        if (!this.emitted && this.syncTime) {
-          this.$emit('childHighlighted', this.transcript.id);
-        }
-        this.emitted = true;
-        return true;
-      }
-      this.emitted = false;
-      return false;
+    transcripts() {
+      return this.timelineSegmentAnnotationStore.transcriptSegments;
     },
-    time() {
-      return this.playerStore.currentTime;
-    },
-    syncTime() {
-      return this.playerStore.syncTime;
-    },
-    ...mapStores(usePlayerStore),
+    ...mapStores(useTimelineSegmentAnnotationStore),
   }
 };
 </script>
-
-<style>
-.highlighted {
-  background-color: rgba(43, 24, 27, 0.287) !important;
-}
-.v-tooltip__content {
-  max-width: 400px; /* Set your desired maximum width */
-}
-</style>
