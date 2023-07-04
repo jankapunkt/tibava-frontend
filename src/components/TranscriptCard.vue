@@ -5,7 +5,7 @@
     height="120"
     v-on:click="setVideoPlayerTime(transcript.start)"
     >
-      <span style="color:rgb(0, 0, 0); margin-bottom:0.2cm">{{ get_timecode(transcript.start) }}</span>
+      <span style="color:rgb(0, 0, 0); margin-bottom:0.2cm">{{ get_timecode(transcript.start, 0) }}</span>
       <v-tooltip top>
       <template v-slot:activator="{ on, attrs }">
         <span

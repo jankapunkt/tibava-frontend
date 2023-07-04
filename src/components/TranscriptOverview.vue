@@ -1,24 +1,27 @@
 <template>
+  <v-card>
   <v-virtual-scroll
     ref="parentContainer"
-    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
+    :class="['d-flex', 'flex-column', 'pa-2']"
     :items="transcripts"
     item-height="140"
   >
     <template v-slot:default="{ item }">
-      <TranscriptCard
+      <TranscriptCard 
         :transcript="item"
         :ref="`childContainer-${item.id}`"
         @childHighlighted="scrollToHighlightedChild"
       />
     </template>
   </v-virtual-scroll>
+  </v-card>
 </template>
 
 <script>
 import { mapStores } from "pinia";
 import TranscriptCard from "@/components/TranscriptCard.vue";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
+
 export default {
   methods: {
     scrollToHighlightedChild(childID) {
