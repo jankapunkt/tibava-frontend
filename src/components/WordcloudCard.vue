@@ -1,16 +1,16 @@
 <template>
-  <v-card ref="parent" class="parent" fluid :items="transcripts">
-    <div ref="wordcloudContainer" class="wordcloudContainer"></div>
+  <v-card ref="parent" class="parent" fluid :items="transcripts" elevation="0">
+    <v-card v-if="transcripts.length == 0" flat>There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> timeline. </v-card>
+    <div v-else ref="wordcloudContainer" class="wordcloudContainer"></div>
   </v-card>
 </template>
 
 <script>
 import TimeMixin from "../mixins/time";
-import * as d3 from 'd3';
+import * as d3 from 'd3'; 
 import cloud from 'd3-cloud';
 import { mapStores } from "pinia";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
-import { removeStopwords } from "stopword";
 
 export default {
   mixins: [TimeMixin],
@@ -33,7 +33,10 @@ export default {
       const all_words = [];
       for (var transcript of this.transcripts) {
         for (var word of transcript.name.split(" ")) {
-          all_words.push(word);
+          if (word.endsWith(',') || word.endsWith('.')){
+            word = word.slice(0, -1);
+          }
+          all_words.push(word.toLowerCase());
         }
       }
 
@@ -65,7 +68,7 @@ export default {
         }));
 
       const current_max = words[0].count;
-      const desired_max = 17;
+      const desired_max = 12;
       
       // map all font-sizes to a good size, where the maximum is 17
       words.map((w) => {
@@ -114,7 +117,6 @@ export default {
 
 <style>
 .v-window {
-    overflow: hidden;
     height: 90%;
 }
 </style>
