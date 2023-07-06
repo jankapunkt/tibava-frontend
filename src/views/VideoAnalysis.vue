@@ -28,7 +28,6 @@
 
         <v-col cols="6">
           <v-card
-            class="overflow-auto"
             elevation="2"
             ref="resultCard"
             :height="resultCardHeight"
@@ -45,7 +44,7 @@
                 <v-tab disabled>Scenes</v-tab> -->
               </v-tabs>
             </div>
-            <v-tabs-items v-model="tab">
+            <v-tabs-items v-model="tab" style="height: 95%">
               <v-tab-item style="height: 100%">
                 <ShotsOverview @seek="onTargetTimeChange"/>
               </v-tab-item>
