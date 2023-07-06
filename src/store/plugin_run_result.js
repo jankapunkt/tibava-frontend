@@ -16,10 +16,12 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
         get: (state) => (id) => {
             return state.pluginRunResults[id];
         },
+        all: (state) => {
+            return state.pluginRunResultList;
+        },
         forPlugin: (state) => (id) => {
             return state.pluginRunResults[id];
         },
-
         forPluginRun: (state) => (plugin_run_id) => {
             return state.pluginRunResultList
                 .map((id) => state.pluginRunResults[id])
