@@ -13,7 +13,6 @@
 
       <v-spacer></v-spacer>
       <PluginMenu v-if="videoLoaded" />
-      <VisualizationMenu v-if="videoLoaded" />
       <AnnotationMenu v-if="videoLoaded" />
       <VideoMenu v-if="videoLoaded" />
       <UserMenu />
@@ -27,7 +26,6 @@ import UserMenu from "@/components/UserMenu.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
 import PluginMenu from "@/components/PluginMenu.vue";
 import AnnotationMenu from "@/components/AnnotationMenu.vue";
-import VisualizationMenu from "./components/VisualizationMenu.vue";
 
 import { mapStores } from "pinia";
 import { useUserStore } from "@/store/user";
@@ -54,7 +52,6 @@ export default {
     VideoMenu,
     PluginMenu,
     AnnotationMenu,
-    VisualizationMenu
   },
 };
 </script>

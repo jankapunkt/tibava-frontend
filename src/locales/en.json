@@ -15,27 +15,6 @@
             "new": "New"
         }
     },
-    "visualization": {
-        "title": "Visualize",
-        "start": "Apply",
-        "reset": "Reset",
-        "controls": {
-            "plotTypes": {
-                "controlName": "Select Plot Type",
-                "resultControlName": "Select Timeline to Visualize",
-                "linePlot": "Line Plot",
-                "histogramChart": "Histogram Chart",
-                "stackedBarChart": "Stacked Bar Chart"
-            },
-            "mapping": {
-                "mappingTitle": "Visualization mapping",
-                "xTitle": "Select x axis data:",
-                "xSelect": "Not selected",
-                "yTitle": "Select y axis data:",
-                "ySelect": "Not selected"
-            }
-        }
-    },
     "timelineSegment": {
         "title": "Title",
         "close": "Close",

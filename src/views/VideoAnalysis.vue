@@ -102,11 +102,6 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row class="ma-2">
-        <v-col>
-            <VideoVisualization />
-        </v-col>
-      </v-row>
       <ModalTimelineSegmentAnnotate :show.sync="annotationDialog.show" />
     </v-container>
   </v-main>
@@ -121,7 +116,6 @@ import TimeSelector from "@/components/TimeSelector.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
-import VideoVisualization from "@/components/VideoVisualization.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -412,7 +406,6 @@ export default {
     EntitiesCard,
     CurrentEntitiesOverView,
     ModalTimelineSegmentAnnotate,
-    VideoVisualization
   },
 
   watch: {
