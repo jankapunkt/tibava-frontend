@@ -33,6 +33,13 @@ import * as d3 from "d3";
 import { useTimelineStore } from "@/store/timeline";
 import { mapStores } from "pinia";
 
+const width = 640;
+const height = 400;
+const marginTop = 20;
+const marginRight = 30;
+const marginBottom = 30;
+const marginLeft = 40;
+
 export default {
     data() {
         return {
@@ -72,12 +79,6 @@ export default {
                 }
                 const xData = newData["plotData"]["result"]["data"][newData["xMapping"]];
                 const yData = newData["plotData"]["result"]["data"][newData["yMapping"]];
-                const width = 640;
-                const height = 400;
-                const marginTop = 20;
-                const marginRight = 30;
-                const marginBottom = 30;
-                const marginLeft = 40;
 
                 // Declare the x (horizontal position) scale.
                 const x = d3.scaleLinear(d3.extent(xData), [marginLeft, width - marginRight]);
@@ -97,6 +98,26 @@ export default {
                     return [x(d), y(yData[i])];
                 });
 
+
+                const pointerLine = svg.append("line")
+                    .attr("x1", 0)
+                    .attr("y1", 0)
+                    .attr("stroke", "black")
+                    .attr("y2", height);
+
+                svg.on("mousemove", (event) => {
+                    const points = d3.pointer(event);
+                    let datapoint = [0, 0];
+                    for (let i = 0; i < data.length; i++) {
+                        if (Math.abs(points[0] - data[i][0]) < Math.abs(points[0] - datapoint[0])) {
+                            datapoint = data[i];
+                        }
+                    }
+                    pointerLine.attr("x1", points[0]);
+                    pointerLine.attr("x2", points[0]);
+                    pointerLine.attr("y2", datapoint[1]);
+                });
+
                 svg.append("g")
                     .attr("transform", `translate(0,${height - marginBottom})`)
                     .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
@@ -108,6 +129,7 @@ export default {
                     .call(g => g.selectAll(".tick line").clone()
                         .attr("x2", width - marginLeft - marginRight)
                         .attr("stroke-opacity", 0.1));
+
 
                 svg.append("path")
                     .attr("fill", "none")
