@@ -1,20 +1,21 @@
 <template>
-  <v-card>
-  <v-virtual-scroll
+   <v-card v-if="transcripts.length == 0" elevation="0"> There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> timeline. </v-card>
+   <v-virtual-scroll v-else
     ref="parentContainer"
-    :class="['d-flex', 'flex-column', 'pa-2']"
-    :items="transcripts"
+    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
+     :items="transcripts"
     item-height="140"
+    :bench="transcriptLength"
+    height="100%"    
   >
     <template v-slot:default="{ item }">
-      <TranscriptCard 
+      <TranscriptCard
         :transcript="item"
         :ref="`childContainer-${item.id}`"
         @childHighlighted="scrollToHighlightedChild"
       />
     </template>
   </v-virtual-scroll>
-  </v-card>
 </template>
 
 <script>
@@ -34,6 +35,9 @@ export default {
     },
   },
   computed: {
+    transcriptLength() {
+      return this.transcripts.length;
+    },
     transcripts() {
       return this.timelineSegmentAnnotationStore.transcriptSegments;
     },

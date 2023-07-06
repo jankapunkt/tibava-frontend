@@ -46,7 +46,7 @@
               </v-tabs>
             </div>
             <v-tabs-items v-model="tab">
-              <v-tab-item>
+              <v-tab-item style="height: 100%">
                 <ShotsOverview @seek="onTargetTimeChange"/>
               </v-tab-item>
                 
@@ -54,7 +54,7 @@
                 <CurrentEntitiesOverView/>
               </v-tab-item>
                 
-              <v-tab-item>
+              <v-tab-item style="height: 100%">
                 <TranscriptOverview @seek="onTargetTimeChange"/>
               </v-tab-item>
               

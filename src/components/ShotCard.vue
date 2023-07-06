@@ -8,7 +8,7 @@
       <v-col cols="4">
         <v-list-item three-line>
           <v-list-item-content min-width>
-            <div class="text-overline mb-4">Shot {{ shot.id }}</div>
+            <div style="font-size: 16px; margin-bottom:0.2cm">Shot {{ shot.id }}</div>
             <v-list-item-subtitle>Begin: {{ get_timecode(shot.start) }}</v-list-item-subtitle>
             <v-list-item-subtitle>End: {{ get_timecode(shot.end) }}</v-list-item-subtitle>
             <v-list-item-subtitle>Duration:

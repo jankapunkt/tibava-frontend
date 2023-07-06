@@ -41,7 +41,6 @@ export default {
       }
 
       // filter out stopwords
-
       const {removeStopwords, deu} = require('stopword');
       const filteredText = removeStopwords(all_words, deu); // Pass "de" to specify German stopwords
 
