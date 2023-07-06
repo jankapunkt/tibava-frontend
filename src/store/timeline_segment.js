@@ -335,7 +335,7 @@ export const useTimelineSegmentStore = defineStore("timelineSegment", {
 
             // update shot list
             const shotStore = useShotStore();
-            shotStore.buildShots();
+            shotStore.shots();
           }
         })
         .finally(() => {
@@ -383,7 +383,7 @@ export const useTimelineSegmentStore = defineStore("timelineSegment", {
 
             // update shot list
             const shotStore = useShotStore();
-            shotStore.buildShots();
+            shotStore.shots();
           }
           // let timeline know that something change
         })

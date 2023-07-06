@@ -124,17 +124,7 @@ export default {
               text: this.$t("modal.plugin.timeline_name"),
             },
           ],
-          optional_parameters: [
-            // {
-            //   field: "slider",
-            //   min: 1000,
-            //   max: 24000,
-            //   value: 8000,
-            //   step: 1000,
-            //   name: "sr",
-            //   text: this.$t("modal.plugin.audio_waveform.sr"),
-            // },
-          ],
+          optional_parameters: [],
         },
         {
           name: this.$t("modal.plugin.audio_frequency.plugin_name"),
@@ -189,16 +179,6 @@ export default {
               name: "k",
               text: this.$t("modal.plugin.color_analysis.slider"),
             },
-            // {
-            //   field: "buttongroup",
-            //   text: this.$t("modal.plugin.color_analysis.buttongroup"),
-            //   name: "timeline_visualization",
-            //   value: 0,
-            //   buttons: [
-            //     this.$t("modal.plugin.color_analysis.singletimeline"),
-            //     this.$t("modal.plugin.color_analysis.multipletimelines"),
-            //   ],
-            // },
           ],
           optional_parameters: [
             {
@@ -243,16 +223,6 @@ export default {
               ),
               text: this.$t("modal.plugin.timeline_name"),
             },
-            // {
-            //   field: "buttongroup",
-            //   text: this.$t("modal.plugin.color_brightness_analysis.buttongroup"),
-            //   name: "timeline_visualization",
-            //   value: 0,
-            //   buttons: [
-            //     this.$t("modal.plugin.color_brightness_analysis.singletimeline"),
-            //     this.$t("modal.plugin.color_brightness_analysis.multipletimelines"),
-            //   ],
-            // },
           ],
           optional_parameters: [
             {
@@ -396,30 +366,6 @@ export default {
             },
           ],
         },
-        // {
-        //   name: this.$t("modal.plugin.facedetection.plugin_name"),
-        //   icon: "mdi-face-recognition",
-        //   plugin: "insightface_detection",
-        //   parameters: [
-        //     {
-        //       field: "text_field",
-        //       name: "timeline",
-        //       value: this.$t("modal.plugin.facedetection.timeline_name"),
-        //       text: this.$t("modal.plugin.timeline_name"),
-        //     },
-        //   ],
-        //   optional_parameters: [
-        //     {
-        //       field: "slider",
-        //       min: 1,
-        //       max: 10,
-        //       value: 2,
-        //       step: 1,
-        //       name: "fps",
-        //       text: this.$t("modal.plugin.fps"),
-        //     },
-        //   ],
-        // },
         {
           name: this.$t("modal.plugin.facesize.plugin_name"),
           icon: "mdi-face-recognition",
@@ -614,6 +560,45 @@ export default {
               name: "search_term",
               value: "",
               text: this.$t("modal.plugin.clip.search_term"),
+            },
+          ],
+          optional_parameters: [
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 2,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.fps"),
+            },
+          ],
+        },
+        {
+          name: this.$t("modal.plugin.clip_ontology.plugin_name"),
+          icon: "mdi-eye",
+          plugin: "clip_ontology",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.clip_ontology.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "select_timeline",
+              name: "shot_timeline_id",
+              // value: this.shot_timelines_names[0],
+              // items: this.shot_timelines_names,
+              text: this.$t("modal.plugin.shot_timeline_name"),
+              hint: this.$t("modal.plugin.shot_timeline_hint"),
+            },
+            {
+              field: "csv_input",
+              file: null,
+              name: "concept_csv",
+              text: this.$t("modal.plugin.clip_ontology.concepts"),
+              hint: this.$t("modal.plugin.clip_ontology.concepts_hint"),
             },
           ],
           optional_parameters: [

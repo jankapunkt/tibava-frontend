@@ -76,7 +76,6 @@ export class AnnotationTimeline extends Timeline {
   }
 
   drawSegmentsAnnotationsTexts() {
-    console.log("drawSegmentsAnnotationsTexts")
     // let textContainer = new PIXI.Graphics();
     // let text
     if (this.pTimeline.segments) {
@@ -89,7 +88,6 @@ export class AnnotationTimeline extends Timeline {
         }
 
         if (s.end < this.pStartTime || s.start > this.pEndTime) {
-          console.log("skip")
           return;
         }
 
@@ -98,7 +96,6 @@ export class AnnotationTimeline extends Timeline {
 
         // delete small annotations if exists
         if (width < 20) {
-          console.log("delete")
           return;
         }
         //new annotation

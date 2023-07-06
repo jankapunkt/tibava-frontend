@@ -97,7 +97,6 @@ export const usePluginRunStore = defineStore("pluginRun", {
         });
     },
     async fetchForVideo({ videoId = null, fetchResults = false }) {
-      console.log("fetchForVideo")
       if (this.isLoading) {
         return;
       }
