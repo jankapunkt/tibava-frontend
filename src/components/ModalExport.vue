@@ -64,33 +64,58 @@ export default {
       dialog: false,
       export_formats: [
         {
-          name: this.$t("modal.export.csv.export_name"),
+          name: this.$t("modal.export.merged_csv.export_name"),
           icon: "mdi-file",
-          export: "csv",
+          export: "merged_csv",
           parameters: [
             {
               field: "checkbox",
               name: "merge_timeline",
               value: true,
-              text: this.$t("modal.export.csv.timeline_merge"),
+              text: this.$t("modal.export.merged_csv.timeline_merge"),
             },
             {
               field: "checkbox",
               name: "use_timestamps",
               value: true,
-              text: this.$t("modal.export.csv.use_timestamps"),
+              text: this.$t("modal.export.merged_csv.use_timestamps"),
             },
             {
               field: "checkbox",
               name: "use_seconds",
               value: true,
-              text: this.$t("modal.export.csv.use_seconds"),
+              text: this.$t("modal.export.merged_csv.use_seconds"),
             },
             {
               field: "checkbox",
               name: "include_category",
               value: true,
-              text: this.$t("modal.export.csv.include_category"),
+              text: this.$t("modal.export.merged_csv.include_category"),
+            },
+          ],
+        },
+        {
+          name: this.$t("modal.export.individual_csv.export_name"),
+          icon: "mdi-file",
+          export: "individual_csv",
+          parameters: [
+            {
+              field: "checkbox",
+              name: "use_timestamps",
+              value: true,
+              text: this.$t("modal.export.individual_csv.use_timestamps"),
+            },
+            {
+              field: "checkbox",
+              name: "use_seconds",
+              value: true,
+              text: this.$t("modal.export.individual_csv.use_seconds"),
+            },
+            {
+              field: "checkbox",
+              name: "include_category",
+              value: true,
+              text: this.$t("modal.export.individual_csv.include_category"),
             },
           ],
         },
@@ -102,8 +127,6 @@ export default {
             {
               field: "select_timeline",
               name: "shot_timeline_id",
-              // value: this.shot_timelines_names[0],
-              // items: this.shot_timelines_names,
               text: this.$t("modal.plugin.shot_timeline_name"),
               hint: this.$t("modal.plugin.shot_timeline_hint"),
             },

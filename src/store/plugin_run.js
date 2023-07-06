@@ -29,7 +29,7 @@ export const usePluginRunStore = defineStore("pluginRun", {
           .map((id) => state.pluginRuns[id])
           .filter((e) => e.video_id === videoId);
       };
-    }
+    },
   },
   actions: {
     async submit({ plugin, parameters = [], videoId = null }) {
@@ -97,7 +97,6 @@ export const usePluginRunStore = defineStore("pluginRun", {
         });
     },
     async fetchForVideo({ videoId = null, fetchResults = false }) {
-      console.log("fetchForVideo")
       if (this.isLoading) {
         return;
       }
@@ -218,6 +217,6 @@ export const usePluginRunStore = defineStore("pluginRun", {
         this.pluginRuns[e.id] = e;
         this.pluginRunList.push(e.id);
       });
-    }
+    },
   },
 });
