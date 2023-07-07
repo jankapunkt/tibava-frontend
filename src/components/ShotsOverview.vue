@@ -1,46 +1,19 @@
 <template>
-  <v-virtual-scroll
-    ref="parentContainer"
-    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
-    :items="shots"
-    item-height="140"
-    :bench="shotsLength"
-    height="100%"
-  >
-    <template v-slot:default="{ item }">
-      <ShotCard
-        :shot="item"
-        :ref="`childContainer-${item.id}`"
-        @childHighlighted="scrollToHighlightedChild"
-      />
-    </template>
-  </v-virtual-scroll>
+  <v-container>
+    <v-virtual-scroll :items="shots" height="500" item-height="160">
+      <template v-slot:default="{ item }">
+        <v-list-item :key="item.id">
+          <ShotCard :shot="item" />
+        </v-list-item>
+      </template>
+    </v-virtual-scroll>
+  </v-container>
 </template>
 
 <script>
-import { mapStores } from "pinia";
 import ShotCard from "@/components/ShotCard.vue";
-import { useShotStore } from "@/store/shot";
 export default {
-  methods: {
-    scrollToHighlightedChild(childID) {
-      const parentContainer = this.$refs.parentContainer;
-      const childContainer = this.$refs[`childContainer-${childID}`];
-
-      if (parentContainer && childContainer) {
-        childContainer.$el.scrollIntoView({ behavior: 'auto', block: 'center'});
-      }
-    },
-  },
-  computed: {
-    shotsLength() {
-      return this.shots.length;
-    },
-    shots() {
-      return this.shotStore.shots;
-    },
-    ...mapStores(useShotStore),
-  },
+  props: ["shots"],
   components: {
     ShotCard,
   },

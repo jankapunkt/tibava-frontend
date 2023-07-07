@@ -19,12 +19,8 @@ export default {
             var ms = Math.round(10 ** num_digits_ms * (((seconds % 3600) % 60) % 1))
 
             const zeroPad = (num, places) => String(num).padStart(places, '0')
-            // return zeroPad(h, 2) + ":" + zeroPad(m, 2) + ":" + zeroPad(s, 2)
-            if (num_digits_ms > 0){
-                return zeroPad(h, 2) + ":" + zeroPad(m, 2) + ":" + zeroPad(s, 2) + "." + zeroPad(ms, num_digits_ms);
-            }else{
-                return zeroPad(h, 2) + ":" + zeroPad(m, 2) + ":" + zeroPad(s, 2);
-            }
+            // return zeroPad(h, 2) + ":" + zeroPad(m, 2) + ":" + zeroPad(s, 2) 
+            return zeroPad(h, 2) + ":" + zeroPad(m, 2) + ":" + zeroPad(s, 2) + "." + zeroPad(ms, num_digits_ms);
         }
     }
 }

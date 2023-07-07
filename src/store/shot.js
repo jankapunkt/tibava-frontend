@@ -6,8 +6,20 @@ import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
 
 export const useShotStore = defineStore("shot", {
+  state: () => {
+    return {
+      shots: [],
+    };
+  },
   getters: {
-    shots (state) {
+    forVideo: (state) => (videoId) => {
+      return state.timelineList
+        .map((id) => state.timelines[id])
+        .filter((e) => e.video_id === videoId);
+    },
+  },
+  actions: {
+    buildShots() {
       const pluginRunStore = usePluginRunStore();
       const pluginRunResultStore = usePluginRunResultStore();
       const playerStore = usePlayerStore();
@@ -102,8 +114,7 @@ export const useShotStore = defineStore("shot", {
         };
       });
 
-      return results;
-      }
-    }
+      this.shots = results;
+    },
   },
-);
+});

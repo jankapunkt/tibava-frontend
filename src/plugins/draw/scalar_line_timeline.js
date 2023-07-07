@@ -16,8 +16,8 @@ export class ScalarLineTimeline extends Timeline {
     data = null,
     fill = 0xffffff,
     renderer = null,
-    resolution = 1024,
-    oversampling = 1,
+    resolution = 2048,
+    oversampling = 4,
   }) {
     super({ timelineId, width, height, startTime, endTime, duration, fill });
 

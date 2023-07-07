@@ -3,11 +3,17 @@
     <v-menu min-width="175" offset-y bottom left>
       <!-- open-on-hover close-delay -->
       <template v-slot:activator="{ attrs, on }">
-        <v-btn tile text v-bind="attrs" @click="showModalExport = true" class="ml-n2">
+        <v-btn tile text v-bind="attrs" v-on="on" class="ml-n2">
           <v-icon color="primary">mdi-swap-vertical-bold</v-icon>
           Export
         </v-btn>
       </template>
+
+      <v-list class="pa-0">
+        <v-list-item v-if="videoId" @click="showModalExport = true">
+          <v-list-item-title>{{ $t("modal.export.title") }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
     </v-menu>
 
     <ModalExport v-model="showModalExport"> </ModalExport>

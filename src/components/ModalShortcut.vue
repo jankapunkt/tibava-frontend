@@ -2,11 +2,13 @@
   <v-dialog
     v-model="dialog"
     max-width="1000"
+    persistent
     @keydown.esc="dialog = false"
   >
     <v-card>
       <v-card-title class="mb-2">
         {{ $t("modal.shortcut.title") }}
+
         <v-btn icon @click="dialog = false" absolute top right>
           <v-icon>mdi-close</v-icon>
         </v-btn>

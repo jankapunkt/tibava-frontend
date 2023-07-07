@@ -55,36 +55,24 @@ export class TimeScale extends PIXI.Container {
         this.pBars_graphics = new PIXI.Container();
         this.pBars = [];
 
-        const visibleDuration = Math.round(this.pEndTime - this.pStartTime);
+        const visibleDuration = Math.round(
+            1000 * (this.pEndTime - this.pStartTime)
+        );
+        const visibleDurationDigits = Math.floor(
+            Math.log(visibleDuration) * Math.LOG10E
+        );
 
-        // determine optimal scaling
-        const timeline_options = [30, 60, 150, 300, 600];
-        var time_interval_length_in_s = visibleDuration / 10;
-        var diff = 9999999;
-        var best_option = 30;
+        const majorStroke = Math.pow(10, visibleDurationDigits);
+        const minorStroke = Math.pow(10, visibleDurationDigits - 1);
 
-        for (const option of timeline_options) {
-            if (Math.abs(time_interval_length_in_s - option) < diff)
-            {
-            diff = Math.abs(time_interval_length_in_s - option);
-            best_option = option;
-            }
-        }
-        const time_interval_length_in_ms = best_option * 1000;
-
-        const desired_num_of_minor_strokes = 4;
-
-        const majorStroke = time_interval_length_in_ms;
-        const minorStroke = time_interval_length_in_ms / desired_num_of_minor_strokes;
-
-        const timestamps = Array(Math.ceil(this.pEndTime * 10))
+        const timestemps = Array(Math.ceil(this.pEndTime * 10))
             .fill(0)
             .map((_, i) => i);
-            
-        timestamps.forEach((time100, index) => {
+
+        timestemps.forEach((time100, index) => {
             const timeFraction = Math.round(time100);
             const time = timeFraction / 10;
-            const timeCode = Time.get_timecode(time, 0);
+            const timeCode = Time.get_timecode(time);
             let bar = {
                 timeCode: timeCode,
                 time: time,
@@ -141,28 +129,17 @@ export class TimeScale extends PIXI.Container {
         return this.pWidth / (this.pEndTime - this.pStartTime);
     }
     _scale() {
-        const visibleDuration = Math.round(this.pEndTime - this.pStartTime);
+        const visibleDuration = Math.round(
+            1000 * (this.pEndTime - this.pStartTime)
+        );
 
-        // determine optimal scaling
-        const timeline_options = [30, 60, 150, 300, 600];
-        var time_interval_length_in_s = visibleDuration / 10;
-        var diff = 9999999;
-        var best_option = 30;
+        const visibleDurationDigits = Math.floor(
+            Math.log(visibleDuration) * Math.LOG10E
+        );
 
-        for (const option of timeline_options) {
-            if (Math.abs(time_interval_length_in_s - option) < diff)
-            {
-            diff = Math.abs(time_interval_length_in_s - option);
-            best_option = option;
-            }
-        }
-        const time_interval_length_in_ms = best_option * 1000;
+        const majorStroke = Math.pow(10, visibleDurationDigits);
+        const minorStroke = Math.pow(10, visibleDurationDigits - 1);
 
-        const desired_num_of_minor_strokes = 4;
-
-        const majorStroke = time_interval_length_in_ms;
-        const minorStroke = time_interval_length_in_ms / desired_num_of_minor_strokes;
-        
         var largestX = 0;
         this.pBars.forEach((e, i) => {
             const time = e.time;

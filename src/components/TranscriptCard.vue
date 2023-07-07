@@ -1,27 +1,8 @@
 <template>
-    <v-card
-    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4', { highlighted: isHighlighted }]"
-    elevation="4"
-    height="120"
-    v-on:click="setVideoPlayerTime(transcript.start)"
-    >
-      <span style="margin-bottom:0.2cm">{{ get_timecode(transcript.start, 0) }}</span>
-      <v-tooltip top open-delay="200">
-      <template v-slot:activator="{ on, attrs }">
-        <span
-          v-bind="attrs"
-          v-on="on"
-          class="mx-0"
-          style="overflow: hidden; color:rgb(0, 0, 0);"
-          >
-          {{ transcript.name }}
-          </span
-        ></template
-      >
-      <span>{{transcript.name}}</span>
-    </v-tooltip>
-    </v-card>
-
+  <v-card class="d-flex flex-column pa-2 ma-4" elevation="4" v-on:click="setVideoPlayerTime(transcript.start)">
+    <span style="color:rgb(0, 0, 0); margin-bottom:0.2cm">{{ get_timecode(transcript.start) }}</span>
+    <span>{{transcript.name}}</span>
+  </v-card>
 </template>
 
 <script>
@@ -29,50 +10,41 @@ import TimeMixin from "../mixins/time";
 
 import { mapStores } from "pinia";
 import { usePlayerStore } from "@/store/player";
+import { useAnnotationStore } from "../store/annotation";
+import { useAnnotationCategoryStore } from "../store/annotation_category";
+import { useTimelineSegmentAnnotationStore } from "../store/timeline_segment_annotation";
+import { useTimelineSegmentStore } from "../store/timeline_segment";
 
 export default {
   mixins: [TimeMixin],
   props: ["transcript"],
-  data () {
-    return {
-      // this variable ensures that the signal to scroll is only emitted once 
-      emitted: false
-    }
-  },
   methods: {
     setVideoPlayerTime(time) {
       this.playerStore.setTargetTime(time);
     },
   },
   computed: {
-    isHighlighted() {
+    annotations(){
       const cur_time = this.playerStore.currentTime;
-      if (this.transcript.start <= cur_time && this.transcript.end > cur_time){
-        if(!this.emitted && this.syncTime){
-          this.$emit('childHighlighted', this.transcript.id);
+      const timeline_segment_annotations = this.timelineSegmentAnnotationStore.forTimeLUT(cur_time)
+      return timeline_segment_annotations.map((e) => {
+        const timeline_segment = this.timelineSegmentStore.get(e.timeline_segment_id);
+        const annotation = this.annotationStore.get(e.annotation_id);
+        let cat = null;
+        if("category_id" in annotation){
+          cat = this.annotationCategoryStore.get(annotation.category_id)
         }
-        this.emitted = true;
-        return true
-      }
-      this.emitted = false;
-      return false;
+        else
+        {
+          cat = "Unknown"
+        }
+        return { name: annotation.name, color:annotation.color, id:annotation.id, category: cat, start:timeline_segment.start, end:timeline_segment.end }
+     })
     },
     time(){
       return this.playerStore.currentTime;
     },
-    syncTime() {
-      return this.playerStore.syncTime;
-    },
-    ...mapStores(usePlayerStore),
+    ...mapStores(usePlayerStore, useAnnotationCategoryStore, useTimelineSegmentStore, useAnnotationStore, useTimelineSegmentAnnotationStore),
   }
 };
 </script>
-
-<style>
-  .highlighted {
-    background-color: rgba(43, 24, 27, 0.287) !important
-  }
-  .v-tooltip__content {
-  max-width: 400px; /* Set your desired maximum width */
-  }
-</style> 

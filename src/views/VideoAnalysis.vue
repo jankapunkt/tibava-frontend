@@ -28,39 +28,61 @@
 
         <v-col cols="6">
           <v-card
+            class="overflow-auto"
             elevation="2"
             ref="resultCard"
             :height="resultCardHeight"
           >
-            <div class="sticky-tabs-bar">
-              <v-tabs v-model="tab" centered>
-                <v-tabs-slider />
-                <v-tab>Shots</v-tab>
-                <v-tab>Annotations</v-tab>
-                <v-tab>Transcript</v-tab>
-                <v-tab>Word Cloud</v-tab>
-                <!-- <v-tab>Current Entities</v-tab> -->
-                <!-- <v-tab disabled>Persons</v-tab>
-                <v-tab disabled>Scenes</v-tab> -->
-              </v-tabs>
-            </div>
-            <v-tabs-items v-model="tab" style="height: 95%">
-              <v-tab-item style="height: 100%">
-                <ShotsOverview @seek="onTargetTimeChange"/>
-              </v-tab-item>
-                
+            <v-tabs centered>
+              <v-tabs-slider />
+              <v-tab>Shots</v-tab>
+              <v-tab>Annotations</v-tab>
+              <v-tab>Transcript</v-tab>
+              <!-- <v-tab>Current Entities</v-tab> -->
+              <!-- <v-tab disabled>Persons</v-tab>
+              <v-tab disabled>Scenes</v-tab> -->
+
               <v-tab-item>
-                <CurrentEntitiesOverView/>
+                <!-- <v-row class="mx-2">
+                  <v-col px-2>
+                    <v-select v-model="selectedTimeline" @change="updateShots"
+                      hint="Select timeline for which the shots are displayed" :items="timelines" item-text="name"
+                      item-value="id" label="Select timeline for shots" persistent-hint return-object
+                      single-line></v-select>
+                  </v-col>
+                </v-row> -->
+
+                <ShotCard
+                  v-for="item in shots"
+                  v-bind:key="item.id"
+                  :shot="item"
+                  @seek="onTagetTimeChange"
+                />
               </v-tab-item>
-                
-              <v-tab-item style="height: 100%">
-                <TranscriptOverview @seek="onTargetTimeChange"/>
-              </v-tab-item>
-              
+              <!-- <v-tab-item>
+                <EntitiesCard
+                  v-for="item in segmentsAnnotations"
+                  v-bind:key="item.id"
+                  :segment="item"
+                  @seek="onTagetTimeChange"
+                />
+              </v-tab-item> -->
               <v-tab-item>
-                <WordcloudCard />
+                <CurrentEntitiesOverView />
               </v-tab-item>
-            </v-tabs-items>
+              <!-- <v-tab-item> PERSONS </v-tab-item>
+              <v-tab-item> SCENES </v-tab-item> -->
+              <v-tab-item>
+                <!-- {{ transcripts }} -->
+                <TranscriptCard
+                  v-for="item in transcripts"
+                  v-bind:key="item.id"
+                  :transcript="item"
+                  @seek="onTagetTimeChange"
+                />
+              </v-tab-item> 
+
+            </v-tabs>
           </v-card>
         </v-col>
       </v-row>
@@ -80,6 +102,11 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-row class="ma-2">
+        <v-col>
+            <VideoVisualization />
+        </v-col>
+      </v-row>
       <ModalTimelineSegmentAnnotate :show.sync="annotationDialog.show" />
     </v-container>
   </v-main>
@@ -87,14 +114,14 @@
 
 <script>
 import VideoPlayer from "@/components/VideoPlayer.vue";
-import TranscriptOverview from "@/components/TranscriptOverview.vue";
+import ShotCard from "@/components/ShotCard.vue";
+import TranscriptCard from "@/components/TranscriptCard.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
 import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
-import ShotsOverview from "@/components/ShotsOverview.vue";
-import WordcloudCard from "@/components/WordcloudCard.vue";
+import VideoVisualization from "@/components/VideoVisualization.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -102,6 +129,7 @@ import * as Keyboard from "../plugins/keyboard.js";
 import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video";
 import { usePlayerStore } from "@/store/player";
+import { useShotStore } from "@/store/shot";
 import { useTimelineStore } from "@/store/timeline";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
@@ -120,7 +148,6 @@ export default {
       targetTime: 0,
       startTime: 0,
       endTime: 0,
-      tab: null,
       addedAnnotation: null,
       labels: [],
       selectedLabel: null,
@@ -280,7 +307,7 @@ export default {
         });
       }
     },
-    onTargetTimeChange(time) {
+    onTagetTimeChange(time) {
       this.targetTime = time;
     },
     onAnnotateSegment() {
@@ -290,20 +317,26 @@ export default {
         });
       }
     },
+    updateShots() {
+      console.log(this.selectedTimeline);
+    },
     async fetchData({ addResults = true }) {
-      // Ask backend about all videos+
+      // Ask backend about all videos
 
       await this.videoStore.fetch({
         videoId: this.$route.params.id,
         addResults: addResults,
       });
+      this.shotStore.buildShots();
     },
     async fetchPlugin() {
+      // console.log("fetchPlugin");
 
       let updateState = await this.pluginRunStore.fetchForVideo({
         videoId: this.$route.params.id,
         fetchResults: true,
       });
+      // console.log(updateState);
     },
   },
   computed: {
@@ -320,6 +353,12 @@ export default {
     timelineNames() {
       return this.timelines.map((e) => e.name);
     },
+    shots() {
+      return this.shotStore.shots;
+    },
+    transcripts() {
+      return this.timelineSegmentAnnotationStore.transcriptSegments;
+    },
     selectedTimeline: {
       get() {
         return this.selectedTimelineProxy === null
@@ -335,6 +374,7 @@ export default {
       useVideoStore,
       usePluginRunStore,
       usePlayerStore,
+      useShotStore,
       useTimelineStore,
       useTimelineSegmentStore,
       useTimelineSegmentAnnotationStore,
@@ -365,15 +405,15 @@ export default {
 
   components: {
     VideoPlayer,
-    TranscriptOverview,
+    ShotCard,
+    TranscriptCard,
     Timeline,
     TimeSelector,
     EntitiesCard,
     CurrentEntitiesOverView,
     ModalTimelineSegmentAnnotate,
-    ShotsOverview,
-    WordcloudCard
-},
+    VideoVisualization
+  },
 
   watch: {
     pluginInProgress(newState, oldState) {
@@ -402,13 +442,6 @@ export default {
 <style scoped>
 .logo > img {
   max-height: 56px;
-}
-
-.sticky-tabs-bar {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background-color: white; /* Adjust the background color if needed */
 }
 
 .card-title {

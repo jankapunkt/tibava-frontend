@@ -543,6 +543,7 @@ export default {
       return null;
     },
     drawAnnotationTimeline(timeline, width, height) {
+      console.log("drawAnnotationTimeline");
 
       const selection = this.selectedTimelineSegments
         .filter(
@@ -712,12 +713,14 @@ export default {
       return drawnTimeline;
     },
     drawGraphicTimeline(timeline, width, height) {
+      console.log("drawGraphicTimeline");
       const pluginRunResultStore = usePluginRunResultStore();
 
       let drawnTimeline = null;
       if ("plugin_run_result_id" in timeline) {
         const result = pluginRunResultStore.get(timeline.plugin_run_result_id);
 
+        console.log({ a: timeline.plugin_run_result_id, r: result });
         if (result === undefined) {
           return null;
         } else {
@@ -1006,7 +1009,7 @@ export default {
       width: this.containerWidth,
       height: this.containerHeight,
       // antialias: true,
-      backgroundAlpha: 0.0,
+      transparent: true,
       view: this.$refs.canvas,
       resizeTo: this.$refs.canvas,
     });
@@ -1097,6 +1100,7 @@ export default {
             this.timelineObjects.splice(index, 1);
           }
         }
+        console.log(`Draw timeline (changed) ${timeline}`);
         const newTimelineObject = this.drawTimeline(timeline);
         if (!newTimelineObject) {
           return;

@@ -12,8 +12,8 @@
         >
           <v-icon color="primary">mdi-account-circle</v-icon>
 
-          <v-badge v-if="loggedIn" color="accent" dot> {{ username }} </v-badge>
-          <span v-else> Login </span>
+          <v-badge v-if="loggedIn" color="accent" dot> User </v-badge>
+          <span v-else> User </span>
         </v-btn>
       </template>
 
@@ -55,9 +55,6 @@ export default {
     };
   },
   computed: {
-    username() {
-      return this.userStore.username;
-    },
     loggedIn() {
       return this.userStore.loggedIn;
     },
