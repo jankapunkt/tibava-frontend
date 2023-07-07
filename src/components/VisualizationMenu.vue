@@ -35,92 +35,12 @@
                             <span class="text-button">{{ $t("visualization.controls.plotTypes.stackedBarChart") }}</span>
                         </v-tab>
                         <v-tab-item>
-                            <v-card flat>
-                                <v-card-title>
-                                    {{ $t("visualization.controls.plotTypes.linePlot") }}
-                                </v-card-title>
-                                <v-card-text>
-                                    <v-form>
-                                        <v-menu offset-y>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn class="mt-5" v-bind:dark="plotData !== null"
-                                                    v-bind="attrs" v-on="on">
-                                                    <span v-if="plotData === null">
-                                                        {{ $t("visualization.controls.plotTypes.resultControlName") }}
-                                                    </span>
-                                                    <span v-else>
-                                                        {{ plotData.timeline.name }}
-                                                    </span>
-                                                </v-btn>
-                                            </template>
-                                            <v-list>
-                                                <v-list-item v-for="target in visualizationTargets" link
-                                                    @click="selectVisualizationTarget(target)">
-                                                    <v-list-item-title v-text="target.timeline.name"></v-list-item-title>
-                                                </v-list-item>
-                                            </v-list>
-                                        </v-menu>
-                                        <br />
-                                        <div v-if="plotData !== null">
-                                            <div class="text-h5 mt-5">
-                                                {{ $t("visualization.controls.mapping.mappingTitle") }}
-                                            </div>
-                                            <div class="text-h6">
-                                                {{ $t("visualization.controls.mapping.xTitle") }}
-                                            </div>
-                                            <v-menu offset-y>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn class="mt-5"
-                                                        v-bind:dark="xMapping !== null"
-                                                        v-bind="attrs" v-on="on">
-                                                        <span v-if="xMapping !== null">
-                                                            {{ xMapping }}
-                                                        </span>
-                                                        <span v-else>
-                                                            {{ $t("visualization.controls.mapping.xSelect") }}
-                                                        </span>
-                                                    </v-btn>
-                                                </template>
-                                                <v-list>
-                                                    <v-list-item v-for="target in possibleMappings.x" key="target" link
-                                                        @click="selectMappingTarget('xMapping', target)">
-                                                        <v-list-item-title v-text="target"></v-list-item-title>
-                                                    </v-list-item>
-                                                </v-list>
-                                            </v-menu>
-                                            <div class="text-h6 mt-5">
-                                                {{ $t("visualization.controls.mapping.yTitle") }}
-                                            </div>
-                                            <v-menu offset-y>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn class="mt-5"
-                                                        v-bind:dark="yMapping !== null"
-                                                        v-bind="attrs" v-on="on">
-                                                        <span v-if="yMapping !== null">
-                                                            {{ yMapping }}
-                                                        </span>
-                                                        <span v-else>
-                                                            {{ $t("visualization.controls.mapping.ySelect") }}
-                                                        </span>
-                                                    </v-btn>
-                                                </template>
-                                                <v-list>
-                                                    <v-list-item v-for="target in possibleMappings.y" key="target" link
-                                                        @click="selectMappingTarget('yMapping', target)">
-                                                        <v-list-item-title v-text="target"></v-list-item-title>
-                                                    </v-list-item>
-                                                </v-list>
-                                            </v-menu>
-                                        </div>
-                                    </v-form>
-                                </v-card-text>
-                            </v-card>
+                            <div id="lineplotDiv" flat>
+
+                            </div>
                         </v-tab-item>
                         <v-tab-item>
                             <v-card flat>
-                                <v-card-title>
-                                    {{ $t("visualization.controls.plotTypes.histogramChart") }}
-                                </v-card-title>
                                 <v-card-text>
                                     Params here
                                 </v-card-text>
@@ -128,9 +48,6 @@
                         </v-tab-item>
                         <v-tab-item>
                             <v-card flat>
-                                <v-card-title>
-                                    {{ $t("visualization.controls.plotTypes.stackedBarChart") }}
-                                </v-card-title>
                                 <v-card-text>
                                     Params here
                                 </v-card-text>
@@ -151,6 +68,7 @@
 import { mapStores } from "pinia";
 import { usePluginRunResultStore } from "@/store/plugin_run_result";
 import { useTimelineStore } from "@/store/timeline";
+import * as Plotly from 'plotly.js';
 
 const plotTypeResultMapping = {
     "linePlot": ["SCALAR"],
@@ -178,7 +96,27 @@ export default {
             yMapping: null
         };
     },
+    mounted() {
+        this.visualizeLinePlot();
+    },
     methods: {
+        visualizeLinePlot() {
+            var trace1 = {
+            x: [1, 2, 3, 4],
+            y: [10, 15, 13, 17],
+            type: 'scatter'
+            };
+
+            var trace2 = {
+            x: [1, 2, 3, 4],
+            y: [16, 5, 11, 9],
+            type: 'scatter'
+            };
+
+            var data = [trace1, trace2];
+
+            Plotly.newPlot('lineplotDiv', data);
+        },
         resetVisualizationParams() {
             this.plotType = "";
             this.resetPlotData()
