@@ -16,8 +16,8 @@ export class ScalarColorTimeline extends Timeline {
     data = null,
     fill = 0xffffff,
     renderer = null,
-    resolution = 2048,
-    oversampling = 4,
+    resolution = 1024,
+    oversampling = 1,
     colormap = null,
   }) {
     super({ timelineId, width, height, startTime, endTime, duration, fill });

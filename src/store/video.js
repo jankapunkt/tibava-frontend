@@ -11,6 +11,7 @@ import { useAnnotationCategoryStore } from "./annotation_category";
 import { useTimelineStore } from "./timeline";
 import { useTimelineSegmentStore } from "./timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "./timeline_segment_annotation";
+import { useShotStore} from "./shot"
 
 import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
@@ -58,6 +59,7 @@ export const useVideoStore = defineStore("video", {
             const pluginRunResultStore = usePluginRunResultStore();
             const shortcutStore = useShortcutStore();
             const annotationShortcutStore = useAnnotationShortcutStore();
+            const shotStore = useShotStore();
 
             promises.push(playerStore.fetchVideo({ videoId }));
             if (includeAnnotation) {
@@ -211,12 +213,24 @@ export const useVideoStore = defineStore("video", {
                     headers: { "Content-Type": "multipart/form-data" },
                 })
                 .then((res) => {
+                    console.log("data");
+                    console.log(res.data);
                     if (res.data.status === "ok") {
-                        let blob = new Blob([res.data.file], { type: `text/${res.data.extension}` });
-                        let link = document.createElement("a");
-                        link.href = window.URL.createObjectURL(blob);
-                        link.download = `${video_id}.${res.data.extension}`;
-                        link.click();
+                        if (res.data.extension === "zip"){
+                            const filecontent = Buffer.from(res.data.file, 'base64');
+                            let blob = new Blob([filecontent], { type: `application/zip` });
+                            let link = document.createElement("a");
+                            link.href = window.URL.createObjectURL(blob);
+                            link.download = `timelines.${res.data.extension}`;
+                            link.click();
+                        }
+                        else if (res.data.extension === "csv" || res.data.extension === "eaf"){
+                            let blob = new Blob([res.data.file], { type: `text/${res.data.extension}` });
+                            let link = document.createElement("a");
+                            link.href = window.URL.createObjectURL(blob);
+                            link.download = `${video_id}.${res.data.extension}`;
+                            link.click();
+                        }
                     }
                 })
                 .finally(() => {

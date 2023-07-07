@@ -2,7 +2,6 @@
   <v-dialog
     v-model="dialog"
     max-width="1000"
-    persistent
     @keydown.esc="dialog = false"
   >
     <v-card>
