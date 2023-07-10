@@ -1,8 +1,8 @@
 <template>
     <div>
-        <v-dialog v-model="menu" min-width="175" max-width="90%" offset-y bottom left>
-            <template v-slot:activator="{ attrs, on: menu }">
-                <v-btn tile text v-bind="attrs" v-on="menu" class="ml-n2" :title="$t('visualization.title')">
+        <v-dialog @input="handleDialogInput" v-model="dialogVisible" min-width="175" max-width="90%" offset-y bottom left persistent>
+            <template v-slot:activator="{ attrs, on: isDialogVisible }">
+                <v-btn tile text v-bind="attrs" v-on="isDialogVisible" class="ml-n2" :title="$t('visualization.title')">
                     <v-icon color="primary">mdi-chart-box-outline</v-icon>
                     {{ $t('visualization.title') }}
                 </v-btn>
@@ -10,12 +10,12 @@
             <v-card>
                 <v-card-title class="mb-2">
                     {{ $t("visualization.title") }}
-                    <v-btn icon @click="menu = false" absolute right>
+                    <v-btn icon @click="isDialogVisible = false" absolute right>
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
                 <v-card-text>
-                    <v-tabs vertical class="tabs-left" v-model="tab">
+                    <v-tabs vertical class="tabs-left">
                         <v-tab>
                             <v-icon left>
                                 mdi-chart-line
@@ -35,9 +35,9 @@
                             <span class="text-button">{{ $t("visualization.controls.plotTypes.stackedBarChart") }}</span>
                         </v-tab>
                         <v-tab-item>
-                            <div id="lineplotDiv" flat>
-
-                            </div>
+                            <v-card  v-if="dialogVisible">
+                                <div id='plotContainer'></div>
+                            </v-card>
                         </v-tab-item>
                         <v-tab-item>
                             <v-card flat>
@@ -55,10 +55,10 @@
                         </v-tab-item>
                     </v-tabs>
                 </v-card-text>
-                <v-card-actions class="pt-0">
+                <!-- <v-card-actions class="pt-0">
                     <v-btn @click="visualize" v-bind:disabled="!isSetupValid">{{ $t("visualization.start") }}</v-btn>
                     <v-btn @click="reset">{{ $t("visualization.reset") }}</v-btn>
-                </v-card-actions>
+                </v-card-actions> -->
             </v-card>
         </v-dialog>
     </div>
@@ -70,137 +70,65 @@ import { usePluginRunResultStore } from "@/store/plugin_run_result";
 import { useTimelineStore } from "@/store/timeline";
 import * as Plotly from 'plotly.js';
 
-const plotTypeResultMapping = {
-    "linePlot": ["SCALAR"],
-    "histogramChart": ["HIST"],
-    "stackedBarChart": ["RGB_HIST"]
-};
-
-const plotTypePossibleMappings = {
-    "SCALAR": {
-        "x": ["time"],
-        "y": ["y"]
-    }
-};
-
 export default {
     data() {
         return {
-            menu: false,
-            tab: null,
-            plotTypes: Object.keys(plotTypeResultMapping),
-            possibleMappings: null,
-            chosenPlot: "",
+            dialogVisible: false,
             plotData: null,
-            xMapping: null,
-            yMapping: null
         };
     },
     mounted() {
-        this.visualizeLinePlot();
+        console.log("mounted");
+    },
+    updated() {
+        console.log("updated");
     },
     methods: {
-        visualizeLinePlot() {
-            var trace1 = {
-            x: [1, 2, 3, 4],
-            y: [10, 15, 13, 17],
-            type: 'scatter'
+    handleDialogInput(value) {
+      if (value) {
+        this.dialogVisible = true;
+      } else {
+        // Reset the plot data when the dialog is closed
+        this.plotData = null;
+        this.dialogVisible = false;
+      }
+    },
+    loadData() {
+        // TODO: find a better way than this timeout to render the plot after the container has been created
+        setTimeout(() => {
+            // Replace this with your actual data loading logic
+            var a = {
+                x: [1, 2, 3, 4, 5],
+                y: [1, 4, 9, 16, 25],
+                type: 'scatter',
+                name: 'Name 1'
             };
-
-            var trace2 = {
-            x: [1, 2, 3, 4],
-            y: [16, 5, 11, 9],
-            type: 'scatter'
+            var b = {
+                x: [2, 4, 6, 8, 15],
+                y: [121, 24, 69, 6, 15],
+                type: 'scatter',
+                name: 'Name 2'
             };
+            
+            this.plotData = [a, b];
 
-            var data = [trace1, trace2];
-
-            Plotly.newPlot('lineplotDiv', data);
-        },
-        resetVisualizationParams() {
-            this.plotType = "";
-            this.resetPlotData()
-            this.resetMappings();
-            this.timelineStore.setVisualizationData(null);
-        },
-        resetMappings() {
-            this.xMapping = null;
-            this.yMapping = null;
-        },
-        resetPlotData() {
-            this.plotData = null;
-        },
-        visualize() {
-            this.timelineStore.setVisualizationData({
-                "plotData": this.plotData,
-                "chosenPlot": this.chosenPlot,
-                "xMapping": this.xMapping,
-                "yMapping": this.yMapping
-            });
-            this.menu = false;
-        },
-        reset() {
-            this.resetVisualizationParams();
-        },
-        selectVisualizationTarget(target) {
-            this.possibleMappings = plotTypePossibleMappings[target["result"]["type"]];
-            if (target === this.plotData) {
-                this.resetMappings();
-                this.resetPlotData();
-                return;
-            }
-            this.plotData = target;
-        },
-        selectResult(targetData) {
-            this.plotData = targetData;
-        },
-        selectMappingTarget(source, target) {
-            if (this[source] === target) {
-                this[source] = null;
-                return;
-            }
-            this[source] = target;
-        }
+            // Render the Plotly Lineplot
+            Plotly.newPlot('plotContainer', this.plotData);
+        }, 1);
+    },
     },
     computed: {
-        visualizationTargets() {
-            let appropriateTargets = [];
-            if (this.chosenPlot === "") {
-                return appropriateTargets;
-            }
-            let tempResult = null;
-            const pluginResults = this.pluginRunResultStore.all;
-            const timelines = this.timelineStore.all;
-            for (let timeline of timelines) {
-                if (!("plugin_run_result_id" in timeline) || !pluginResults.includes(timeline["plugin_run_result_id"])) {
-                    continue;
-                }
-                tempResult = this.pluginRunResultStore.get(timeline["plugin_run_result_id"]);
-                if (plotTypeResultMapping[this.chosenPlot].includes(tempResult.type)) {
-                    appropriateTargets.push({ "timeline": timeline, "result": tempResult });
-                }
-            }
-            return appropriateTargets;
-        },
-        isSetupValid() {
-            if (this.chosenPlot === "") {
-                return false;
-            }
-            if (this.plotData === null) {
-                return false;
-            }
-            if (this.xMapping === null ||
-                this.yMapping === null) {
-                return false;
-            }
-            return true;
+        shouldLoadData() {
+            return this.dialogVisible && !this.plotData;
         },
         ...mapStores(usePluginRunResultStore, useTimelineStore)
     },
     watch: {
-        tab(newTab) {
-            this.chosenPlot = this.plotTypes[newTab];
-        }
+        shouldLoadData() {
+            if (this.shouldLoadData) {
+                this.loadData();
+            }
+        },
     }
 }
 </script>

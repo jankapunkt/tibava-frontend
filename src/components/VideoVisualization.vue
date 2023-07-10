@@ -32,6 +32,7 @@
 import * as d3 from "d3";
 import { useTimelineStore } from "@/store/timeline";
 import { mapStores } from "pinia";
+import Plotly from 'plotly.js';
 
 const width = 640;
 const height = 400;
@@ -44,7 +45,19 @@ export default {
     data() {
         return {
             isContainerFlex: true,
-            isContainerNone: false
+            isContainerNone: false,
+            plotData: [
+            {
+                x: [1, 2, 3, 4, 5],
+                y: [1, 4, 9, 16, 25],
+                type: 'scatter',
+            },
+            ],
+            plotLayout: {
+                title: 'Line Plot',
+                xaxis: { title: 'X-axis' },
+                yaxis: { title: 'Y-axis' },
+            },
         };
     },
     methods: {
@@ -52,6 +65,11 @@ export default {
             return
         },
 
+    },
+    mounted: {
+        createChart() {
+            Plotly.newPlot('chart-container', this.plotData, this.plotLayout);
+        },
     },
     computed: {
         visualizationData() {

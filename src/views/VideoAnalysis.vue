@@ -80,11 +80,11 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row class="ma-2">
+      <!-- <v-row class="ma-2">
         <v-col>
             <VideoVisualization />
         </v-col>
-      </v-row>
+      </v-row> -->
       <ModalTimelineSegmentAnnotate :show.sync="annotationDialog.show" />
     </v-container>
   </v-main>
