@@ -13,7 +13,7 @@
 
       <v-spacer></v-spacer>
       <PluginMenu v-if="videoLoaded" />
-      <VisualizationMenu v-if="videoLoaded" />
+      <!-- <VisualizationMenu v-if="videoLoaded" /> -->
       <AnnotationMenu v-if="videoLoaded" />
       <VideoMenu v-if="videoLoaded" />
       <UserMenu />
