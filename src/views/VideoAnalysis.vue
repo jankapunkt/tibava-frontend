@@ -46,7 +46,7 @@
             </div>
             <v-tabs-items v-model="tab" style="height: 95%">
               <v-tab-item style="height: 100%">
-                <ShotsOverview @seek="onTargetTimeChange"/>
+                <ShotsOverview/>
               </v-tab-item>
                 
               <v-tab-item>
@@ -54,7 +54,7 @@
               </v-tab-item>
                 
               <v-tab-item style="height: 100%">
-                <TranscriptOverview @seek="onTargetTimeChange"/>
+                <TranscriptOverview/>
               </v-tab-item>
               
               <v-tab-item>
@@ -66,7 +66,7 @@
       </v-row>
 
       <v-row class="ma-2">
-        <VisualizationMenu> </VisualizationMenu>
+        <VisualizationMenu @markerPositionChange="onTargetTimeChange"> </VisualizationMenu>
       </v-row>
 
       <v-row class="ma-2">
@@ -134,8 +134,6 @@ export default {
       annotationDialog: {
         show: false,
       },
-      // annotations: [],
-      // annotationCategories: [],
       resultCardHeight: 69,
     };
   },
@@ -286,7 +284,9 @@ export default {
       }
     },
     onTargetTimeChange(time) {
-      this.targetTime = time;
+      console.log(time);
+      // const targetTime = this.xToTime(time);
+      this.playerStore.setTargetTime(time);
     },
     onAnnotateSegment() {
       if (this.timelineSegmentStore.lastSelected) {

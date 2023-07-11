@@ -356,7 +356,7 @@ export default {
     };
   },
   methods: {
-    startDraging(event, x, time) {
+    startDragging(event, x, time) {
       this.dragSelection.x = x;
       this.dragSelection.start = time;
       this.dragSelection.dragging = true;
@@ -397,13 +397,13 @@ export default {
     },
 
     getTimeline(timelineId) {
-      var founded = null;
+      var found = null;
       this.timelineObjects.forEach((timelineObject) => {
         if (timelineObject.timelineId === timelineId) {
-          founded = timelineObject;
+          found = timelineObject;
         }
       });
-      return founded;
+      return found;
     },
     computeTimelineX() {
       return this.timeToX(this.startTime);
@@ -624,7 +624,7 @@ export default {
       drawnTimeline.on("mousedown", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.startDraging(ev, x, time);
+        this.startDragging(ev, x, time);
       });
       drawnTimeline.on("mousemove", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;

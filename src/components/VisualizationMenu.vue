@@ -56,6 +56,7 @@
 import { mapStores } from "pinia";
 import { usePluginRunResultStore } from "@/store/plugin_run_result";
 import { useTimelineStore } from "@/store/timeline";
+import { usePlayerStore } from "@/store/player";
 import * as Plotly from 'plotly.js';
 
 export default {
@@ -112,7 +113,7 @@ export default {
         renderPlot() {
             Plotly.newPlot('linePlotContainer', this.plotData, this.plotLayout);
             // Add a vertical line shape at the x position of the mouse cursor
-            var myPlot = document.getElementById('linePlotContainer').on('plotly_hover', (eventData) => {
+            var myPlot = document.getElementById('linePlotContainer').on('plotly_click', (eventData) => {
                 const xValue = eventData.points[0].x;
                 const shape = {
                     type: 'line',
@@ -125,13 +126,12 @@ export default {
                         width: 2,
                     },
                 };
-
+                
+                // notify parent Container of timechange for the video player
+                const timestamp = xValue * this.duration / eventData.points[0].data.x;
+                this.$emit('markerPositionChange', timestamp);
+                
                 Plotly.relayout(this.$refs.linePlotContainer, { shapes: [shape] });
-            });
-
-            // Remove the vertical line shape when not hovering
-            this.$refs.linePlotContainer.addEventListener('plotly_unhover', () => {
-                Plotly.relayout(this.$refs.linePlotContainer, { shapes: [] });
             });
         },
         toggleCollapse() {
@@ -142,7 +142,10 @@ export default {
         shouldLoadData() {
         return !this.collapsed && !this.plotData;
         },
-        ...mapStores(usePluginRunResultStore, useTimelineStore)
+        duration() {
+            return this.playerStore.videoDuration;
+        },
+        ...mapStores(usePluginRunResultStore, useTimelineStore, usePlayerStore)
     },
     watch: {
         async shouldLoadData() {
