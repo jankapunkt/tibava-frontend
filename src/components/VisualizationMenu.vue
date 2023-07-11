@@ -1,63 +1,55 @@
 <template>
-    <div>
-        <v-dialog @input="handleDialogInput" v-model="dialogVisible" min-width="175" max-width="90%" offset-y bottom left persistent>
-            <template v-slot:activator="{ attrs, on: dialogVisible }">
-                <v-btn tile text v-bind="attrs" v-on="dialogVisible" class="ml-n2" :title="$t('visualization.title')">
-                    <v-icon color="primary">mdi-chart-box-outline</v-icon>
-                    {{ $t('visualization.title') }}
-                </v-btn>
-            </template>
-            <v-card>
-                <v-card-title class="mb-2">
-                    {{ $t("visualization.title") }}
-                    <v-btn icon @click="dialogVisible = false" absolute right>
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                </v-card-title>
-                <v-card-text>
-                    <v-tabs vertical class="tabs-left">
-                        <v-tab>
-                            <v-icon left>
-                                mdi-chart-line
-                            </v-icon>
-                            <span class="text-button">{{ $t("visualization.controls.plotTypes.linePlot") }}</span>
-                        </v-tab>
-                        <v-tab>
-                            <v-icon left>
-                                mdi-chart-histogram
-                            </v-icon>
-                            <span class="text-button">{{ $t("visualization.controls.plotTypes.histogramChart") }}</span>
-                        </v-tab>
-                        <v-tab>
-                            <v-icon left>
-                                mdi-chart-bar-stacked
-                            </v-icon>
-                            <span class="text-button">{{ $t("visualization.controls.plotTypes.stackedBarChart") }}</span>
-                        </v-tab>
-                        <v-tab-item>
-                            <v-card  v-if="dialogVisible">
-                                <div id='linePlotContainer'></div>
-                            </v-card>
-                        </v-tab-item>
-                        <v-tab-item>
-                            <v-card flat>
-                                <v-card-text>
-                                    TODO
-                                </v-card-text>
-                            </v-card>
-                        </v-tab-item>
-                        <v-tab-item>
-                            <v-card flat>
-                                <v-card-text>
-                                    TODO
-                                </v-card-text>
-                            </v-card>
-                        </v-tab-item>
-                    </v-tabs>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
-    </div>
+    <v-card width="100%">
+        <v-btn @click='toggleCollapse' style="background-color: #E6E6E6" class="m-1" elevation="5">
+          <v-icon color="primary">mdi-chart-box-outline</v-icon> {{ $t('visualization.title') }}
+        </v-btn>
+        <v-card v-if="!collapsed" 
+              class="ma-2"
+              width="100%"
+              elevation="2"
+              scrollable="False">
+            <v-card-text>
+              <v-tabs 
+              horizontal class="tabs-left">
+                <v-tab>
+                  <v-icon left>
+                      mdi-chart-line
+                  </v-icon>
+                  <span class="text-button">{{ $t("visualization.controls.plotTypes.linePlot") }}</span>
+                </v-tab>
+                <v-tab>
+                  <v-icon left>
+                      mdi-chart-histogram
+                  </v-icon>
+                  <span class="text-button">{{ $t("visualization.controls.plotTypes.histogramChart") }}</span>
+                </v-tab>
+                <v-tab>
+                  <v-icon left>
+                      mdi-chart-bar-stacked
+                  </v-icon>
+                  <span class="text-button">{{ $t("visualization.controls.plotTypes.stackedBarChart") }}</span>
+                </v-tab>
+                <v-tab-item>
+                  <div ref='linePlotContainer' id='linePlotContainer'></div>
+                </v-tab-item>
+                <v-tab-item>
+                  <v-card flat>
+                      <v-card-text>
+                          TODO
+                      </v-card-text>
+                  </v-card>
+                </v-tab-item>
+                <v-tab-item>
+                  <v-card flat>
+                      <v-card-text>
+                          TODO
+                      </v-card-text>
+                  </v-card>
+                </v-tab-item>
+              </v-tabs>
+            </v-card-text>
+        </v-card>
+    </v-card>
 </template>
 
 <script>
@@ -69,8 +61,16 @@ import * as Plotly from 'plotly.js';
 export default {
     data() {
         return {
-            dialogVisible: false,
+            collapsed: true,
             plotData: null,
+            plotLayout: {
+                title: 'Scatter Plot',
+                xaxis: { title: 'Time' },
+                yaxis: { title: 'Value' },
+                showlegend: true,
+                hovermode: 'x',
+                value: 'closest'
+            },
         };
     },
     methods: {
@@ -98,7 +98,9 @@ export default {
                                     x: result.data.y.length,
                                     y: result.data.y,
                                     type: 'scatter',
-                                    name: timeline.name
+                                    name: timeline.name,
+                                    visible: "legendonly",
+                                    mode: "markers",
                                 };
                                 this.plotData.push(data);
                             }
@@ -106,14 +108,39 @@ export default {
                     })
                 resolve();
             });
-        },
+            },
         renderPlot() {
-            Plotly.newPlot('linePlotContainer', this.plotData);
-        }
+            Plotly.newPlot('linePlotContainer', this.plotData, this.plotLayout);
+            // Add a vertical line shape at the x position of the mouse cursor
+            var myPlot = document.getElementById('linePlotContainer').on('plotly_hover', (eventData) => {
+                const xValue = eventData.points[0].x;
+                const shape = {
+                    type: 'line',
+                    x0: xValue,
+                    x1: xValue,
+                    y0: this.plotLayout.yaxis.range[0],
+                    y1: this.plotLayout.yaxis.range[1],
+                    line: {
+                        color: 'red',
+                        width: 2,
+                    },
+                };
+
+                Plotly.relayout(this.$refs.linePlotContainer, { shapes: [shape] });
+            });
+
+            // Remove the vertical line shape when not hovering
+            this.$refs.linePlotContainer.addEventListener('plotly_unhover', () => {
+                Plotly.relayout(this.$refs.linePlotContainer, { shapes: [] });
+            });
+        },
+        toggleCollapse() {
+            this.collapsed = !this.collapsed;
+        },
     },
     computed: {
         shouldLoadData() {
-            return this.dialogVisible && !this.plotData;
+        return !this.collapsed && !this.plotData;
         },
         ...mapStores(usePluginRunResultStore, useTimelineStore)
     },
@@ -124,8 +151,8 @@ export default {
                 this.renderPlot();
             }
         },
-        dialogVisible(value) {
-            if (!value) {
+        collapsed(value) {
+            if (value) {
                 this.$emit("close");
                 this.plotData = null;
             } 
