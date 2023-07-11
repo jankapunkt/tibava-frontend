@@ -365,7 +365,7 @@ export default {
       this.timelineStore.setSelectedTimeRangeEnd(null);
       event.stopPropagation();
     },
-    moveDraging(event, x, time) {
+    moveDragging(event, x, time) {
       if (!this.dragSelection.dragging) {
         return;
       }
@@ -384,7 +384,7 @@ export default {
 
       event.stopPropagation();
     },
-    endDraging(event, x, time) {
+    endDragging(event, x, time) {
       this.dragSelection.dragging = false;
       if (Math.abs(x - this.dragSelection.x) < 2) {
         this.timelineStore.setSelectedTimeRangeEnd(null);
@@ -629,17 +629,17 @@ export default {
       drawnTimeline.on("mousemove", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.moveDraging(ev, x, time);
+        this.moveDragging(ev, x, time);
       });
       drawnTimeline.on("mouseup", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.endDraging(ev, x, time);
+        this.endDragging(ev, x, time);
       });
       drawnTimeline.on("mouseupoutside", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.endDraging(ev, x, time);
+        this.endDragging(ev, x, time);
       });
 
       drawnTimeline.on("pointerover", (ev) => {

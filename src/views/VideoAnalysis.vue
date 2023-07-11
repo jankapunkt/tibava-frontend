@@ -66,7 +66,7 @@
       </v-row>
 
       <v-row class="ma-2">
-        <VisualizationMenu @markerPositionChange="onTargetTimeChange"> </VisualizationMenu>
+        <VisualizationMenu > </VisualizationMenu>
       </v-row>
 
       <v-row class="ma-2">
@@ -282,11 +282,6 @@ export default {
           }
         });
       }
-    },
-    onTargetTimeChange(time) {
-      console.log(time);
-      // const targetTime = this.xToTime(time);
-      this.playerStore.setTargetTime(time);
     },
     onAnnotateSegment() {
       if (this.timelineSegmentStore.lastSelected) {

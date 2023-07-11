@@ -66,12 +66,14 @@ export default {
             plotData: null,
             plotLayout: {
                 title: 'Scatter Plot',
-                xaxis: { title: 'Time' },
+                xaxis: { title: 'Time'},
                 yaxis: { title: 'Value' },
                 showlegend: true,
                 hovermode: 'x',
-                value: 'closest'
+                value: 'closest',
             },
+            margin: { autoexpand: false },
+            autosize: false,
         };
     },
     methods: {
@@ -110,28 +112,37 @@ export default {
                 resolve();
             });
             },
+        drawMarker(xValue, convert) {
+            var xCoordinate = xValue;
+
+            if (convert){
+                // for some reason, plotly extends the range of the axis by a factor of ~1.06
+                // to get the original, data-depended length, I have to multiply the axis-range by this magic number of 0.944138 here
+                // TODO: If you find out, how to make plotly use the data ranges properly, you can remove this. I was not able to.
+                xCoordinate = (this.plotLayout.xaxis.range[1] * 0.944138 ) * xValue / this.duration;
+            }
+            
+            const shape = {
+                type: 'line',
+                x0: xCoordinate,
+                x1: xCoordinate,
+                y0: this.plotLayout.yaxis.range[0],
+                y1: this.plotLayout.yaxis.range[1],
+                line: { color: "rgb(175, 20, 20)", width: 2, },
+            };
+            
+            Plotly.relayout(this.$refs.linePlotContainer, { shapes: [shape] });
+        },
         renderPlot() {
             Plotly.newPlot('linePlotContainer', this.plotData, this.plotLayout);
             // Add a vertical line shape at the x position of the mouse cursor
-            var myPlot = document.getElementById('linePlotContainer').on('plotly_click', (eventData) => {
-                const xValue = eventData.points[0].x;
-                const shape = {
-                    type: 'line',
-                    x0: xValue,
-                    x1: xValue,
-                    y0: this.plotLayout.yaxis.range[0],
-                    y1: this.plotLayout.yaxis.range[1],
-                    line: {
-                        color: 'red',
-                        width: 2,
-                    },
-                };
+            document.getElementById('linePlotContainer').on('plotly_click', (eventData) => {
+                const xCoordinate = eventData.points[0].x;
+                this.drawMarker(xCoordinate, false);
                 
                 // notify parent Container of timechange for the video player
-                const timestamp = xValue * this.duration / eventData.points[0].data.x;
-                this.$emit('markerPositionChange', timestamp);
-                
-                Plotly.relayout(this.$refs.linePlotContainer, { shapes: [shape] });
+                const timestamp = xCoordinate * this.duration / eventData.points[0].data.x
+                this.playerStore.setTargetTime(timestamp);
             });
         },
         toggleCollapse() {
@@ -140,14 +151,20 @@ export default {
     },
     computed: {
         shouldLoadData() {
-        return !this.collapsed && !this.plotData;
+            return !this.collapsed && !this.plotData;
         },
         duration() {
             return this.playerStore.videoDuration;
         },
+        currentTime() {
+            return this.playerStore.currentTime;
+        },
         ...mapStores(usePluginRunResultStore, useTimelineStore, usePlayerStore)
     },
     watch: {
+        currentTime(time){
+            this.drawMarker(time, true);
+        },
         async shouldLoadData() {
             if (this.shouldLoadData) {
                 await this.loadData();
