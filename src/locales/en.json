@@ -24,6 +24,7 @@
                 "controlName": "Select Plot Type",
                 "resultControlName": "Select Timeline to Visualize",
                 "linePlot": "Line Plot",
+                "scatterPlot": "Scatter Plot",
                 "histogramChart": "Histogram Chart",
                 "stackedBarChart": "Stacked Bar Chart"
             },
