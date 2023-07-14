@@ -79,8 +79,6 @@ export default {
 
                         if (result) {
                             if (result.type == CHART_PLOT_MAPPING[chosenChart]) {
-                                console.log(timeline.name);
-                                console.log(result);
                                 this.plotData.push(this.dataMapper(result, timeline, chosenChart));
                             }
                         }
@@ -152,13 +150,17 @@ export default {
         },
         drawMarker(xValue, convert) {
             var xCoordinate = xValue;
-            console.log(xCoordinate);
 
             if (convert){
                 // for some reason, plotly extends the range of the axis by a factor of ~1.06
                 // to get the original, data-depended length, I have to multiply the axis-range by this magic number of 0.944138 here
+                // Apparently, this is only the case for the scatter plot so far, thus the following if-else
                 // TODO: If you find out, how to make plotly use the data ranges properly, you can remove this. I was not able to.
-                xCoordinate = (this.plotLayout.xaxis.range[1] * 0.944138 ) * xValue / this.duration;
+                if (this.chosenChart === 0){
+                    xCoordinate = (this.plotLayout.xaxis.range[1] * 0.944138 ) * xValue / this.duration;
+                }else{
+                    xCoordinate = (this.plotLayout.xaxis.range[1]) * xValue / this.duration;
+                }
             }
 
             const shape = {
@@ -178,16 +180,9 @@ export default {
             // Add a vertical line shape at the x position of the mouse cursor
             document.getElementById(CHART_ID_MAPPING[chosenPlot]).on('plotly_click', (eventData) => {
                 const xCoordinate = eventData.points[0].x;
-                this.drawMarker(xCoordinate, false);
-
-                // notify parent Container of timechange for the video player
-                const timestamp = xCoordinate * this.duration / eventData.points[0].data.x
-                this.playerStore.setTargetTime(timestamp);
+                // notify parent Container of timechange for the video player, drawMarker will be called due to the time update
+                this.playerStore.setTargetTime(xCoordinate);
             });
-            document.getElementById(CHART_ID_MAPPING[chosenPlot]).on("plotly_selected", (e) => {
-                this.drawMarker(this.playerStore.currentTime, false);
-            });
-            this.drawMarker(this.playerStore.currentTime, false);
         },
         toggleCollapse() {
             this.collapsed = !this.collapsed;
