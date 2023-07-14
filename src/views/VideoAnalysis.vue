@@ -65,10 +65,8 @@
         </v-col>
       </v-row>
 
-      <v-row class="ma-2">
-        <VisualizationMenu > </VisualizationMenu>
-      </v-row>
-
+      <VisualizationMenu align="center" style="box-shadow: none;"> </VisualizationMenu>
+      
       <v-row class="ma-2">
         <v-col>
           <v-card

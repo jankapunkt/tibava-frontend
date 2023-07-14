@@ -176,6 +176,9 @@
                 "plugin_name": "Face Detection",
                 "timeline_name": "Faces"
             },
+            "face_clustering": {
+                "plugin_name": "Face Clustering"
+            },
             "faceemotion": {
                 "plugin_name": "Face Emotion Recognition",
                 "timeline_name": "Face Emotions",
