@@ -151,6 +151,9 @@ export default {
       if (type === "facedetection") {
         return this.$t("modal.plugin.facedetection.plugin_name");
       }
+      if (type === "face_clustering") {
+        return this.$t("modal.plugin.face_clustering.plugin_name");
+      }
       if (type === "deepface_emotion") {
         return this.$t("modal.plugin.faceemotion.plugin_name");
       }

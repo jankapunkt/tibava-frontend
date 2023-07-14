@@ -89,6 +89,13 @@ export default {
           optional_parameters: [],
         },
         {
+          name: this.$t("modal.plugin.face_clustering.plugin_name"),
+          icon: "mdi-ungroup",
+          plugin: "face_clustering",
+          parameters: [],
+          optional_parameters: [],
+        },
+        {
           name: this.$t("modal.plugin.audio_waveform.plugin_name"),
           icon: "mdi-waveform",
           plugin: "audio_amp",

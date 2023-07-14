@@ -134,7 +134,6 @@ export default {
       );
 
       function getTimelineDict(timeline) {
-        console.log(timeline);
         return { name: timeline.name, id: timeline.id };
       }
 
