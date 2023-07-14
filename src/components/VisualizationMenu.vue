@@ -1,7 +1,11 @@
 <template>
     <v-card width="100%">
-        <v-btn @click='toggleCollapse' style="background-color: #E6E6E6" class="m-1" elevation="5">
-          <v-icon color="primary">mdi-chart-box-outline</v-icon> {{ $t('visualization.title') }}
+        <v-btn @click='toggleCollapse' style="color: rgb(175, 20, 20); background-color: #E6E6E6" class="m-1" elevation="2">
+        <v-icon v-if="!collapsed" color="primary">mdi-arrow-up-drop-circle-outline</v-icon>
+        <v-icon v-if="collapsed" color="primary">mdi-arrow-down-drop-circle-outline</v-icon>
+        &nbsp;{{ $t('visualization.title') }}&nbsp; 
+        <v-icon v-if="!collapsed" color="primary">mdi-arrow-up-drop-circle-outline</v-icon>
+        <v-icon v-if="collapsed" color="primary">mdi-arrow-down-drop-circle-outline</v-icon>
         </v-btn>
         <v-card v-if="!collapsed" 
               class="ma-2"
