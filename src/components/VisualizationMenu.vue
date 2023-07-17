@@ -10,8 +10,8 @@
         <v-card v-if="!collapsed"
               class="ma-2"
               width="100%"
-              elevation="2"
-              scrollable="False">
+              scrollable="False"
+              style="border: 1px solid black">
             <v-card-text>
               <v-tabs
               horizontal class="tabs-left" v-model="chosenChart">
