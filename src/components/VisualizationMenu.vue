@@ -10,8 +10,8 @@
         <v-card v-if="!collapsed"
               class="ma-2"
               width="100%"
-              elevation="2"
-              scrollable="False">
+              scrollable="False"
+              style="border: 1px solid black">
             <v-card-text>
               <v-tabs
               horizontal class="tabs-left" v-model="chosenChart">
@@ -65,6 +65,7 @@ export default {
             plotLayout: null,
             margin: { autoexpand: false },
             autosize: false,
+            magicNumber: 1,
         };
     },
     methods: {
@@ -148,25 +149,12 @@ export default {
                 };
             }
         },
-        drawMarker(xValue, convert) {
-            var xCoordinate = xValue;
-
-            if (convert){
-                // for some reason, plotly extends the range of the axis by a factor of ~1.06
-                // to get the original, data-depended length, I have to multiply the axis-range by this magic number of 0.944138 here
-                // Apparently, this is only the case for the scatter plot so far, thus the following if-else
-                // TODO: If you find out, how to make plotly use the data ranges properly, you can remove this. I was not able to.
-                if (this.chosenChart === 0){
-                    xCoordinate = (this.plotLayout.xaxis.range[1] * 0.944138 ) * xValue / this.duration;
-                }else{
-                    xCoordinate = (this.plotLayout.xaxis.range[1]) * xValue / this.duration;
-                }
-            }
+        drawMarker(xValue) {
 
             const shape = {
                 type: 'line',
-                x0: xCoordinate,
-                x1: xCoordinate,
+                x0: xValue,
+                x1: xValue,
                 y0: this.plotLayout.yaxis.range[0],
                 y1: this.plotLayout.yaxis.range[1],
                 line: { color: "rgb(175, 20, 20)", width: 2, },
@@ -202,7 +190,7 @@ export default {
     },
     watch: {
         currentTime(time){
-            this.drawMarker(time, true);
+            this.drawMarker(time);
         },
         async shouldLoadData(newValue) {
             if (newValue[0]) {
