@@ -36,6 +36,7 @@
               <v-tabs v-model="tab" centered>
                 <v-tabs-slider />
                 <v-tab>Shots</v-tab>
+                <v-tab>People</v-tab>
                 <v-tab>Annotations</v-tab>
                 <v-tab>Transcript</v-tab>
                 <v-tab>Word Cloud</v-tab>
@@ -44,11 +45,16 @@
                 <v-tab disabled>Scenes</v-tab> -->
               </v-tabs>
             </div>
+
             <v-tabs-items v-model="tab" style="height: 95%">
               <v-tab-item style="height: 100%">
                 <ShotsOverview/>
               </v-tab-item>
-                
+              
+              <v-tab-item style="height: 100%">
+                <PersonOverview/>
+              </v-tab-item>
+
               <v-tab-item>
                 <CurrentEntitiesOverView/>
               </v-tab-item>
@@ -98,6 +104,7 @@ import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnot
 import ShotsOverview from "@/components/ShotsOverview.vue";
 import WordcloudCard from "@/components/WordcloudCard.vue";
 import VisualizationMenu from "@/components/VisualizationMenu.vue";
+import PersonOverview from "@/components/PersonOverview.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -367,6 +374,7 @@ export default {
     ModalTimelineSegmentAnnotate,
     ShotsOverview,
     WordcloudCard,
+    PersonOverview,
     VisualizationMenu
 },
 
