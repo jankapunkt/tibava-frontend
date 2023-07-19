@@ -38,7 +38,9 @@ export const usePeopleStore = defineStore("people", {
 
       let results = [];
       
-      results = face_clustering.results[1].data.facecluster.map((cluster, index) => {
+      results = face_clustering.results[1].data.facecluster.sort( // bigger clusters should come first
+        (a, b) => b.face_refs.length - a.face_refs.length
+      ).map((cluster, index) => {
         return {
           id: index + 1,
           facecluster: cluster,
@@ -47,14 +49,14 @@ export const usePeopleStore = defineStore("people", {
             return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
           }))
         };
-      });
+      })
 
       // console.log("results");
       // console.log(results);
 
       return results;
-
-      }
+ 
+    }
     }
   },
 );

@@ -2,12 +2,13 @@
   <v-card 
   :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
   elevation="4"
+  style="border: 1px solid black"
   >
     <v-row align="center" justify="center" class="px-2 py-0">
       <v-col cols="8">
         <v-item-group>
           <v-row>
-            <v-col v-for="(item, i) in cluster.image_paths" :key="i" cols="4">
+            <v-col style="align-items: center; display: flex;"  v-for="(item, i) in cluster.image_paths.slice(0, 5)" :key="i" cols="2">
               <v-img contain :src="item" max-height="100"> </v-img>
             </v-col>
           </v-row>
@@ -17,10 +18,11 @@
       <v-col cols="4">
         <v-list-item three-line>
           <v-list-item-content min-width>
-            <div style="font-size: 16px; text-align: right; margin-bottom:0.2cm">Person {{ cluster.id }}</div>
+            <div style="font-size: 16px; text-align: center; margin-bottom:0.2cm">Person {{ cluster.id }}</div>
+            <div style="font-size: 16px; text-align: center; margin-bottom:0.2cm">#Faces: {{ cluster.image_paths.length }}</div>
+            <v-btn style="border: 1px solid black" text @click="createTimeline">to timeline</v-btn>
           </v-list-item-content>
         </v-list-item>
-
       </v-col>
     </v-row>
   </v-card>
@@ -42,6 +44,9 @@ export default {
     }
   },
   methods: {
+    createTimeline(){
+
+    },
     setVideoPlayerTime(time) {
       this.playerStore.setTargetTime(time);
     },
