@@ -47,6 +47,10 @@ export const usePeopleStore = defineStore("people", {
           image_paths: Array.from(cluster.face_refs.map((face_ref) => {
             let img_dict = face_clustering.results[1].data.images.find(image => image.ref_id == face_ref);
             return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
+          })),
+          timestamps: Array.from(cluster.face_refs.map((face_ref) => {
+            let timestamp =  face_clustering.results[1].data.kpss.find(kps => kps.ref_id == face_ref);
+            return timestamp.time;
           }))
         };
       })

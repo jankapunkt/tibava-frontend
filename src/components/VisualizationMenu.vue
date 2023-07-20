@@ -150,6 +150,10 @@ export default {
         },
         drawMarker(xValue, convert) {
             var xCoordinate = xValue;
+            // if a plot does not exist, return
+            if (!this.plotLayout){
+                return
+            }
 
             if (convert){
                 // for some reason, plotly extends the range of the axis by a factor of ~1.06
