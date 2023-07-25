@@ -32,31 +32,32 @@ export const usePeopleStore = defineStore("people", {
       }
 
       face_clustering = face_clustering.at(-1); // use latest face_clustering
-      
-      // console.log("face_clustering");
-      // console.log(face_clustering);
 
       let results = [];
       
-      results = face_clustering.results[1].data.facecluster.sort( // bigger clusters should come first
-        (a, b) => b.face_refs.length - a.face_refs.length
-      ).map((cluster, index) => {
+      results = face_clustering.results[0].data.facecluster
+      .map((cluster, index) => {
         return {
-          id: index + 1,
+          embedding_index: index,
           facecluster: cluster,
+          embedding_ref: face_clustering.results[1].data_id,
           image_paths: Array.from(cluster.face_refs.map((face_ref) => {
-            let img_dict = face_clustering.results[1].data.images.find(image => image.ref_id == face_ref);
+            let img_dict = face_clustering.results[0].data.images.find(image => image.ref_id == face_ref);
             return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
           })),
           timestamps: Array.from(cluster.face_refs.map((face_ref) => {
-            let timestamp =  face_clustering.results[1].data.kpss.find(kps => kps.ref_id == face_ref);
+            let timestamp =  face_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
             return timestamp.time;
           }))
         };
       })
-
-      // console.log("results");
-      // console.log(results);
+      .sort( 
+        // bigger clusters should come first
+        (a, b) => b.image_paths.length - a.image_paths.length
+      ).map((cluster, index) => ({
+        ...cluster,
+        id: index + 1,
+      }))
 
       return results;
  
