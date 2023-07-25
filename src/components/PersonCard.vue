@@ -10,8 +10,8 @@
             <v-list-item-content min-width>
               <div style="font-size: 16px; margin-bottom:0.2cm">Person {{ cluster.id }}</div>
               <v-list-item-subtitle>Faces: {{ cluster.image_paths.length }}</v-list-item-subtitle>
-              <v-list-item-subtitle>First: {{ cluster.timestamps[0] }}</v-list-item-subtitle>
-              <v-list-item-subtitle>Last: {{ cluster.timestamps[cluster.timestamps.length-1] }}</v-list-item-subtitle>
+              <v-list-item-subtitle>First: {{ cluster.timestamps[0] }} sec</v-list-item-subtitle>
+              <v-list-item-subtitle>Last: {{ cluster.timestamps[cluster.timestamps.length-1] }} sec</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-col>
