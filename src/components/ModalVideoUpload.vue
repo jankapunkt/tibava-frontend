@@ -86,21 +86,6 @@ export default {
           disabled: false,
           model: "shotdetection",
         },
-        {
-          label: "Scene Recognition (coming soon)",
-          disabled: true,
-          model: "scenerecognition",
-        },
-        {
-          label: "Person Recognition (coming soon)",
-          disabled: true,
-          model: "personrecognition",
-        },
-        {
-          label: "Emotion Recognition (coming soon)",
-          disabled: true,
-          model: "emotionrecognition",
-        },
       ],
       selected_analysers: ["shotdetection"],
       licenses: ["CC-BY-0", "CC-BY-2"],
@@ -136,7 +121,7 @@ export default {
       var extension_id = 0;
       var extensions = [" B", " kB", " MB", " GB"]
       while (size > 1024){
-        size = size / 1024;
+        size = (size / 1024).toFixed(2);
         extension_id++;
       }
       return size + extensions[extension_id];
