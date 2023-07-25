@@ -19,12 +19,12 @@
       <v-toolbar color="primary" dark>Upload new video</v-toolbar>
       <v-card-text>
         <v-form>
-          <span
+          <v-text-field
             v-model="video.title"
             :counter="120"
             label="Video title"
             required
-          ></span>
+          ></v-text-field>
           <v-select
             v-model="video.license"
             :items="licenses"
@@ -38,34 +38,6 @@
             filled
             prepend-icon="mdi-movie-filter"
           ></v-file-input>
-
-          <v-list>
-            <v-subheader>Please select the analysis steps</v-subheader>
-
-            <v-list-item-group v-model="selected_analysers" multiple>
-              <template v-for="item in analysers">
-                <v-list-item
-                  :value="item.model"
-                  :disabled="item.disabled"
-                >
-                  <template v-slot:default="{ active }">
-                    <v-list-item-content>
-                      <v-list-item-title
-                        v-text="item.label"
-                      ></v-list-item-title>
-                    </v-list-item-content>
-
-                    <v-list-item-action>
-                      <v-checkbox
-                        :disabled="item.disabled"
-                        :input-value="active"
-                      ></v-checkbox>
-                    </v-list-item-action>
-                  </template>
-                </v-list-item>
-              </template>
-            </v-list-item-group>
-          </v-list>
 
           <v-checkbox
             v-model="checkbox"
@@ -114,21 +86,6 @@ export default {
           disabled: false,
           model: "shotdetection",
         },
-        {
-          label: "Scene Recognition (coming soon)",
-          disabled: true,
-          model: "scenerecognition",
-        },
-        {
-          label: "Person Recognition (coming soon)",
-          disabled: true,
-          model: "personrecognition",
-        },
-        {
-          label: "Emotion Recognition (coming soon)",
-          disabled: true,
-          model: "emotionrecognition",
-        },
       ],
       selected_analysers: ["shotdetection"],
       licenses: ["CC-BY-0", "CC-BY-2"],
@@ -165,7 +122,7 @@ export default {
       var extension_id = 0;
       var extensions = [" B", " kB", " MB", " GB"]
       while (size > 1024){
-        size = size / 1024;
+        size = (size / 1024).toFixed(2);
         extension_id++;
       }
       return size + extensions[extension_id];
