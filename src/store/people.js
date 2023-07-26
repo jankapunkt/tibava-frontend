@@ -31,7 +31,7 @@ export const usePeopleStore = defineStore("people", {
         return [];
       }
 
-      face_clustering = face_clustering.at(-1); // use latest face_clustering
+      face_clustering = face_clustering.at(0); // use latest face_clustering
 
       let results = [];
       

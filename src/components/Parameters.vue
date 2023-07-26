@@ -60,7 +60,9 @@
           :step="parameter.step"
           :value="parameter.default"
           :disabled="parameter.disabled"
+          :hint="parameter.hint"
           thumb-label="always"
+          persistent-hint
         >
         </v-slider>
       </div>

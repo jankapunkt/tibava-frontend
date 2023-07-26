@@ -92,8 +92,29 @@ export default {
           name: this.$t("modal.plugin.face_clustering.plugin_name"),
           icon: "mdi-ungroup",
           plugin: "face_clustering",
-          parameters: [],
-          optional_parameters: [],
+          parameters: [
+            {
+              field: "slider",
+              min: 0.0,
+              max: 1.0,
+              value: 0.4,
+              step: 0.01,
+              name: "cluster_threshold",
+              text: this.$t("modal.plugin.face_clustering.cluster_threshold"),
+              hint: this.$t("modal.plugin.face_clustering.cluster_threshold_hint"),
+            }
+          ],
+          optional_parameters: [ 
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 2,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.fps"),
+            }
+          ],
         },
         {
           name: this.$t("modal.plugin.audio_waveform.plugin_name"),
@@ -672,6 +693,12 @@ export default {
               name: "fps",
               text: this.$t("modal.plugin.fps"),
             },
+            {
+              field: "checkbox",
+              text: this.$t("modal.plugin.normalize"),
+              name: "normalize",
+              value: true,
+            }
           ],
         },
         {
@@ -723,6 +750,7 @@ export default {
           return { name: e.name, value: e.value };
         }
       });
+      // console.log(parameters);
       this.pluginRunStore
         .submit({ plugin: plugin, parameters: parameters })
         .then(() => {
