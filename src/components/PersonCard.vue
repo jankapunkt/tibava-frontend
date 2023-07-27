@@ -16,14 +16,16 @@
           </v-list-item>
         </v-col>
 
-        <v-col cols="9">
-          <v-item-group>
-            <v-row>
-              <v-col v-for="(item, i) in cluster.image_paths.slice(0, 4)" :key="i" cols="3">
-                <v-img contain :src="item" max-height="100" @click="goToFace(cluster.timestamps[i])"> </v-img>
-              </v-col>
-            </v-row>
-          </v-item-group>
+        <v-col cols="9" style="width: 100%">
+          <div class="image-container" style="width: 100%; gap: 10px; overflow-x: auto; justify-content: flex-start; display:flex; flex-direction: row;">
+            <v-img 
+            v-for="(item, i) in cluster.image_paths" 
+            :key="i" 
+            :src="item"
+            contain
+            style="cursor: pointer; height: 100px; max-width: 100px;"
+            @click="goToFace(cluster.timestamps[i])"></v-img>
+          </div>
         </v-col>
 
         <v-col align="end" cols="1">
@@ -134,3 +136,13 @@ export default {
   }
 };
 </script>
+
+<style>
+.image-contaniner {
+  overflow-x: auto;
+  white-space: nowrap;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+</style>
