@@ -150,6 +150,9 @@ export default {
             }
         },
         drawMarker(xValue) {
+            if(!this.plotData){
+                return;
+            }
 
             const shape = {
                 type: 'line',

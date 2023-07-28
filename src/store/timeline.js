@@ -81,6 +81,17 @@ export const useTimelineStore = defineStore("timeline", {
         return state.timelines[id];
       };
     },
+    getByName(state) {
+      return (name) => {
+        return state.timelineList
+        .map((id) => state.timelines[id])
+        .filter((e) => {
+          if (e.name == name){
+            return e;
+          }
+        });
+      };
+    },
     segmentPosition(state) {
       return (segmentId) => {
         let result = null;
