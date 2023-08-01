@@ -36,6 +36,7 @@
               <v-tabs v-model="tab" centered>
                 <v-tabs-slider />
                 <v-tab>Shots</v-tab>
+                <v-tab>People</v-tab>
                 <v-tab>Annotations</v-tab>
                 <v-tab>Transcript</v-tab>
                 <v-tab>Word Cloud</v-tab>
@@ -44,17 +45,22 @@
                 <v-tab disabled>Scenes</v-tab> -->
               </v-tabs>
             </div>
+
             <v-tabs-items v-model="tab" style="height: 95%">
               <v-tab-item style="height: 100%">
-                <ShotsOverview @seek="onTargetTimeChange"/>
+                <ShotsOverview/>
               </v-tab-item>
-                
+              
+              <v-tab-item style="height: 100%">
+                <PersonOverview/>
+              </v-tab-item>
+
               <v-tab-item>
                 <CurrentEntitiesOverView/>
               </v-tab-item>
                 
               <v-tab-item style="height: 100%">
-                <TranscriptOverview @seek="onTargetTimeChange"/>
+                <TranscriptOverview/>
               </v-tab-item>
               
               <v-tab-item>
@@ -65,6 +71,8 @@
         </v-col>
       </v-row>
 
+      <VisualizationMenu align="center" style="box-shadow: none;"> </VisualizationMenu>
+      
       <v-row class="ma-2">
         <v-col>
           <v-card
@@ -95,6 +103,8 @@ import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 import ShotsOverview from "@/components/ShotsOverview.vue";
 import WordcloudCard from "@/components/WordcloudCard.vue";
+import VisualizationMenu from "@/components/VisualizationMenu.vue";
+import PersonOverview from "@/components/PersonOverview.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -129,8 +139,6 @@ export default {
       annotationDialog: {
         show: false,
       },
-      // annotations: [],
-      // annotationCategories: [],
       resultCardHeight: 69,
     };
   },
@@ -280,9 +288,6 @@ export default {
         });
       }
     },
-    onTargetTimeChange(time) {
-      this.targetTime = time;
-    },
     onAnnotateSegment() {
       if (this.timelineSegmentStore.lastSelected) {
         this.$nextTick(() => {
@@ -310,10 +315,6 @@ export default {
     pluginInProgress() {
       return this.pluginRunStore.pluginInProgress;
     },
-    duration() {
-      let duration = this.playerStore.videoDuration;
-      return duration;
-    },
     timelines() {
       return this.timelineStore.forVideo(this.$route.params.id);
     },
@@ -339,7 +340,7 @@ export default {
       useTimelineSegmentStore,
       useTimelineSegmentAnnotationStore,
       useShortcutStore,
-      useAnnotationShortcutStore
+      useAnnotationShortcutStore,
     ),
   },
   async created() {
@@ -372,7 +373,9 @@ export default {
     CurrentEntitiesOverView,
     ModalTimelineSegmentAnnotate,
     ShotsOverview,
-    WordcloudCard
+    WordcloudCard,
+    PersonOverview,
+    VisualizationMenu
 },
 
   watch: {

@@ -5,7 +5,7 @@
         "demo_title": "Video Demonstration",
         "demo_text": "We are currently preparing a video that demonstrates the features of TIB-AV-A and explains how to use it to simplify the onboarding process. It is expected to be available by March 3 at the latest.",
         "login_title": "Need an account?",
-        "login_text": "If you do not have an account yet, you can request one by writing an E-Mail to firstname.lastname@tib.eu with a short explanation of your intended usecase. Alternatively, you can try out TIB-AV-A using the account 'demouser' with the password 'demouser' to analyze pre-calculated videos. Please be aware that the uploaded videos and annotations of this user will be reset periodically.",
+        "login_text": "If you do not have an account yet, you can request one by writing an E-Mail to eric.mueller@tib.eu with a short explanation of your intended usecase. Alternatively, you can try out TIB-AV-A using the account 'demouser' with the password 'demouser' to analyze pre-calculated videos. Please be aware that the uploaded videos and annotations of this user will be reset periodically.",
         "format_title": "Video File Support",
         "format_text": "Please note that TIB-AV-A currently only supports the analysis of <span style='font-weight: bold;'>mp4 video files</span> to avoid long processing times due to transcoding videos on our server."
     },
@@ -13,6 +13,28 @@
         "menu": {
             "title": "Pipelines",
             "new": "New"
+        }
+    },
+    "visualization": {
+        "title": "Visualize",
+        "start": "Apply",
+        "reset": "Reset",
+        "controls": {
+            "plotTypes": {
+                "controlName": "Select Plot Type",
+                "resultControlName": "Select Timeline to Visualize",
+                "linePlot": "Line Plot",
+                "scatterPlot": "Scatter Plot",
+                "histogramChart": "Histogram Chart",
+                "stackedBarChart": "Stacked Bar Chart"
+            },
+            "mapping": {
+                "mappingTitle": "Visualization mapping",
+                "xTitle": "Select x axis data:",
+                "xSelect": "Not selected",
+                "yTitle": "Select y axis data:",
+                "ySelect": "Not selected"
+            }
         }
     },
     "timelineSegment": {
@@ -91,6 +113,7 @@
             "scalar_timeline_name": "Select Timelines",
             "scalar_timeline_hint": "*The scalar values of the selected timelines will be aggregated",
             "fps": "Frames per Second (FPS)",
+            "normalize": "Normalize Results?",
             "aggregation": {
                 "plugin_name": "Aggregate Timelines",
                 "timeline_name": "Aggregated Timeline",
@@ -154,6 +177,11 @@
             "facedetection": {
                 "plugin_name": "Face Detection",
                 "timeline_name": "Faces"
+            },
+            "face_clustering": {
+                "plugin_name": "Face Clustering",
+                "cluster_threshold": "Cluster Threshold",
+                "cluster_threshold_hint": "The lower the value, the more similar two faces have to be in order to be considered for the same cluster."
             },
             "faceemotion": {
                 "plugin_name": "Face Emotion Recognition",

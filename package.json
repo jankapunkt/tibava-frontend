@@ -21,6 +21,7 @@
     "pinia-plugin-persistedstate": "^1.6.1",
     "pixi-filters": "^4.1.6",
     "pixi.js": "^6.2.2",
+    "plotly.js": "^2.24.3",
     "stopword": "^2.0.8",
     "vue": "^2.6.11",
     "vue-draggable-nested-tree": "^3.0.0-beta2",

@@ -19,10 +19,14 @@ export const useTimelineStore = defineStore("timeline", {
         start: null,
         end: null,
       },
+      visualizationData: null,
       isLoading: false,
     };
   },
   getters: {
+    getVisualizationData(state) {
+      return state.visualizationData;
+    },
     selectedTimeRangeStart(state) {
       if (
         state.timelineSelectedTimeRange.start === null ||
@@ -75,6 +79,17 @@ export const useTimelineStore = defineStore("timeline", {
     get(state) {
       return (id) => {
         return state.timelines[id];
+      };
+    },
+    getByName(state) {
+      return (name) => {
+        return state.timelineList
+        .map((id) => state.timelines[id])
+        .filter((e) => {
+          if (e.name == name){
+            return e;
+          }
+        });
       };
     },
     segmentPosition(state) {
@@ -155,6 +170,9 @@ export const useTimelineStore = defineStore("timeline", {
     },
   },
   actions: {
+    setVisualizationData(data) {
+      this.visualizationData = data;
+    },
     setSelectedTimeRangeStart(time) {
       this.timelineSelectedTimeRange.start = time;
     },

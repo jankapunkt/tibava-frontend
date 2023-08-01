@@ -1,7 +1,18 @@
 <template>
   <v-card ref="parent" class="parent" fluid :items="transcripts" elevation="0">
-    <v-card v-if="transcripts.length == 0" flat>There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> timeline. </v-card>
-    <div v-else ref="wordcloudContainer" class="wordcloudContainer"></div>
+    <v-card v-if="transcripts.length == 0" flat>There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> Pipeline. </v-card>
+    <div v-else>
+      <div ref="wordcloudContainer" class="wordcloudContainer"></div>
+      <v-select style="width: 30%;" v-if="transcripts.length > 0"
+          v-model="stopword_selection"
+          :items="stopword_options"
+          label="Select stopwords to be removed"
+          item-text="name"
+          item-value="id"
+          persistent-hint
+          multiple
+        ></v-select>
+    </div>
   </v-card>
 </template>
 
@@ -19,16 +30,19 @@ export default {
       layout: null,
       containerHeight: 0,
       containerWidth: 0,
+      stopword_selection: ['Englisch'],
+      stopword_options: ['Englisch', 'Deutsch']
     };
   },
   mounted() {
     this.$nextTick(() => {
       this.containerWidth = this.$refs.wordcloudContainer.offsetWidth;
-      this.containerHeight = this.$parent.$parent.$el.clientHeight;
+      this.containerHeight = this.$parent.$parent.$el.clientHeight-100;
       this.createWordCloud();
     });
   },
   methods: {
+
     createWordCloud() {
       const all_words = [];
       for (var transcript of this.transcripts) {
@@ -41,9 +55,19 @@ export default {
       }
 
       // filter out stopwords
-      const {removeStopwords, deu} = require('stopword');
-      const filteredText = removeStopwords(all_words, deu); // Pass "de" to specify German stopwords
+      const { removeStopwords, deu, eng} = require('stopword');
+      var filteredText = all_words;
+      for (const lan of this.stopword_selection) {
+        if(this.stopword_selection.includes("Englisch")){
+          filteredText = removeStopwords(filteredText, eng);
+        }
+        if(this.stopword_selection.includes("Deutsch")){
+          filteredText = removeStopwords(filteredText, deu);
+        }
 
+      }
+      
+ 
       // count words
       var dictionary = {};
 
@@ -110,12 +134,20 @@ export default {
       return this.timelineSegmentAnnotationStore.transcriptSegments;
     },
     ...mapStores(useTimelineSegmentAnnotationStore),
-  }
+  },
+  watch:   { 
+    stopword_selection(value) {
+      console.log("watch");
+      d3.select(this.$refs.wordcloudContainer).select('svg').remove();
+      this.createWordCloud();
+      },
+    }
 };
 </script>
 
 <style>
 .v-window {
-    height: 90%;
-}
+    height: 100%;
+    width: 100%
+    }
 </style>

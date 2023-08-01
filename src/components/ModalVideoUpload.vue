@@ -60,7 +60,7 @@
       </v-card-text>
     </v-card>
   </v-dialog>
-  <span v-if="!canUpload" class="red--text">You have uploaded the maximum amount of videos that you are allowed to. If you require more, please contact TODO.</span>
+  <span v-if="!canUpload" class="red--text">You have uploaded the maximum amount of videos that you are allowed to. If you require more, please contact eric.mueller@tib.eu.</span>
   <span v-if="canUpload">Videos uploaded: {{ num_videos }} out of {{  allowance }}</span>
   <span v-if="canUpload">Maximum file size: {{ max_size_in_words }}</span>
 
@@ -111,6 +111,7 @@ export default {
       return this.videoUploadStore.progress;
     },    
     allowance() {
+      console.log(this.userStore.allowance);
       return this.userStore.allowance;
     },
     num_videos() {
@@ -127,6 +128,7 @@ export default {
       return size + extensions[extension_id];
     },
     max_size() {
+      console.log(this.userStore.max_video_size);
       return this.userStore.max_video_size;
     },
     ...mapStores(useVideoUploadStore, useUserStore, useVideoStore)

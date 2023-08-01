@@ -68,13 +68,11 @@ export default {
       }
       this.isSubmitting = true;
 
-      // console.log("AAA");
       await this.timelineStore.duplicate({
         id: this.timeline,
         name: this.name,
         includeannotations: this.includeannotations,
       });
-      // console.log("BBB");
       this.isSubmitting = false;
       this.show = false;
     },

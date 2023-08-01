@@ -89,6 +89,34 @@ export default {
           optional_parameters: [],
         },
         {
+          name: this.$t("modal.plugin.face_clustering.plugin_name"),
+          icon: "mdi-ungroup",
+          plugin: "face_clustering",
+          parameters: [
+            {
+              field: "slider",
+              min: 0.0,
+              max: 1.0,
+              value: 0.4,
+              step: 0.01,
+              name: "cluster_threshold",
+              text: this.$t("modal.plugin.face_clustering.cluster_threshold"),
+              hint: this.$t("modal.plugin.face_clustering.cluster_threshold_hint"),
+            }
+          ],
+          optional_parameters: [ 
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 2,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.fps"),
+            }
+          ],
+        },
+        {
           name: this.$t("modal.plugin.audio_waveform.plugin_name"),
           icon: "mdi-waveform",
           plugin: "audio_amp",
@@ -124,7 +152,17 @@ export default {
               text: this.$t("modal.plugin.timeline_name"),
             },
           ],
-          optional_parameters: [],
+          optional_parameters: [
+            // {
+            //   field: "slider",
+            //   min: 1000,
+            //   max: 24000,
+            //   value: 8000,
+            //   step: 1000,
+            //   name: "sr",
+            //   text: this.$t("modal.plugin.audio_waveform.sr"),
+            // },
+          ],
         },
         {
           name: this.$t("modal.plugin.audio_frequency.plugin_name"),
@@ -179,6 +217,16 @@ export default {
               name: "k",
               text: this.$t("modal.plugin.color_analysis.slider"),
             },
+            // {
+            //   field: "buttongroup",
+            //   text: this.$t("modal.plugin.color_analysis.buttongroup"),
+            //   name: "timeline_visualization",
+            //   value: 0,
+            //   buttons: [
+            //     this.$t("modal.plugin.color_analysis.singletimeline"),
+            //     this.$t("modal.plugin.color_analysis.multipletimelines"),
+            //   ],
+            // },
           ],
           optional_parameters: [
             {
@@ -223,6 +271,16 @@ export default {
               ),
               text: this.$t("modal.plugin.timeline_name"),
             },
+            // {
+            //   field: "buttongroup",
+            //   text: this.$t("modal.plugin.color_brightness_analysis.buttongroup"),
+            //   name: "timeline_visualization",
+            //   value: 0,
+            //   buttons: [
+            //     this.$t("modal.plugin.color_brightness_analysis.singletimeline"),
+            //     this.$t("modal.plugin.color_brightness_analysis.multipletimelines"),
+            //   ],
+            // },
           ],
           optional_parameters: [
             {
@@ -366,6 +424,30 @@ export default {
             },
           ],
         },
+        // {
+        //   name: this.$t("modal.plugin.facedetection.plugin_name"),
+        //   icon: "mdi-face-recognition",
+        //   plugin: "insightface_detection",
+        //   parameters: [
+        //     {
+        //       field: "text_field",
+        //       name: "timeline",
+        //       value: this.$t("modal.plugin.facedetection.timeline_name"),
+        //       text: this.$t("modal.plugin.timeline_name"),
+        //     },
+        //   ],
+        //   optional_parameters: [
+        //     {
+        //       field: "slider",
+        //       min: 1,
+        //       max: 10,
+        //       value: 2,
+        //       step: 1,
+        //       name: "fps",
+        //       text: this.$t("modal.plugin.fps"),
+        //     },
+        //   ],
+        // },
         {
           name: this.$t("modal.plugin.facesize.plugin_name"),
           icon: "mdi-face-recognition",
@@ -538,43 +620,6 @@ export default {
           ],
         },
         {
-          name: this.$t("modal.plugin.thumbnail.plugin_name"),
-          icon: "mdi-image-multiple",
-          plugin: "thumbnail",
-          parameters: [],
-          optional_parameters: [],
-        },
-        {
-          name: this.$t("modal.plugin.clip.plugin_name"),
-          icon: "mdi-eye",
-          plugin: "clip",
-          parameters: [
-            {
-              field: "text_field",
-              name: "timeline",
-              value: this.$t("modal.plugin.clip.timeline_name"),
-              text: this.$t("modal.plugin.timeline_name"),
-            },
-            {
-              field: "text_field",
-              name: "search_term",
-              value: "",
-              text: this.$t("modal.plugin.clip.search_term"),
-            },
-          ],
-          optional_parameters: [
-            {
-              field: "slider",
-              min: 1,
-              max: 10,
-              value: 2,
-              step: 1,
-              name: "fps",
-              text: this.$t("modal.plugin.fps"),
-            },
-          ],
-        },
-        {
           name: this.$t("modal.plugin.clip_ontology.plugin_name"),
           icon: "mdi-eye",
           plugin: "clip_ontology",
@@ -611,6 +656,49 @@ export default {
               name: "fps",
               text: this.$t("modal.plugin.fps"),
             },
+          ],
+        },
+        {
+          name: this.$t("modal.plugin.thumbnail.plugin_name"),
+          icon: "mdi-image-multiple",
+          plugin: "thumbnail",
+          parameters: [],
+          optional_parameters: [],
+        },
+        {
+          name: this.$t("modal.plugin.clip.plugin_name"),
+          icon: "mdi-eye",
+          plugin: "clip",
+          parameters: [
+            {
+              field: "text_field",
+              name: "timeline",
+              value: this.$t("modal.plugin.clip.timeline_name"),
+              text: this.$t("modal.plugin.timeline_name"),
+            },
+            {
+              field: "text_field",
+              name: "search_term",
+              value: "",
+              text: this.$t("modal.plugin.clip.search_term"),
+            },
+          ],
+          optional_parameters: [
+            {
+              field: "slider",
+              min: 1,
+              max: 10,
+              value: 2,
+              step: 1,
+              name: "fps",
+              text: this.$t("modal.plugin.fps"),
+            },
+            {
+              field: "checkbox",
+              text: this.$t("modal.plugin.normalize"),
+              name: "normalize",
+              value: true,
+            }
           ],
         },
         {
@@ -662,6 +750,7 @@ export default {
           return { name: e.name, value: e.value };
         }
       });
+      // console.log(parameters);
       this.pluginRunStore
         .submit({ plugin: plugin, parameters: parameters })
         .then(() => {

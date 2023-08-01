@@ -356,7 +356,7 @@ export default {
     };
   },
   methods: {
-    startDraging(event, x, time) {
+    startDragging(event, x, time) {
       this.dragSelection.x = x;
       this.dragSelection.start = time;
       this.dragSelection.dragging = true;
@@ -365,7 +365,7 @@ export default {
       this.timelineStore.setSelectedTimeRangeEnd(null);
       event.stopPropagation();
     },
-    moveDraging(event, x, time) {
+    moveDragging(event, x, time) {
       if (!this.dragSelection.dragging) {
         return;
       }
@@ -384,7 +384,7 @@ export default {
 
       event.stopPropagation();
     },
-    endDraging(event, x, time) {
+    endDragging(event, x, time) {
       this.dragSelection.dragging = false;
       if (Math.abs(x - this.dragSelection.x) < 2) {
         this.timelineStore.setSelectedTimeRangeEnd(null);
@@ -397,13 +397,13 @@ export default {
     },
 
     getTimeline(timelineId) {
-      var founded = null;
+      var found = null;
       this.timelineObjects.forEach((timelineObject) => {
         if (timelineObject.timelineId === timelineId) {
-          founded = timelineObject;
+          found = timelineObject;
         }
       });
-      return founded;
+      return found;
     },
     computeTimelineX() {
       return this.timeToX(this.startTime);
@@ -624,22 +624,22 @@ export default {
       drawnTimeline.on("mousedown", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.startDraging(ev, x, time);
+        this.startDragging(ev, x, time);
       });
       drawnTimeline.on("mousemove", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.moveDraging(ev, x, time);
+        this.moveDragging(ev, x, time);
       });
       drawnTimeline.on("mouseup", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.endDraging(ev, x, time);
+        this.endDragging(ev, x, time);
       });
       drawnTimeline.on("mouseupoutside", (ev) => {
         const x = ev.data.getLocalPosition(drawnTimeline).x;
         const time = drawnTimeline.xToTime(x);
-        this.endDraging(ev, x, time);
+        this.endDragging(ev, x, time);
       });
 
       drawnTimeline.on("pointerover", (ev) => {

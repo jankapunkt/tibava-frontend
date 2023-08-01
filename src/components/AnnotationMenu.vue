@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import ModalExport from "@/components/ModalExport.vue";
+import ModalPlugin from "@/components/ModalPlugin.vue";
 import ModalShortcut from "@/components/ModalShortcut.vue";
 
 import { mapStores } from "pinia";
@@ -24,6 +26,8 @@ import { usePlayerStore } from "@/store/player";
 export default {
   data() {
     return {
+      showModalExport: false,
+      showModalPlugin: false,
       showModalShortcut: false,
     };
   },
@@ -39,6 +43,8 @@ export default {
     ...mapStores(useUserStore, usePlayerStore),
   },
   components: {
+    ModalExport,
+    ModalPlugin,
     ModalShortcut,
   },
 };

@@ -7,6 +7,7 @@
     <v-card>
       <v-card-title class="mb-2">
         {{ $t("modal.shortcut.title") }}
+
         <v-btn icon @click="dialog = false" absolute top right>
           <v-icon>mdi-close</v-icon>
         </v-btn>
