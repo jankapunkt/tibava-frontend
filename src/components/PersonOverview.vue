@@ -18,8 +18,18 @@
 import { mapStores } from "pinia";
 import PersonCard from "@/components/PersonCard.vue";
 import { usePeopleStore } from "@/store/people";
+import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
 
 export default {
+  mounted() {
+    this.fetchData();
+  },
+  methods: {
+    fetchData() {
+      // Ask backend about all videos
+      this.clusterTimelineItemStore.fetchAll();
+    },
+  },
   computed: {
     clustersLength() {
       return this.clusters.length;
@@ -27,7 +37,7 @@ export default {
     clusters() {
       return this.peopleStore.clusters;
     },
-    ...mapStores(usePeopleStore),
+    ...mapStores(usePeopleStore, useClusterTimelineItemStore),
   },
   components: {
     PersonCard,

@@ -81,16 +81,11 @@ export const useTimelineStore = defineStore("timeline", {
         return state.timelines[id];
       };
     },
-    getByName(state) {
-      return (name) => {
-        return state.timelineList
-        .map((id) => state.timelines[id])
-        .filter((e) => {
-          if (e.name == name){
-            return e;
-          }
-        });
-      };
+    getLatest(state) {
+      return () => {
+          console.log(this.all);
+          return this.all.sort((a, b) => b.order - a.order)[0];
+        }
     },
     segmentPosition(state) {
       return (segmentId) => {

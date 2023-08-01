@@ -8,47 +8,38 @@
         <v-col cols="3">
             <v-list-item-content min-width>
               <div style="font-size: 16px;"> {{ name }}
-                <v-menu bottom right>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon size="16">
-                      <v-icon v-bind="attrs" v-on="on">mdi-pencil</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-dialog v-model="show" max-width="1000">
-                        <template v-slot:activator="{ on }">
-                          <v-btn v-on="on" text block large>
-                            {{ $t("modal.timeline.rename.link") }}
-                          </v-btn>
-                        </template>
-                        <v-card>
-                          <v-card-title class="mb-2">
-                            {{ $t("modal.timeline.rename.title") }}
-                            <v-btn icon @click.native="show = false" absolute top right>
-                              <v-icon>mdi-close</v-icon>
-                            </v-btn>
-                          </v-card-title>
-                          <v-card-text>
-                            <v-text-field
-                              :label="$t('modal.timeline.rename.name')"
-                              prepend-icon="mdi-pencil"
-                              v-model="name"
-                            ></v-text-field>
-                          </v-card-text>
-                          <v-card-actions class="pt-0">
-                            <v-btn class="mr-4" @click="submit" :disabled="isSubmitting || !name">
-                              {{ $t("modal.timeline.rename.update") }}
-                            </v-btn>
-                            <v-btn @click="show = false">{{
-                              $t("modal.timeline.rename.close")
-                            }}</v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-dialog>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <v-dialog v-model="show" max-width="1000">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" @click="show=true" icon size="16">
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                </template>
+
+                  <v-card>
+                    <v-card-title class="mb-2">
+                      {{ $t("modal.timeline.rename.title") }}
+                      <v-btn icon @click.native="show = false" absolute top right>
+                        <v-icon>mdi-close</v-icon>
+                      </v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-text-field
+                        :label="$t('modal.timeline.rename.name')"
+                        prepend-icon="mdi-pencil"
+                        v-model="name"
+                      ></v-text-field>
+                    </v-card-text>
+                    <v-card-actions class="pt-0">
+                      <v-btn class="mr-4" @click="submit" :disabled="renaming || !name">
+                        {{ $t("modal.timeline.rename.update") }}
+                      </v-btn>
+                      <v-btn @click="show = false">{{
+                        $t("modal.timeline.rename.close")
+                      }}</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              
               </div>
               <v-list-item-subtitle>Faces: {{ cluster.image_paths.length }}</v-list-item-subtitle>
               <v-list-item-subtitle>First: {{ cluster.timestamps[0] }} sec</v-list-item-subtitle>
@@ -93,9 +84,10 @@ import TimeMixin from "../mixins/time";
 
 import { mapStores } from "pinia";
 import { usePlayerStore } from "@/store/player";
-import { usePluginRunStore } from "@/store/plugin_run";
-import { usePluginRunResultStore } from "@/store/plugin_run_result";
+import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
 import { useTimelineStore } from "@/store/timeline";
+import { usePluginRunStore } from "@/store/plugin_run";
+import { usePeopleStore } from "@/store/people";
 import { cluster } from "d3";
 
 export default {
@@ -106,35 +98,42 @@ export default {
       // card shows loading animation while the faceidentification plugin runs
       loading: false,
       show: false,
-      isSubmitting: false,
-      hasTimeline: false,
+      renaming: false, // during renaming, we do not want to create new ClusterTimelineItems in the watcher
       nameProxy: "Person " + String(this.cluster.id),
     }
   },
-  mounted() {
-    const check = this.usePluginRunResultStore.forPluginRun(this.cluster.plugin_run_id);
-    console.log(check); 
-  },
   methods: {
     async submit() {
-      if (this.isSubmitting) {
+      if (this.renaming) {
         return;
       }
-      this.isSubmitting = true;
+      this.renaming = true;
       
-      if (this.hasTimeline){
-        console.log("drin");
-        const timeline = this.timelineStore.getByName(this.nameProxy)[0];
+      if (this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId)){
+        var timelineId = this.clusterTimelineItemStore.getTimelineByCluster(this.cluster.systemId);
+        if (timelineId === null){
+          console.log("This cluster has no timeline yet.");
+          return;
+        }
 
         await this.timelineStore.rename({
-          timelineId: timeline,
+          timelineId: timelineId,
           name: this.nameProxy,
         });
-      }
-      console.log("3");
-      console.log(this.hasTimeline);
 
-      this.isSubmitting = false;
+        const cti_id = this.clusterTimelineItemStore.getIDByCluster(this.cluster.systemId);
+
+        if (cti_id !== -1)
+        {
+          await this.clusterTimelineItemStore.rename({
+            cti_id: cti_id,
+            name: this.nameProxy,
+          });
+
+        }
+      }
+
+      this.renaming = false;
       this.show = false;
     },
     async createTimeline(cluster) {
@@ -143,7 +142,7 @@ export default {
         {
           field: "text_field",
           name: "timeline",
-          value: "Person "+ cluster.id,
+          value: this.nameProxy,
           text: this.$t("modal.plugin.timeline_name"),
         },
         {
@@ -186,16 +185,14 @@ export default {
         }
       });
 
+      console.log(parameters);
+
       this.pluginRunStore
         .submit({ plugin: "insightface_identification", parameters: parameters })
         .then(() => {
           this.loading = false;
-          this.hasTimeline=true;
         });
 
-    },
-    setVideoPlayerTime(time) {
-      this.playerStore.setTargetTime(time);
     },
     goToFace(time){
       this.playerStore.setTargetTime(time);
@@ -205,10 +202,8 @@ export default {
   computed: {
     name: {
       get() {
-          console.log(this.cluster.id);
-          console.log(this.hasTimeline);
-
-          return this.hasTimeline ? this.timelineStore.getByName(this.nameProxy)[0].name : this.nameProxy;
+          const clusterTimelineItemStore = useClusterTimelineItemStore();
+          return clusterTimelineItemStore.hasTimeline(this.cluster.systemId) ? clusterTimelineItemStore.getNameByCluster(this.cluster.systemId) : this.nameProxy;
       },
       set(val) {
         this.nameProxy = val;
@@ -217,14 +212,26 @@ export default {
     syncTime() {
       return this.playerStore.syncTime;
     },
-    ...mapStores(usePlayerStore, usePluginRunStore, useTimelineStore),
+    timelines() {
+      let timelines = this.timelineStore.all;
+      return timelines;
+    },
+    ...mapStores(usePlayerStore, usePluginRunStore, useClusterTimelineItemStore, useTimelineStore, usePeopleStore),
   },
   watch: {
-    show(value) {
-      if (value) {
-        this.$emit("close");
+    timelines(values) {
+      if (values.length == 0 || this.renaming){
+        return;
       }
-    },
+      const newTimeline = values.slice(-1)[0];
+      
+      // make sure this is the right card
+      if (newTimeline.name != this.nameProxy){
+        return;
+      }
+
+      this.peopleStore.connectToTimeline(this.cluster.systemId, newTimeline.id, this.nameProxy);
+    }
   },
 };
 </script>

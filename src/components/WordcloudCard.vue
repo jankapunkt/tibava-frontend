@@ -137,7 +137,6 @@ export default {
   },
   watch:   { 
     stopword_selection(value) {
-      console.log("watch");
       d3.select(this.$refs.wordcloudContainer).select('svg').remove();
       this.createWordCloud();
       },
