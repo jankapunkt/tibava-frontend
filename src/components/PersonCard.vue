@@ -50,12 +50,12 @@
         <v-col cols="8" style="width: 100%">
           <div class="image-container" style="width: 100%; gap: 10px; overflow-x: auto; justify-content: flex-start; display:flex; flex-direction: row;">
             <v-img 
-            v-for="(item, i) in cluster.image_paths.slice(0,4)" 
+            v-for="(item, i) in this.cluster_thumbnails" 
             :key="i" 
             :src="item"
             contain
             style="cursor: pointer; height: 100px; max-width: 100px;"
-            @click="goToFace(cluster.timestamps[i])"></v-img>
+            @click="goToFace(i)"></v-img>
           </div>
         </v-col>
 
@@ -100,7 +100,29 @@ export default {
       show: false,
       renaming: false, // during renaming, we do not want to create new ClusterTimelineItems in the watcher
       nameProxy: "Person " + String(this.cluster.id),
+      cluster_thumbnails: [],
+      thumbnail_ids: [],
     }
+  },
+  mounted() {
+    this.cluster_thumbnails = [this.cluster.image_paths.at(0)];
+    this.thumbnail_ids = [0];
+
+    if(this.cluster.image_paths.length > 1){
+      this.cluster_thumbnails.push(this.cluster.image_paths.at(-1));
+      this.thumbnail_ids.push(this.cluster.image_paths.length-1)
+    }    
+    
+    if(this.cluster.image_paths.length > 2){
+      this.cluster_thumbnails.push(this.cluster.image_paths.at(this.cluster.image_paths.length/4));
+      this.thumbnail_ids.push(this.cluster.image_paths.length/4)
+    }    
+    
+    if(this.cluster.image_paths.length > 3){
+      this.cluster_thumbnails.push(this.cluster.image_paths.at(3 * this.cluster.image_paths.length/4));
+      this.thumbnail_ids.push(3 * this.cluster.image_paths.length/4)
+    }
+
   },
   methods: {
     async submit() {
@@ -193,7 +215,8 @@ export default {
         });
 
     },
-    goToFace(time){
+    goToFace(index){
+      const time = this.cluster.timestamps[Math.round(this.thumbnail_ids[index])];
       this.playerStore.setTargetTime(time);
     },
 
