@@ -70,7 +70,7 @@
             </template>
             <v-list>
               <v-list-item>
-                <v-btn text @click="createTimeline(cluster)"> to timeline </v-btn>
+                <v-btn :disabled="timelineExists" text @click="createTimeline(cluster)">{{ $t("button.totimeline") }}</v-btn>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -110,28 +110,29 @@ export default {
       this.renaming = true;
       
       if (this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId)){
-        var timelineId = this.clusterTimelineItemStore.getTimelineByCluster(this.cluster.systemId);
-        if (timelineId === null){
-          console.log("This cluster has no timeline yet.");
-          return;
-        }
 
-        await this.timelineStore.rename({
-          timelineId: timelineId,
+        var timelineId = this.clusterTimelineItemStore.getTimelineByCluster(this.cluster.systemId);
+        if (timelineId){
+          await this.timelineStore.rename({
+            timelineId: timelineId,
+            name: this.nameProxy,
+          });
+        }
+      }
+      const cti_id = this.clusterTimelineItemStore.getIDByCluster(this.cluster.systemId);
+
+      if (cti_id !== -1)
+      {
+        await this.clusterTimelineItemStore.rename({
+          cti_id: cti_id,
           name: this.nameProxy,
         });
 
-        const cti_id = this.clusterTimelineItemStore.getIDByCluster(this.cluster.systemId);
-
-        if (cti_id !== -1)
-        {
-          await this.clusterTimelineItemStore.rename({
-            cti_id: cti_id,
-            name: this.nameProxy,
-          });
-
-        }
       }
+      else{ //for some reason, this cluster has not CTI, so we create it
+        await this.clusterTimelineItemStore.create({cluster_id: this.cluster.systemId, name: this.nameProxy, video_id: usePlayerStore().videoId});
+      }
+
 
       this.renaming = false;
       this.show = false;
@@ -185,8 +186,6 @@ export default {
         }
       });
 
-      console.log(parameters);
-
       this.pluginRunStore
         .submit({ plugin: "insightface_identification", parameters: parameters })
         .then(() => {
@@ -209,6 +208,9 @@ export default {
         this.nameProxy = val;
       },
     },
+    timelineExists(){
+      return this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId);
+    },
     syncTime() {
       return this.playerStore.syncTime;
     },
@@ -224,7 +226,6 @@ export default {
         return;
       }
       const newTimeline = values.slice(-1)[0];
-      console.log(newTimeline);
       
       // make sure this is the right card
       if (newTimeline.name != this.nameProxy){

@@ -1,6 +1,6 @@
 <template>
   <v-card ref="parent" class="parent" fluid :items="transcripts" elevation="0">
-    <v-card v-if="transcripts.length == 0" flat>There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> Pipeline. </v-card>
+    <v-card v-if="transcripts.length == 0" flat>There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> pipeline. </v-card>
     <div v-else>
       <div ref="wordcloudContainer" class="wordcloudContainer"></div>
       <v-select style="width: 30%;" v-if="transcripts.length > 0"
@@ -36,9 +36,11 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      this.containerWidth = this.$refs.wordcloudContainer.offsetWidth;
-      this.containerHeight = this.$parent.$parent.$el.clientHeight-100;
-      this.createWordCloud();
+      if (this.$refs.wordcloudContainer){
+        this.containerWidth = this.$refs.wordcloudContainer.offsetWidth;
+        this.containerHeight = this.$parent.$parent.$el.clientHeight-100;
+        this.createWordCloud();
+      }
     });
   },
   methods: {

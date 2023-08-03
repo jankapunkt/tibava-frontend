@@ -56,7 +56,8 @@
         "color": "Color"
     },
     "button": {
-        "search": "Search"
+        "search": "Search",
+        "totimeline": "To Timeline"
     },
     "modal": {
         "video": {

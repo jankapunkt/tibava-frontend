@@ -19,6 +19,7 @@ import { mapStores } from "pinia";
 import PersonCard from "@/components/PersonCard.vue";
 import { usePeopleStore } from "@/store/people";
 import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
+import { usePlayerStore } from "@/store/player";
 
 export default {
   mounted() {
@@ -27,7 +28,7 @@ export default {
   methods: {
     fetchData() {
       // Ask backend about all videos
-      this.clusterTimelineItemStore.fetchAll();
+      this.clusterTimelineItemStore.fetchAll(usePlayerStore().videoId);
     },
   },
   computed: {
@@ -37,7 +38,7 @@ export default {
     clusters() {
       return this.peopleStore.clusters;
     },
-    ...mapStores(usePeopleStore, useClusterTimelineItemStore),
+    ...mapStores(usePeopleStore, useClusterTimelineItemStore, usePlayerStore),
   },
   components: {
     PersonCard,

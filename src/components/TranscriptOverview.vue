@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="transcripts.length == 0" elevation="0"> There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> timeline. </v-card>
+  <v-card v-if="transcripts.length == 0" elevation="0"> There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> pipeline. </v-card>
   <v-virtual-scroll v-else
    ref="parentContainer"
    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
