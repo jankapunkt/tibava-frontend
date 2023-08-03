@@ -36,7 +36,7 @@
               <v-tabs v-model="tab" centered>
                 <v-tabs-slider />
                 <v-tab>Shots</v-tab>
-                <v-tab>People</v-tab>
+                <v-tab>Faces</v-tab>
                 <v-tab>Annotations</v-tab>
                 <v-tab>Transcript</v-tab>
                 <v-tab>Word Cloud</v-tab>

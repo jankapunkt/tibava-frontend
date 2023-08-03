@@ -40,6 +40,9 @@ export const usePeopleStore = defineStore("people", {
 
       this.current_clustering = face_clustering.at(0); // use latest face_clustering
 
+      // console.log("faceclustering");
+      // console.log(this.current_clustering);
+      
       let results = [];
       
       results = this.current_clustering.results[0].data.facecluster

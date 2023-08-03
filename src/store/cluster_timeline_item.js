@@ -68,7 +68,20 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                 }
                 return -1;
             }
+        },
+        exists(state) {
+            return (cluster_id) => {
+                console.log("exists?");
+                for (const key in state.clusterTimelineItems){
+                    if (state.clusterTimelineItems[key].cluster_id.replaceAll("-", "") === cluster_id){
+                        return true;
+                    }
+                }
+                console.log("false");
+                return false;
+            }
         }
+
     },
     actions: {
         async fetchAll() {
@@ -97,20 +110,86 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
               id: cti_id,
               name: name,
             };
+
+            console.log(params);
+            console.log(this.clusterTimelineItems);
       
             const updated_ctis = { ...this.clusterTimelineItems };
             updated_ctis[cti_id].name = name;
             Vue.set(this, "clusterTimelineItems", updated_ctis);
       
             return axios
-              .post(`${config.API_LOCATION}/clusterTimelineItem/rename`, params)
-              .then((res) => {
+                .post(`${config.API_LOCATION}/clusterTimelineItem/rename`, params)
+                .then((res) => {
                 if (res.data.status === "ok") {
+
                 }
-              })
-              .finally(() => {
-                this.isLoading = false;
-              });
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
+        async create({cluster_id, name, video}){
+            if (this.isLoading) {
+              return;
+            }
+            this.isLoading = true;
+
+            let params = {
+                cluster_id: cluster_id,
+                name: name,
+                video: video,
+            };
+
+            return axios
+                .post(`${config.API_LOCATION}/clusterTimelineItem/create`, params)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                        console.log("entry");
+                        console.log(res.data);
+                        this.addToStore(res.data.entry);
+                    }
+                    else{
+                        console.log("Error in clusterTimelineItem/create");
+                        console.log(res.data.type);
+                    }
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+
+        },
+        async setTimelineByCluster(cti_id, timeline_id){
+            if (this.isLoading) {
+              return;
+            }
+            this.isLoading = true;
+
+            let params = {
+                cti_id: cti_id,
+                timeline_id: timeline_id,
+            };
+
+            return axios
+                .post(`${config.API_LOCATION}/clusterTimelineItem/setTimeline`, params)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                        for (const key in this.clusterTimelineItems){
+                            if (this.clusterTimelineItems[key].cluster_id.replaceAll("-", "") === cluster_id){
+                                this.clusterTimelineItems[key].timeline_id = timeline_id;
+                                break;
+                            }
+                        }
+                    }
+                    else{
+                        console.log("Error in clusterTimelineItem/create");
+                        console.log(res.data.type);
+                    }
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+
         },
         setNewNameByCluster(cluster_id, newname){
                 for (const key in this.clusterTimelineItems){
@@ -136,8 +215,8 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
             this.clusterTimelineItems = {};
             this.clusterTimelineItemList = [];
             items.forEach((e, i) => {
-                this.clusterTimelineItems[e.id] = e;
-                this.clusterTimelineItemList.push(e.id);
+                this.clusterTimelineItems[e.id.replaceAll("-", "")] = e;
+                this.clusterTimelineItemList.push(e.id.replaceAll("-", ""));
             });
         },
 

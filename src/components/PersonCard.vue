@@ -50,7 +50,7 @@
         <v-col cols="8" style="width: 100%">
           <div class="image-container" style="width: 100%; gap: 10px; overflow-x: auto; justify-content: flex-start; display:flex; flex-direction: row;">
             <v-img 
-            v-for="(item, i) in cluster.image_paths" 
+            v-for="(item, i) in cluster.image_paths.slice(0,4)" 
             :key="i" 
             :src="item"
             contain
@@ -202,8 +202,8 @@ export default {
   computed: {
     name: {
       get() {
-          const clusterTimelineItemStore = useClusterTimelineItemStore();
-          return clusterTimelineItemStore.hasTimeline(this.cluster.systemId) ? clusterTimelineItemStore.getNameByCluster(this.cluster.systemId) : this.nameProxy;
+        const clusterTimelineItemStore = useClusterTimelineItemStore();
+        return clusterTimelineItemStore.getNameByCluster(this.cluster.systemId);
       },
       set(val) {
         this.nameProxy = val;
@@ -224,13 +224,15 @@ export default {
         return;
       }
       const newTimeline = values.slice(-1)[0];
+      console.log(newTimeline);
       
       // make sure this is the right card
       if (newTimeline.name != this.nameProxy){
         return;
       }
-
-      this.peopleStore.connectToTimeline(this.cluster.systemId, newTimeline.id, this.nameProxy);
+      
+      const cti_id = this.clusterTimelineItemStore.getIDByCluster(this.cluster.systemId);
+      this.clusterTimelineItemStore.setTimelineByCluster(cti_id, newTimeline.id);
     }
   },
 };
