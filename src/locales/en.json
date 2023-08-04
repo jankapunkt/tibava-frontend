@@ -57,7 +57,8 @@
     },
     "button": {
         "search": "Search",
-        "totimeline": "To Timeline"
+        "totimeline": "To Timeline",
+        "deleteCluster": "Delete Cluster"
     },
     "modal": {
         "video": {

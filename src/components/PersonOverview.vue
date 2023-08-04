@@ -22,15 +22,6 @@ import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
 import { usePlayerStore } from "@/store/player";
 
 export default {
-  mounted() {
-    this.fetchData();
-  },
-  methods: {
-    fetchData() {
-      // Ask backend about all videos
-      this.clusterTimelineItemStore.fetchAll(usePlayerStore().videoId);
-    },
-  },
   computed: {
     clustersLength() {
       return this.clusters.length;

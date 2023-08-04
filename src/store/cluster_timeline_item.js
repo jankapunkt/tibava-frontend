@@ -81,6 +81,8 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                     }
                 })
                 .finally(() => {
+                    console.log("done fetching");
+                    console.log(this.clusterTimelineItemList.length);
                     this.isLoading = false;
                 });
         },

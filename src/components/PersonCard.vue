@@ -70,7 +70,10 @@
             </template>
             <v-list>
               <v-list-item>
-                <v-btn :disabled="timelineExists" text @click="createTimeline(cluster)">{{ $t("button.totimeline") }}</v-btn>
+                <v-btn :disabled="timelineExists" text @click="createTimeline">{{ $t("button.totimeline") }}</v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn text @click="deleteCluster">{{ $t("button.deleteCluster") }}</v-btn>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -105,22 +108,24 @@ export default {
     }
   },
   mounted() {
-    this.cluster_thumbnails = [this.cluster.image_paths.at(0)];
-    this.thumbnail_ids = [0];
-
-    if(this.cluster.image_paths.length > 1){
-      this.cluster_thumbnails.push(this.cluster.image_paths.at(-1));
-      this.thumbnail_ids.push(this.cluster.image_paths.length-1)
-    }    
-    
-    if(this.cluster.image_paths.length > 2){
-      this.cluster_thumbnails.push(this.cluster.image_paths.at(this.cluster.image_paths.length/4));
-      this.thumbnail_ids.push(this.cluster.image_paths.length/4)
-    }    
-    
-    if(this.cluster.image_paths.length > 3){
-      this.cluster_thumbnails.push(this.cluster.image_paths.at(3 * this.cluster.image_paths.length/4));
-      this.thumbnail_ids.push(3 * this.cluster.image_paths.length/4)
+    if (this.cluster.image_paths){
+      this.cluster_thumbnails = [this.cluster.image_paths.at(0)];
+      this.thumbnail_ids = [0];  
+      
+      if(this.cluster.image_paths.length > 2){
+        this.cluster_thumbnails.push(this.cluster.image_paths.at(this.cluster.image_paths.length/4));
+        this.thumbnail_ids.push(this.cluster.image_paths.length/4)
+      }    
+      
+      if(this.cluster.image_paths.length > 3){
+        this.cluster_thumbnails.push(this.cluster.image_paths.at(3 * this.cluster.image_paths.length/4));
+        this.thumbnail_ids.push(3 * this.cluster.image_paths.length/4)
+      }
+      
+      if(this.cluster.image_paths.length > 1){
+        this.cluster_thumbnails.push(this.cluster.image_paths.at(-1));
+        this.thumbnail_ids.push(this.cluster.image_paths.length-1)
+      }  
     }
 
   },
@@ -157,7 +162,11 @@ export default {
       this.renaming = false;
       this.show = false;
     },
-    async createTimeline(cluster) {
+    async deleteCluster() {
+      // remove cluster from store
+      // remove cluster from 
+    },
+    async createTimeline() {
       this.loading = true;
       let parameters = [
         {
@@ -189,11 +198,11 @@ export default {
           },
           {
             name: "embedding_ref",
-            value: cluster.embedding_ref,
+            value: this.cluster.embedding_ref,
           },
           {
             name: "index",
-            value: cluster.embedding_index,
+            value: this.cluster.embedding_index,
           }
         ]
       );

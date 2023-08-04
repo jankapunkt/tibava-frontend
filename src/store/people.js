@@ -45,22 +45,28 @@ export const usePeopleStore = defineStore("people", {
       
       let results = [];
       
+      if (this.current_clustering.results.length === 0){
+        return [];
+      }
+
       results = this.current_clustering.results[0].data.facecluster
       .map((cluster, index) => {
-        return {
-          embedding_index: index,
-          systemId: cluster.id,
-          facecluster: cluster,
-          embedding_ref: this.current_clustering.results[1].data_id,
-          image_paths: Array.from(cluster.face_refs.map((face_ref) => {
-            let img_dict = this.current_clustering.results[0].data.images.find(image => image.ref_id == face_ref);
-            return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
-          })),
-          timestamps: Array.from(cluster.face_refs.map((face_ref) => {
-            let timestamp =  this.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
-            return timestamp.time;
-          }))
-        };
+        if(useClusterTimelineItemStore().getID(cluster.id) !== -1){
+          return {
+            embedding_index: index,
+            systemId: cluster.id,
+            facecluster: cluster,
+            embedding_ref: this.current_clustering.results[1].data_id,
+            image_paths: Array.from(cluster.face_refs.map((face_ref) => {
+              let img_dict = this.current_clustering.results[0].data.images.find(image => image.ref_id == face_ref);
+              return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
+            })),
+            timestamps: Array.from(cluster.face_refs.map((face_ref) => {
+              let timestamp =  this.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
+              return timestamp.time;
+            }))
+          };
+        }
       })
       .sort( 
         // bigger clusters should come first
@@ -74,32 +80,6 @@ export const usePeopleStore = defineStore("people", {
       // console.log(results);
 
       return results;
- 
     }
-  },
-  actions: {
-    async connectToTimeline (cluster_id, timeline_id, new_name) {
-      if (this.isLoading) {
-        return;
-      }
-      this.isLoading = true;
-
-      let params = {
-        cluster_id: cluster_id,
-        timeline_id: timeline_id,
-        name: new_name,
-      };
-      
-      return axios
-        .post(`${config.API_LOCATION}/clusterTimelineItem/create`, params)
-        .then((res) => {
-          const clusterTimelineStore = useClusterTimelineItemStore();
-          clusterTimelineStore.addToStore(res.data.entry);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
-    }
-  },
-  },
-);
+  }, 
+},);

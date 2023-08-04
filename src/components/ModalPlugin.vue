@@ -97,7 +97,7 @@ export default {
               field: "slider",
               min: 0.0,
               max: 1.0,
-              value: 0.4,
+              value: 0.5,
               step: 0.01,
               name: "cluster_threshold",
               hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
