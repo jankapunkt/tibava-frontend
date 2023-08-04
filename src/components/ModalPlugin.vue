@@ -99,6 +99,7 @@ export default {
               max: 1.0,
               value: 0.4,
               step: 0.01,
+              name: "cluster_threshold",
               hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
               hint_left: this.$t("modal.plugin.face_clustering.hint_right"),
             }
@@ -749,7 +750,7 @@ export default {
           return { name: e.name, value: e.value };
         }
       });
-      // console.log(parameters);
+      console.log(parameters);
       this.pluginRunStore
         .submit({ plugin: plugin, parameters: parameters })
         .then(() => {
