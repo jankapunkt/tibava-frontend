@@ -99,9 +99,8 @@ export default {
               max: 1.0,
               value: 0.4,
               step: 0.01,
-              name: "cluster_threshold",
-              text: this.$t("modal.plugin.face_clustering.cluster_threshold"),
-              hint: this.$t("modal.plugin.face_clustering.cluster_threshold_hint"),
+              hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
+              hint_left: this.$t("modal.plugin.face_clustering.hint_right"),
             }
           ],
           optional_parameters: [ 

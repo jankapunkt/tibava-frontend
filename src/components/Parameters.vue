@@ -52,19 +52,37 @@
       ></v-select>
 
       <div v-if="parameter.field == 'slider'" :key="parameter.name">
-        <v-slider
-          v-model="parameter.value"
-          :label="parameter.text"
-          :min="parameter.min"
-          :max="parameter.max"
-          :step="parameter.step"
-          :value="parameter.default"
-          :disabled="parameter.disabled"
-          :hint="parameter.hint"
-          thumb-label="always"
-          persistent-hint
-        >
-        </v-slider>
+        <v-row v-if="parameter.hint_left  && parameter.hint_right">
+          <v-col cols="3" style="display: flex; justify-content: flex-end">{{ parameter.hint_left }}</v-col>
+          <v-col cols="6" >
+            <v-slider
+              v-model="parameter.value"
+              :min="parameter.min"
+              :max="parameter.max"
+              :step="parameter.step"
+              :value="parameter.default"
+              :disabled="parameter.disabled"
+              :hint="parameter.hint"
+              thumb-label="always"
+              persistent-hint
+            >
+            </v-slider>
+          </v-col>
+          <v-col cols="3">{{ parameter.hint_right }}</v-col>
+      </v-row>
+      <v-slider v-else
+              v-model="parameter.value"
+              :label="parameter.text"
+              :min="parameter.min"
+              :max="parameter.max"
+              :step="parameter.step"
+              :value="parameter.default"
+              :disabled="parameter.disabled"
+              :hint="parameter.hint"
+              thumb-label="always"
+              persistent-hint
+            >
+            </v-slider>
       </div>
 
       <div v-if="parameter.field == 'buttongroup'" :key="parameter.name">

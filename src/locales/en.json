@@ -181,8 +181,8 @@
             },
             "face_clustering": {
                 "plugin_name": "Face Clustering",
-                "cluster_threshold": "Cluster Threshold",
-                "cluster_threshold_hint": "The lower the value, the more similar two faces have to be in order to be considered for the same cluster."
+                "hint_left": "Less clusters, but lower accuracy",
+                "hint_right": "More clusters, but higher accuracy"
             },
             "faceemotion": {
                 "plugin_name": "Face Emotion Recognition",
