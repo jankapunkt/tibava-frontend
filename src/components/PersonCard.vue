@@ -132,8 +132,7 @@ export default {
       this.renaming = true;
       
       if (this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId)){
-
-        var timelineId = this.clusterTimelineItemStore.getTimelineByCluster(this.cluster.systemId);
+        var timelineId = this.clusterTimelineItemStore.getTimeline(this.cluster.systemId);
         if (timelineId){
           await this.timelineStore.rename({
             timelineId: timelineId,
@@ -141,12 +140,11 @@ export default {
           });
         }
       }
-      const cti_id = this.clusterTimelineItemStore.getIDByCluster(this.cluster.systemId);
 
-      if (cti_id !== -1)
+      if (this.clusterTimelineItemStore.getID(this.cluster.systemId) !== -1)
       {
         await this.clusterTimelineItemStore.rename({
-          cti_id: cti_id,
+          cluster_id: this.cluster.systemId,
           name: this.nameProxy,
         });
 
@@ -165,7 +163,7 @@ export default {
         {
           field: "text_field",
           name: "timeline",
-          value: this.nameProxy,
+          value: this.name,
           text: this.$t("modal.plugin.timeline_name"),
         },
         {
@@ -225,7 +223,7 @@ export default {
     name: {
       get() {
         const clusterTimelineItemStore = useClusterTimelineItemStore();
-        return clusterTimelineItemStore.getNameByCluster(this.cluster.systemId);
+        return clusterTimelineItemStore.getName(this.cluster.systemId);
       },
       set(val) {
         this.nameProxy = val;
@@ -255,8 +253,7 @@ export default {
         return;
       }
       
-      const cti_id = this.clusterTimelineItemStore.getIDByCluster(this.cluster.systemId);
-      this.clusterTimelineItemStore.setTimelineByCluster(cti_id, newTimeline.id);
+      this.clusterTimelineItemStore.setTimeline(this.cluster.systemId, newTimeline.id);
     }
   },
 };
