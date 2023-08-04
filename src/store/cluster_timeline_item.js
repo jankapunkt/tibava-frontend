@@ -81,8 +81,6 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                     }
                 })
                 .finally(() => {
-                    console.log("done fetching");
-                    console.log(this.clusterTimelineItemList.length);
                     this.isLoading = false;
                 });
         },
@@ -165,6 +163,29 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                         console.log("Error in clusterTimelineItem/setTimeline");
                         console.log(res.data);
                     }
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
+        async delete(cluster_id){
+            if (this.isLoading) {
+                return;
+            }
+            this.isLoading = true;
+
+            let params = {
+                id: this.clusterTimelineItems[cluster_id].id,
+            };
+            // update own store
+            this.deleteFromStore(cluster_id);
+
+            return axios
+                .post(`${config.API_LOCATION}/clusterTimelineItem/delete`, params)
+                .then((res) => {
+                if (res.data.status === "ok") {
+                    // commit("delete", timeline_id);
+                }
                 })
                 .finally(() => {
                     this.isLoading = false;

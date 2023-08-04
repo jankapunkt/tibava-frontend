@@ -51,21 +51,19 @@ export const usePeopleStore = defineStore("people", {
 
       results = this.current_clustering.results[0].data.facecluster
       .map((cluster, index) => {
-        if(useClusterTimelineItemStore().getID(cluster.id) !== -1){
-          return {
-            embedding_index: index,
-            systemId: cluster.id,
-            facecluster: cluster,
-            embedding_ref: this.current_clustering.results[1].data_id,
-            image_paths: Array.from(cluster.face_refs.map((face_ref) => {
-              let img_dict = this.current_clustering.results[0].data.images.find(image => image.ref_id == face_ref);
-              return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
-            })),
-            timestamps: Array.from(cluster.face_refs.map((face_ref) => {
-              let timestamp =  this.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
-              return timestamp.time;
-            }))
-          };
+        return {
+          embedding_index: index,
+          systemId: cluster.id,
+          facecluster: cluster,
+          embedding_ref: this.current_clustering.results[1].data_id,
+          image_paths: Array.from(cluster.face_refs.map((face_ref) => {
+            let img_dict = this.current_clustering.results[0].data.images.find(image => image.ref_id == face_ref);
+            return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
+          })),
+          timestamps: Array.from(cluster.face_refs.map((face_ref) => {
+            let timestamp =  this.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
+            return timestamp.time;
+          }))
         }
       })
       .sort( 

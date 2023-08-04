@@ -105,6 +105,7 @@ export default {
       nameProxy: "Person " + String(this.cluster.id),
       cluster_thumbnails: [],
       thumbnail_ids: [],
+      isSubmitting: false,
     }
   },
   mounted() {
@@ -163,8 +164,18 @@ export default {
       this.show = false;
     },
     async deleteCluster() {
+      if (this.isSubmitting) {
+        return;
+      }
+      this.isSubmitting = true;
+
       // remove cluster from store
-      // remove cluster from 
+      await this.clusterTimelineItemStore.delete(this.cluster.systemId);
+      // delete this card
+      this.$emit("childDeleted", this.cluster.systemId);
+      this.isSubmitting = false;
+      this.show = false;
+
     },
     async createTimeline() {
       this.loading = true;
