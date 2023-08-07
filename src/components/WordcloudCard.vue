@@ -1,24 +1,18 @@
 <template>
   <v-card ref="parent" class="parent" fluid :items="transcripts" elevation="0">
-    <v-card v-if="transcripts.length == 0" flat>There is no transcript. Create it with the <em>Speech Recognition (whisper)</em> pipeline. </v-card>
+    <v-card v-if="transcripts.length == 0" flat>There is no transcript. Create it with the <em>Speech Recognition
+        (whisper)</em> pipeline. </v-card>
     <div v-else>
       <div ref="wordcloudContainer" class="wordcloudContainer"></div>
-      <v-select style="width: 30%;" v-if="transcripts.length > 0"
-          v-model="stopword_selection"
-          :items="stopword_options"
-          label="Select stopwords to be removed"
-          item-text="name"
-          item-value="id"
-          persistent-hint
-          multiple
-        ></v-select>
+      <v-select style="width: 30%;" v-if="transcripts.length > 0" v-model="stopword_selection" :items="stopword_options"
+        label="Select stopwords to be removed" item-text="name" item-value="id" persistent-hint multiple></v-select>
     </div>
   </v-card>
 </template>
 
 <script>
 import TimeMixin from "../mixins/time";
-import * as d3 from 'd3'; 
+import * as d3 from 'd3';
 import cloud from 'd3-cloud';
 import { mapStores } from "pinia";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
@@ -36,9 +30,9 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      if (this.$refs.wordcloudContainer){
+      if (this.$refs.wordcloudContainer) {
         this.containerWidth = this.$refs.wordcloudContainer.offsetWidth;
-        this.containerHeight = this.$parent.$parent.$el.clientHeight-100;
+        this.containerHeight = this.$parent.$parent.$el.clientHeight - 100;
         this.createWordCloud();
       }
     });
@@ -49,7 +43,7 @@ export default {
       const all_words = [];
       for (var transcript of this.transcripts) {
         for (var word of transcript.name.split(" ")) {
-          if (word.endsWith(',') || word.endsWith('.')){
+          if (word.endsWith(',') || word.endsWith('.')) {
             word = word.slice(0, -1);
           }
           all_words.push(word.toLowerCase());
@@ -57,26 +51,26 @@ export default {
       }
 
       // filter out stopwords
-      const { removeStopwords, deu, eng} = require('stopword');
+      const { removeStopwords, deu, eng } = require('stopword');
       var filteredText = all_words;
       for (const lan of this.stopword_selection) {
-        if(this.stopword_selection.includes("Englisch")){
+        if (this.stopword_selection.includes(lan)) {
           filteredText = removeStopwords(filteredText, eng);
         }
-        if(this.stopword_selection.includes("Deutsch")){
+        if (this.stopword_selection.includes(lan)) {
           filteredText = removeStopwords(filteredText, deu);
         }
 
       }
-      
- 
+
+
       // count words
       var dictionary = {};
 
       filteredText.forEach((word) => {
         if (dictionary.hasOwnProperty(word)) {
           dictionary[word]++;
-        }else{
+        } else {
           dictionary[word] = 1;
         }
       });
@@ -94,17 +88,17 @@ export default {
 
       const current_max = words[0].count;
       const desired_max = 12;
-      
+
       // map all font-sizes to a good size, where the maximum is 17
       words.map((w) => {
-        w.count = w.count * desired_max/current_max;
+        w.count = w.count * desired_max / current_max;
       });
-      
+
       this.layout = cloud()
         .size([this.containerWidth, this.containerHeight])
         .words(words)
         .padding(10)
-        .rotate(function() {return ~~((2*Math.random()-1) * 45)})
+        .rotate(function () { return ~~((2 * Math.random() - 1) * 45) })
         .fontSize((d) => d.count * 10)
         .on('end', this.drawWordCloud);
 
@@ -122,14 +116,14 @@ export default {
         .data(words)
         .enter().append("text")
         .style("font-family", "Arial")
-        .style("font-size", function(d) { return d.size + "px"; })
-        .style("fill", function(d, i) { return colorScale(i); })
+        .style("font-size", function (d) { return d.size + "px"; })
+        .style("fill", function (d, i) { return colorScale(i); })
         .attr("text-anchor", "middle")
-        .attr("transform", function(d) {
+        .attr("transform", function (d) {
           return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
         })
-        .text(function(d) { return d.text; });
-}
+        .text(function (d) { return d.text; });
+    }
   },
   computed: {
     transcripts() {
@@ -137,18 +131,18 @@ export default {
     },
     ...mapStores(useTimelineSegmentAnnotationStore),
   },
-  watch:   { 
+  watch: {
     stopword_selection(value) {
       d3.select(this.$refs.wordcloudContainer).select('svg').remove();
       this.createWordCloud();
-      },
-    }
+    },
+  }
 };
 </script>
 
 <style>
 .v-window {
-    height: 100%;
-    width: 100%
-    }
+  height: 100%;
+  width: 100%
+}
 </style>

@@ -1,83 +1,79 @@
 <template>
-  <v-card 
-  :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
-  elevation="4"
-  :loading="loading"
-  >
-      <v-row no-gutters align="center" class="px-2 py-0">
-        <v-col cols="3">
-            <v-list-item-content min-width>
-              <div style="font-size: 16px;"> {{ name }}
-                <v-dialog v-model="show" max-width="1000">
-                <template v-slot:activator="{ props }">
-                  <v-btn v-bind="props" @click="show=true" icon size="16">
-                    <v-icon>mdi-pencil</v-icon>
+  <v-card :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" elevation="4" :loading="loading">
+    <v-row no-gutters align="center" class="px-2 py-0">
+      <v-col cols="3">
+        <v-list-item-content min-width>
+          <div style="font-size: 16px;"> {{ name }}
+            <v-dialog v-model="show" max-width="1000">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" @click="show = true" icon size="16">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+              </template>
+
+              <v-card>
+                <v-card-title class="mb-2">
+                  {{ $t("modal.timeline.rename.title") }}
+                  <v-btn icon @click.native="show = false" absolute top right>
+                    <v-icon>mdi-close</v-icon>
                   </v-btn>
-                </template>
+                </v-card-title>
+                <v-card-text>
+                  <v-text-field :label="$t('modal.timeline.rename.name')" prepend-icon="mdi-pencil"
+                    v-model="name"></v-text-field>
+                </v-card-text>
+                <v-card-actions class="pt-0">
+                  <v-btn class="mr-4" @click="submit" :disabled="renaming || !name">
+                    {{ $t("modal.timeline.rename.update") }}
+                  </v-btn>
+                  <v-btn @click="show = false">{{
+                    $t("modal.timeline.rename.close")
+                  }}</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
 
-                  <v-card>
-                    <v-card-title class="mb-2">
-                      {{ $t("modal.timeline.rename.title") }}
-                      <v-btn icon @click.native="show = false" absolute top right>
-                        <v-icon>mdi-close</v-icon>
-                      </v-btn>
-                    </v-card-title>
-                    <v-card-text>
-                      <v-text-field
-                        :label="$t('modal.timeline.rename.name')"
-                        prepend-icon="mdi-pencil"
-                        v-model="name"
-                      ></v-text-field>
-                    </v-card-text>
-                    <v-card-actions class="pt-0">
-                      <v-btn class="mr-4" @click="submit" :disabled="renaming || !name">
-                        {{ $t("modal.timeline.rename.update") }}
-                      </v-btn>
-                      <v-btn @click="show = false">{{
-                        $t("modal.timeline.rename.close")
-                      }}</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              
-              </div>
-              <v-list-item-subtitle>Faces: {{ cluster.image_paths.length }}</v-list-item-subtitle>
-              <v-list-item-subtitle>First: {{ cluster.timestamps[0] }} sec</v-list-item-subtitle>
-              <v-list-item-subtitle>Last: {{ cluster.timestamps[cluster.timestamps.length-1] }} sec</v-list-item-subtitle>
-            </v-list-item-content>
-        </v-col>
-
-        <v-col cols="8" style="width: 100%">
-          <div class="image-container" style="width: 100%; gap: 10px; overflow-x: auto; justify-content: flex-start; display:flex; flex-direction: row;">
-            <v-img 
-            v-for="(item, i) in this.cluster_thumbnails" 
-            :key="i" 
-            :src="item"
-            contain
-            style="cursor: pointer; height: 100px; max-width: 100px;"
-            @click="goToFace(i)"></v-img>
           </div>
-        </v-col>
+          <v-list-item-subtitle>Faces: {{ cluster.image_paths.length }}</v-list-item-subtitle>
+          <v-list-item-subtitle>First: {{ cluster.timestamps[0] }} sec</v-list-item-subtitle>
+          <v-list-item-subtitle>Last: {{ cluster.timestamps[cluster.timestamps.length - 1] }} sec</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-col>
 
-        <v-col align="end" cols="1">
-          <v-menu bottom right>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon small>
-                <v-icon v-bind="attrs" v-on="on"
-                  >mdi-dots-vertical</v-icon
-                >
+      <v-col cols="8" style="width: 100%">
+        <div class="image-container"
+          style="width: 100%; gap: 10px; overflow-x: auto; justify-content: flex-start; display:flex; flex-direction: row;">
+          <v-img v-for="(item, i) in this.cluster_thumbnails" :key="i" :src="item" contain
+            style="cursor: pointer; height: 100px; max-width: 100px;" @click="goToFace(i)"></v-img>
+        </div>
+      </v-col>
+
+      <v-col align="end" cols="1">
+        <v-menu bottom right>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon small>
+              <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item>
+              <ClusterExploration :cluster="this.cluster"></ClusterExploration>
+            </v-list-item>
+            <v-list-item>
+              <v-btn :disabled="timelineExists" text @click="createTimeline">
+                <v-icon left>{{ "mdi-barcode" }}</v-icon>
+                {{ $t("button.totimeline") }}
               </v-btn>
-            </template>
-            <v-list>
-              <v-list-item>
-                <v-btn :disabled="timelineExists" text @click="createTimeline">{{ $t("button.totimeline") }}</v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn text @click="deleteCluster">{{ $t("button.deleteCluster") }}</v-btn>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-col>
+            </v-list-item>
+            <v-list-item>
+              <v-btn text @click="deleteCluster">
+                <v-icon left>{{ "mdi-trash-can-outline" }}</v-icon>{{
+                  $t("button.deleteCluster") }}
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-col>
     </v-row>
   </v-card>
 </template>
@@ -92,11 +88,12 @@ import { useTimelineStore } from "@/store/timeline";
 import { usePluginRunStore } from "@/store/plugin_run";
 import { usePeopleStore } from "@/store/people";
 import { cluster } from "d3";
+import ClusterExploration from "@/components/ClusterExploration.vue";
 
 export default {
   mixins: [TimeMixin],
   props: ["cluster"],
-  data () {
+  data() {
     return {
       // card shows loading animation while the faceidentification plugin runs
       loading: false,
@@ -109,24 +106,24 @@ export default {
     }
   },
   mounted() {
-    if (this.cluster.image_paths){
+    if (this.cluster.image_paths) {
       this.cluster_thumbnails = [this.cluster.image_paths.at(0)];
-      this.thumbnail_ids = [0];  
-      
-      if(this.cluster.image_paths.length > 2){
-        this.cluster_thumbnails.push(this.cluster.image_paths.at(this.cluster.image_paths.length/4));
-        this.thumbnail_ids.push(this.cluster.image_paths.length/4)
-      }    
-      
-      if(this.cluster.image_paths.length > 3){
-        this.cluster_thumbnails.push(this.cluster.image_paths.at(3 * this.cluster.image_paths.length/4));
-        this.thumbnail_ids.push(3 * this.cluster.image_paths.length/4)
+      this.thumbnail_ids = [0];
+
+      if (this.cluster.image_paths.length > 2) {
+        this.cluster_thumbnails.push(this.cluster.image_paths.at(this.cluster.image_paths.length / 4));
+        this.thumbnail_ids.push(this.cluster.image_paths.length / 4)
       }
-      
-      if(this.cluster.image_paths.length > 1){
+
+      if (this.cluster.image_paths.length > 3) {
+        this.cluster_thumbnails.push(this.cluster.image_paths.at(3 * this.cluster.image_paths.length / 4));
+        this.thumbnail_ids.push(3 * this.cluster.image_paths.length / 4)
+      }
+
+      if (this.cluster.image_paths.length > 1) {
         this.cluster_thumbnails.push(this.cluster.image_paths.at(-1));
-        this.thumbnail_ids.push(this.cluster.image_paths.length-1)
-      }  
+        this.thumbnail_ids.push(this.cluster.image_paths.length - 1)
+      }
     }
 
   },
@@ -136,10 +133,10 @@ export default {
         return;
       }
       this.renaming = true;
-      
-      if (this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId)){
+
+      if (this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId)) {
         var timelineId = this.clusterTimelineItemStore.getTimeline(this.cluster.systemId);
-        if (timelineId){
+        if (timelineId) {
           await this.timelineStore.rename({
             timelineId: timelineId,
             name: this.nameProxy,
@@ -147,16 +144,15 @@ export default {
         }
       }
 
-      if (this.clusterTimelineItemStore.getID(this.cluster.systemId) !== -1)
-      {
+      if (this.clusterTimelineItemStore.getID(this.cluster.systemId) !== -1) {
         await this.clusterTimelineItemStore.rename({
           cluster_id: this.cluster.systemId,
           name: this.nameProxy,
         });
 
       }
-      else{ //for some reason, this cluster has not CTI, so we create it
-        await this.clusterTimelineItemStore.create({cluster_id: this.cluster.systemId, name: this.nameProxy, video_id: usePlayerStore().videoId});
+      else { //for some reason, this cluster has not CTI, so we create it
+        await this.clusterTimelineItemStore.create({ cluster_id: this.cluster.systemId, name: this.nameProxy, video_id: usePlayerStore().videoId });
       }
 
 
@@ -233,7 +229,7 @@ export default {
         });
 
     },
-    goToFace(index){
+    goToFace(index) {
       const time = this.cluster.timestamps[Math.round(this.thumbnail_ids[index])];
       this.playerStore.setTargetTime(time);
     },
@@ -249,7 +245,7 @@ export default {
         this.nameProxy = val;
       },
     },
-    timelineExists(){
+    timelineExists() {
       return this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId);
     },
     syncTime() {
@@ -263,18 +259,21 @@ export default {
   },
   watch: {
     timelines(values) {
-      if (values.length == 0 || this.renaming){
+      if (values.length == 0 || this.renaming) {
         return;
       }
       const newTimeline = values.slice(-1)[0];
-      
+
       // make sure this is the right card
-      if (newTimeline.name != this.nameProxy){
+      if (newTimeline.name != this.nameProxy) {
         return;
       }
-      
+
       this.clusterTimelineItemStore.setTimeline(this.cluster.systemId, newTimeline.id);
     }
+  },
+  components: {
+    ClusterExploration,
   },
 };
 </script>
@@ -286,5 +285,4 @@ export default {
   justify-content: flex-start;
   gap: 10px;
 }
-
 </style>
