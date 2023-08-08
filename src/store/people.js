@@ -1,10 +1,8 @@
 import config from "../../app.config";
 import { defineStore } from "pinia";
-import axios from "../plugins/axios";
 import { usePlayerStore } from "./player";
 import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
-import { useClusterTimelineItemStore } from "./cluster_timeline_item";
 
 export const usePeopleStore = defineStore("people", {
   state: () => {
@@ -56,6 +54,7 @@ export const usePeopleStore = defineStore("people", {
           systemId: cluster.id,
           facecluster: cluster,
           embedding_ref: this.current_clustering.results[1].data_id,
+          face_refs: cluster.face_refs,
           image_paths: Array.from(cluster.face_refs.map((face_ref) => {
             let img_dict = this.current_clustering.results[0].data.images.find(image => image.ref_id == face_ref);
             return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
@@ -70,6 +69,7 @@ export const usePeopleStore = defineStore("people", {
         // bigger clusters should come first
         (a, b) => b.image_paths.length - a.image_paths.length
       ).map((cluster, index) => ({
+        // add an index that resembles the clusters sorted by length
         ...cluster,
         id: index + 1,
       }))

@@ -1,12 +1,12 @@
 <template>
-    <v-dialog v-model="show" max-width="1000">
+    <v-dialog v-model="show" width="90%" persistent>
         <template v-slot:activator="{ on }">
             <v-btn @click="showCanvas" v-on="on" text block large>
                 <v-icon left>{{ "mdi-eye-outline" }}</v-icon>
                 {{ $t("button.edit") }}
             </v-btn>
         </template>
-        <v-card v-show="show" class="canvasContainer" ref="canvasContainer" width="1024">
+        <v-card v-show="show" class="canvasContainer" ref="canvasContainer">
             <v-card-title>Person {{ this.cluster.id }}</v-card-title>
             <v-card-subtitle>Click on images to mark them for deletion.</v-card-subtitle>
             <img class="clusterImg" v-for="imageUrl in  displayedImages " :key="imageUrl" :src="imageUrl"
@@ -20,7 +20,9 @@
 </template>
   
 <script>
-import { image } from 'd3';
+import { mapStores } from "pinia";
+import { useFaceStore } from "@/store/face";
+import { del } from "@vue/composition-api";
 
 
 export default {
@@ -30,6 +32,7 @@ export default {
             show: false,
             displayedImages: [], // Array to store the displayed images
             markedForDeletion: [],
+            faceRefDict: [],
         };
     },
     methods: {
@@ -40,9 +43,16 @@ export default {
             // Create a copy of the cluster array to avoid directly modifying the prop
             const clusterCopy = this.cluster.image_paths ? this.cluster.image_paths.slice() : [];
 
+            const faceStore = useFaceStore();
+            const deletedFaces = faceStore.getDeletedFaces(this.cluster.systemId);
+            console.log(deletedFaces);
+
             // Add each image URL from the cluster to the displayedImages array
-            clusterCopy.forEach((imageUrl) => {
-                this.displayedImages.push(imageUrl);
+            clusterCopy.forEach((imageUrl, index) => {
+                if (!deletedFaces.includes(this.cluster.face_refs[index])) {
+                    this.displayedImages.push(imageUrl);
+                    this.faceRefDict[imageUrl] = this.cluster.face_refs[index];
+                }
             });
 
             // Set show to true to show the v-card
@@ -60,33 +70,33 @@ export default {
         },
         borderStyle(imageUrl) {
             if (this.marked(imageUrl)) {
-                return 'opacity: 0.5; transition: opacity 0.3s; border: 1px solid red'
+                return 'opacity: 0.5; transition: opacity 1s; border: 1px solid red'
             }
             return ''
         },
-        applyDeletion() {
-
+        async applyDeletion() {
+            const faceStore = useFaceStore();
+            let face_refs_to_delete = this.markedForDeletion.map((el) => this.faceRefDict[el]);
+            await faceStore.setDeleted(face_refs_to_delete);
+            this.markedForDeletion = [];
+            this.show = false;
         },
         abortDeletion() {
             this.markedForDeletion = [];
             this.show = false;
         }
     },
+    ...mapStores(useFaceStore),
 };
 </script>
 
 <style>
 .clusterImg {
-    margin: 1%;
-    height: 150px;
+    margin: 5px;
+    height: 100px;
 }
 
 .canvasContainer {
     background: white;
-}
-
-.marked-for-delete {
-    opacity: 0.5;
-    transition: opacity 0.3s;
 }
 </style>

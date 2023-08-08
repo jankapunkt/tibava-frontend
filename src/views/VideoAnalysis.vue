@@ -3,12 +3,7 @@
     <v-container fluid>
       <v-row class="ma-2">
         <v-col cols="6">
-          <v-card
-            class="d-flex flex-column flex-nowrap px-2"
-            elevation="2"
-            v-resize="onVideoResize"
-            ref="videoCard"
-          >
+          <v-card class="d-flex flex-column flex-nowrap px-2" elevation="2" v-resize="onVideoResize" ref="videoCard">
             <v-row>
               <v-card-title>
                 {{ playerStore.videoName }}
@@ -27,11 +22,7 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card
-            elevation="2"
-            ref="resultCard"
-            :height="resultCardHeight"
-          >
+          <v-card elevation="2" ref="resultCard" :height="resultCardHeight">
             <div class="sticky-tabs-bar">
               <v-tabs v-model="tab" centered>
                 <v-tabs-slider />
@@ -48,21 +39,21 @@
 
             <v-tabs-items v-model="tab" style="height: 95%">
               <v-tab-item style="height: 100%">
-                <ShotsOverview/>
+                <ShotsOverview />
               </v-tab-item>
-              
+
               <v-tab-item style="height: 100%">
-                <PersonOverview/>
+                <PersonOverview />
               </v-tab-item>
 
               <v-tab-item>
-                <CurrentEntitiesOverView/>
+                <CurrentEntitiesOverView />
               </v-tab-item>
-                
+
               <v-tab-item style="height: 100%">
-                <TranscriptOverview/>
+                <TranscriptOverview />
               </v-tab-item>
-              
+
               <v-tab-item>
                 <WordcloudCard />
               </v-tab-item>
@@ -72,15 +63,10 @@
       </v-row>
 
       <VisualizationMenu align="center" style="box-shadow: none;"> </VisualizationMenu>
-      
+
       <v-row class="ma-2">
         <v-col>
-          <v-card
-            class="d-flex flex-column flex-nowrap"
-            max-width="100%"
-            elevation="2"
-            scrollable="False"
-          >
+          <v-card class="d-flex flex-column flex-nowrap" max-width="100%" elevation="2" scrollable="False">
             <v-card-title> Timelines </v-card-title>
             <v-flex grow class="mb-2 px-4">
               <Timeline ref="timeline" width="100%"> </Timeline>
@@ -119,6 +105,7 @@ import { useShortcutStore } from "@/store/shortcut";
 import { useAnnotationShortcutStore } from "../store/annotation_shortcut.js";
 import { usePluginRunStore } from "../store/plugin_run.js";
 import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
+import { useFaceStore } from "../store/face";
 
 export default {
   data() {
@@ -305,6 +292,7 @@ export default {
       });
 
       await this.clusterTimelineItemStore.fetchAll(usePlayerStore().videoId);
+      await this.faceStore.fetchAll(usePlayerStore().videoId);
 
     },
     async fetchPlugin() {
@@ -346,6 +334,7 @@ export default {
       useShortcutStore,
       useAnnotationShortcutStore,
       useClusterTimelineItemStore,
+      useFaceStore,
     ),
   },
   async created() {
@@ -381,7 +370,7 @@ export default {
     WordcloudCard,
     PersonOverview,
     VisualizationMenu
-},
+  },
 
   watch: {
     pluginInProgress(newState, oldState) {
@@ -408,7 +397,7 @@ export default {
 </script>
 
 <style scoped>
-.logo > img {
+.logo>img {
   max-height: 56px;
 }
 
@@ -416,7 +405,8 @@ export default {
   position: sticky;
   top: 0;
   z-index: 1;
-  background-color: white; /* Adjust the background color if needed */
+  background-color: white;
+  /* Adjust the background color if needed */
 }
 
 .card-title {
