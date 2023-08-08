@@ -59,7 +59,9 @@
         "search": "Search",
         "totimeline": "To Timeline",
         "deleteCluster": "Delete",
-        "edit": "Edit"
+        "edit": "Edit",
+        "apply": "Apply",
+        "cancel": "Cancel"
     },
     "modal": {
         "video": {
