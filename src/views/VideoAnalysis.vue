@@ -22,7 +22,8 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card elevation="2" ref="resultCard" :height="resultCardHeight">
+          <v-card v-if="isLoading">Loading data ... </v-card>
+          <v-card v-else elevation="2" ref="resultCard" :height="resultCardHeight">
             <div class="sticky-tabs-bar">
               <v-tabs v-model="tab" centered>
                 <v-tabs-slider />
@@ -106,6 +107,7 @@ import { useAnnotationShortcutStore } from "../store/annotation_shortcut.js";
 import { usePluginRunStore } from "../store/plugin_run.js";
 import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
 import { useFaceStore } from "../store/face";
+import { thresholdFreedmanDiaconis } from "d3";
 
 export default {
   data() {
@@ -127,7 +129,8 @@ export default {
       annotationDialog: {
         show: false,
       },
-      resultCardHeight: 69,
+      isLoading: true,
+      resultCardHeight: 0,
     };
   },
   methods: {
@@ -335,25 +338,9 @@ export default {
   },
   async created() {
     // fetch the data when the view is created and the data is
-    // already being observed
-
-    this.fetchData({ addResults: true });
-
-    this.fetchTimer = setInterval(
-      function () {
-        // this.fetchData({ addResults: false });
-      }.bind(this),
-      5000
-    );
+    await this.fetchData({ addResults: true });
+    this.isLoading = false;
   },
-  mounted() {
-    this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
-    this.$refs.main.$el.focus();
-    // document.addEventListener("keydown", (e) => {
-
-    // });
-  },
-
   components: {
     VideoPlayer,
     TranscriptOverview,
@@ -382,12 +369,12 @@ export default {
         clearInterval(this.fetchPluginTimer);
       }
     },
-  },
-
-  beforeRouteLeave(to, from, next) {
-    clearInterval(this.fetchPluginTimer);
-    this.playerStore.clearStore();
-    next(true);
+    isLoading(value){
+      if (!value){
+        this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
+        this.$refs.main.$el.focus();
+      }
+    }
   },
 };
 </script>

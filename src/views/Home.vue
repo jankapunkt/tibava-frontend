@@ -59,16 +59,10 @@ import ModalVideoRename from "@/components/ModalVideoRename.vue";
 import TimeMixin from "../mixins/time";
 import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video.js";
-import { useUserStore } from "@/store/user.js";
 import { usePluginRunStore } from "@/store/plugin_run.js";
 
 export default {
   mixins: [TimeMixin],
-  data() {
-    return {
-      fetchTimer: null,
-    };
-  },
   methods: {
     deleteVideo(video_id) {
       console.log(video_id);
@@ -103,35 +97,6 @@ export default {
   components: {
     ModalVideoUpload,
     ModalVideoRename,
-  },
-  mounted() {
-    this.fetchData();
-
-    this.fetchTimer = setInterval(
-      function () {
-        this.fetchData();
-      }.bind(this),
-      5000
-    );
-  },
-
-  // TODO rwrite everything
-  beforeRouteEnter(to, from, next) {
-    next(() => {
-      console.log("NEXT");
-      const userStore = useUserStore();
-
-      const loggedIn = userStore.loggedIn;
-
-      console.log(loggedIn);
-      if (!loggedIn && to.name !== "Login") {
-        return router.push({ path: `/login`, query: { redirect: to.path } });
-      }
-    });
-  },
-  beforeRouteLeave(to, from, next) {
-    clearInterval(this.fetchTimer);
-    next(true);
   },
 };
 </script>
