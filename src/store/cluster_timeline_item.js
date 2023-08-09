@@ -215,6 +215,10 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                 this.clusterTimelineItemList.push(e.cluster_id);
             });
         },
+        clearStore(){
+            this.clusterTimelineItems = {};
+            this.clusterTimelineItemList = [];
+        }
 
     },
 });

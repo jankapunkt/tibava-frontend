@@ -46,14 +46,15 @@ export const useFaceStore = defineStore("face", {
                     this.isLoading = false;
                 });
         },
-        async setDeleted(face_ref_list){
+        async setDeleted(face_ref_list, cluster_id){
             if (this.isLoading) {
               return;
             }
             this.isLoading = true;
 
             let params = {
-                face_ref_list: face_ref_list
+                face_ref_list: face_ref_list,
+                cluster_id: cluster_id
             };
 
             return axios
@@ -85,5 +86,9 @@ export const useFaceStore = defineStore("face", {
                 this.faceList.push(e.id);
             });
         },
+        clearStore() {
+            this.faces = {};
+            this.faceList = [];
+        }
     }
 })

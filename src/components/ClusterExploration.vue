@@ -1,4 +1,5 @@
 <template>
+    <div>
     <v-dialog v-model="show" width="90%" persistent>
         <template v-slot:activator="{ on }">
             <v-btn @click="showCanvas" v-on="on" text block large>
@@ -12,27 +13,45 @@
             <img class="clusterImg" v-for="imageUrl in  displayedImages " :key="imageUrl" :src="imageUrl"
                 :style="borderStyle(imageUrl)" @click="mark(imageUrl)" />
             <v-card-actions variant="tonal">
-                <v-btn @click="applyDeletion"> {{ $t("button.apply") }} </v-btn>
+                <v-btn :disabled="!imagesSelectedForDeletion()" @click="showConfirmation=true"> {{ $t("button.apply") }} </v-btn>
                 <v-btn @click="abortDeletion"> {{ $t("button.cancel") }} </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <v-dialog
+        v-model="showConfirmation"
+        width="auto"
+      >
+        <v-card>
+          <v-card-title>
+            Confirm
+          </v-card-title>
+          <v-card-text>
+            Delete {{ this.markedForDeletion.length }} images from Cluster {{ this.cluster.id }}?
+          <v-card-text style="color: red" v-if="allImagesMarked()"> <b>You selected all images. This removes the cluster.</b></v-card-text>
+        </v-card-text>
+          <v-card-actions>
+            <v-btn @click="applyDeletion"> Confirm </v-btn>
+            <v-btn @click="showConfirmation = false"> Back </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
 </template>
   
 <script>
 import { mapStores } from "pinia";
 import { useFaceStore } from "@/store/face";
-import { del } from "@vue/composition-api";
-
 
 export default {
     props: ["cluster"],
     data() {
         return {
             show: false,
+            showConfirmation: false,
             displayedImages: [], // Array to store the displayed images
             markedForDeletion: [],
-            faceRefDict: [],
+            faceRefDict: {},
         };
     },
     methods: {
@@ -45,7 +64,6 @@ export default {
 
             const faceStore = useFaceStore();
             const deletedFaces = faceStore.getDeletedFaces(this.cluster.systemId);
-            console.log(deletedFaces);
 
             // Add each image URL from the cluster to the displayedImages array
             clusterCopy.forEach((imageUrl, index) => {
@@ -60,6 +78,13 @@ export default {
         },
         marked(imageUrl) {
             return this.markedForDeletion.includes(imageUrl);
+        },
+        imagesSelectedForDeletion(){
+            return this.markedForDeletion.length > 0;
+        },
+        allImagesMarked(){
+            const faceStore = useFaceStore();
+            return this.markedForDeletion.length >= this.cluster.image_paths.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
         },
         mark(imageUrl) {
             if (this.marked(imageUrl)) {
@@ -77,9 +102,14 @@ export default {
         async applyDeletion() {
             const faceStore = useFaceStore();
             let face_refs_to_delete = this.markedForDeletion.map((el) => this.faceRefDict[el]);
-            await faceStore.setDeleted(face_refs_to_delete);
+            await faceStore.setDeleted(face_refs_to_delete, this.cluster.systemId);
             this.markedForDeletion = [];
+            this.showConfirmation = false;
             this.show = false;
+            this.$emit("update");
+            if (this.allImagesMarked()) {
+                this.$emit("deleteCluster");
+            }
         },
         abortDeletion() {
             this.markedForDeletion = [];

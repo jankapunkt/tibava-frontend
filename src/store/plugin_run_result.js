@@ -30,7 +30,6 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
     },
     actions: {
         async fetchForVideo({ addResults = false, videoId = null, pluginRunId = null }) {
-            console.log("pluginRunResult::fetchForVideo")
             if (this.isLoading) {
                 return
             }

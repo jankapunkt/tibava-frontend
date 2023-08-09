@@ -57,7 +57,7 @@
           </template>
           <v-list>
             <v-list-item>
-              <ClusterExploration :cluster="this.cluster"></ClusterExploration>
+              <ClusterExploration :cluster="this.cluster" @deleteCluster="deleteCluster" @update="fill_thumbnails"></ClusterExploration>
             </v-list-item>
             <v-list-item>
               <v-btn :disabled="timelineExists" text @click="createTimeline">
@@ -87,8 +87,10 @@ import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
 import { useTimelineStore } from "@/store/timeline";
 import { usePluginRunStore } from "@/store/plugin_run";
 import { usePeopleStore } from "@/store/people";
+import { useFaceStore } from "../store/face";
 import { cluster } from "d3";
 import ClusterExploration from "@/components/ClusterExploration.vue";
+import { del } from "@vue/composition-api";
 
 export default {
   mixins: [TimeMixin],
@@ -106,28 +108,34 @@ export default {
     }
   },
   mounted() {
-    if (this.cluster.image_paths) {
-      this.cluster_thumbnails = [this.cluster.image_paths.at(0)];
-      this.thumbnail_ids = [0];
-
-      if (this.cluster.image_paths.length > 2) {
-        this.cluster_thumbnails.push(this.cluster.image_paths.at(this.cluster.image_paths.length / 4));
-        this.thumbnail_ids.push(this.cluster.image_paths.length / 4)
-      }
-
-      if (this.cluster.image_paths.length > 3) {
-        this.cluster_thumbnails.push(this.cluster.image_paths.at(3 * this.cluster.image_paths.length / 4));
-        this.thumbnail_ids.push(3 * this.cluster.image_paths.length / 4)
-      }
-
-      if (this.cluster.image_paths.length > 1) {
-        this.cluster_thumbnails.push(this.cluster.image_paths.at(-1));
-        this.thumbnail_ids.push(this.cluster.image_paths.length - 1)
-      }
-    }
-
+    this.fill_thumbnails();
   },
   methods: {
+    fill_thumbnails() {
+      const faceStore = useFaceStore();
+      const peopleStore = usePeopleStore();
+      const deletedFaces = faceStore.getDeletedFaces(this.cluster.systemId);
+      const remainingFaces = peopleStore.getFilteredFaceRefs(deletedFaces, this.cluster.systemId);
+      if (remainingFaces) {
+        this.cluster_thumbnails = [remainingFaces.at(0)];
+        this.thumbnail_ids = [0];
+
+        if (remainingFaces.length > 2) {
+          this.cluster_thumbnails.push(remainingFaces.at(remainingFaces.length / 4));
+          this.thumbnail_ids.push(remainingFaces.length / 4)
+        }
+
+        if (remainingFaces.length > 3) {
+          this.cluster_thumbnails.push(remainingFaces.at(3 * remainingFaces.length / 4));
+          this.thumbnail_ids.push(3 * remainingFaces.length / 4)
+        }
+
+        if (remainingFaces.length > 1) {
+          this.cluster_thumbnails.push(remainingFaces.at(-1));
+          this.thumbnail_ids.push(remainingFaces.length - 1)
+        }
+      }
+    },
     async submit() {
       if (this.renaming) {
         return;

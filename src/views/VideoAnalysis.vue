@@ -290,10 +290,6 @@ export default {
         videoId: this.$route.params.id,
         addResults: addResults,
       });
-
-      await this.clusterTimelineItemStore.fetchAll(usePlayerStore().videoId);
-      await this.faceStore.fetchAll(usePlayerStore().videoId);
-
     },
     async fetchPlugin() {
 

@@ -9,43 +9,15 @@ export const usePeopleStore = defineStore("people", {
     return {
       current_clustering: null,
       isLoading: false,
+      faceRefDict: {},
     };
   },
   getters: {
     clusters (state) {
-      const pluginRunStore = usePluginRunStore();
-      const pluginRunResultStore = usePluginRunResultStore();
-      const playerStore = usePlayerStore();
+      console.log("Loading face_clusterings");
+      this.getCurrentClustering();
 
-      // selection of timeline to be used for the thumbnails
-      let face_clustering = pluginRunStore
-        .forVideo(playerStore.videoId)
-        .filter((e) => {
-          return e.type == "face_clustering" && e.status == "DONE";
-        })
-        .map((e) => {
-          e.results = pluginRunResultStore.forPluginRun(e.id);
-          return e;
-        })
-        .sort((a, b) => {
-          return new Date(b.date) - new Date(a.date);
-        })
-      ;
-
-      if (!face_clustering.length) {
-        return [];
-      }
-
-      this.current_clustering = face_clustering.at(0); // use latest face_clustering
-
-      // console.log("faceclustering");
-      // console.log(this.current_clustering);
-      
       let results = [];
-      
-      if (this.current_clustering.results.length === 0){
-        return [];
-      }
 
       results = this.current_clustering.results[0].data.facecluster
       .map((cluster, index) => {
@@ -74,10 +46,55 @@ export const usePeopleStore = defineStore("people", {
         id: index + 1,
       }))
 
-      // console.log("results");
-      // console.log(results);
+      this.faceRefDict = {};
+      results.forEach((cluster) => {
+        cluster.face_refs.forEach((face_ref, index) => {
+          this.faceRefDict[face_ref] = cluster.image_paths[index];
+        });
+      });
 
       return results;
     }
   }, 
+  actions: {
+    getFilteredFaceRefs (deletedFaces, cluster_id) {
+          this.getCurrentClustering();
+
+          let current_cluster_face_refs = this.current_clustering.results[0].data.facecluster
+          .filter((cluster) => cluster.id == cluster_id)[0].face_refs;
+
+          if (deletedFaces.length > 0){
+            current_cluster_face_refs = current_cluster_face_refs
+            .filter((ref) => !deletedFaces.includes(ref));
+          }
+
+          return current_cluster_face_refs.map((ref) => this.faceRefDict[ref]);
+    },
+    getCurrentClustering() {
+      const pluginRunStore = usePluginRunStore();
+      const pluginRunResultStore = usePluginRunResultStore();
+      const playerStore = usePlayerStore();
+
+      // selection of timeline to be used for the thumbnails
+      let face_clustering = pluginRunStore
+        .forVideo(playerStore.videoId)
+        .filter((e) => {
+          return e.type == "face_clustering" && e.status == "DONE";
+        })
+        .map((e) => {
+          e.results = pluginRunResultStore.forPluginRun(e.id);
+          return e;
+        })
+        .sort((a, b) => {
+          return new Date(b.date) - new Date(a.date);
+        })
+      ;
+
+      if (!face_clustering.length) {
+        return [];
+      }
+
+      this.current_clustering = face_clustering.at(0); // use latest face_clustering
+    }
+  }
 },);

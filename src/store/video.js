@@ -15,6 +15,8 @@ import { useShotStore} from "./shot"
 
 import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
+import { useClusterTimelineItemStore } from "./cluster_timeline_item";
+import { useFaceStore } from "./face";
 
 // useStore could be anything like useUser, useCart
 // the first argument is a unique id of the store across your application
@@ -44,6 +46,8 @@ export const useVideoStore = defineStore("video", {
             includeAnnotation = true,
             includeAnalyser = true,
             includeShortcut = true,
+            includeClusterTimelineItem = true,
+            includeFaces = true,
             addResults = true,
         }) {
             this.isLoading = true;
@@ -60,6 +64,8 @@ export const useVideoStore = defineStore("video", {
             const shortcutStore = useShortcutStore();
             const annotationShortcutStore = useAnnotationShortcutStore();
             const shotStore = useShotStore();
+            const clusterTimelineItemStore = useClusterTimelineItemStore();
+            const faceStore = useFaceStore();
 
             promises.push(playerStore.fetchVideo({ videoId }));
             if (includeAnnotation) {
@@ -99,6 +105,14 @@ export const useVideoStore = defineStore("video", {
                 annotationShortcutStore.clearStore()
                 promises.push(shortcutStore.fetchForVideo({ videoId }));
                 promises.push(annotationShortcutStore.fetchForVideo({ videoId }));
+            }
+            if (includeClusterTimelineItem){
+                clusterTimelineItemStore.clearStore();
+                promises.push(clusterTimelineItemStore.fetchAll(videoId));
+            }
+            if (includeFaces){
+                faceStore.clearStore();
+                promises.push(faceStore.fetchAll(videoId));
             }
             return Promise.all(promises).finally(() => {
                 console.log("Loading done!");
