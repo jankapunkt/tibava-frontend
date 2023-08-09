@@ -4,7 +4,7 @@ import { usePlayerStore } from "./player";
 import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
 
-export const usePeopleStore = defineStore("people", {
+export const useFaceclusterStore = defineStore("facecluster", {
   state: () => {
     return {
       current_clustering: null,

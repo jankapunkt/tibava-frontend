@@ -23,7 +23,7 @@
                     v-model="name"></v-text-field>
                 </v-card-text>
                 <v-card-actions class="pt-0">
-                  <v-btn class="mr-4" @click="submit" :disabled="renaming || !name">
+                  <v-btn class="mr-4" @click="renameCluster" :disabled="renaming || !name">
                     {{ $t("modal.timeline.rename.update") }}
                   </v-btn>
                   <v-btn @click="show = false">{{
@@ -86,11 +86,10 @@ import { usePlayerStore } from "@/store/player";
 import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
 import { useTimelineStore } from "@/store/timeline";
 import { usePluginRunStore } from "@/store/plugin_run";
-import { usePeopleStore } from "@/store/people";
+import { useFaceclusterStore } from "@/store/facecluster";
 import { useFaceStore } from "../store/face";
 import { cluster } from "d3";
 import ClusterExploration from "@/components/ClusterExploration.vue";
-import { del } from "@vue/composition-api";
 
 export default {
   mixins: [TimeMixin],
@@ -113,9 +112,9 @@ export default {
   methods: {
     fill_thumbnails() {
       const faceStore = useFaceStore();
-      const peopleStore = usePeopleStore();
+      const faceclusterStore = useFaceclusterStore();
       const deletedFaces = faceStore.getDeletedFaces(this.cluster.systemId);
-      const remainingFaces = peopleStore.getFilteredFaceRefs(deletedFaces, this.cluster.systemId);
+      const remainingFaces = faceclusterStore.getFilteredFaceRefs(deletedFaces, this.cluster.systemId);
       if (remainingFaces) {
         this.cluster_thumbnails = [remainingFaces.at(0)];
         this.thumbnail_ids = [0];
@@ -136,7 +135,7 @@ export default {
         }
       }
     },
-    async submit() {
+    async renameCluster() {
       if (this.renaming) {
         return;
       }
@@ -263,7 +262,7 @@ export default {
       let timelines = this.timelineStore.all;
       return timelines;
     },
-    ...mapStores(usePlayerStore, usePluginRunStore, useClusterTimelineItemStore, useTimelineStore, usePeopleStore),
+    ...mapStores(usePlayerStore, usePluginRunStore, useClusterTimelineItemStore, useTimelineStore, useFaceclusterStore),
   },
   watch: {
     timelines(values) {
