@@ -22,7 +22,9 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card v-if="isLoading">Loading data ... </v-card>
+          <v-card v-if="isLoading" elevation="0">Loading data ... 
+                <v-icon small>{{ "mdi-timer-sand" }}</v-icon>
+              </v-card>
           <v-card v-else elevation="2" ref="resultCard" :height="resultCardHeight">
             <div class="sticky-tabs-bar">
               <v-tabs v-model="tab" centered>
@@ -32,9 +34,6 @@
                 <v-tab>Annotations</v-tab>
                 <v-tab>Transcript</v-tab>
                 <v-tab>Word Cloud</v-tab>
-                <!-- <v-tab>Current Entities</v-tab> -->
-                <!-- <v-tab disabled>Persons</v-tab>
-                <v-tab disabled>Scenes</v-tab> -->
               </v-tabs>
             </div>
 

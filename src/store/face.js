@@ -23,6 +23,18 @@ export const useFaceStore = defineStore("face", {
                     return f.face_ref;
                 });
             }
+        },
+        getRemainingFaceRefs(state) {
+            return (cluster_id) => {
+                // Create a copy of the cluster array to avoid directly modifying the prop
+                return state.faceList
+                .map((id) => state.faces[id])
+                .filter((f) => f.cluster_id == cluster_id)
+                .filter((f) => deleted !== true)
+                .map((f) => {
+                    return f.face_ref;
+                });
+            }
         }
     },
     actions: {

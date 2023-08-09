@@ -63,6 +63,9 @@ import { usePluginRunStore } from "@/store/plugin_run.js";
 
 export default {
   mixins: [TimeMixin],
+  mounted() {
+    this.fetchData();
+  },
   methods: {
     deleteVideo(video_id) {
       console.log(video_id);

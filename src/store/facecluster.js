@@ -29,6 +29,7 @@ export const useFaceclusterStore = defineStore("facecluster", {
           face_refs: cluster.face_refs,
           image_paths: Array.from(cluster.face_refs.map((face_ref) => {
             let img_dict = this.current_clustering.results[0].data.images.find(image => image.ref_id == face_ref);
+            console.log(img_dict);
             return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
           })),
           timestamps: Array.from(cluster.face_refs.map((face_ref) => {
