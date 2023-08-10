@@ -34,7 +34,7 @@
             </v-dialog>
 
           </div>
-          <v-list-item-subtitle>Faces: {{ cluster.image_paths.length }}</v-list-item-subtitle>
+          <v-list-item-subtitle>Faces: {{ cluster.facecluster.face_refs.length }}</v-list-item-subtitle>
           <v-list-item-subtitle>First: {{ cluster.timestamps[0] }} sec</v-list-item-subtitle>
           <v-list-item-subtitle>Last: {{ cluster.timestamps[cluster.timestamps.length - 1] }} sec</v-list-item-subtitle>
         </v-list-item-content>
@@ -57,7 +57,8 @@
           </template>
           <v-list>
             <v-list-item>
-              <ClusterExploration :cluster="this.cluster" @deleteCluster="deleteCluster" @update="fill_thumbnails"></ClusterExploration>
+              <ClusterExploration :cluster="this.cluster" @deleteCluster="deleteCluster" @update="fill_thumbnails">
+              </ClusterExploration>
             </v-list-item>
             <v-list-item>
               <v-btn :disabled="timelineExists" text @click="createTimeline">
@@ -112,9 +113,7 @@ export default {
   methods: {
     fill_thumbnails() {
       const faceStore = useFaceStore();
-      const faceclusterStore = useFaceclusterStore();
-      const deletedFaces = faceStore.getDeletedFaces(this.cluster.systemId);
-      const remainingFaces = faceclusterStore.getFilteredFaceRefs(deletedFaces, this.cluster.systemId);
+      const remainingFaces = faceStore.getImagePaths(this.cluster);
       if (remainingFaces) {
         this.cluster_thumbnails = [remainingFaces.at(0)];
         this.thumbnail_ids = [0];

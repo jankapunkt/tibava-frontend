@@ -1,19 +1,12 @@
 <template>
-  <v-virtual-scroll
-    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']"
-    ref="parentContainer"
-    :items="clusterList"
-    item-height="140"
-    :bench="clustersLength"
-    height="100%"
-  >
+  <v-card v-if="clustersLength == 0" elevation="0">
+    No face clustering has been conducted yet. Create it with the <em>Face Clustering</em> pipeline.
+  </v-card>
+  <v-virtual-scroll v-else :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" ref="parentContainer" :items="clusterList"
+    item-height="140" :bench="clustersLength" height="100%">
     <template v-slot:default="{ item }">
-      <PersonCard
-        :cluster="item"
-        :key="item.systemId"
-        :ref="`childContainer-${item.systemId}`"
-        @childDeleted="removeChild"
-      />
+      <PersonCard :cluster="item" :key="item.systemId" :ref="`childContainer-${item.systemId}`"
+        @childDeleted="removeChild" />
     </template>
   </v-virtual-scroll>
 </template>
@@ -40,17 +33,30 @@ export default {
     },
     fetchClusters() {
       this.clusterList = this.faceclusterStore.clusters;
+
+      if (this.clusterList.length == 0) {
+        return
+      }
+
       this.clusterList = this.clusterList.filter((item) => this.clusterTimelineItemStore.getID(item.systemId) !== -1);
     }
   },
   computed: {
+    clusters() {
+      return this.faceclusterStore.clusters;
+    },
     clustersLength() {
-      return this.clusterList.length;
+      return this.faceclusterStore.clusters.length;
     },
     ...mapStores(useFaceclusterStore, useClusterTimelineItemStore, usePlayerStore),
   },
   components: {
     PersonCard,
   },
+  watch: {
+    clusters() {
+      fetchClusters();
+    }
+  }
 };
 </script>

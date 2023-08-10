@@ -15,45 +15,29 @@ export const useFaceclusterStore = defineStore("facecluster", {
   getters: {
     clusters (state) {
       console.log("Loading face_clusterings");
-      this.getCurrentClustering();
+      
+      if(!this.getCurrentClustering()){
+        return []
+      }
 
       let results = [];
 
       results = this.current_clustering.results[0].data.facecluster
-      .map((cluster, index) => {
+      .sort( 
+        // bigger clusters should come first
+        (a, b) => b.face_refs.length - a.face_refs.length
+      ).map((cluster, index) => {
         return {
-          embedding_index: index,
+          id: index + 1,
           systemId: cluster.id,
           facecluster: cluster,
-          embedding_ref: this.current_clustering.results[1].data_id,
-          face_refs: cluster.face_refs,
-          image_paths: Array.from(cluster.face_refs.map((face_ref) => {
-            let img_dict = this.current_clustering.results[0].data.images.find(image => image.ref_id == face_ref);
-            console.log(img_dict);
-            return config.THUMBNAIL_LOCATION + `/${img_dict.id.substr(0, 2)}/${img_dict.id.substr(2, 2)}/${img_dict.id}.${img_dict.ext}`
-          })),
           timestamps: Array.from(cluster.face_refs.map((face_ref) => {
             let timestamp =  this.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
             return timestamp.time;
           }))
         }
       })
-      .sort( 
-        // bigger clusters should come first
-        (a, b) => b.image_paths.length - a.image_paths.length
-      ).map((cluster, index) => ({
-        // add an index that resembles the clusters sorted by length
-        ...cluster,
-        id: index + 1,
-      }))
-
-      this.faceRefDict = {};
-      results.forEach((cluster) => {
-        cluster.face_refs.forEach((face_ref, index) => {
-          this.faceRefDict[face_ref] = cluster.image_paths[index];
-        });
-      });
-
+      // console.log(results);
       return results;
     }
   }, 
@@ -92,10 +76,12 @@ export const useFaceclusterStore = defineStore("facecluster", {
       ;
 
       if (!face_clustering.length) {
-        return [];
+        return false;
       }
 
       this.current_clustering = face_clustering.at(0); // use latest face_clustering
+
+      return true;
     }
   }
 },);

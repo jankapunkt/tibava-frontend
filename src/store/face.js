@@ -24,16 +24,27 @@ export const useFaceStore = defineStore("face", {
                 });
             }
         },
-        getRemainingFaceRefs(state) {
-            return (cluster_id) => {
-                // Create a copy of the cluster array to avoid directly modifying the prop
+        getImagePaths(state) {
+            return (cluster) => {
+                let result = [];
+                
+                cluster.facecluster.face_refs.forEach((face_ref) => {
+                    if(!this.faces[face_ref].deleted){
+                        result.push(this.faces[face_ref].image_path);
+                    }
+                });
+
+                return result;
+            }
+        },
+        getFaceRef(state) {
+            return (image_path) => {
                 return state.faceList
                 .map((id) => state.faces[id])
-                .filter((f) => f.cluster_id == cluster_id)
-                .filter((f) => deleted !== true)
+                .filter((f) => f.image_path == image_path)
                 .map((f) => {
                     return f.face_ref;
-                });
+                })[0];
             }
         }
     },
@@ -76,9 +87,11 @@ export const useFaceStore = defineStore("face", {
                         const filteredFaces = this.faceList
                         .map((id) => this.faces[id])
                         .filter((f) => face_ref_list.includes(f.face_ref));
+                        console.log("filteredFaces");
+                        console.log(filteredFaces);
 
                         filteredFaces.forEach((filteredFace) => {
-                            this.faces[filteredFace.id].deleted = true;
+                            this.faces[filteredFace.face_ref].deleted = true;
                         });
                     }
                     else{
@@ -94,8 +107,8 @@ export const useFaceStore = defineStore("face", {
             this.faces = {};
             this.faceList = [];
             items.forEach((e, i) => {
-                this.faces[e.id] = e;
-                this.faceList.push(e.id);
+                this.faces[e.face_ref] = e;
+                this.faceList.push(e.face_ref);
             });
         },
         clearStore() {
