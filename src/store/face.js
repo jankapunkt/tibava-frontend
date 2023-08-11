@@ -46,6 +46,19 @@ export const useFaceStore = defineStore("face", {
                     return f.face_ref;
                 })[0];
             }
+        },
+        getIndexList(state) {
+            return (cluster) => {
+                let result = [];
+                
+                cluster.facecluster.face_refs.forEach((face_ref, index) => {
+                    if(!this.faces[face_ref].deleted){
+                        result.push(index);
+                    }
+                });
+
+                return result;
+            }
         }
     },
     actions: {
@@ -84,14 +97,8 @@ export const useFaceStore = defineStore("face", {
                 .post(`${config.API_LOCATION}/face/setDeleted`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        const filteredFaces = this.faceList
-                        .map((id) => this.faces[id])
-                        .filter((f) => face_ref_list.includes(f.face_ref));
-                        console.log("filteredFaces");
-                        console.log(filteredFaces);
-
-                        filteredFaces.forEach((filteredFace) => {
-                            this.faces[filteredFace.face_ref].deleted = true;
+                        face_ref_list.forEach((filteredFace) => {
+                            this.faces[filteredFace].deleted = true;
                         });
                     }
                     else{

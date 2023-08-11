@@ -8,7 +8,7 @@
                 </v-btn>
             </template>
             <v-card v-show="show" class="canvasContainer" ref="canvasContainer">
-                <v-card-title>Person {{ this.cluster.id }}</v-card-title>
+                <v-card-title>Cluster {{ this.cluster.id }}</v-card-title>
                 <v-card-subtitle>Click on images to mark them for deletion.</v-card-subtitle>
                 <img class="clusterImg" v-for="imageUrl in displayedImages " :key="imageUrl" :src="imageUrl"
                     :style="borderStyle(imageUrl)" @click="mark(imageUrl)" />

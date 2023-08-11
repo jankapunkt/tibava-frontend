@@ -55,7 +55,7 @@ export default {
   },
   watch: {
     clusters() {
-      fetchClusters();
+      this.fetchClusters();
     }
   }
 };

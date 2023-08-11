@@ -20,6 +20,8 @@ export const useFaceclusterStore = defineStore("facecluster", {
         return []
       }
 
+      // console.log(this.current_clustering);
+
       let results = [];
 
       results = this.current_clustering.results[0].data.facecluster
@@ -29,6 +31,7 @@ export const useFaceclusterStore = defineStore("facecluster", {
       ).map((cluster, index) => {
         return {
           id: index + 1,
+          clustering_data_id: this.current_clustering.results[0].data_id,
           systemId: cluster.id,
           facecluster: cluster,
           timestamps: Array.from(cluster.face_refs.map((face_ref) => {

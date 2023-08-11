@@ -101,7 +101,7 @@ export default {
       loading: false,
       show: false,
       renaming: false, // during renaming, we do not want to create new ClusterTimelineItems in the watcher
-      nameProxy: "Person " + String(this.cluster.id),
+      nameProxy: "Cluster " + String(this.cluster.id),
       cluster_thumbnails: [],
       thumbnail_ids: [],
       isSubmitting: false,
@@ -157,7 +157,7 @@ export default {
         });
 
       }
-      else { //for some reason, this cluster has not CTI, so we create it
+      else { //for some reason, this cluster has no CTI, so we create it
         await this.clusterTimelineItemStore.create({ cluster_id: this.cluster.systemId, name: this.nameProxy, video_id: usePlayerStore().videoId });
       }
 
@@ -183,39 +183,31 @@ export default {
       this.loading = true;
       let parameters = [
         {
-          field: "text_field",
           name: "timeline",
           value: this.name,
-          text: this.$t("modal.plugin.timeline_name"),
-        },
-        {
-          field: "image_input",
-          file: null,
-          name: "query_images",
-          text: this.$t("modal.plugin.face_identification.query_images"),
-          hint: this.$t(
-            "modal.plugin.face_identification.query_images_hint"
-          ),
         },
       ];
+
+      // create a list of indices that resemble the images of the cluster that are not deleted yet
+      let index_list = useFaceStore().getIndexList(this.cluster);
+
       parameters = parameters.concat(
         [
           {
-            field: "slider",
-            min: 1,
-            max: 10,
-            value: 2,
-            step: 1,
             name: "fps",
-            text: this.$t("modal.plugin.fps"),
+            value: 2,
           },
           {
             name: "embedding_ref",
-            value: this.cluster.embedding_ref,
+            value: this.cluster.clustering_data_id,
+          },
+          {
+            name: "cluster_id",
+            value: this.cluster.systemId,
           },
           {
             name: "index",
-            value: this.cluster.embedding_index,
+            value: String(index_list),
           }
         ]
       );
@@ -233,6 +225,7 @@ export default {
         .then(() => {
           this.loading = false;
         });
+
 
     },
     goToFace(index) {
