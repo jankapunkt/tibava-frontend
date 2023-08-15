@@ -17,6 +17,7 @@ import PersonCard from "@/components/PersonCard.vue";
 import { useFaceclusterStore } from "@/store/facecluster";
 import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
 import { usePlayerStore } from "@/store/player";
+import { usePluginRunResultStore } from "@/store/plugin_run_result";
 
 export default {
   data() {
@@ -32,21 +33,22 @@ export default {
       this.clusterList = this.clusterList.filter((item) => item.systemId !== childID);
     },
     fetchClusters() {
-      this.clusterList = this.faceclusterStore.clusters;
+      let tempList = this.faceclusterStore.clusters;
 
-      if (this.clusterList.length == 0) {
+      if (tempList.length == 0) {
         return
       }
 
-      this.clusterList = this.clusterList.filter((item) => this.clusterTimelineItemStore.getID(item.systemId) !== -1);
+      this.clusterList = tempList.filter((item) => this.clusterTimelineItemStore.getID(item.systemId) !== -1);
     }
   },
   computed: {
-    clusters() {
-      return this.faceclusterStore.clusters;
+    pluginRunResults() {
+      const pluginRunResultStore = usePluginRunResultStore();
+      return pluginRunResultStore.all.length;
     },
     clustersLength() {
-      return this.faceclusterStore.clusters.length;
+      return this.clusterList.length;
     },
     ...mapStores(useFaceclusterStore, useClusterTimelineItemStore, usePlayerStore),
   },
@@ -54,8 +56,10 @@ export default {
     PersonCard,
   },
   watch: {
-    clusters() {
-      this.fetchClusters();
+    pluginRunResults(num) {
+      if (num > 0) {
+        this.fetchClusters();
+      }
     }
   }
 };

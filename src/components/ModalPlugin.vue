@@ -20,12 +20,9 @@
               <v-card-text>
                 <Parameters :parameters="plugin.parameters"> </Parameters>
 
-                <v-expansion-panels
-                  v-if="
-                    plugin.optional_parameters &&
-                    plugin.optional_parameters.length > 0
-                  "
-                >
+                <v-expansion-panels v-if="plugin.optional_parameters &&
+                  plugin.optional_parameters.length > 0
+                  ">
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
@@ -40,16 +37,13 @@
               </v-card-text>
 
               <v-card-actions class="pt-0">
-                <v-btn
-                  @click="
-                    runPlugin(
-                      plugin.plugin,
-                      plugin.parameters,
-                      plugin.optional_parameters
-                    )
-                  "
-                  >{{ $t("modal.plugin.run") }}</v-btn
-                >
+                <v-btn @click="
+                  runPlugin(
+                    plugin.plugin,
+                    plugin.parameters,
+                    plugin.optional_parameters
+                  )
+                  ">{{ $t("modal.plugin.run") }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-tab-item>
@@ -104,7 +98,7 @@ export default {
               hint_left: this.$t("modal.plugin.face_clustering.hint_right"),
             }
           ],
-          optional_parameters: [ 
+          optional_parameters: [
             {
               field: "slider",
               min: 1,
@@ -750,7 +744,6 @@ export default {
           return { name: e.name, value: e.value };
         }
       });
-      console.log(parameters);
       this.pluginRunStore
         .submit({ plugin: plugin, parameters: parameters })
         .then(() => {

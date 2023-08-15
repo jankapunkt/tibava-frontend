@@ -2,20 +2,9 @@
   <div>
     <v-menu v-model="menu" min-width="175" offset-y bottom left>
       <template v-slot:activator="{ attrs, on: menu }">
-        <v-btn
-          tile
-          text
-          v-bind="attrs"
-          v-on="menu"
-          class="ml-n2"
-          :title="$t('plugin.menu.title')"
-        >
+        <v-btn tile text v-bind="attrs" v-on="menu" class="ml-n2" :title="$t('plugin.menu.title')">
           <v-icon color="primary">mdi-timer-sand-empty</v-icon>
-          <v-badge
-            v-if="numRunningPlugins > 0"
-            color="accent"
-            :content="numRunningPlugins"
-          >
+          <v-badge v-if="numRunningPlugins > 0" color="accent" :content="numRunningPlugins">
             {{ $t("plugin.menu.title") }}
           </v-badge>
           <span v-else>
@@ -36,17 +25,11 @@
                     ({{ pluginStatus(pluginRun.status) }})
                   </span>
                 </div>
-                <v-progress-linear
-                  :value="
-                    pluginRun.status !== 'ERROR'
-                      ? 100 * pluginRun.progress
-                      : 100
-                  "
-                  :striped="pluginRun.status === 'ERROR'"
-                  :color="progressColor(pluginRun.status)"
-                  :indeterminate="indeterminate(pluginRun.status)"
-                  height="5"
-                >
+                <v-progress-linear :value="pluginRun.status !== 'ERROR'
+                    ? 100 * pluginRun.progress
+                    : 100
+                  " :striped="pluginRun.status === 'ERROR'" :color="progressColor(pluginRun.status)"
+                  :indeterminate="indeterminate(pluginRun.status)" height="5">
                 </v-progress-linear>
               </v-col>
             </v-list-item>
@@ -54,15 +37,8 @@
           </template>
         </v-list>
         <div class="v-btn--absolute v-btn--right v-btn--top">
-          <v-btn
-            :title="$t('plugin.menu.new')"
-            class="mr-n1 mt-n1"
-            @click="showModalPlugin = true"
-            color="red"
-            dark
-            fab
-            x-small
-          >
+          <v-btn :title="$t('plugin.menu.new')" class="mr-n1 mt-n1" @click="showModalPlugin = true" color="red" dark fab
+            x-small>
             <v-icon dark>mdi-plus</v-icon>
           </v-btn>
         </div>
@@ -233,7 +209,8 @@ export default {
 
 .text-overflow {
   overflow: hidden;
-  white-space: nowrap; /* Don't forget this one */
+  white-space: nowrap;
+  /* Don't forget this one */
   text-overflow: ellipsis;
 }
 

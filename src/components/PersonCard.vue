@@ -49,7 +49,7 @@
       </v-col>
 
       <v-col align="end" cols="1">
-        <v-menu bottom right>
+        <v-menu v-model="showDotMenu" bottom right>
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon small>
               <v-icon v-bind="attrs" v-on="on">mdi-dots-vertical</v-icon>
@@ -61,10 +61,17 @@
               </ClusterExploration>
             </v-list-item>
             <v-list-item>
-              <v-btn :disabled="timelineExists" text @click="createTimeline">
-                <v-icon left>{{ "mdi-barcode" }}</v-icon>
-                {{ $t("button.totimeline") }}
-              </v-btn>
+              <v-tooltip :disabled="!timelineExists" left>
+                <template v-slot:activator="{ on }">
+                  <div v-on="on" class="d-inline-block">
+                    <v-btn :disabled="timelineExists" text @click="createTimeline" v-on="on">
+                      <v-icon left>{{ "mdi-barcode" }}</v-icon>
+                      {{ $t("button.totimeline") }}
+                    </v-btn>
+                  </div>
+                </template>
+                A timeline for this Cluster already exists. Delete it before you create another one.
+              </v-tooltip>
             </v-list-item>
             <v-list-item>
               <v-btn text @click="deleteCluster">
@@ -105,6 +112,7 @@ export default {
       cluster_thumbnails: [],
       thumbnail_ids: [],
       isSubmitting: false,
+      showDotMenu: false,
     }
   },
   mounted() {
@@ -133,6 +141,11 @@ export default {
           this.thumbnail_ids.push(remainingFaces.length - 1)
         }
       }
+
+      if (this.showDotMenu) {
+        this.showDotMenu = false;
+      }
+
     },
     async renameCluster() {
       if (this.renaming) {
@@ -177,6 +190,7 @@ export default {
       this.$emit("childDeleted", this.cluster.systemId);
       this.isSubmitting = false;
       this.show = false;
+      this.showDotMenu = false;
 
     },
     async createTimeline() {

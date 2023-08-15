@@ -7,11 +7,13 @@
                     {{ $t("button.edit") }}
                 </v-btn>
             </template>
-            <v-card v-show="show" class="canvasContainer" ref="canvasContainer">
+            <v-card v-show="show" class="canvasContainer" ref="canvasContainer" style="height: 90vh;">
                 <v-card-title>Cluster {{ this.cluster.id }}</v-card-title>
                 <v-card-subtitle>Click on images to mark them for deletion.</v-card-subtitle>
-                <img class="clusterImg" v-for="imageUrl in displayedImages " :key="imageUrl" :src="imageUrl"
-                    :style="borderStyle(imageUrl)" @click="mark(imageUrl)" />
+                <v-card-text class="scrollable-content">
+                    <img class="clusterImg" v-for="imageUrl in displayedImages " :key="imageUrl" :src="imageUrl"
+                        :style="borderStyle(imageUrl)" @click="mark(imageUrl)" />
+                </v-card-text>
                 <v-card-actions variant="tonal">
                     <v-btn :disabled="!imagesSelectedForDeletion()" @click="showConfirmation = true"> {{ $t("button.apply")
                     }}
@@ -85,7 +87,7 @@ export default {
         },
         borderStyle(imageUrl) {
             if (this.marked(imageUrl)) {
-                return 'opacity: 0.5; transition: opacity 1s; border: 1px solid red'
+                return 'border: 5px solid red'
             }
             return ''
         },
@@ -105,6 +107,7 @@ export default {
         abortDeletion() {
             this.markedForDeletion = [];
             this.show = false;
+            this.$emit("update");
         }
     },
     ...mapStores(useFaceStore),
@@ -112,6 +115,12 @@ export default {
 </script>
 
 <style>
+.scrollable-content {
+    max-height: 83%;
+    overflow-y: auto;
+    margin-bottom: 5px;
+}
+
 .clusterImg {
     margin: 5px;
     height: 100px;

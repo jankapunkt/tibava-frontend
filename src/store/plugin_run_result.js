@@ -73,6 +73,17 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
             this.pluginRunResults = {}
             this.pluginRunResultList = []
         },
+        deleteForPluginRuns(id_list) {
+            id_list.forEach((id) => {
+                let results = this.forPluginRun(id);
+                results.forEach((result_id) => {
+                    let index = this.pluginRunResultList.findIndex((item) => item === result_id);
+                    this.pluginRunResultList.splice(index, 1);
+                    delete this.pluginRunResults[id];
+                })
+              }
+            )
+          },
         updateAll(pluginRunResults) {
             pluginRunResults.forEach((e, i) => {
                 if (e.id in this.pluginRunResults) {
