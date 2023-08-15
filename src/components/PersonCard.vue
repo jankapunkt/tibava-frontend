@@ -61,10 +61,10 @@
               </ClusterExploration>
             </v-list-item>
             <v-list-item>
-              <v-tooltip :disabled="!timelineExists" left>
+              <v-tooltip :disabled="!toTimelineDisabled" left>
                 <template v-slot:activator="{ on }">
                   <div v-on="on" class="d-inline-block">
-                    <v-btn :disabled="timelineExists" text @click="createTimeline" v-on="on">
+                    <v-btn :disabled="toTimelineDisabled" text @click="createTimeline" v-on="on">
                       <v-icon left>{{ "mdi-barcode" }}</v-icon>
                       {{ $t("button.totimeline") }}
                     </v-btn>
@@ -113,10 +113,12 @@ export default {
       thumbnail_ids: [],
       isSubmitting: false,
       showDotMenu: false,
+      toTimelineDisabled: false,
     }
   },
   mounted() {
     this.fill_thumbnails();
+    this.toTimelineDisabled = this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId);
   },
   methods: {
     fill_thumbnails() {
@@ -258,9 +260,6 @@ export default {
         this.nameProxy = val;
       },
     },
-    timelineExists() {
-      return this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId);
-    },
     syncTime() {
       return this.playerStore.syncTime;
     },
@@ -272,9 +271,11 @@ export default {
   },
   watch: {
     timelines(values) {
+      this.toTimelineDisabled = this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId);
       if (values.length == 0 || this.renaming) {
         return;
       }
+
       const newTimeline = values.slice(-1)[0];
 
       // make sure this is the right card
@@ -283,6 +284,7 @@ export default {
       }
 
       this.clusterTimelineItemStore.setTimeline(this.cluster.systemId, newTimeline.id);
+      this.toTimelineDisabled = true;
     }
   },
   components: {

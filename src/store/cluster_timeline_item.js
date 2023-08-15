@@ -215,6 +215,13 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                 this.clusterTimelineItemList.push(e.cluster_id);
             });
         },
+        deleteTimeline(timeline_id) {
+            for (const [cluster_id, cti] of Object.entries(this.clusterTimelineItems)) {
+                if (cti.timeline && cti.timeline === timeline_id){
+                    cti.timeline = false;
+                }
+            }
+        },
         clearStore(){
             this.clusterTimelineItems = {};
             this.clusterTimelineItemList = [];

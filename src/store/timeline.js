@@ -5,6 +5,7 @@ import { defineStore } from "pinia";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { usePlayerStore } from "@/store/player";
+import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
 
 export const useTimelineStore = defineStore("timeline", {
   state: () => {
@@ -353,6 +354,10 @@ export const useTimelineStore = defineStore("timeline", {
       // update all segments
       const timelineSegmentStore = useTimelineSegmentStore();
       timelineSegmentStore.deleteTimeline(timeline_id);
+
+      // update ctis
+      const clusterTimelineItemStore = useClusterTimelineItemStore();
+      clusterTimelineItemStore.deleteTimeline(timeline_id);
 
       return axios
         .post(`${config.API_LOCATION}/timeline/delete`, params)
