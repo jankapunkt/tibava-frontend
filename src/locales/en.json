@@ -101,6 +101,18 @@
             "title": "Analyse"
         },
         "plugin": {
+            "search": {
+                "prompt": "Search Plugin",
+                "select": "Select Plugin"
+            },
+            "groups": {
+                "audio": "Audio",
+                "aggregation": "Aggregation",
+                "color": "Color",
+                "face": "Face",
+                "identification": "Identification",
+                "shot": "Shot"
+            },
             "status": {
                 "unknown": "Unknown",
                 "error": "Error",

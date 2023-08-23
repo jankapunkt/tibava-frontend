@@ -6,12 +6,12 @@
       <v-card-text>
         <v-row>
           <v-col cols="3">
-            <v-sheet class="pa-4 primary lighten-2">
-              <v-text-field v-model="search" label="Search Plugin" dark flat solo-inverted hide-details clearable
+            <v-sheet class="pa-1" style="background-color: rgb(174, 19, 19) !important;">
+              <v-text-field v-model="search" label="Search Plugin" class="searchField" dark flat solo-inverted hide-details clearable
                 clear-icon="mdi-close-circle-outline">
               </v-text-field>
             </v-sheet>
-            <v-treeview :items="plugins_sorted" :search="search" :open.sync="open" open-all activatable open-on-click
+            <v-treeview :items="plugins_sorted" :search="search" :open.sync="open" activatable open-on-click
               :active.sync="active">
               <template v-slot:prepend="{ item }">
                 <v-icon v-text="item.icon"></v-icon>
@@ -21,7 +21,7 @@
           <v-col cols="9">
             <div v-if="!selected" class="text-h6 grey--text text--lighten-1 font-weight-light"
               style="align-self: center;">
-              Select a Plugin
+              {{ $t("modal.plugin.search.select") }}
             </div>
             <v-card v-else :key="selected.id" class="pt-6 mx-auto" flat>
               <v-card-text>
@@ -69,7 +69,7 @@ export default {
       plugins: [
         {
           id: 1,
-          name: "Audio",
+          name: this.$t("modal.plugin.groups.audio"),
           children: [
             {
               name: this.$t("modal.plugin.audio_rms.plugin_name"),
@@ -174,7 +174,7 @@ export default {
         },
         {
           id: 2,
-          name: "Face",
+          name: this.$t("modal.plugin.groups.face"),
           children: [
             {
               name: this.$t("modal.plugin.face_clustering.plugin_name"),
@@ -319,7 +319,7 @@ export default {
         },
         {
           id: 3,
-          name: "Color",
+          name: this.$t("modal.plugin.groups.color"),
           children: [
             {
               name: this.$t("modal.plugin.color_analysis.plugin_name"),
@@ -404,7 +404,7 @@ export default {
         },
         {
           id: 4,
-          name: "Identification",
+          name: this.$t("modal.plugin.groups.identification"),
           children: [
             {
               name: this.$t("modal.plugin.places_classification.plugin_name"),
@@ -547,7 +547,7 @@ export default {
         },
         {
           id: 5,
-          name: "Shot",
+          name: this.$t("modal.plugin.groups.shot"),
           children: [
             {
               name: this.$t("modal.plugin.shot_detection.plugin_name"),
@@ -687,7 +687,7 @@ export default {
         },
         {
           id: 6,
-          name: "Aggregation",
+          name: this.$t("modal.plugin.groups.aggregation"),
           children: [
             {
               name: this.$t("modal.plugin.aggregation.plugin_name"),
@@ -729,6 +729,7 @@ export default {
   },
   computed: {
     plugins_sorted() {
+      console.log(this.plugins);
       return this.plugins.sort((a, b) => a.name.localeCompare(b.name));
     },
     selected() {
@@ -777,6 +778,7 @@ export default {
 </script>
 
 <style>
+
 div.tabs-left [role="tab"] {
   justify-content: flex-start;
 }
