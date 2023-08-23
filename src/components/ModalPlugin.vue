@@ -19,8 +19,8 @@
             </v-treeview>
           </v-col>
           <v-col cols="9">
-            <div v-if="!selected" class="text-h6 grey--text text--lighten-1 font-weight-light"
-              style="align-self: center;">
+            <div v-if="!selected" class="text-h6 grey--text font-weight-light"
+              style="text-align: center;">
               {{ $t("modal.plugin.search.select") }}
             </div>
             <v-card v-else :key="selected.id" class="pt-6 mx-auto" flat>
@@ -41,6 +41,15 @@
                   </v-expansion-panel>
                 </v-expansion-panels>
               </v-card-text>
+              <v-card-actions class="pt-0">
+                <v-btn @click="
+                  runPlugin(
+                    selected.plugin,
+                    selected.parameters,
+                    selected.optional_parameters
+                  )
+                  ">{{ $t("modal.plugin.run") }}</v-btn>
+              </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
@@ -543,6 +552,35 @@ export default {
                 },
               ],
             },
+            {
+              name: this.$t("modal.plugin.place_clustering.plugin_name"),
+              icon: "mdi-ungroup",
+              plugin: "place_clustering",
+              id: 405,
+              parameters: [
+                {
+                  field: "slider",
+                  min: 0.0,
+                  max: 1.0,
+                  value: 0.5,
+                  step: 0.01,
+                  name: "cluster_threshold",
+                  hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
+                  hint_left: this.$t("modal.plugin.face_clustering.hint_right"),
+                }
+              ],
+              optional_parameters: [
+                {
+                  field: "slider",
+                  min: 1,
+                  max: 10,
+                  value: 2,
+                  step: 1,
+                  name: "fps",
+                  text: this.$t("modal.plugin.fps"),
+                }
+              ],
+            },
           ]
         },
         {
@@ -729,7 +767,6 @@ export default {
   },
   computed: {
     plugins_sorted() {
-      console.log(this.plugins);
       return this.plugins.sort((a, b) => a.name.localeCompare(b.name));
     },
     selected() {
