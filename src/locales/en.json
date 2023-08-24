@@ -216,6 +216,9 @@
                 "plugin_name": "Face Shot Size Analysis",
                 "timeline_name": "Face Shot Size"
             },
+            "place_clustering": {
+                "plugin_name": "Place Clustering"
+            },
             "places_classification": {
                 "plugin_name": "Place Recognition",
                 "timeline_name": "Places"

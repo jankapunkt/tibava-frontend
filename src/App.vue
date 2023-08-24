@@ -54,8 +54,9 @@ export default {
     VideoMenu,
     PluginMenu,
     AnnotationMenu,
-    VisualizationMenu
-  },
+    VisualizationMenu,
+    History
+},
 };
 </script>
 

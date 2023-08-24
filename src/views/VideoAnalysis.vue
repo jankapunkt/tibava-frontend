@@ -31,6 +31,7 @@
                 <v-tabs-slider />
                 <v-tab>Shots</v-tab>
                 <v-tab>Faces</v-tab>
+                <v-tab>Places</v-tab>
                 <v-tab>Annotations</v-tab>
                 <v-tab>Transcript</v-tab>
                 <v-tab>Word Cloud</v-tab>
@@ -45,6 +46,10 @@
               <v-tab-item style="height: 100%">
                 <PersonOverview />
               </v-tab-item>
+
+              <v-tab-item style="height: 100%">
+                <PlacesOverview />
+              </v-tab-item>"
 
               <v-tab-item>
                 <CurrentEntitiesOverView />
@@ -91,6 +96,7 @@ import ShotsOverview from "@/components/ShotsOverview.vue";
 import WordcloudCard from "@/components/WordcloudCard.vue";
 import VisualizationMenu from "@/components/VisualizationMenu.vue";
 import PersonOverview from "@/components/PersonOverview.vue";
+import PlacesOverview from "@/components/PlacesOverview.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -351,6 +357,7 @@ export default {
     ShotsOverview,
     WordcloudCard,
     PersonOverview,
+    PlacesOverview,
     VisualizationMenu
   },
 

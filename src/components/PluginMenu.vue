@@ -15,7 +15,7 @@
       <v-list-item-content class="pa-0 plugin-overview">
         <v-list dense class="mt-4">
           <template v-for="(pluginRun, i) in pluginRuns">
-            <v-list-item class="px-4" dense :key="pluginRun.id">
+            <v-list-item class="px-4" dense>
               <v-col class="pa-0 ma-0">
                 <div class="d-flex">
                   <span class="text-overflow plugin-name">
@@ -138,6 +138,9 @@ export default {
       }
       if (type === "places_classification") {
         return this.$t("modal.plugin.places_classification.plugin_name");
+      }
+      if (type === "place_clustering") {
+        return this.$t("modal.plugin.place_clustering.plugin_name");
       }
       if (type === "shotdetection") {
         return this.$t("modal.plugin.shot_detection.plugin_name");
