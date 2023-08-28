@@ -1,39 +1,34 @@
 <template>
     <v-card width="100%">
         <v-btn @click='toggleCollapse' style="color: rgb(175, 20, 20); background-color: #E6E6E6" class="m-1" elevation="2">
-        <v-icon v-if="!collapsed" color="primary">mdi-arrow-up-drop-circle-outline</v-icon>
-        <v-icon v-if="collapsed" color="primary">mdi-arrow-down-drop-circle-outline</v-icon>
-        &nbsp;{{ $t('visualization.title') }}&nbsp; 
-        <v-icon v-if="!collapsed" color="primary">mdi-arrow-up-drop-circle-outline</v-icon>
-        <v-icon v-if="collapsed" color="primary">mdi-arrow-down-drop-circle-outline</v-icon>
+            <v-icon v-if="!collapsed" color="primary">mdi-arrow-up-drop-circle-outline</v-icon>
+            <v-icon v-if="collapsed" color="primary">mdi-arrow-down-drop-circle-outline</v-icon>
+            &nbsp;{{ $t('visualization.title') }}&nbsp;
+            <v-icon v-if="!collapsed" color="primary">mdi-arrow-up-drop-circle-outline</v-icon>
+            <v-icon v-if="collapsed" color="primary">mdi-arrow-down-drop-circle-outline</v-icon>
         </v-btn>
-        <v-card v-if="!collapsed"
-              class="ma-2"
-              width="100%"
-              scrollable="False"
-              style="border: 1px solid black">
+        <v-card v-if="!collapsed" class="ma-2" width="100%" scrollable="False" style="border: 1px solid black">
             <v-card-text>
-              <v-tabs
-              horizontal class="tabs-left" v-model="chosenChart">
-                <v-tab>
-                  <v-icon left>
-                      mdi-chart-scatter-plot
-                  </v-icon>
-                  <span class="text-button">{{ $t("visualization.controls.plotTypes.scatterPlot") }}</span>
-                </v-tab>
-                <v-tab>
-                  <v-icon left>
-                      mdi-chart-line
-                  </v-icon>
-                  <span class="text-button">{{ $t("visualization.controls.plotTypes.linePlot") }}</span>
-                </v-tab>
-                 <v-tab-item>
-                  <div ref='scatterPlotContainer' id='scatterPlotContainer'></div>
-                </v-tab-item>
-                <v-tab-item>
-                  <div ref='linePlotContainer' id='linePlotContainer'></div>
-                </v-tab-item>
-               </v-tabs>
+                <v-tabs horizontal class="tabs-left" v-model="chosenChart">
+                    <v-tab>
+                        <v-icon left>
+                            mdi-chart-scatter-plot
+                        </v-icon>
+                        <span class="text-button">{{ $t("visualization.controls.plotTypes.scatterPlot") }}</span>
+                    </v-tab>
+                    <v-tab>
+                        <v-icon left>
+                            mdi-chart-line
+                        </v-icon>
+                        <span class="text-button">{{ $t("visualization.controls.plotTypes.linePlot") }}</span>
+                    </v-tab>
+                    <v-tab-item>
+                        <div ref='scatterPlotContainer' id='scatterPlotContainer'></div>
+                    </v-tab-item>
+                    <v-tab-item>
+                        <div ref='linePlotContainer' id='linePlotContainer'></div>
+                    </v-tab-item>
+                </v-tabs>
             </v-card-text>
         </v-card>
     </v-card>
@@ -47,14 +42,14 @@ import { usePlayerStore } from "@/store/player";
 import * as Plotly from 'plotly.js';
 
 const CHART_PLOT_MAPPING = {
-     0: "SCALAR",
-     1: "SCALAR",
- };
+    0: "SCALAR",
+    1: "SCALAR",
+};
 
- const CHART_ID_MAPPING = {
-     0: "scatterPlotContainer",
-     1: "linePlotContainer",
- }
+const CHART_ID_MAPPING = {
+    0: "scatterPlotContainer",
+    1: "linePlotContainer",
+}
 
 export default {
     data() {
@@ -99,7 +94,7 @@ export default {
             if (plotNumber === 0) {
                 return {
                     title: 'Scatter Plot',
-                    xaxis: { title: 'Time (Minutes)'},
+                    xaxis: { title: 'Time (Seconds)' },
                     yaxis: { title: 'Value' },
                     showlegend: true,
                     hovermode: 'x',
@@ -109,7 +104,7 @@ export default {
             if (plotNumber === 1) {
                 return {
                     title: 'Line Plot',
-                    xaxis: { title: 'Time (Minutes)'},
+                    xaxis: { title: 'Time (Seconds)' },
                     yaxis: { title: 'Value' },
                     showlegend: true,
                     hovermode: 'x',
@@ -150,7 +145,7 @@ export default {
             }
         },
         drawMarker(xValue) {
-            if(!this.plotData){
+            if (!this.plotData) {
                 return;
             }
 
@@ -192,7 +187,7 @@ export default {
         ...mapStores(usePluginRunResultStore, useTimelineStore, usePlayerStore)
     },
     watch: {
-        currentTime(time){
+        currentTime(time) {
             this.drawMarker(time);
         },
         async shouldLoadData(newValue) {
