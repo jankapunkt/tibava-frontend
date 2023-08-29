@@ -22,9 +22,9 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card v-if="isLoading" elevation="0">Loading data ... 
-                <v-icon small>{{ "mdi-timer-sand" }}</v-icon>
-              </v-card>
+          <v-card v-if="isLoading" elevation="0">Loading data ...
+            <v-icon small>{{ "mdi-timer-sand" }}</v-icon>
+          </v-card>
           <v-card v-else elevation="2" ref="resultCard" :height="resultCardHeight">
             <div class="sticky-tabs-bar">
               <v-tabs v-model="tab" centered>
@@ -49,7 +49,7 @@
 
               <v-tab-item style="height: 100%">
                 <PlacesOverview />
-              </v-tab-item>"
+              </v-tab-item>
 
               <v-tab-item>
                 <CurrentEntitiesOverView />
@@ -375,8 +375,8 @@ export default {
         clearInterval(this.fetchPluginTimer);
       }
     },
-    isLoading(value){
-      if (!value){
+    isLoading(value) {
+      if (!value) {
         this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
         this.$refs.main.$el.focus();
       }
