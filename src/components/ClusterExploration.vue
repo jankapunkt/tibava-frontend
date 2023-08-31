@@ -76,7 +76,7 @@ export default {
         },
         allImagesMarked() {
             const faceStore = useFaceStore();
-            return this.markedForDeletion.length >= this.cluster.facecluster.object_refs.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
+            return this.markedForDeletion.length >= this.cluster.cluster.object_refs.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
         },
         mark(imageUrl) {
             if (this.marked(imageUrl)) {

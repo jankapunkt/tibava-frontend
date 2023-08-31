@@ -1,11 +1,11 @@
 <template>
   <v-card v-if="clustersLength == 0" elevation="0">
-    No face clustering has been conducted yet. Create it with the <em>Place Recognition</em> pipeline.
+    No place clustering has been conducted yet. Create it with the <em>Place Recognition</em> pipeline.
   </v-card>
   <v-virtual-scroll v-else :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" ref="parentContainer" :items="clusterList"
     item-height="140" :bench="clustersLength" height="100%">
     <template v-slot:default="{ item }">
-      <PersonCard :cluster="item" :key="item.systemId" :ref="`childContainer-${item.systemId}`"
+      <PlaceCard :cluster="item" :key="item.systemId" :ref="`childContainer-${item.systemId}`"
         @childDeleted="removeChild" />
     </template>
   </v-virtual-scroll>
@@ -33,7 +33,7 @@ export default {
       this.clusterList = this.clusterList.filter((item) => item.systemId !== childID);
     },
     fetchClusters() {
-      let tempList = this.faceclusterStore.clusters;
+      let tempList = this.placeclusterStore.clusters;
 
       if (tempList.length == 0) {
         return

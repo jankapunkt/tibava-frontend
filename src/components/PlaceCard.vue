@@ -34,7 +34,7 @@
             </v-dialog>
 
           </div>
-          <v-list-item-subtitle>Faces: {{ cluster.facecluster.object_refs.length }}</v-list-item-subtitle>
+          <v-list-item-subtitle>Places: {{ cluster.cluster.object_refs.length }}</v-list-item-subtitle>
           <v-list-item-subtitle>First: {{ cluster.timestamps[0] }} sec</v-list-item-subtitle>
           <v-list-item-subtitle>Last: {{ cluster.timestamps[cluster.timestamps.length - 1] }} sec</v-list-item-subtitle>
         </v-list-item-content>
@@ -44,7 +44,7 @@
         <div class="image-container"
           style="width: 100%; gap: 10px; overflow-x: auto; justify-content: flex-start; display:flex; flex-direction: row;">
           <v-img v-for="(item, i) in this.cluster_thumbnails" :key="i" :src="item" contain
-            style="cursor: pointer; height: 100px; max-width: 100px;" @click="goToFace(i)"></v-img>
+            style="cursor: pointer; height: 100px; max-width: 100px;" @click="goToPlace(i)"></v-img>
         </div>
       </v-col>
 
@@ -122,25 +122,25 @@ export default {
   },
   methods: {
     fill_thumbnails() {
-      const faceStore = useFaceStore();
-      const remainingFaces = faceStore.getImagePaths(this.cluster);
-      if (remainingFaces) {
-        this.cluster_thumbnails = [remainingFaces.at(0)];
+      const placeStore = usePlaceStore();
+      const remainingPlaces = placeStore.getImagePaths(this.cluster);
+      if (remainingPlaces) {
+        this.cluster_thumbnails = [remainingPlaces.at(0)];
         this.thumbnail_ids = [0];
 
-        if (remainingFaces.length > 2) {
-          this.cluster_thumbnails.push(remainingFaces.at(remainingFaces.length / 4));
-          this.thumbnail_ids.push(remainingFaces.length / 4)
+        if (remainingPlaces.length > 2) {
+          this.cluster_thumbnails.push(remainingPlaces.at(remainingPlaces.length / 4));
+          this.thumbnail_ids.push(remainingPlaces.length / 4)
         }
 
-        if (remainingFaces.length > 3) {
-          this.cluster_thumbnails.push(remainingFaces.at(3 * remainingFaces.length / 4));
-          this.thumbnail_ids.push(3 * remainingFaces.length / 4)
+        if (remainingPlaces.length > 3) {
+          this.cluster_thumbnails.push(remainingPlaces.at(3 * remainingPlaces.length / 4));
+          this.thumbnail_ids.push(3 * remainingPlaces.length / 4)
         }
 
-        if (remainingFaces.length > 1) {
-          this.cluster_thumbnails.push(remainingFaces.at(-1));
-          this.thumbnail_ids.push(remainingFaces.length - 1)
+        if (remainingPlaces.length > 1) {
+          this.cluster_thumbnails.push(remainingPlaces.at(-1));
+          this.thumbnail_ids.push(remainingPlaces.length - 1)
         }
       }
 
@@ -205,7 +205,7 @@ export default {
       ];
 
       // create a list of indices that resemble the images of the cluster that are not deleted yet
-      let index_list = useFaceStore().getIndexList(this.cluster);
+      let index_list = usePlaceStore().getIndexList(this.cluster);
 
       parameters = parameters.concat(
         [
@@ -244,7 +244,7 @@ export default {
 
 
     },
-    goToFace(index) {
+    goToPlace(index) {
       const time = this.cluster.timestamps[Math.round(this.thumbnail_ids[index])];
       this.playerStore.setTargetTime(time);
     },

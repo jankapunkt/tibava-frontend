@@ -34,7 +34,7 @@
             </v-dialog>
 
           </div>
-          <v-list-item-subtitle>Faces: {{ cluster.facecluster.object_refs.length }}</v-list-item-subtitle>
+          <v-list-item-subtitle>Faces: {{ cluster.cluster.object_refs.length }}</v-list-item-subtitle>
           <v-list-item-subtitle>First: {{ cluster.timestamps[0] }} sec</v-list-item-subtitle>
           <v-list-item-subtitle>Last: {{ cluster.timestamps[cluster.timestamps.length - 1] }} sec</v-list-item-subtitle>
         </v-list-item-content>

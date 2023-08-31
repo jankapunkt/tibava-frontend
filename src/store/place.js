@@ -28,7 +28,7 @@ export const usePlaceStore = defineStore("place", {
             return (cluster) => {
                 let result = [];
                 
-                cluster.placecluster.place_refs.forEach((place_ref) => {
+                cluster.cluster.object_refs.forEach((place_ref) => {
                     if(!this.places[place_ref].deleted){
                         result.push(this.places[place_ref].image_path);
                     }
@@ -51,7 +51,7 @@ export const usePlaceStore = defineStore("place", {
             return (cluster) => {
                 let result = [];
                 
-                cluster.placecluster.place_refs.forEach((place_ref, index) => {
+                cluster.cluster.object_refs.forEach((place_ref, index) => {
                     if(!this.places[place_ref].deleted){
                         result.push(index);
                     }
@@ -117,6 +117,10 @@ export const usePlaceStore = defineStore("place", {
                 this.places[e.place_ref] = e;
                 this.placeList.push(e.place_ref);
             });
+            console.log("this.places")
+            console.log(this.places)
+            console.log("this.placeList")
+            console.log(this.placeList)
         },
         clearStore() {
             this.places = {};

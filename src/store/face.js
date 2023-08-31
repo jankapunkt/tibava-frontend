@@ -28,7 +28,7 @@ export const useFaceStore = defineStore("face", {
             return (cluster) => {
                 let result = [];
                 
-                cluster.facecluster.object_refs.forEach((face_ref) => {
+                cluster.cluster.object_refs.forEach((face_ref) => {
                     if(!this.faces[face_ref].deleted){
                         result.push(this.faces[face_ref].image_path);
                     }
@@ -51,7 +51,7 @@ export const useFaceStore = defineStore("face", {
             return (cluster) => {
                 let result = [];
                 
-                cluster.facecluster.object_refs.forEach((face_ref, index) => {
+                cluster.cluster.object_refs.forEach((face_ref, index) => {
                     if(!this.faces[face_ref].deleted){
                         result.push(index);
                     }

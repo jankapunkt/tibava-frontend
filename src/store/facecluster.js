@@ -81,7 +81,11 @@ export const useFaceclusterStore = defineStore("facecluster", {
         return [];
       }
 
-      results = state.current_clustering.results[0].data.facecluster
+
+      console.log("face clustering");
+      console.log(this.current_clustering);
+
+      results = state.current_clustering.results[0].data.cluster
       .sort( 
         // bigger clusters should come first
         (a, b) => b.object_refs.length - a.object_refs.length
@@ -90,7 +94,7 @@ export const useFaceclusterStore = defineStore("facecluster", {
           id: index + 1,
           clustering_data_id: state.current_clustering.results[0].data_id,
           systemId: cluster.id,
-          facecluster: cluster,
+          cluster: cluster,
           timestamps: Array.from(cluster.object_refs.map((face_ref) => {
             let timestamp =  state.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
             return timestamp.time;
@@ -103,7 +107,7 @@ export const useFaceclusterStore = defineStore("facecluster", {
   }, 
   actions: {
     getFilteredFaceRefs (deletedFaces, cluster_id) {
-          let current_cluster_object_refs = this.current_clustering.results[0].data.facecluster
+          let current_cluster_object_refs = this.current_clustering.results[0].data.cluster
           .filter((cluster) => cluster.id == cluster_id)[0].object_refs;
 
           if (deletedFaces.length > 0){

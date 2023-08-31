@@ -55,24 +55,26 @@ export const usePlaceclusterStore = defineStore("placecluster", {
 
         place_clustering.forEach((item) => plugin_list.push(item.id));
         
-        let params = {
-          plugin_list: plugin_list
+        if(plugin_list.length > 1){
+          let params = {
+            plugin_list: plugin_list
+          }
+
+          axios.post(`${config.API_LOCATION}/plugin/run/delete`, params)
+          .then((res) => {
+              if (res.data.status !== "ok") {
+                  console.log("Error in plugin/run/delete");
+                  console.log(res.data);
+              }else{
+                pluginRunStore.delete(plugin_list);
+                pluginRunResultStore.deleteForPluginRuns(plugin_list);
+              }
+          })
+          .finally(() => {
+              state.isLoading = false;
+          });
+
         }
-
-        axios.post(`${config.API_LOCATION}/plugin/run/delete`, params)
-        .then((res) => {
-            if (res.data.status !== "ok") {
-                console.log("Error in plugin/run/delete");
-                console.log(res.data);
-            }else{
-              pluginRunStore.delete(plugin_list);
-              pluginRunResultStore.deleteForPluginRuns(plugin_list);
-            }
-        })
-        .finally(() => {
-            state.isLoading = false;
-        });
-
       }
 
       let results = [];
@@ -81,19 +83,23 @@ export const usePlaceclusterStore = defineStore("placecluster", {
         return [];
       }
 
-      results = state.current_clustering.results[0].data.placecluster
+      console.log("place clustering");
+      console.log(this.current_clustering);
+      
+
+      results = state.current_clustering.results[0].data.cluster
       .sort( 
         // bigger clusters should come first
-        (a, b) => b.place_ref.length - a.place_ref.length
+        (a, b) => b.object_refs.length - a.object_refs.length
       ).map((cluster, index) => {
         return {
           id: index + 1,
           clustering_data_id: state.current_clustering.results[0].data_id,
           systemId: cluster.id,
-          placecluster: cluster,
-          timestamps: Array.from(cluster.place_ref.map((place_ref) => {
-            let timestamp =  state.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == place_ref);
-            return timestamp.time;
+          cluster: cluster,
+          timestamps: Array.from(cluster.object_refs.map((place_ref) => {
+            let place =  state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
+            return place.time;
           }))
         }
       })
@@ -103,7 +109,7 @@ export const usePlaceclusterStore = defineStore("placecluster", {
   }, 
   actions: {
     getFilteredPlaceRefs (deletedPlaces, cluster_id) {
-          let current_cluster_place_ref = this.current_clustering.results[0].data.placecluster
+          let current_cluster_place_ref = this.current_clustering.results[0].data.cluster
           .filter((cluster) => cluster.id == cluster_id)[0].place_ref;
 
           if (deletedPlaces.length > 0){
