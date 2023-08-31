@@ -55,26 +55,26 @@ export const useFaceclusterStore = defineStore("facecluster", {
 
         face_clustering.forEach((item) => plugin_list.push(item.id));
         
-        let params = {
-          plugin_list: plugin_list
+        if(plugin_list.length > 1){
+          let params = {
+            plugin_list: plugin_list
+          }
+
+          axios.post(`${config.API_LOCATION}/plugin/run/delete`, params)
+          .then((res) => {
+              if (res.data.status !== "ok") {
+                  console.log("Error in plugin/run/delete");
+                  console.log(res.data);
+              }else{
+                pluginRunStore.delete(plugin_list);
+                pluginRunResultStore.deleteForPluginRuns(plugin_list);
+              }
+          })
+          .finally(() => {
+              state.isLoading = false;
+          });
         }
-
-        axios.post(`${config.API_LOCATION}/plugin/run/delete`, params)
-        .then((res) => {
-            if (res.data.status !== "ok") {
-                console.log("Error in plugin/run/delete");
-                console.log(res.data);
-            }else{
-              pluginRunStore.delete(plugin_list);
-              pluginRunResultStore.deleteForPluginRuns(plugin_list);
-            }
-        })
-        .finally(() => {
-            state.isLoading = false;
-        });
-
       }
-
       let results = [];
 
       if(!state.current_clustering.results[0]){
@@ -84,14 +84,14 @@ export const useFaceclusterStore = defineStore("facecluster", {
       results = state.current_clustering.results[0].data.facecluster
       .sort( 
         // bigger clusters should come first
-        (a, b) => b.face_refs.length - a.face_refs.length
+        (a, b) => b.object_refs.length - a.object_refs.length
       ).map((cluster, index) => {
         return {
           id: index + 1,
           clustering_data_id: state.current_clustering.results[0].data_id,
           systemId: cluster.id,
           facecluster: cluster,
-          timestamps: Array.from(cluster.face_refs.map((face_ref) => {
+          timestamps: Array.from(cluster.object_refs.map((face_ref) => {
             let timestamp =  state.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
             return timestamp.time;
           }))
@@ -103,15 +103,15 @@ export const useFaceclusterStore = defineStore("facecluster", {
   }, 
   actions: {
     getFilteredFaceRefs (deletedFaces, cluster_id) {
-          let current_cluster_face_refs = this.current_clustering.results[0].data.facecluster
-          .filter((cluster) => cluster.id == cluster_id)[0].face_refs;
+          let current_cluster_object_refs = this.current_clustering.results[0].data.facecluster
+          .filter((cluster) => cluster.id == cluster_id)[0].object_refs;
 
           if (deletedFaces.length > 0){
-            current_cluster_face_refs = current_cluster_face_refs
+            current_cluster_object_refs = current_cluster_object_refs
             .filter((ref) => !deletedFaces.includes(ref));
           }
 
-          return current_cluster_face_refs.map((ref) => this.faceRefDict[ref]);
+          return current_cluster_object_refs.map((ref) => this.faceRefDict[ref]);
     },
   }
 },);

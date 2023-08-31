@@ -76,7 +76,7 @@ export default {
         },
         allImagesMarked() {
             const faceStore = useFaceStore();
-            return this.markedForDeletion.length >= this.cluster.facecluster.face_refs.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
+            return this.markedForDeletion.length >= this.cluster.facecluster.object_refs.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
         },
         mark(imageUrl) {
             if (this.marked(imageUrl)) {
@@ -93,9 +93,9 @@ export default {
         },
         async applyDeletion() {
             const faceStore = useFaceStore();
-            let face_refs_to_delete = this.markedForDeletion.map((path) => faceStore.getFaceRef(path));
+            let object_refs_to_delete = this.markedForDeletion.map((path) => faceStore.getFaceRef(path));
 
-            await faceStore.setDeleted(face_refs_to_delete, this.cluster.systemId);
+            await faceStore.setDeleted(object_refs_to_delete, this.cluster.systemId);
             this.markedForDeletion = [];
             this.showConfirmation = false;
             this.show = false;
