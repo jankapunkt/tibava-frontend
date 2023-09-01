@@ -238,7 +238,7 @@ export default {
       });
 
       this.pluginRunStore
-        .submit({ plugin: "insightface_identification", parameters: parameters })
+        .submit({ plugin: "place_indentification", parameters: parameters })
         .then(() => {
           this.loading = false;
         });
