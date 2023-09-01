@@ -13,7 +13,7 @@ export const usePlaceStore = defineStore("place", {
         };
     },
     getters: {
-        getDeletedplaces(state) {
+        getDeletedPlaces(state) {
             return (cluster_id) => {
                 return state.placeList
                 .map((id) => state.places[id])

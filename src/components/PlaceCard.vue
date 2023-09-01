@@ -57,7 +57,8 @@
           </template>
           <v-list>
             <v-list-item>
-              <ClusterExploration :cluster="this.cluster" @deleteCluster="deleteCluster" @update="fill_thumbnails">
+              <ClusterExploration :cluster="this.cluster" :isFaceCluster="false" @deleteCluster="deleteCluster"
+                @update="fill_thumbnails">
               </ClusterExploration>
             </v-list-item>
             <v-list-item>
