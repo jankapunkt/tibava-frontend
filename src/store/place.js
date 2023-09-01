@@ -117,10 +117,6 @@ export const usePlaceStore = defineStore("place", {
                 this.places[e.place_ref] = e;
                 this.placeList.push(e.place_ref);
             });
-            console.log("this.places")
-            console.log(this.places)
-            console.log("this.placeList")
-            console.log(this.placeList)
         },
         clearStore() {
             this.places = {};

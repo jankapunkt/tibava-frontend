@@ -3,7 +3,7 @@
     No place clustering has been conducted yet. Create it with the <em>Place Recognition</em> pipeline.
   </v-card>
   <v-virtual-scroll v-else :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" ref="parentContainer" :items="clusterList"
-    item-height="140" :bench="clustersLength" height="100%">
+    item-height="180" :bench="clustersLength" height="100%">
     <template v-slot:default="{ item }">
       <PlaceCard :cluster="item" :key="item.systemId" :ref="`childContainer-${item.systemId}`"
         @childDeleted="removeChild" />

@@ -83,10 +83,6 @@ export const usePlaceclusterStore = defineStore("placecluster", {
         return [];
       }
 
-      console.log("place clustering");
-      console.log(this.current_clustering);
-      
-
       results = state.current_clustering.results[0].data.cluster
       .sort( 
         // bigger clusters should come first
@@ -100,6 +96,18 @@ export const usePlaceclusterStore = defineStore("placecluster", {
           timestamps: Array.from(cluster.object_refs.map((place_ref) => {
             let place =  state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
             return place.time;
+          })),
+          place365classes: Array.from(cluster.object_refs.map((place_ref) => {
+            let place = state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
+            return place.place365class;
+          })),
+          place16classes: Array.from(cluster.object_refs.map((place_ref) => {
+            let place = state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
+            return place.place16class;
+          })),
+          place3classes: Array.from(cluster.object_refs.map((place_ref) => {
+            let place = state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
+            return place.place3class;
           }))
         }
       })

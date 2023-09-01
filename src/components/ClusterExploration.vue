@@ -8,7 +8,7 @@
                 </v-btn>
             </template>
             <v-card v-show="show" class="canvasContainer" ref="canvasContainer" style="height: 90vh;">
-                <v-card-title>Cluster {{ this.cluster.id }}</v-card-title>
+                <v-card-title>Cluster {{ this.cluster.id }} </v-card-title>
                 <v-card-subtitle>Click on images to mark them for deletion.</v-card-subtitle>
                 <v-card-text class="scrollable-content">
                     <!-- Scrollable Content -->

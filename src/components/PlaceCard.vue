@@ -84,6 +84,7 @@
         </v-menu>
       </v-col>
     </v-row>
+    <span style="font-size: 16px; margin-left: 1%;" class="mb-2"> Majority Labels: {{ max_labels }} </span>
   </v-card>
 </template>
 
@@ -249,7 +250,12 @@ export default {
       const time = this.cluster.timestamps[Math.round(this.thumbnail_ids[index])];
       this.playerStore.setTargetTime(time);
     },
-
+    mostFrequentString(arr) {
+      return arr.sort((a, b) =>
+        arr.filter(v => v === a).length
+        - arr.filter(v => v === b).length
+      ).pop();
+    }
   },
   computed: {
     name: {
@@ -261,6 +267,10 @@ export default {
         this.nameProxy = val;
       },
     },
+    max_labels() {
+      return this.mostFrequentString(this.cluster.place365classes) + " | " + this.mostFrequentString(this.cluster.place16classes) + " | " + this.mostFrequentString(this.cluster.place3classes)
+    },
+
     syncTime() {
       return this.playerStore.syncTime;
     },
