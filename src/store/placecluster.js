@@ -15,8 +15,6 @@ export const usePlaceclusterStore = defineStore("placecluster", {
   },
   getters: {
     clusters (state) {
-      console.log("Loading place_clustering");
-      
       const pluginRunStore = usePluginRunStore();
       const pluginRunResultStore = usePluginRunResultStore();
       const playerStore = usePlayerStore();

@@ -15,8 +15,6 @@ export const useFaceclusterStore = defineStore("facecluster", {
   },
   getters: {
     clusters (state) {
-      console.log("Loading face_clusterings");
-      
       const pluginRunStore = usePluginRunStore();
       const pluginRunResultStore = usePluginRunResultStore();
       const playerStore = usePlayerStore();
@@ -80,10 +78,6 @@ export const useFaceclusterStore = defineStore("facecluster", {
       if(!state.current_clustering.results[0]){
         return [];
       }
-
-
-      console.log("face clustering");
-      console.log(this.current_clustering);
 
       results = state.current_clustering.results[0].data.cluster
       .sort( 

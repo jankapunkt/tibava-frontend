@@ -265,8 +265,7 @@ export default {
       return this.playerStore.syncTime;
     },
     timelines() {
-      let timelines = this.timelineStore.all;
-      return timelines;
+      return this.timelineStore.all;
     },
     ...mapStores(usePlayerStore, usePluginRunStore, useClusterTimelineItemStore, useTimelineStore, useFaceclusterStore),
   },
@@ -277,7 +276,7 @@ export default {
         return;
       }
 
-      const newTimeline = values.slice(-1)[0];
+      const newTimeline = this.timelineStore.getLatest();
 
       // make sure this is the right card
       if (newTimeline.name != this.nameProxy) {
