@@ -84,7 +84,9 @@
         </v-menu>
       </v-col>
     </v-row>
-    <span style="font-size: 16px; margin-left: 1%;" class="mb-2"> Majority Labels: {{ max_labels }} </span>
+    <span style="font-size: 16px; margin-left: 1%;" class="mb-2">
+      <i>Majority Labels: {{ max_labels }} </i>
+    </span>
   </v-card>
 </template>
 
