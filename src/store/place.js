@@ -4,23 +4,23 @@ import config from "../../app.config";
 
 import { defineStore } from "pinia";
 
-export const useFaceStore = defineStore("face", {
+export const usePlaceStore = defineStore("place", {
     state: () => {
         return {
-            faces: {},
-            faceList: [],
+            places: {},
+            placeList: [],
             isLoading: false,
         };
     },
     getters: {
-        getDeletedFaces(state) {
+        getDeletedPlaces(state) {
             return (cluster_id) => {
-                return state.faceList
-                .map((id) => state.faces[id])
+                return state.placeList
+                .map((id) => state.places[id])
                 .filter((f) => f.cluster_id == cluster_id)
                 .filter((f) => f.deleted == true)
                 .map((f) => {
-                    return f.face_ref;
+                    return f.place_ref;
                 });
             }
         },
@@ -28,22 +28,22 @@ export const useFaceStore = defineStore("face", {
             return (cluster) => {
                 let result = [];
                 
-                cluster.cluster.object_refs.forEach((face_ref) => {
-                    if(!this.faces[face_ref].deleted){
-                        result.push(this.faces[face_ref].image_path);
+                cluster.cluster.object_refs.forEach((place_ref) => {
+                    if(!this.places[place_ref].deleted){
+                        result.push(this.places[place_ref].image_path);
                     }
                 });
 
                 return result;
             }
         },
-        getFaceRef(state) {
+        getPlaceRef(state) {
             return (image_path) => {
-                return state.faceList
-                .map((id) => state.faces[id])
+                return state.placeList
+                .map((id) => state.places[id])
                 .filter((f) => f.image_path == image_path)
                 .map((f) => {
-                    return f.face_ref;
+                    return f.place_ref;
                 })[0];
             }
         },
@@ -51,8 +51,8 @@ export const useFaceStore = defineStore("face", {
             return (cluster) => {
                 let result = [];
                 
-                cluster.cluster.object_refs.forEach((face_ref, index) => {
-                    if(!this.faces[face_ref].deleted){
+                cluster.cluster.object_refs.forEach((place_ref, index) => {
+                    if(!this.places[place_ref].deleted){
                         result.push(index);
                     }
                 });
@@ -68,13 +68,13 @@ export const useFaceStore = defineStore("face", {
             }
             this.isLoading = true
 
-            return axios.get(`${config.API_LOCATION}/face/fetch`, { params: { video_id: video_id } })
+            return axios.get(`${config.API_LOCATION}/place/fetch`, { params: { video_id: video_id } })
                 .then((res) => {
                     if (res.data.status === "ok") {
                         this.replaceStore(res.data.entries);
                     }
                     else{
-                        console.log("error in fetchAll faces");
+                        console.log("error in fetchAll places");
                         console.log(res.data);
                     }
                 })
@@ -82,23 +82,23 @@ export const useFaceStore = defineStore("face", {
                     this.isLoading = false;
                 });
         },
-        async setDeleted(face_ref_list, cluster_id){
+        async setDeleted(place_ref_list, cluster_id){
             if (this.isLoading) {
               return;
             }
             this.isLoading = true;
 
             let params = {
-                face_ref_list: face_ref_list,
+                place_ref_list: place_ref_list,
                 cluster_id: cluster_id
             };
 
             return axios
-                .post(`${config.API_LOCATION}/face/setDeleted`, params)
+                .post(`${config.API_LOCATION}/place/setDeleted`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        face_ref_list.forEach((filteredFace) => {
-                            this.faces[filteredFace].deleted = true;
+                        place_ref_list.forEach((filteredPlace) => {
+                            this.places[filteredPlace].deleted = true;
                         });
                     }
                     else{
@@ -111,16 +111,16 @@ export const useFaceStore = defineStore("face", {
                 });
         },
         replaceStore(items) {
-            this.faces = {};
-            this.faceList = [];
+            this.places = {};
+            this.placeList = [];
             items.forEach((e, i) => {
-                this.faces[e.face_ref] = e;
-                this.faceList.push(e.face_ref);
+                this.places[e.place_ref] = e;
+                this.placeList.push(e.place_ref);
             });
         },
         clearStore() {
-            this.faces = {};
-            this.faceList = [];
+            this.places = {};
+            this.placeList = [];
         }
     }
 })

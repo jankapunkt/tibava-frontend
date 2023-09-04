@@ -8,9 +8,10 @@
                 </v-btn>
             </template>
             <v-card v-show="show" class="canvasContainer" ref="canvasContainer" style="height: 90vh;">
-                <v-card-title>Cluster {{ this.cluster.id }}</v-card-title>
+                <v-card-title>Cluster {{ this.cluster.id }} </v-card-title>
                 <v-card-subtitle>Click on images to mark them for deletion.</v-card-subtitle>
                 <v-card-text class="scrollable-content">
+                    <!-- Scrollable Content -->
                     <img class="clusterImg" v-for="imageUrl in displayedImages " :key="imageUrl" :src="imageUrl"
                         :style="borderStyle(imageUrl)" @click="mark(imageUrl)" />
                 </v-card-text>
@@ -44,9 +45,10 @@
 <script>
 import { mapStores } from "pinia";
 import { useFaceStore } from "@/store/face";
+import { usePlaceStore } from "@/store/place";
 
 export default {
-    props: ["cluster"],
+    props: ["cluster", "isFaceCluster"],
     data() {
         return {
             show: false,
@@ -61,9 +63,13 @@ export default {
             this.displayedImages = [];
 
             // Create a copy of the cluster array to avoid directly modifying the prop
-
-            const faceStore = useFaceStore();
-            this.displayedImages = faceStore.getImagePaths(this.cluster);
+            if (this.isFaceCluster) {
+                const faceStore = useFaceStore();
+                this.displayedImages = faceStore.getImagePaths(this.cluster);
+            } else {
+                const placeStore = usePlaceStore();
+                this.displayedImages = placeStore.getImagePaths(this.cluster);
+            }
 
             // Set show to true to show the v-card
             this.show = true;
@@ -75,8 +81,14 @@ export default {
             return this.markedForDeletion.length > 0;
         },
         allImagesMarked() {
-            const faceStore = useFaceStore();
-            return this.markedForDeletion.length >= this.cluster.facecluster.face_refs.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
+
+            if (this.isFaceCluster) {
+                const faceStore = useFaceStore();
+                return this.markedForDeletion.length >= this.cluster.cluster.object_refs.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
+            } else {
+                const placeStore = usePlaceStore();
+                return this.markedForDeletion.length >= this.cluster.cluster.object_refs.length - placeStore.getDeletedPlaces(this.cluster.systemId).length;
+            }
         },
         mark(imageUrl) {
             if (this.marked(imageUrl)) {
@@ -92,10 +104,16 @@ export default {
             return ''
         },
         async applyDeletion() {
-            const faceStore = useFaceStore();
-            let face_refs_to_delete = this.markedForDeletion.map((path) => faceStore.getFaceRef(path));
+            if (this.isFaceCluster) {
+                const faceStore = useFaceStore();
+                var object_refs_to_delete = this.markedForDeletion.map((path) => faceStore.getFaceRef(path));
+                await faceStore.setDeleted(object_refs_to_delete, this.cluster.systemId);
+            } else {
+                const placeStore = usePlaceStore();
+                var object_refs_to_delete = this.markedForDeletion.map((path) => placeStore.getPlaceRef(path));
+                await placeStore.setDeleted(object_refs_to_delete, this.cluster.systemId);
+            }
 
-            await faceStore.setDeleted(face_refs_to_delete, this.cluster.systemId);
             this.markedForDeletion = [];
             this.showConfirmation = false;
             this.show = false;
@@ -110,7 +128,7 @@ export default {
             this.$emit("update");
         }
     },
-    ...mapStores(useFaceStore),
+    ...mapStores(useFaceStore, usePlaceStore),
 };
 </script>
 

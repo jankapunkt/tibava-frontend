@@ -7,8 +7,8 @@
         <v-row>
           <v-col cols="3">
             <v-sheet class="pa-1" style="background-color: rgb(174, 19, 19) !important;">
-              <v-text-field v-model="search" label="Search Plugin" class="searchField" dark flat solo-inverted hide-details clearable
-                clear-icon="mdi-close-circle-outline">
+              <v-text-field v-model="search" label="Search Plugin" class="searchField" dark flat solo-inverted
+                hide-details clearable clear-icon="mdi-close-circle-outline">
               </v-text-field>
             </v-sheet>
             <v-treeview :items="plugins_sorted" :search="search" :open.sync="open" activatable open-on-click
@@ -19,8 +19,7 @@
             </v-treeview>
           </v-col>
           <v-col cols="9">
-            <div v-if="!selected" class="text-h6 grey--text font-weight-light"
-              style="text-align: center;">
+            <div v-if="!selected" class="text-h6 grey--text font-weight-light" style="text-align: center;">
               {{ $t("modal.plugin.search.select") }}
             </div>
             <v-card v-else :key="selected.id" class="pt-6 mx-auto" flat>
@@ -562,7 +561,7 @@ export default {
                   field: "slider",
                   min: 0.0,
                   max: 1.0,
-                  value: 0.5,
+                  value: 0.25,
                   step: 0.01,
                   name: "cluster_threshold",
                   hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
@@ -815,7 +814,6 @@ export default {
 </script>
 
 <style>
-
 div.tabs-left [role="tab"] {
   justify-content: flex-start;
 }

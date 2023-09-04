@@ -22,15 +22,16 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card v-if="isLoading" elevation="0">Loading data ... 
-                <v-icon small>{{ "mdi-timer-sand" }}</v-icon>
-              </v-card>
+          <v-card v-if="isLoading" elevation="0">Loading data ...
+            <v-icon small>{{ "mdi-timer-sand" }}</v-icon>
+          </v-card>
           <v-card v-else elevation="2" ref="resultCard" :height="resultCardHeight">
             <div class="sticky-tabs-bar">
               <v-tabs v-model="tab" centered>
                 <v-tabs-slider />
                 <v-tab>Shots</v-tab>
                 <v-tab>Faces</v-tab>
+                <v-tab>Places</v-tab>
                 <v-tab>Annotations</v-tab>
                 <v-tab>Transcript</v-tab>
                 <v-tab>Word Cloud</v-tab>
@@ -44,6 +45,10 @@
 
               <v-tab-item style="height: 100%">
                 <PersonOverview />
+              </v-tab-item>
+
+              <v-tab-item style="height: 100%">
+                <PlacesOverview />
               </v-tab-item>
 
               <v-tab-item>
@@ -91,6 +96,7 @@ import ShotsOverview from "@/components/ShotsOverview.vue";
 import WordcloudCard from "@/components/WordcloudCard.vue";
 import VisualizationMenu from "@/components/VisualizationMenu.vue";
 import PersonOverview from "@/components/PersonOverview.vue";
+import PlacesOverview from "@/components/PlacesOverview.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -351,6 +357,7 @@ export default {
     ShotsOverview,
     WordcloudCard,
     PersonOverview,
+    PlacesOverview,
     VisualizationMenu
   },
 
@@ -368,8 +375,8 @@ export default {
         clearInterval(this.fetchPluginTimer);
       }
     },
-    isLoading(value){
-      if (!value){
+    isLoading(value) {
+      if (!value) {
         this.resultCardHeight = this.$refs.videoCard.$el.clientHeight;
         this.$refs.main.$el.focus();
       }

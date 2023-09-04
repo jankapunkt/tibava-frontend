@@ -5,12 +5,12 @@ import { usePlayerStore } from "./player";
 import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
 
-export const useFaceclusterStore = defineStore("facecluster", {
+export const usePlaceclusterStore = defineStore("placecluster", {
   state: () => {
     return {
       current_clustering: null,
       isLoading: false,
-      faceRefDict: {},
+      placeRefDict: {},
     };
   },
   getters: {
@@ -20,10 +20,10 @@ export const useFaceclusterStore = defineStore("facecluster", {
       const playerStore = usePlayerStore();
 
       // selection of timeline to be used for the thumbnails
-      let face_clustering = pluginRunStore
+      let place_clustering = pluginRunStore
         .forVideo(playerStore.videoId)
         .filter((e) => {
-          return e.type == "face_clustering" && e.status == "DONE";
+          return e.type == "place_clustering" && e.status == "DONE";
         })
         .map((e) => {
           e.results = pluginRunResultStore.forPluginRun(e.id);
@@ -34,14 +34,14 @@ export const useFaceclusterStore = defineStore("facecluster", {
         })
       ;
 
-      if (!face_clustering.length) {
+      if (!place_clustering.length) {
         return [];
       }
       
-      state.current_clustering = face_clustering.at(0); // use latest face_clustering
+      state.current_clustering = place_clustering.at(0); // use latest place_clustering
 
-      // if there is more than one face_clustering result for this video, delete all the 'old' ones to preserve memory
-      if (face_clustering.length > 1) {
+      // if there is more than one place_clustering result for this video, delete all the 'old' ones to preserve memory
+      if (place_clustering.length > 1) {
         if (state.isLoading) {
           return [];
         }
@@ -49,9 +49,9 @@ export const useFaceclusterStore = defineStore("facecluster", {
 
         let plugin_list = [];
 
-        face_clustering = face_clustering.slice(1)
+        place_clustering = place_clustering.slice(1)
 
-        face_clustering.forEach((item) => plugin_list.push(item.id));
+        place_clustering.forEach((item) => plugin_list.push(item.id));
         
         if(plugin_list.length > 1){
           let params = {
@@ -71,8 +71,10 @@ export const useFaceclusterStore = defineStore("facecluster", {
           .finally(() => {
               state.isLoading = false;
           });
+
         }
       }
+
       let results = [];
 
       if(!state.current_clustering.results[0]){
@@ -89,9 +91,21 @@ export const useFaceclusterStore = defineStore("facecluster", {
           clustering_data_id: state.current_clustering.results[0].data_id,
           systemId: cluster.id,
           cluster: cluster,
-          timestamps: Array.from(cluster.object_refs.map((face_ref) => {
-            let timestamp =  state.current_clustering.results[0].data.kpss.find(kps => kps.ref_id == face_ref);
-            return timestamp.time;
+          timestamps: Array.from(cluster.object_refs.map((place_ref) => {
+            let place =  state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
+            return place.time;
+          })),
+          place365classes: Array.from(cluster.object_refs.map((place_ref) => {
+            let place = state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
+            return place.place365class;
+          })),
+          place16classes: Array.from(cluster.object_refs.map((place_ref) => {
+            let place = state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
+            return place.place16class;
+          })),
+          place3classes: Array.from(cluster.object_refs.map((place_ref) => {
+            let place = state.current_clustering.results[0].data.places.find(place => place.id == place_ref);
+            return place.place3class;
           }))
         }
       })
@@ -100,16 +114,16 @@ export const useFaceclusterStore = defineStore("facecluster", {
     }
   }, 
   actions: {
-    getFilteredFaceRefs (deletedFaces, cluster_id) {
-          let current_cluster_object_refs = this.current_clustering.results[0].data.cluster
-          .filter((cluster) => cluster.id == cluster_id)[0].object_refs;
+    getFilteredPlaceRefs (deletedPlaces, cluster_id) {
+          let current_cluster_place_ref = this.current_clustering.results[0].data.cluster
+          .filter((cluster) => cluster.id == cluster_id)[0].place_ref;
 
-          if (deletedFaces.length > 0){
-            current_cluster_object_refs = current_cluster_object_refs
-            .filter((ref) => !deletedFaces.includes(ref));
+          if (deletedPlaces.length > 0){
+            current_cluster_place_ref = current_cluster_place_ref
+            .filter((ref) => !deletedPlaces.includes(ref));
           }
 
-          return current_cluster_object_refs.map((ref) => this.faceRefDict[ref]);
+          return current_cluster_place_ref.map((ref) => this.placeRefDict[ref]);
     },
   }
 },);

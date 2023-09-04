@@ -80,7 +80,8 @@
                 "timeline_merge": "Merge annotations",
                 "use_timestamps": "Use timestamps",
                 "use_seconds": "Use seconds",
-                "include_category": "Include category"
+                "include_category": "Include category",
+                "split_places": "Show places categories in separate columns"
             },
             "individual_csv": {
                 "export_name": "Individual CSVs",
@@ -215,6 +216,9 @@
             "facesize": {
                 "plugin_name": "Face Shot Size Analysis",
                 "timeline_name": "Face Shot Size"
+            },
+            "place_clustering": {
+                "plugin_name": "Place Clustering"
             },
             "places_classification": {
                 "plugin_name": "Place Recognition",

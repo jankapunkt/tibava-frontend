@@ -17,6 +17,7 @@ import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
 import { useClusterTimelineItemStore } from "./cluster_timeline_item";
 import { useFaceStore } from "./face";
+import { usePlaceStore } from "./place";
 
 // useStore could be anything like useUser, useCart
 // the first argument is a unique id of the store across your application
@@ -48,6 +49,7 @@ export const useVideoStore = defineStore("video", {
             includeShortcut = true,
             includeClusterTimelineItem = true,
             includeFaces = true,
+            includePlaces = true,
             addResults = true,
         }) {
             this.isLoading = true;
@@ -66,6 +68,7 @@ export const useVideoStore = defineStore("video", {
             const shotStore = useShotStore();
             const clusterTimelineItemStore = useClusterTimelineItemStore();
             const faceStore = useFaceStore();
+            const placeStore = usePlaceStore();
 
             promises.push(playerStore.fetchVideo({ videoId }));
             if (includeAnnotation) {
@@ -113,6 +116,10 @@ export const useVideoStore = defineStore("video", {
             if (includeFaces){
                 faceStore.clearStore();
                 promises.push(faceStore.fetchAll(videoId));
+            }
+            if (includePlaces){
+                placeStore.clearStore();
+                promises.push(placeStore.fetchAll(videoId));
             }
             return Promise.all(promises).finally(() => {
                 console.log("Loading done!");
