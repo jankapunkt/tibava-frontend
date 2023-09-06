@@ -11,8 +11,8 @@
                 hide-details clearable clear-icon="mdi-close-circle-outline">
               </v-text-field>
             </v-sheet>
-            <v-treeview open-all :items="plugins_sorted" :search="search" :open.sync="open" activatable
-              :active.sync="active">
+            <v-treeview :items="plugins_sorted" :search="search" :open.sync="open" activatable open-all
+              style="cursor: pointer;" :active.sync="active">
               <template v-slot:prepend="{ item }">
                 <v-icon v-text="item.icon"></v-icon>
               </template>
