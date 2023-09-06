@@ -1,8 +1,7 @@
 <template>
   <v-dialog v-model="dialog" max-width="90%">
     <v-card>
-      <v-card-title class="mb-0">
-      </v-card-title>
+      <v-card-title class="mb-0"> </v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="3">
@@ -14,7 +13,7 @@
             <v-treeview :items="plugins_sorted" :search="search" :open.sync="open" activatable open-all
               style="cursor: pointer;" :active.sync="active">
               <template v-slot:prepend="{ item }">
-                <v-icon v-text="item.icon"></v-icon>
+                <v-icon>{{ item.icon }}</v-icon>
               </template>
             </v-treeview>
           </v-col>
@@ -25,9 +24,12 @@
             <v-card v-else :key="selected.id" class="pt-6 mx-auto" flat>
               <v-card-text>
                 <Parameters :parameters="selected.parameters"> </Parameters>
-                <v-expansion-panels v-if="selected.optional_parameters &&
-                  selected.optional_parameters.length > 0
-                  ">
+                <v-expansion-panels
+                  v-if="
+                    selected.optional_parameters &&
+                    selected.optional_parameters.length > 0
+                  "
+                >
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
@@ -41,13 +43,16 @@
                 </v-expansion-panels>
               </v-card-text>
               <v-card-actions class="pt-0">
-                <v-btn @click="
-                  runPlugin(
-                    selected.plugin,
-                    selected.parameters,
-                    selected.optional_parameters
-                  )
-                  ">{{ $t("modal.plugin.run") }}</v-btn>
+                <v-btn
+                  @click="
+                    runPlugin(
+                      selected.plugin,
+                      selected.parameters,
+                      selected.optional_parameters
+                    )
+                  "
+                  >{{ $t("modal.plugin.run") }}</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-col>
@@ -177,7 +182,7 @@ export default {
                 },
               ],
               optional_parameters: [],
-            }
+            },
           ],
         },
         {
@@ -199,7 +204,7 @@ export default {
                   name: "cluster_threshold",
                   hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
                   hint_left: this.$t("modal.plugin.face_clustering.hint_right"),
-                }
+                },
               ],
               optional_parameters: [
                 {
@@ -210,7 +215,7 @@ export default {
                   step: 1,
                   name: "fps",
                   text: this.$t("modal.plugin.fps"),
-                }
+                },
               ],
             },
             {
@@ -222,14 +227,18 @@ export default {
                 {
                   field: "text_field",
                   name: "timeline",
-                  value: this.$t("modal.plugin.face_identification.timeline_name"),
+                  value: this.$t(
+                    "modal.plugin.face_identification.timeline_name"
+                  ),
                   text: this.$t("modal.plugin.timeline_name"),
                 },
                 {
                   field: "image_input",
                   file: null,
                   name: "query_images",
-                  text: this.$t("modal.plugin.face_identification.query_images"),
+                  text: this.$t(
+                    "modal.plugin.face_identification.query_images"
+                  ),
                   hint: this.$t(
                     "modal.plugin.face_identification.query_images_hint"
                   ),
@@ -323,7 +332,7 @@ export default {
                 },
               ],
             },
-          ]
+          ],
         },
         {
           id: 3,
@@ -382,7 +391,9 @@ export default {
               ],
             },
             {
-              name: this.$t("modal.plugin.color_brightness_analysis.plugin_name"),
+              name: this.$t(
+                "modal.plugin.color_brightness_analysis.plugin_name"
+              ),
               icon: "mdi-palette",
               plugin: "color_brightness_analysis",
               id: 302,
@@ -408,7 +419,7 @@ export default {
                 },
               ],
             },
-          ]
+          ],
         },
         {
           id: 4,
@@ -566,7 +577,7 @@ export default {
                   name: "cluster_threshold",
                   hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
                   hint_left: this.$t("modal.plugin.face_clustering.hint_right"),
-                }
+                },
               ],
               optional_parameters: [
                 {
@@ -577,10 +588,41 @@ export default {
                   step: 1,
                   name: "fps",
                   text: this.$t("modal.plugin.fps"),
-                }
+                },
               ],
             },
-          ]
+            {
+              name: this.$t("modal.plugin.blip.plugin_name"),
+              icon: "mdi-eye",
+              plugin: "blip_vqa",
+              id: 406,
+              parameters: [
+                {
+                  field: "text_field",
+                  name: "timeline",
+                  value: this.$t("modal.plugin.blip.timeline_name"),
+                  text: this.$t("modal.plugin.timeline_name"),
+                },
+                {
+                  field: "text_field",
+                  name: "query_term",
+                  value: "",
+                  text: this.$t("modal.plugin.blip.query_term"),
+                },
+              ],
+              optional_parameters: [
+                {
+                  field: "slider",
+                  min: 1,
+                  max: 10,
+                  value: 2,
+                  step: 1,
+                  name: "fps",
+                  text: this.$t("modal.plugin.fps"),
+                },
+              ],
+            },
+          ],
         },
         {
           id: 5,
@@ -659,7 +701,9 @@ export default {
               ],
             },
             {
-              name: this.$t("modal.plugin.shot_type_classification.plugin_name"),
+              name: this.$t(
+                "modal.plugin.shot_type_classification.plugin_name"
+              ),
               icon: "mdi-video-switch",
               plugin: "shot_type_classification",
               id: 504,
@@ -720,7 +764,7 @@ export default {
               ],
               optional_parameters: [],
             },
-          ]
+          ],
         },
         {
           id: 6,
@@ -759,7 +803,7 @@ export default {
               ],
               optional_parameters: [],
             },
-          ]
+          ],
         },
       ],
     };
@@ -769,16 +813,18 @@ export default {
       return this.plugins.sort((a, b) => a.name.localeCompare(b.name));
     },
     selected() {
-      if (!this.active.length) return undefined
+      if (!this.active.length) return undefined;
 
-      const id = this.active[0]
-      let plugin_group = this.plugins.find(group => group.id === parseInt(id / 100));
+      const id = this.active[0];
+      let plugin_group = this.plugins.find(
+        (group) => group.id === parseInt(id / 100)
+      );
       let plugin = plugin_group.children.find((plugin) => plugin.id === id);
 
       return plugin;
     },
     filter() {
-      return (item, search, textKey) => item[textKey].indexOf(search) > -1
+      return (item, search, textKey) => item[textKey].indexOf(search) > -1;
     },
     ...mapStores(usePluginRunStore),
   },
