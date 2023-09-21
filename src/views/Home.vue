@@ -8,16 +8,8 @@
           </v-col>
         </v-row>
 
-        <v-container
-          class="d-flex flex-wrap video-gallery align-content-center"
-        >
-          <v-card
-            elevation="2"
-            width="400px"
-            :loading="item.loading"
-            v-for="item in videos"
-            :key="item.id"
-          >
+        <v-container class="d-flex flex-wrap video-gallery align-content-center">
+          <v-card elevation="2" width="400px" :loading="item.loading" v-for="item in videos" :key="item.id">
             <v-card-title>{{ item.name }}</v-card-title>
             <v-card-text>
               <div>Video ID: {{ item.id }}</div>
@@ -26,6 +18,8 @@
                 {{ get_display_time(item.duration) }}
               </div>
               <div>License: {{ item.license }}</div>
+              <div>Uploaded: {{ item.date.slice(0, 10) }}</div>
+              <div>Timelines: {{ item.num_timelines }}</div>
 
               <v-card-actions class="actions">
                 <v-btn outlined @click="showVideo(item.id)">
@@ -112,13 +106,16 @@ export default {
   width: 100%;
   text-overflow: ellipsis;
 }
-.video-gallery > * {
+
+.video-gallery>* {
   margin: 8px;
 }
-.video-gallery > * {
+
+.video-gallery>* {
   margin: 8px;
 }
-.actions > .v-btn:not(:first-child) {
+
+.actions>.v-btn:not(:first-child) {
   margin-left: 8px !important;
 }
 </style>
