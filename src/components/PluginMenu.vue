@@ -1,52 +1,16 @@
 <template>
   <div>
-    <v-menu v-model="menu" min-width="175" offset-y bottom left>
-      <template v-slot:activator="{ attrs, on: menu }">
-        <v-btn tile text v-bind="attrs" v-on="menu" class="ml-n2" :title="$t('plugin.menu.title')">
-          <v-icon color="primary">mdi-timer-sand-empty</v-icon>
-          <v-badge v-if="numRunningPlugins > 0" color="accent" :content="numRunningPlugins">
-            {{ $t("plugin.menu.title") }}
-          </v-badge>
-          <span v-else>
-            {{ $t("plugin.menu.title") }}
-          </span>
+    <v-menu min-width="175" offset-y bottom left>
+      <!-- open-on-hover close-delay -->
+      <template v-slot:activator="{ attrs, on }">
+        <v-btn tile text v-bind="attrs" @click="showModalPlugin = true" class="ml-n2">
+          <v-icon color="primary">mdi-plus</v-icon>
+          Run Plugin
         </v-btn>
       </template>
-      <v-list-item-content class="pa-0 plugin-overview">
-        <v-list dense class="mt-4">
-          <template v-for="(pluginRun, i) in pluginRuns">
-            <v-list-item class="px-4" dense>
-              <v-col class="pa-0 ma-0">
-                <div class="d-flex">
-                  <span class="text-overflow plugin-name">
-                    {{ pluginName(pluginRun.type) }}
-                  </span>
-                  <span class="ml-auto mr-2">
-                    ({{ pluginStatus(pluginRun.status) }})
-                  </span>
-                </div>
-                <v-progress-linear :value="pluginRun.status !== 'ERROR'
-                    ? 100 * pluginRun.progress
-                    : 100
-                  " :striped="pluginRun.status === 'ERROR'" :color="progressColor(pluginRun.status)"
-                  :indeterminate="indeterminate(pluginRun.status)" height="5">
-                </v-progress-linear>
-              </v-col>
-            </v-list-item>
-            <v-divider :key="i" v-if="i < pluginRuns.length - 1"></v-divider>
-          </template>
-        </v-list>
-        <div class="v-btn--absolute v-btn--right v-btn--top">
-          <v-btn :title="$t('plugin.menu.new')" class="mr-n1 mt-n1" @click="showModalPlugin = true" color="red" dark fab
-            x-small>
-            <v-icon dark>mdi-plus</v-icon>
-          </v-btn>
-        </div>
-      </v-list-item-content>
     </v-menu>
-    <ModalPlugin v-model="showModalPlugin">
-      <activator />
-    </ModalPlugin>
+
+    <ModalPlugin v-model="showModalPlugin"> </ModalPlugin>
   </div>
 </template>
 
@@ -61,7 +25,6 @@ import { usePluginRunResultStore } from "@/store/plugin_run_result";
 export default {
   data() {
     return {
-      menu: false,
       showModalPlugin: false,
     };
   },
@@ -138,9 +101,6 @@ export default {
       }
       if (type === "places_classification") {
         return this.$t("modal.plugin.places_classification.plugin_name");
-      }
-      if (type === "place_clustering") {
-        return this.$t("modal.plugin.place_clustering.plugin_name");
       }
       if (type === "shotdetection") {
         return this.$t("modal.plugin.shot_detection.plugin_name");

@@ -241,7 +241,7 @@ export default {
       });
 
       this.pluginRunStore
-        .submit({ plugin: "place_indentification", parameters: parameters })
+        .submit({ plugin: "place_identification", parameters: parameters })
         .then(() => {
           this.loading = false;
         });

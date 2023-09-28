@@ -157,10 +157,15 @@
                 "timeline_name": "Speech Recognition"
             },
             "audio_frequency": {
-                "plugin_name": "Audio Spectrorgram Analysis",
+                "plugin_name": "Audio Spectrogram Analysis",
                 "timeline_name": "Audio Spectrogram",
                 "sr": "Sampling Rate",
                 "n_fft": "Length of the FFT (Fast Fourier Transform) window"
+            },
+            "blip": {
+                "plugin_name": "BLIP Visual QA",
+                "timeline_name": "BLIP Visual QA",
+                "search_term": "Search Term"
             },
             "clip": {
                 "plugin_name": "Object Classification",
@@ -219,6 +224,9 @@
             },
             "place_clustering": {
                 "plugin_name": "Place Clustering"
+            },
+            "place_identification": {
+                "plugin_name": "Place Identification"
             },
             "places_classification": {
                 "plugin_name": "Place Recognition",

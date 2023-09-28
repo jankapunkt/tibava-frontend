@@ -24,12 +24,9 @@
             <v-card v-else :key="selected.id" class="pt-6 mx-auto" flat>
               <v-card-text>
                 <Parameters :parameters="selected.parameters"> </Parameters>
-                <v-expansion-panels
-                  v-if="
-                    selected.optional_parameters &&
-                    selected.optional_parameters.length > 0
-                  "
-                >
+                <v-expansion-panels v-if="selected.optional_parameters &&
+                  selected.optional_parameters.length > 0
+                  ">
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
@@ -43,16 +40,13 @@
                 </v-expansion-panels>
               </v-card-text>
               <v-card-actions class="pt-0">
-                <v-btn
-                  @click="
-                    runPlugin(
-                      selected.plugin,
-                      selected.parameters,
-                      selected.optional_parameters
-                    )
-                  "
-                  >{{ $t("modal.plugin.run") }}</v-btn
-                >
+                <v-btn @click="
+                  runPlugin(
+                    selected.plugin,
+                    selected.parameters,
+                    selected.optional_parameters
+                  )
+                  ">{{ $t("modal.plugin.run") }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -607,7 +601,7 @@ export default {
                   field: "text_field",
                   name: "query_term",
                   value: "",
-                  text: this.$t("modal.plugin.blip.query_term"),
+                  text: this.$t("modal.plugin.blip.search_term"),
                 },
               ],
               optional_parameters: [

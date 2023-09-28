@@ -87,7 +87,7 @@ export default {
         }));
 
       const current_max = words[0].count;
-      const desired_max = 12;
+      const desired_max = 50;
 
       // map all font-sizes to a good size, where the maximum is 17
       words.map((w) => {

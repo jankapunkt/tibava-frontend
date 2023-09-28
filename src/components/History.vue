@@ -1,233 +1,245 @@
 <template>
-  <v-menu
-    v-model="menu"
-    min-width="365"
-    max-width="365"
-    max-height="600"
-    offset-y
-    bottom
-    left
-    open-on-hover
-    :close-on-content-click="false"
-  >
+  <v-dialog v-model="menu" offset-y bottom left width="700px">
     <template v-slot:activator="{ attrs, on: menu }">
-      <v-btn
-        icon
-        v-bind="attrs"
-        v-on="menu"
-        class="ml-n2"
-        :title="$t('drawer.history.title')"
-      >
-        <v-badge
-          v-if="data.length"
-          color="accent"
-          :content="data.length"
-        >
-          <v-icon>mdi-history</v-icon>
+      <v-btn tile text v-bind="attrs" v-on="menu" class="ml-n2" :title="$t('plugin.menu.title')">
+        <v-icon color="primary">mdi-history</v-icon>
+        <v-badge v-if="numRunningPlugins > 0" color="accent" :content="numRunningPlugins">
+          History
         </v-badge>
-        <v-icon v-else>mdi-history</v-icon>
+        <span v-else>
+          History
+        </span>
       </v-btn>
     </template>
-
-    <v-list
-      class="pa-0 history"
-      v-if="data.length"
-    >
-      <v-row
-        class="ma-0"
-        align-content="center"
-        style="border-bottom: 1px solid #f5f5f5;"
-      >
-        <v-col
-          cols="auto"
-          class="v-menu__title mx-1"
-        >
-          {{ $t('drawer.history.title') }}
-        </v-col>
-
-        <v-spacer />
-
-        <v-col cols="2">
-          <v-layout justify-end>
-            <v-btn
-              :title="$t('drawer.history.remove')"
-              class="ml-n2"
-              @click="removeAllItems"
-              icon
-            >
-              <v-icon>mdi-trash-can-outline</v-icon>
-            </v-btn>
-          </v-layout>
-        </v-col>
-      </v-row>
-      </v-list>
-
-      <v-list-item-group>
-        <v-list-item v-for="item in data" :key=item>
-          <v-list-item-content @click="submit(item, ...arguments)">
-            <div class="query">
-              <span
-                :title="title(item)"
-                class="clip mr-1"
-              >{{ title(item) }}</span>
-              <span class="v-label theme--light"> · {{ date(item) }}</span>
-            </div>
-
-            <div
-              :title="filters(item)"
-              class="clip"
-            >
-              <v-icon
-                size="12"
-                class="mr-2"
-                small
-              >mdi-tune</v-icon>
-              <span style="font-size: 12px;">{{ filters(item) }}</span>
-            </div>
-
-            <v-btn
-              @click="removeItem(item)"
-              :title="$t('button.remove')"
-              style="justify-content: center;"
-              icon
-              absolute
-              right
-            >
-              <v-icon small>mdi-trash-can-outline</v-icon>
-            </v-btn>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-  </v-menu>
+    <v-data-table :items-per-page="20" :headers="headers" :items="pluginRuns" item-key="id" class="elevation-1">
+      <template v-slot:item.status="{ value }">
+        <v-chip :color="progressColor(value)"> {{ value }}</v-chip>
+      </template>
+    </v-data-table>
+  </v-dialog>
 </template>
 
 <script>
+
+import ModalPlugin from "@/components/ModalPlugin.vue";
+
+import { mapStores } from "pinia";
+import { usePlayerStore } from "@/store/player";
+import { usePluginRunStore } from "@/store/plugin_run";
+import { usePluginRunResultStore } from "@/store/plugin_run_result";
+
 export default {
   data() {
     return {
       menu: false,
+      showModalPlugin: false,
+      headers: [
+        {
+          text: 'Plugin Name',
+          align: 'start',
+          sortable: false,
+          value: 'type',
+        },
+        { text: 'Date', value: 'date' },
+        { text: 'Progress', value: 'progress' },
+        { text: 'Status', value: 'status' },
+      ],
     };
   },
   methods: {
-    title(item) {
-      if (item.random) {
-        return this.$t("search.random");
+    progressColor(status) {
+      if (status === "ERROR") {
+        return "red";
       }
-      if (item.query.length) {
-        const title = this.$t("drawer.history.query.filled");
-        const values = [];
-        item.query.forEach(({ value, label }) => {
-          if (label) {
-            values.push(label);
-          } else {
-            values.push(value);
-          }
-        });
-        return `${title}: ${values.join(", ")}`;
+      if (status === "RUNNING") {
+        return "blue";
       }
-      return this.$t("drawer.history.query.empty");
+      if (status === "DONE") {
+        return "green";
+      }
+      return "yellow";
     },
-    date(item) {
-      const date = new Date(item.date);
-      const hours = date.getHours();
-      let minutes = date.getMinutes();
-      if (date.setHours(0, 0, 0, 0) === new Date().setHours(0, 0, 0, 0)) {
-        if (minutes < 10) {
-          return `${hours}:0${minutes}`;
-        }
-        return `${hours}:${minutes}`;
+    indeterminate(status) {
+      if (status === "QUEUED") {
+        return true;
       }
-      let month = date.toLocaleString("default", { month: "short" });
-      if (navigator.language.startsWith("en-")) {
-        return `${month}, ${date.getDate()}`;
+      if (status === "WAITING") {
+        return true;
       }
-      return `${date.getDate()}. ${month}`;
+      return false;
     },
-    filters(item) {
-      let values = [];
-      if (item.full_text && item.full_text.length) {
-        const title = this.$t("drawer.filter.field")["full.text"];
-        values.push(`${title}: ${item.full_text.join(", ")}`);
+    pluginStatus(status) {
+      if (status === "UNKNOWN") {
+        return this.$t("modal.plugin.status.unknown");
       }
-      if (item.filters && Object.keys(item.filters).length) {
-        Object.keys(item.filters).forEach((field) => {
-          if (item.filters[field].length) {
-            const title = this.$t("drawer.filter.field")[field];
-            const value = item.filters[field].map((n) => {
-              if (!n.positive) return `–${n.name}`;
-              return n.name;
-            });
-            values.push(`${title}: ${value.join(", ")}`);
-          }
-        });
+      if (status === "ERROR") {
+        return this.$t("modal.plugin.status.error");
       }
-      if (item.date_range && item.date_range.length) {
-        const title = this.$t("drawer.filter.field")["meta.period"];
-        values.push(`${title}: ${item.date_range.join("–")}`);
+      if (status === "DONE") {
+        return this.$t("modal.plugin.status.done");
       }
-      if (values.length) return `${values.join(" · ")}`;
-      return this.$t("drawer.history.filter.empty");
+      if (status === "RUNNING") {
+        return this.$t("modal.plugin.status.running");
+      }
+      if (status === "QUEUED") {
+        return this.$t("modal.plugin.status.queued");
+      }
+      if (status === "WAITING") {
+        return this.$t("modal.plugin.status.waiting");
+      }
+      return status;
     },
-    removeItem(item) {
-      this.$store.commit("bookmark/removeHistory", item);
-    },
-    removeAllItems() {
-      this.$store.commit("bookmark/removeAllHistory");
-    },
-    submit(item, event) {
-      if (event.target.nodeName !== "I") {
-        this.$store.commit("api/updateAll", item);
+    pluginName(type) {
+      if (type === "aggregate_scalar") {
+        return this.$t("modal.plugin.aggregation.plugin_name");
       }
+      if (type === "audio_amp") {
+        return this.$t("modal.plugin.audio_waveform.plugin_name");
+      }
+      if (type === "audio_freq") {
+        return this.$t("modal.plugin.audio_frequency.plugin_name");
+      }
+      if (type === "audio_rms") {
+        return this.$t("modal.plugin.audio_rms.plugin_name");
+      }
+      if (type === "clip") {
+        return this.$t("modal.plugin.clip.plugin_name");
+      }
+      if (type === "x_clip") {
+        return this.$t("modal.plugin.x_clip.plugin_name");
+      }
+      if (type === "clip_ontology") {
+        return this.$t("modal.plugin.clip_ontology.plugin_name");
+      }
+      if (type === "color_analysis") {
+        return this.$t("modal.plugin.color_analysis.plugin_name");
+      }
+      if (type === "color_brightness_analysis") {
+        return this.$t("modal.plugin.color_brightness_analysis.plugin_name");
+      }
+      if (type === "facedetection") {
+        return this.$t("modal.plugin.facedetection.plugin_name");
+      }
+      if (type === "face_clustering") {
+        return this.$t("modal.plugin.face_clustering.plugin_name");
+      }
+      if (type === "deepface_emotion") {
+        return this.$t("modal.plugin.faceemotion.plugin_name");
+      }
+      if (type === "insightface_facesize") {
+        return this.$t("modal.plugin.facesize.plugin_name");
+      }
+      if (type === "insightface_identification") {
+        return this.$t("modal.plugin.face_identification.plugin_name");
+      }
+      if (type === "blip_vqa") {
+        return this.$t("modal.plugin.blip.plugin_name");
+      }
+      if (type === "place_identification") {
+        return this.$t("modal.plugin.place_identification.plugin_name");
+      }
+      if (type === "places_classification") {
+        return this.$t("modal.plugin.places_classification.plugin_name");
+      }
+      if (type === "place_clustering") {
+        return this.$t("modal.plugin.place_clustering.plugin_name");
+      }
+      if (type === "whisper") {
+        return this.$t("modal.plugin.whisper.plugin_name");
+      }
+      if (type === "shotdetection") {
+        return this.$t("modal.plugin.shot_detection.plugin_name");
+      }
+      if (type === "shot_density") {
+        return this.$t("modal.plugin.shot_density.plugin_name");
+      }
+      if (type === "shot_scalar_annotation") {
+        return this.$t("modal.plugin.shot_scalar_annotation.plugin_name");
+      }
+      if (type === "shot_type_classification") {
+        return this.$t("modal.plugin.shot_type_classification.plugin_name");
+      }
+      if (type === "thumbnail") {
+        return this.$t("modal.plugin.thumbnail.plugin_name");
+      }
+      return type;
     },
   },
   computed: {
-    data() {
-      return this.$store.state.bookmark.history.slice(1);
+    loggedIn() {
+      return this.userStore.loggedIn;
     },
+    pluginRuns() {
+      const pluginRuns = this.pluginRunStore
+        .forVideo(this.playerStore.videoId)
+        .sort((a, b) => {
+          return new Date(b.date) - new Date(a.date)
+        }).map((pluginRun, index) => {
+          return {
+            id: index,
+            type: this.pluginName(pluginRun.type),
+            date: pluginRun.date.replace("T", " ").replace("Z", "").substring(0, pluginRun.date.length - 5),
+            progress: pluginRun.progress * 100 + "%",
+            status: pluginRun.status
+          }
+        });
+      return pluginRuns;
+    },
+    numRunningPlugins() {
+      return this.pluginRuns.filter((e) => {
+        return e.status !== "DONE" && e.status !== "ERROR";
+      }).length;
+    },
+
+    ...mapStores(usePlayerStore, usePluginRunStore, usePluginRunResultStore),
+  },
+  components: {
+    ModalPlugin,
   },
 };
 </script>
 
 <style>
-.v-menu__content:empty {
-  box-shadow: none;
+.v-menu__content .v-btn:not(.accent) {
+  text-transform: capitalize;
+  justify-content: left;
 }
 
-.v-menu__content .clip {
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.v-btn:not(.v-btn--round).v-size--large {
+  height: 48px;
+}
+
+.plugin-overview {
+  background-color: rgb(255, 255, 255) !important;
+  max-height: 500px;
+  padding: 0;
+  margin: 0;
+}
+
+.v-list-item__content.plugin-overview {
+  min-width: 350px;
+  max-width: 500px;
+  letter-spacing: 0.0892857143em;
+  overflow: auto;
+  /* border-bottom: 1px solid #f5f5f5; */
+}
+
+.text-overflow {
   overflow: hidden;
+  white-space: nowrap;
+  /* Don't forget this one */
+  text-overflow: ellipsis;
 }
 
-.v-menu__content span.clip {
-  max-width: 190px;
+.plugin-name {
+  font-weight: bold;
 }
 
-.v-menu__title {
-  display: flex;
-  align-items: center;
-  font-size: 1.25rem;
-}
-
-.history .v-list-item__content > button {
-  opacity: 0;
-}
-
-.history .v-list-item__content:hover > button {
-  opacity: 1;
-}
-
-.history .v-list-item__content .query {
-  line-height: 1.25;
-}
-
-.history .v-list-item__content .query > span {
-  display: inline-block;
-  vertical-align: middle;
-  max-width: 210px;
-}
-
-.v-menu__content .history .v-btn:not(.accent) {
+.v-menu__content .plugin-overview .v-btn:not(.accent) {
   justify-content: center;
+}
+
+.v-data-table .v-data-table-header tr th {
+  font-size: 20px !important;
 }
 </style>

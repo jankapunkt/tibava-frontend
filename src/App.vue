@@ -10,9 +10,10 @@
       </v-btn>
 
       <v-spacer></v-spacer>
-      <PluginMenu v-if="videoLoaded" />
-      <AnnotationMenu v-if="videoLoaded" />
-      <VideoMenu v-if="videoLoaded" />
+      <PluginMenu style="margin-right: 10px;" v-if="videoLoaded" />
+      <History style="margin-right: 10px;" v-if="videoLoaded" />
+      <AnnotationMenu style="margin-right: 10px;" v-if="videoLoaded" />
+      <VideoMenu style="margin-right: 10px;" v-if="videoLoaded" />
       <UserMenu />
     </v-app-bar>
     <router-view />
@@ -25,6 +26,7 @@ import VideoMenu from "@/components/VideoMenu.vue";
 import PluginMenu from "@/components/PluginMenu.vue";
 import AnnotationMenu from "@/components/AnnotationMenu.vue";
 import VisualizationMenu from "./components/VisualizationMenu.vue";
+import History from "./components/History.vue";
 
 import { mapStores } from "pinia";
 import { useUserStore } from "@/store/user";
