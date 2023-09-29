@@ -77,31 +77,24 @@ export default {
         }
       });
 
-      console.log("dictionary");
-      console.log(Object.keys(dictionary).length);
       // Set the desired number of words to visualize
       const num_words = 40;
 
       var words = Object.entries(dictionary)
         .sort((a, b) => b[1] - a[1]) // Sort the entries by count in descending order
         .slice(0, num_words) // Take the top `num_words` entries
-        .map(([word, count], index) => ({ // assign each word a number according to how often it appears
+        .map(([word, count]) => ({ // assign each word a number according to how often it appears
           text: word,
-          count: count - index,
+          count: count,
         }));
 
-      const current_max = words[0].count;
-      const desired_max = 80;
+      const max = words[0].count;
+      const desired_max = 100;
 
       // map all font-sizes to a good size, where the maximum is 17
-      const diff = desired_max - words[0].count;
       words.map((w) => {
-        w.count = w.count + diff;
+        w.count = w.count / max * desired_max;
       });
-
-
-      console.log("words");
-      console.log(words);
 
       this.layout = cloud()
         .size([this.containerWidth, this.containerHeight])
