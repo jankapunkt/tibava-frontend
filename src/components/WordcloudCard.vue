@@ -50,6 +50,7 @@ export default {
         }
       }
 
+
       // filter out stopwords
       const { removeStopwords, deu, eng } = require('stopword');
       var filteredText = all_words;
@@ -66,46 +67,55 @@ export default {
 
       // count words
       var dictionary = {};
+      const custom_filter = ["", "..", ".", "?", "!"]
 
       filteredText.forEach((word) => {
         if (dictionary.hasOwnProperty(word)) {
           dictionary[word]++;
-        } else {
+        } else if (!custom_filter.includes(word)) {
           dictionary[word] = 1;
         }
       });
 
+      console.log("dictionary");
+      console.log(Object.keys(dictionary).length);
       // Set the desired number of words to visualize
       const num_words = 40;
 
       var words = Object.entries(dictionary)
         .sort((a, b) => b[1] - a[1]) // Sort the entries by count in descending order
         .slice(0, num_words) // Take the top `num_words` entries
-        .map(([word, count]) => ({ // assign each word a number according to how often it appears
+        .map(([word, count], index) => ({ // assign each word a number according to how often it appears
           text: word,
-          count: count,
+          count: count - index,
         }));
 
       const current_max = words[0].count;
-      const desired_max = 50;
+      const desired_max = 80;
 
       // map all font-sizes to a good size, where the maximum is 17
+      const diff = desired_max - words[0].count;
       words.map((w) => {
-        w.count = w.count * desired_max / current_max;
+        w.count = w.count + diff;
       });
+
+
+      console.log("words");
+      console.log(words);
 
       this.layout = cloud()
         .size([this.containerWidth, this.containerHeight])
         .words(words)
-        .padding(10)
-        .rotate(function () { return ~~((2 * Math.random() - 1) * 45) })
-        .fontSize((d) => d.count * 10)
+        .padding(8)
+        .rotate(function () { return 0 })
+        // .rotate(function () { return ~~((2 * Math.random() - 1)) }) add this if you want some rotation in the words
+        .fontSize((d) => d.count)
         .on('end', this.drawWordCloud);
 
       this.layout.start();
     },
     drawWordCloud(words) {
-      const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+      const colorScale = d3.scaleOrdinal(d3.schemeTableau10);
       d3.select(this.$refs.wordcloudContainer)
         .append('svg')
         .attr('width', this.containerWidth)
