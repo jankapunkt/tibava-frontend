@@ -2,18 +2,22 @@
   <v-card v-if="clustersLength == 0" elevation="0">
     No face clustering has been conducted yet. Create it with the <em>Face Clustering</em> pipeline.
   </v-card>
-  <v-virtual-scroll v-else :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" ref="parentContainer" :items="clusterList"
-    item-height="140" :bench="clustersLength" height="100%">
-    <template v-slot:default="{ item }">
-      <PersonCard :cluster="item" :key="item.systemId" :ref="`childContainer-${item.systemId}`"
-        @childDeleted="removeChild" />
-    </template>
-  </v-virtual-scroll>
+  <v-card align="center" v-else>
+    <PersonGraph />
+    <v-virtual-scroll :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" ref="parentContainer" :items="clusterList"
+      item-height="140" :bench="clustersLength" height="100%">
+      <template v-slot:default="{ item }">
+        <PersonCard :cluster="item" :key="item.systemId" :ref="`childContainer-${item.systemId}`"
+          @childDeleted="removeChild" />
+      </template>
+    </v-virtual-scroll>
+  </v-card>
 </template>
 
 <script>
 import { mapStores } from "pinia";
 import PersonCard from "@/components/PersonCard.vue";
+import PersonGraph from "@/components/PersonGraph.vue"
 import { useFaceclusterStore } from "@/store/facecluster";
 import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
 import { usePlayerStore } from "@/store/player";
@@ -54,6 +58,7 @@ export default {
   },
   components: {
     PersonCard,
+    PersonGraph,
   },
   watch: {
     pluginRunResults(num) {

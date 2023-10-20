@@ -25,7 +25,6 @@ import UserMenu from "@/components/UserMenu.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
 import PluginMenu from "@/components/PluginMenu.vue";
 import AnnotationMenu from "@/components/AnnotationMenu.vue";
-import VisualizationMenu from "./components/VisualizationMenu.vue";
 import History from "./components/History.vue";
 
 import { mapStores } from "pinia";
@@ -53,7 +52,6 @@ export default {
     VideoMenu,
     PluginMenu,
     AnnotationMenu,
-    VisualizationMenu,
     History
   },
 };
