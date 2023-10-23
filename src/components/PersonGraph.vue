@@ -181,7 +181,7 @@ export default {
 <style>
 #graphContainer {
     width: 100%;
-    height: 90%;
+    height: 80%;
 }
 
 .loading-container {
@@ -189,13 +189,12 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    height: 50vh;
 }
 
 .spinner {
     font-size: 48px;
-    color: #3498db;
-    /* Change the color as desired */
+    color: #ac1414;
 }
 
 .loading-text {

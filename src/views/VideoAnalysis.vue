@@ -22,9 +22,12 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card v-if="isLoading" elevation="0">Loading data ...
-            <v-icon small>{{ "mdi-timer-sand" }}</v-icon>
-          </v-card>
+          <div v-if="isLoading" class="loading-container">
+            <div class="spinner">
+              <i class="mdi mdi-loading mdi-spin"></i>
+            </div>
+            <div class="loading-text">Loading...</div>
+          </div>
           <v-card v-else elevation="2" ref="resultCard" :height="resultCardHeight">
             <div class="sticky-tabs-bar">
               <v-tabs v-model="tab" centered>
@@ -411,5 +414,23 @@ export default {
 
 .main:focus {
   outline: none;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+}
+
+.spinner {
+    font-size: 48px;
+    color: #ac1414;
+}
+
+.loading-text {
+    margin-top: 10px;
+    font-size: 18px;
 }
 </style>
