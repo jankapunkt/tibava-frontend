@@ -38,12 +38,13 @@
               </v-tabs>
             </div>
 
-            <v-tabs-items v-model="tab" style="height: 95%">
+            <v-tabs-items v-model="tab" style="height: 92%;">
               <v-tab-item style="height: 100%">
                 <ShotsOverview />
               </v-tab-item>
 
               <v-tab-item style="height: 100%">
+                <PersonGraph />
                 <PersonOverview />
               </v-tab-item>
 
@@ -97,6 +98,7 @@ import WordcloudCard from "@/components/WordcloudCard.vue";
 import VisualizationMenu from "@/components/VisualizationMenu.vue";
 import PersonOverview from "@/components/PersonOverview.vue";
 import PlacesOverview from "@/components/PlacesOverview.vue";
+import PersonGraph from "../components/PersonGraph.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -358,7 +360,8 @@ export default {
     WordcloudCard,
     PersonOverview,
     PlacesOverview,
-    VisualizationMenu
+    VisualizationMenu,
+    PersonGraph
   },
 
   watch: {

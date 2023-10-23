@@ -9,7 +9,13 @@
         <v-card style="height: 90vh;">
             <v-card-title>Graph Visualization</v-card-title>
             <v-card-subtitle>You can drag around graph elements.</v-card-subtitle>
-            <div id="graphContainer"></div>
+            <div v-if="!loading" id="graphContainer"></div>
+            <div v-else class="loading-container">
+                <div class="spinner">
+                    <i class="mdi mdi-loading mdi-spin"></i>
+                </div>
+                <div class="loading-text">Loading...</div>
+            </div>
             <v-card-actions variant="tonal">
                 <v-btn @click="close">{{ $t("button.close") }}</v-btn>
             </v-card-actions>
@@ -22,57 +28,152 @@ import "vis";
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import { mapStores } from "pinia";
-import { useFaceStore } from "@/store/face";
-import { usePlaceStore } from "@/store/place";
+import { useFaceclusterStore } from "@/store/facecluster";
+import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
 
 export default {
+    props: ["clusters"],
     data() {
         return {
             show: false,
+            clusterList: [],
+            nodes: null,
+            edges: null,
+            loading: false,
         };
+    },
+    created() {
+        this.fetchClusters();
+        this.prepareData();
     },
     mounted() {
         this.isGraphInitialized = true;
     },
     methods: {
+        prepareData() {
+            if (this.clusterList.length == 0) {
+                return;
+            }
+
+            this.loading = true;
+
+            const clusterTimelineItemStore = useClusterTimelineItemStore();
+
+            let dataset = [];
+            this.clusterList.forEach((cluster) => {
+                dataset.push({ id: cluster.id, label: clusterTimelineItemStore.getName(cluster.systemId) })
+            });
+
+            this.nodes = new DataSet(dataset);
+
+            let connections = [];
+            let checked = [];
+            this.clusterList.forEach((cluster) => {
+                this.clusterList.forEach((conn_cluster) => {
+                    if (cluster.id === conn_cluster.id) {
+                        return;
+                    }
+                    if (checked.includes(String(cluster.id) + String(conn_cluster.id))) {
+                        return;
+                    }
+                    let value = 0;
+                    cluster.timestamps.forEach((timestamp) => {
+                        if (conn_cluster.timestamps.includes(timestamp)) {
+                            value++;
+                        }
+                    });
+                    if (value > 0) {
+                        connections.push({ from: cluster.id, to: conn_cluster.id, value: value, label: String(value) });
+                    }
+                    checked.push(String(cluster.id) + String(conn_cluster.id));
+                    checked.push(String(conn_cluster.id) + String(cluster.id));
+                });
+            });
+            this.edges = new DataSet(connections);
+            this.loading = false;
+
+        },
         openGraph() {
 
             if (!this.isGraphInitialized) {
                 return;
             }
+            this.loading = true;
             this.show = true;
             this.$nextTick(() => {
                 const container = document.getElementById("graphContainer");
-                console.log(container);
-                console.log(this);
 
                 // Define your GraphML data here
-                const nodes = new DataSet([
-                    { id: 1, label: "Node 1" },
-                    { id: 2, label: "Node 2" },
-                    { id: 3, label: "Node 3" },
-                ]);
-                const edges = new DataSet([
-                    { from: 1, to: 2 },
-                    { from: 2, to: 3 },
-                ]);
+
 
                 const data = {
-                    nodes: nodes,
-                    edges: edges,
+                    nodes: this.nodes,
+                    edges: this.edges,
                 };
 
                 const options = {
-                    // Customize your visualization options here
+                    autoResize: true,
+                    nodes: {
+
+                        color: {
+                            background: '#ffffff',
+                            border: '#ae1313',
+                            highlight: '#ae1313',
+                        },
+                        shape: 'circle',
+                        size: 55,
+                        font: {
+                            size: 16,
+                        },
+                        borderWidth: 2,
+                        shadow: true
+                    },
+                    edges: {
+                        smooth: {
+                            forceDirection: "none"
+                        }
+                    },
+                    physics: {
+                        forceAtlas2Based: {
+                            springLength: 180,
+                            springConstant: 0.27
+                        },
+                    },
+                    interaction: {
+                        hover: true
+                    }
                 };
 
-                const network = new Network(container, data, options);
+                var network = new Network(container, data, options);
             })
+            this.loading = false;
+        },
+        fetchClusters() {
+            let tempList = this.faceclusterStore.clusters;
+
+            if (tempList.length == 0) {
+                return
+            }
+
+            this.clusterList = tempList.filter((item) => this.clusterTimelineItemStore.getID(item.systemId) !== -1);
         },
         close() {
             this.show = false;
-        }
+        },
     },
+    computed: {
+        availableClusters() {
+            const clusterTimelineItemStore = useClusterTimelineItemStore();
+            return clusterTimelineItemStore.all.length;
+        },
+        ...mapStores(useFaceclusterStore, useClusterTimelineItemStore)
+    },
+    watch: {
+        availableClusters(num) {
+            this.fetchClusters();
+            this.prepareData();
+        },
+    }
 };
 </script>
 
@@ -81,5 +182,24 @@ export default {
 #graphContainer {
     width: 100%;
     height: 90%;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.spinner {
+    font-size: 48px;
+    color: #3498db;
+    /* Change the color as desired */
+}
+
+.loading-text {
+    margin-top: 10px;
+    font-size: 18px;
 }
 </style>

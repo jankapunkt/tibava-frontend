@@ -174,7 +174,6 @@ export default {
       return this.userStore.loggedIn;
     },
     pluginRuns() {
-      console.log("now");
       const pluginRuns = this.pluginRunStore
         .forVideo(this.playerStore.videoId)
         .sort((a, b) => {
