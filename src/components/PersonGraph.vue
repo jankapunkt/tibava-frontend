@@ -18,9 +18,14 @@
             <div id="graphContainer">
             </div>
             <div v-if="!loading" align="center" class="text-caption">
-                <v-slider class="clusterslider" v-model="desired_min_size" style="width: 40%" :max="cluster_max_size"
-                    :min="cluster_min_size" thumb-label="always">
-                </v-slider>
+                <v-text-field
+                    v-model="desired_min_size"
+                    type="number"
+                    style="width: 80px"
+                    density="compact"
+                    hide-details
+                    variant="outlined"
+                ></v-text-field>
                 <h3>Minimum Cluster Size</h3>
             </div>
             <v-card-actions variant="tonal">
@@ -67,7 +72,6 @@ export default {
             if (this.clusterList.length == 0) {
                 return;
             }
-
             const clusterTimelineItemStore = useClusterTimelineItemStore();
 
             this.clusterList.forEach((cluster) => {
@@ -82,10 +86,9 @@ export default {
             let dataset = [];
             this.clusterList.forEach((cluster) => {
                 if (cluster.timestamps.length < this.desired_min_size) {
-                    console.log("<<<<<<<<<<<<<<<<<");
                     return;
                 }
-                dataset.push({ id: cluster.id, label: clusterTimelineItemStore.getName(cluster.systemId) + "\n" + cluster.timestamps.length })
+                dataset.push({ id: cluster.id, label: clusterTimelineItemStore.getName(cluster.systemId) + "\nSize:" + cluster.timestamps.length })
             });
 
             this.nodes = new DataSet(dataset);
@@ -94,7 +97,6 @@ export default {
             let checked = [];
             this.clusterList.forEach((cluster) => {
                 if (cluster.timestamps.length < this.desired_min_size) {
-                    console.log("<<<<<<<<<<2<<<<<<<");
                     return;
                 }
 
@@ -125,6 +127,12 @@ export default {
 
             if (!this.isGraphInitialized) {
                 return;
+            }
+
+            this.prepareData();
+            // Destroy the existing network (if it exists)
+            if (this.network) {
+                this.network.destroy();
             }
 
             this.show = true;
@@ -204,17 +212,7 @@ export default {
         },
         desired_min_size(value) {
             console.log("dersired_min_size " + this.desired_min_size);
-            this.prepareData();
-            // Destroy the existing network (if it exists)
-            if (this.network) {
-                this.network.destroy();
-            }
-            // Create a new network with the updated data
-            this.network = new Network(
-                document.getElementById("graphContainer"),
-                this.data,
-                this.options
-            );
+            this.openGraph();
         }
     }
 };
@@ -223,14 +221,11 @@ export default {
 
 <style>
 #graphContainer {
-    display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 83%;
-    max-height: 83%;
-    overflow-y: auto;
+    height: 72%;
+    max-height: 75vh;
     margin-bottom: 5px;
 }
 
@@ -239,6 +234,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-bottom: 0px;
 }
 
 .loading-container {
@@ -246,8 +242,8 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 83%;
-    max-height: 83%;
+    height: 75vh;
+    max-height: 75vh;
     overflow-y: auto;
     margin-bottom: 5px;
 }
