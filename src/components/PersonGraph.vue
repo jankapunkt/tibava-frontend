@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="show" width="90%" persistent>
+    <v-dialog v-model="show" width="100%" persistent>
         <template v-slot:activator="{ on }">
             <v-btn @click="openGraph" style="color: rgb(175, 20, 20);">&nbsp; Show as Graph&nbsp;
                 <v-icon color="primary">mdi-arrow-top-right-bold-box-outline</v-icon>
@@ -17,19 +17,18 @@
             </div>
             <div id="graphContainer">
             </div>
-            <div v-if="!loading" align="center" class="text-caption">
-                <v-text-field
-                    v-model="desired_min_size"
-                    type="number"
-                    style="width: 80px"
-                    density="compact"
-                    hide-details
-                    variant="outlined"
-                ></v-text-field>
-                <h3>Minimum Cluster Size</h3>
-            </div>
+
             <v-card-actions variant="tonal">
-                <v-btn @click="close">{{ $t("button.close") }}</v-btn>
+                <v-row>
+                    <v-col cols="1">
+                        <v-text-field v-if="!loading" label="Minimum Cluster Size" v-model="desired_min_size" type="number"
+                            @input="updateText"></v-text-field>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="1">
+                        <v-btn @click="close">{{ $t("button.close") }}</v-btn>
+                    </v-col>
+                </v-row>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -58,6 +57,7 @@ export default {
             network: null,
             data: null,
             options: null,
+            debounceTimer: null,
         };
     },
     created() {
@@ -68,6 +68,18 @@ export default {
         this.isGraphInitialized = true;
     },
     methods: {
+        updateText() {
+            // Clear the previous debounce timer, if any
+            if (this.debounceTimer) {
+                clearTimeout(this.debounceTimer);
+            }
+
+            // Set a new debounce timer to update the content after 500 milliseconds (adjust the delay as needed)
+            this.debounceTimer = setTimeout(() => {
+                // Your update logic here
+                this.openGraph();
+            }, 500);
+        },
         prepareData() {
             if (this.clusterList.length == 0) {
                 return;
@@ -210,10 +222,6 @@ export default {
         availableClusters(num) {
             this.fetchClusters();
         },
-        desired_min_size(value) {
-            console.log("dersired_min_size " + this.desired_min_size);
-            this.openGraph();
-        }
     }
 };
 </script>
@@ -224,7 +232,7 @@ export default {
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 72%;
+    height: 79%;
     max-height: 75vh;
     margin-bottom: 5px;
 }
