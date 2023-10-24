@@ -1,20 +1,27 @@
 <template>
     <v-dialog v-model="show" width="90%" persistent>
         <template v-slot:activator="{ on }">
-            <v-btn @click="openGraph" style="color: rgb(175, 20, 20); background-color: #E6E6E6; margin-top: 10px;">
-                &nbsp; Show as Graph&nbsp;
+            <v-btn @click="openGraph" style="color: rgb(175, 20, 20);">&nbsp; Show as Graph&nbsp;
                 <v-icon color="primary">mdi-arrow-top-right-bold-box-outline</v-icon>
             </v-btn>
         </template>
         <v-card style="height: 90vh;">
             <v-card-title>Graph Visualization</v-card-title>
             <v-card-subtitle>You can drag around graph elements.</v-card-subtitle>
-            <div v-if="!loading" id="graphContainer"></div>
-            <div v-else class="loading-container">
+
+            <div v-if="loading" class="loading-container">
                 <div class="spinner">
                     <i class="mdi mdi-loading mdi-spin"></i>
                 </div>
                 <div class="loading-text">Loading...</div>
+            </div>
+            <div id="graphContainer">
+            </div>
+            <div v-if="!loading" align="center" class="text-caption">
+                <v-slider class="clusterslider" v-model="desired_min_size" style="width: 40%" :max="cluster_max_size"
+                    :min="cluster_min_size" thumb-label="always">
+                </v-slider>
+                <h3>Minimum Cluster Size</h3>
             </div>
             <v-card-actions variant="tonal">
                 <v-btn @click="close">{{ $t("button.close") }}</v-btn>
@@ -39,7 +46,13 @@ export default {
             clusterList: [],
             nodes: null,
             edges: null,
-            loading: false,
+            loading: true,
+            cluster_min_size: 0,
+            cluster_max_size: null,
+            desired_min_size: 0,
+            network: null,
+            data: null,
+            options: null,
         };
     },
     created() {
@@ -55,13 +68,24 @@ export default {
                 return;
             }
 
-            this.loading = true;
-
             const clusterTimelineItemStore = useClusterTimelineItemStore();
+
+            this.clusterList.forEach((cluster) => {
+                if (cluster.timestamps.length < this.cluster_min_size) {
+                    this.cluster_min_size = cluster.timestamps.length;
+                }
+                if (cluster.timestamps.length > this.cluster_max_size) {
+                    this.cluster_max_size = cluster.timestamps.length;
+                }
+            });
 
             let dataset = [];
             this.clusterList.forEach((cluster) => {
-                dataset.push({ id: cluster.id, label: clusterTimelineItemStore.getName(cluster.systemId) })
+                if (cluster.timestamps.length < this.desired_min_size) {
+                    console.log("<<<<<<<<<<<<<<<<<");
+                    return;
+                }
+                dataset.push({ id: cluster.id, label: clusterTimelineItemStore.getName(cluster.systemId) + "\n" + cluster.timestamps.length })
             });
 
             this.nodes = new DataSet(dataset);
@@ -69,6 +93,11 @@ export default {
             let connections = [];
             let checked = [];
             this.clusterList.forEach((cluster) => {
+                if (cluster.timestamps.length < this.desired_min_size) {
+                    console.log("<<<<<<<<<<2<<<<<<<");
+                    return;
+                }
+
                 this.clusterList.forEach((conn_cluster) => {
                     if (cluster.id === conn_cluster.id) {
                         return;
@@ -90,7 +119,6 @@ export default {
                 });
             });
             this.edges = new DataSet(connections);
-            this.loading = false;
 
         },
         openGraph() {
@@ -98,20 +126,20 @@ export default {
             if (!this.isGraphInitialized) {
                 return;
             }
-            this.loading = true;
+
             this.show = true;
+            this.loading = true;
+
             this.$nextTick(() => {
-                const container = document.getElementById("graphContainer");
 
                 // Define your GraphML data here
 
-
-                const data = {
+                this.data = {
                     nodes: this.nodes,
                     edges: this.edges,
                 };
 
-                const options = {
+                this.options = {
                     autoResize: true,
                     nodes: {
 
@@ -135,18 +163,20 @@ export default {
                     },
                     physics: {
                         forceAtlas2Based: {
-                            springLength: 180,
+                            springLength: 250,
                             springConstant: 0.27
                         },
                     },
-                    interaction: {
-                        hover: true
-                    }
                 };
 
-                var network = new Network(container, data, options);
+                const container = document.getElementById("graphContainer");
+                this.network = new Network(container, this.data, this.options);
+
+                const functionThatDoesWhatYouNeed = () => {
+                    this.loading = false;
+                }
+                this.network.on('afterDrawing', functionThatDoesWhatYouNeed);
             })
-            this.loading = false;
         },
         fetchClusters() {
             let tempList = this.faceclusterStore.clusters;
@@ -171,8 +201,21 @@ export default {
     watch: {
         availableClusters(num) {
             this.fetchClusters();
-            this.prepareData();
         },
+        desired_min_size(value) {
+            console.log("dersired_min_size " + this.desired_min_size);
+            this.prepareData();
+            // Destroy the existing network (if it exists)
+            if (this.network) {
+                this.network.destroy();
+            }
+            // Create a new network with the updated data
+            this.network = new Network(
+                document.getElementById("graphContainer"),
+                this.data,
+                this.options
+            );
+        }
     }
 };
 </script>
@@ -180,8 +223,22 @@ export default {
 
 <style>
 #graphContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    height: 80%;
+    height: 83%;
+    max-height: 83%;
+    overflow-y: auto;
+    margin-bottom: 5px;
+}
+
+.clusterslider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .loading-container {
@@ -189,7 +246,10 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 50vh;
+    height: 83%;
+    max-height: 83%;
+    overflow-y: auto;
+    margin-bottom: 5px;
 }
 
 .spinner {
