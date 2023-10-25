@@ -7,7 +7,7 @@
         </template>
         <v-card style="height: 90vh;">
             <v-card-title>Graph Visualization</v-card-title>
-            <v-card-subtitle>You can drag around graph elements.</v-card-subtitle>
+            <v-card-subtitle>Use the mouse to interact and zoom.</v-card-subtitle>
 
             <div v-if="loading" class="loading-container">
                 <div class="spinner">
@@ -160,7 +160,6 @@ export default {
                 };
 
                 this.options = {
-                    autoResize: true,
                     nodes: {
 
                         color: {
@@ -177,15 +176,10 @@ export default {
                         shadow: true
                     },
                     edges: {
+                        length: 400,
                         smooth: {
                             forceDirection: "none"
                         }
-                    },
-                    physics: {
-                        forceAtlas2Based: {
-                            springLength: 250,
-                            springConstant: 0.27
-                        },
                     },
                 };
 
