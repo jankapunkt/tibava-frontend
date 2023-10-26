@@ -24,6 +24,16 @@
                         <v-text-field v-if="!loading" label="Minimum Cluster Size" v-model="desired_min_size" type="number"
                             @input="updateText"></v-text-field>
                     </v-col>
+                    <v-col cols="1"></v-col>
+                    <v-col cols="5">
+                        <v-label>Connect clusters if elements appeared in the same:</v-label>
+                        <v-switch v-model="shotVisualization" label="Shot">
+                            <template #prepend>
+                                <v-label>Frame</v-label>
+                            </template>
+
+                        </v-switch>
+                    </v-col>
                     <v-spacer></v-spacer>
                     <v-col cols="1">
                         <v-btn @click="close">{{ $t("button.close") }}</v-btn>
@@ -40,6 +50,7 @@ import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import { mapStores } from "pinia";
 import { useFaceclusterStore } from "@/store/facecluster";
+import { useShotStore } from "@/store/shot";
 import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
 
 export default {
@@ -58,6 +69,7 @@ export default {
             data: null,
             options: null,
             debounceTimer: null,
+            shotVisualization: true
         };
     },
     created() {
@@ -93,14 +105,45 @@ export default {
                 if (cluster.timestamps.length > this.cluster_max_size) {
                     this.cluster_max_size = cluster.timestamps.length;
                 }
+                if (this.mode == "shot") {
+                    cluster.shots = [];
+                }
             });
+
+
+            const shotStore = useShotStore();
+            const shots = shotStore.shots;
+
+            if (this.shotVisualization) {
+                // for each shot
+                for (const shot of shots) {
+                    // iterate over all clusters
+                    for (const [index, cluster] of Object.entries(this.clusterList)) {
+                        // if an object of the cluster is in the shot
+                        for (const timestamp of cluster.timestamps) {
+                            // console.log(timestamp);
+                            if (shot.start <= timestamp & shot.end >= timestamp) {
+                                if (!cluster.shots.includes(shot.id)) {
+                                    cluster.shots.push(shot.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // save the shotnumber to this cluster
 
             let dataset = [];
             this.clusterList.forEach((cluster) => {
                 if (cluster.timestamps.length < this.desired_min_size) {
                     return;
                 }
-                dataset.push({ id: cluster.id, label: clusterTimelineItemStore.getName(cluster.systemId) + "\nSize:" + cluster.timestamps.length })
+                dataset.push({
+                    id: cluster.id,
+                    label: clusterTimelineItemStore.getName(cluster.systemId),
+                    value: cluster.timestamps.length
+                })
             });
 
             this.nodes = new DataSet(dataset);
@@ -120,11 +163,19 @@ export default {
                         return;
                     }
                     let value = 0;
-                    cluster.timestamps.forEach((timestamp) => {
-                        if (conn_cluster.timestamps.includes(timestamp)) {
-                            value++;
-                        }
-                    });
+                    if (!this.shotVisualization) {
+                        cluster.timestamps.forEach((timestamp) => {
+                            if (conn_cluster.timestamps.includes(timestamp)) {
+                                value++;
+                            }
+                        });
+                    } else { // this.shotVisualization == true
+                        cluster.shots.forEach((shot) => {
+                            if (conn_cluster.shots.includes(shot)) {
+                                value++;
+                            }
+                        })
+                    }
                     if (value > 0) {
                         connections.push({ from: cluster.id, to: conn_cluster.id, value: value, label: String(value) });
                     }
@@ -167,16 +218,18 @@ export default {
                             border: '#ae1313',
                             highlight: '#ae1313',
                         },
-                        shape: 'circle',
-                        size: 55,
+                        shape: 'dot',
                         font: {
-                            size: 16,
+                            size: 25,
                         },
                         borderWidth: 2,
-                        shadow: true
+                        shadow: true,
+                        scaling: {
+                            max: 50
+                        }
                     },
                     edges: {
-                        length: 400,
+                        length: 300,
                         smooth: {
                             forceDirection: "none"
                         }
@@ -210,12 +263,15 @@ export default {
             const clusterTimelineItemStore = useClusterTimelineItemStore();
             return clusterTimelineItemStore.all.length;
         },
-        ...mapStores(useFaceclusterStore, useClusterTimelineItemStore)
+        ...mapStores(useFaceclusterStore, useClusterTimelineItemStore, useShotStore)
     },
     watch: {
         availableClusters(num) {
             this.fetchClusters();
         },
+        shotVisualization(shot) {
+            this.openGraph();
+        }
     }
 };
 </script>
