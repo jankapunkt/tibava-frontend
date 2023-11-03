@@ -105,7 +105,7 @@ export default {
                 if (cluster.timestamps.length > this.cluster_max_size) {
                     this.cluster_max_size = cluster.timestamps.length;
                 }
-                if (this.mode == "shot") {
+                if (this.shotVisualization) {
                     cluster.shots = [];
                 }
             });
