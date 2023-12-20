@@ -15,6 +15,10 @@
       <template v-slot:item.status="{ value }">
         <v-chip :color="progressColor(value)"> {{ value }}</v-chip>
       </template>
+      <template v-slot:item.progress="{ value }">
+        <v-progress-linear :value="value * 100" height="8">
+        </v-progress-linear>
+      </template>
     </v-data-table>
   </v-dialog>
 </template>
@@ -179,7 +183,7 @@ export default {
             id: index,
             type: this.pluginName(pluginRun.type),
             date: pluginRun.date.replace("T", " ").replace("Z", "").substring(0, pluginRun.date.length - 5),
-            progress: pluginRun.progress * 100 + "%",
+            progress: parseFloat(pluginRun.progress),// * 100 + "%",
             status: pluginRun.status
           }
         });

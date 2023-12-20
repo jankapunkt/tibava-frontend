@@ -14,9 +14,8 @@
               <div class="text-h5">{{ $t("welcome.demo_title") }}</div>
 
               <p>
-                <video controls>
+                <video style="border-style: outset; border-color: black;" controls>
                   <source
-                    width="10%"
                     src="https://tib.eu/cloud/s/sMmqWqWYict3Zpb/download/TIB-AV-A_Einfuehrung_2.mp4"
                     type="video/mp4"
                   />
@@ -114,11 +113,13 @@ export default {
   margin-right: auto;
   max-width: 1920px;
   width: 100%;
-  height: auto;
   display: block;
 }
 .welcome {
   margin-bottom: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .video-gallery > * {
   margin: 10px;

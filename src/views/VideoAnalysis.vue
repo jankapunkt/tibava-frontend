@@ -22,9 +22,12 @@
         </v-col>
 
         <v-col cols="6">
-          <v-card v-if="isLoading" elevation="0">Loading data ...
-            <v-icon small>{{ "mdi-timer-sand" }}</v-icon>
-          </v-card>
+          <div v-if="isLoading" class="loading-container">
+            <div class="spinner">
+              <i class="mdi mdi-loading mdi-spin"></i>
+            </div>
+            <div class="loading-text">Loading...</div>
+          </div>
           <v-card v-else elevation="2" ref="resultCard" :height="resultCardHeight">
             <div class="sticky-tabs-bar">
               <v-tabs v-model="tab" centered>
@@ -38,12 +41,13 @@
               </v-tabs>
             </div>
 
-            <v-tabs-items v-model="tab" style="height: 95%">
+            <v-tabs-items v-model="tab" style="height: 92%;">
               <v-tab-item style="height: 100%">
                 <ShotsOverview />
               </v-tab-item>
 
               <v-tab-item style="height: 100%">
+                <PersonGraph />
                 <PersonOverview />
               </v-tab-item>
 
@@ -97,6 +101,7 @@ import WordcloudCard from "@/components/WordcloudCard.vue";
 import VisualizationMenu from "@/components/VisualizationMenu.vue";
 import PersonOverview from "@/components/PersonOverview.vue";
 import PlacesOverview from "@/components/PlacesOverview.vue";
+import PersonGraph from "../components/PersonGraph.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
 // import store from "../store/index.js";
@@ -358,7 +363,8 @@ export default {
     WordcloudCard,
     PersonOverview,
     PlacesOverview,
-    VisualizationMenu
+    VisualizationMenu,
+    PersonGraph
   },
 
   watch: {
@@ -408,5 +414,23 @@ export default {
 
 .main:focus {
   outline: none;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+}
+
+.spinner {
+    font-size: 48px;
+    color: #ac1414;
+}
+
+.loading-text {
+    margin-top: 10px;
+    font-size: 18px;
 }
 </style>

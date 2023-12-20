@@ -23,6 +23,8 @@
     "pixi.js": "^6.2.2",
     "plotly.js": "^2.24.3",
     "stopword": "^2.0.8",
+    "vis": "^4.21.0-EOL",
+    "vis-network": "^9.1.8",
     "vue": "^2.6.11",
     "vue-draggable-nested-tree": "^3.0.0-beta2",
     "vue-i18n": "^8.26.8",

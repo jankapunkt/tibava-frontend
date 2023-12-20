@@ -61,7 +61,8 @@
         "deleteCluster": "Delete",
         "edit": "Edit",
         "apply": "Apply",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "close" : "Close"
     },
     "modal": {
         "video": {

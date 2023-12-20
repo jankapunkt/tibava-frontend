@@ -78,10 +78,10 @@ export class HistTimeline extends Timeline {
 
         const data = new Uint8Array(flatdata.map((value) => { return scalarToRGB(value, false, this.pColormap) }).flat())
         const bt = new PIXI.Texture(new PIXI.BaseTexture(new PIXI.BufferResource(data, { width: width, height: height })));
-        console.log(bt)
+        // console.log(bt)
 
         const sprite = new PIXI.Sprite(bt);
-        console.log(sprite)
+        // console.log(sprite)
         // console.log(data)
         // times.forEach((t, i) => {
         //     hist[i].forEach((v, j) => {
