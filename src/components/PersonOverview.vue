@@ -1,6 +1,6 @@
 <template>
-  <v-card v-if="clustersLength == 0" elevation="0">
-    No face clustering has been conducted yet. Create it with the <em>Face Clustering</em> pipeline.
+  <v-card v-if="clustersLength == 0" elevation="0" :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']">
+    <span>No face clustering has been conducted yet. Create it with the <em>Face Clustering</em> pipeline.</span>
   </v-card>
   <v-virtual-scroll v-else :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" ref="parentContainer" :items="clusterList"
     item-height="140" :bench="clustersLength">

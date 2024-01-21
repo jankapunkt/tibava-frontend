@@ -1,6 +1,6 @@
 <template>
-  <v-card v-if="clustersLength == 0" elevation="0">
-    No place clustering has been conducted yet. Create it with the <em>Place Recognition</em> pipeline.
+  <v-card v-if="clustersLength == 0" :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" elevation="0">
+    <span>No place clustering has been conducted yet. Create it with the <em>Place Recognition</em> pipeline.</span>
   </v-card>
   <v-virtual-scroll v-else :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']" ref="parentContainer" :items="clusterList"
     item-height="180" :bench="clustersLength" height="100%">
