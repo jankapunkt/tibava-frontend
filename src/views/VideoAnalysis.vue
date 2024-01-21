@@ -47,7 +47,9 @@
               </v-tab-item>
 
               <v-tab-item style="height: 100%">
-                <PersonGraph />
+                <div :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']">
+                  <PersonGraph />
+                </div>
                 <PersonOverview />
               </v-tab-item>
 
