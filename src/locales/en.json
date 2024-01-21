@@ -204,8 +204,10 @@
             },
             "face_clustering": {
                 "plugin_name": "Face Clustering",
-                "hint_left": "Less clusters, but lower accuracy",
-                "hint_right": "More clusters, but higher accuracy",
+                "threshold": {
+                    "hint_left": "More clusters, but higher accuracy",
+                    "hint_right": "Less clusters, but lower accuracy"
+                },
                 "max_cluster": {
                     "hint_left": "Less clusters",
                     "hint_right": "More clusters"

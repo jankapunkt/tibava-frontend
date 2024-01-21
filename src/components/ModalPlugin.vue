@@ -196,8 +196,8 @@ export default {
                   value: 0.5,
                   step: 0.01,
                   name: "cluster_threshold",
-                  hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
-                  hint_left: this.$t("modal.plugin.face_clustering.hint_right"),
+                  hint_right: this.$t("modal.plugin.face_clustering.threshold.hint_right"),
+                  hint_left: this.$t("modal.plugin.face_clustering.threshold.hint_left"),
                 },
                 {
                   field: "slider",
@@ -206,8 +206,8 @@ export default {
                   value: 50,
                   step: 1,
                   name: "max_cluster",
-                  hint_right: this.$t("modal.plugin.face_clustering.max_cluster.hint_left"),
-                  hint_left: this.$t("modal.plugin.face_clustering.max_cluster.hint_right"),
+                  hint_right: this.$t("modal.plugin.face_clustering.max_cluster.hint_right"),
+                  hint_left: this.$t("modal.plugin.face_clustering.max_cluster.hint_left"),
                 },
                 {
                   field: "slider",
@@ -216,8 +216,8 @@ export default {
                   value: 20,
                   step: 1,
                   name: "max_faces",
-                  hint_right: this.$t("modal.plugin.face_clustering.max_faces.hint_left"),
-                  hint_left: this.$t("modal.plugin.face_clustering.max_faces.hint_right"),
+                  hint_right: this.$t("modal.plugin.face_clustering.max_faces.hint_right"),
+                  hint_left: this.$t("modal.plugin.face_clustering.max_faces.hint_left"),
                 },
               ],
               optional_parameters: [
