@@ -62,7 +62,7 @@
         "edit": "Edit",
         "apply": "Apply",
         "cancel": "Cancel",
-        "close" : "Close"
+        "close": "Close"
     },
     "modal": {
         "video": {
@@ -205,7 +205,15 @@
             "face_clustering": {
                 "plugin_name": "Face Clustering",
                 "hint_left": "Less clusters, but lower accuracy",
-                "hint_right": "More clusters, but higher accuracy"
+                "hint_right": "More clusters, but higher accuracy",
+                "max_cluster": {
+                    "hint_left": "Less clusters",
+                    "hint_right": "More clusters"
+                },
+                "max_faces": {
+                    "hint_left": "Less faces per clusters",
+                    "hint_right": "More faces per clusters"
+                }
             },
             "faceemotion": {
                 "plugin_name": "Face Emotion Recognition",
