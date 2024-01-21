@@ -35,8 +35,8 @@
 
           </div>
           <v-list-item-subtitle>Faces: {{ cluster.cluster.object_refs.length }}</v-list-item-subtitle>
-          <v-list-item-subtitle>First: {{ cluster.timestamps[0] }} sec</v-list-item-subtitle>
-          <v-list-item-subtitle>Last: {{ cluster.timestamps[cluster.timestamps.length - 1] }} sec</v-list-item-subtitle>
+          <v-list-item-subtitle>First: {{ this.get_timecode(cluster.timestamps[0]) }}</v-list-item-subtitle>
+          <v-list-item-subtitle>Last: {{ this.get_timecode(cluster.timestamps[cluster.timestamps.length - 1]) }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-col>
 
