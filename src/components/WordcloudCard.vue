@@ -1,7 +1,11 @@
 <template>
-  <v-card ref="parent" class="parent" fluid :items="transcripts" elevation="0">
-    <v-card v-if="transcripts.length == 0" flat>There is no transcript. Create it with the <em>Speech Recognition
-        (whisper)</em> pipeline. </v-card>
+  <v-card ref="parent" class="parent" fluid :items="transcripts" elevation="0"
+    :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']">
+    <v-card v-if="transcripts.length == 0" flat>
+      <span>There is no transcript. Create it with the <em>Speech Recognition
+          (whisper)</em> pipeline.
+      </span>
+    </v-card>
     <div v-else>
       <div ref="wordcloudContainer" class="wordcloudContainer"></div>
       <v-select style="width: 30%;" v-if="transcripts.length > 0" v-model="stopword_selection" :items="stopword_options"
