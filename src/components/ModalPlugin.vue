@@ -1,17 +1,17 @@
 <template>
   <v-dialog v-model="dialog" max-width="90%">
     <v-card>
-      <v-card-title class="mb-0"> </v-card-title>
+      <v-card-title class="mb-0"> {{ $t("modal.plugin.title") }} </v-card-title>
       <v-card-text>
         <v-row>
-          <v-col cols="3">
+          <v-col cols="3" style="max-height: 600px; overflow: hidden;">
             <v-sheet class="pa-1" style="background-color: rgb(174, 19, 19) !important;">
               <v-text-field v-model="search" label="Search Plugin" class="searchField" dark flat solo-inverted
                 hide-details clearable clear-icon="mdi-close-circle-outline">
               </v-text-field>
             </v-sheet>
             <v-treeview :items="plugins_sorted" :search="search" :open.sync="open" activatable open-all
-              style="cursor: pointer;" :active.sync="active">
+              style="cursor: pointer; overflow-y: scroll; height: 100%;" :active.sync="active">
               <template v-slot:prepend="{ item }">
                 <v-icon>{{ item.icon }}</v-icon>
               </template>
