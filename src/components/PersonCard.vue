@@ -36,7 +36,8 @@
           </div>
           <v-list-item-subtitle>Faces: {{ cluster.cluster.object_refs.length }}</v-list-item-subtitle>
           <v-list-item-subtitle>First: {{ this.get_timecode(cluster.timestamps[0]) }}</v-list-item-subtitle>
-          <v-list-item-subtitle>Last: {{ this.get_timecode(cluster.timestamps[cluster.timestamps.length - 1]) }}</v-list-item-subtitle>
+          <v-list-item-subtitle>Last: {{ this.get_timecode(cluster.timestamps[cluster.timestamps.length - 1])
+          }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-col>
 
@@ -211,20 +212,12 @@ export default {
       parameters = parameters.concat(
         [
           {
-            name: "fps",
-            value: 2,
-          },
-          {
-            name: "embedding_ref",
-            value: this.cluster.clustering_data_id,
-          },
-          {
             name: "cluster_id",
-            value: this.cluster.systemId,
+            value: this.cluster.systemId
           },
           {
-            name: "index",
-            value: String(index_list),
+            name: "data_id",
+            value: this.cluster.clustering_data_id,
           }
         ]
       );
@@ -238,7 +231,7 @@ export default {
       });
 
       this.pluginRunStore
-        .submit({ plugin: "insightface_identification", parameters: parameters })
+        .submit({ plugin: "cluster_to_scalar", parameters: parameters })
         .then(() => {
           this.loading = false;
         });

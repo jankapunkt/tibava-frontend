@@ -16,20 +16,20 @@ export const usePlaceStore = defineStore("place", {
         getDeletedPlaces(state) {
             return (cluster_id) => {
                 return state.placeList
-                .map((id) => state.places[id])
-                .filter((f) => f.cluster_id == cluster_id)
-                .filter((f) => f.deleted == true)
-                .map((f) => {
-                    return f.place_ref;
-                });
+                    .map((id) => state.places[id])
+                    .filter((f) => f.cluster_id == cluster_id)
+                    .filter((f) => f.deleted == true)
+                    .map((f) => {
+                        return f.place_ref;
+                    });
             }
         },
         getImagePaths(state) {
             return (cluster) => {
                 let result = [];
-                
+
                 cluster.cluster.object_refs.forEach((place_ref) => {
-                    if(!this.places[place_ref].deleted){
+                    if (!this.places[place_ref].deleted) {
                         result.push(this.places[place_ref].image_path);
                     }
                 });
@@ -40,19 +40,19 @@ export const usePlaceStore = defineStore("place", {
         getPlaceRef(state) {
             return (image_path) => {
                 return state.placeList
-                .map((id) => state.places[id])
-                .filter((f) => f.image_path == image_path)
-                .map((f) => {
-                    return f.place_ref;
-                })[0];
+                    .map((id) => state.places[id])
+                    .filter((f) => f.image_path == image_path)
+                    .map((f) => {
+                        return f.place_ref;
+                    })[0];
             }
         },
         getIndexList(state) {
             return (cluster) => {
                 let result = [];
-                
+
                 cluster.cluster.object_refs.forEach((place_ref, index) => {
-                    if(!this.places[place_ref].deleted){
+                    if (!this.places[place_ref].deleted) {
                         result.push(index);
                     }
                 });
@@ -62,18 +62,18 @@ export const usePlaceStore = defineStore("place", {
         }
     },
     actions: {
-        async fetchAll(video_id){
+        async fetchAll(video_id) {
             if (this.isLoading) {
                 return
             }
             this.isLoading = true
 
-            return axios.get(`${config.API_LOCATION}/place/fetch`, { params: { video_id: video_id } })
+            return axios.get(`${config.API_LOCATION}/cluster/item/fetch`, { params: { video_id: video_id } })
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        this.replaceStore(res.data.entries);
+                        this.replaceStore(res.data.entries.filter((element) => element.type == "PLACE"));
                     }
-                    else{
+                    else {
                         console.log("error in fetchAll places");
                         console.log(res.data);
                     }
@@ -82,26 +82,26 @@ export const usePlaceStore = defineStore("place", {
                     this.isLoading = false;
                 });
         },
-        async setDeleted(place_ref_list, cluster_id){
+        async setDeleted(plugin_item_ref_list, cluster_id) {
             if (this.isLoading) {
-              return;
+                return;
             }
             this.isLoading = true;
 
             let params = {
-                place_ref_list: place_ref_list,
+                plugin_item_ref_list: plugin_item_ref_list,
                 cluster_id: cluster_id
             };
 
             return axios
-                .post(`${config.API_LOCATION}/place/setDeleted`, params)
+                .post(`${config.API_LOCATION}/cluster/item/setDeleted`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
-                        place_ref_list.forEach((filteredPlace) => {
+                        plugin_item_ref_list.forEach((filteredPlace) => {
                             this.places[filteredPlace].deleted = true;
                         });
                     }
-                    else{
+                    else {
                         console.log("Error in clusterTimelineItem/setTimeline");
                         console.log(res.data);
                     }

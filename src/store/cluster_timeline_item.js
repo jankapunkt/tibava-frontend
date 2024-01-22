@@ -16,46 +16,46 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
         all(state) {
             return state.clusterTimelineItemList.map((id) => state.clusterTimelineItems[id]);
         },
-        get(state){
+        get(state) {
             return (id) => {
                 return state.clusterTimelineItems[id];
             };
         },
-        hasTimeline(state){
+        hasTimeline(state) {
             return (cluster_id) => {
-                if (this.clusterTimelineItemList.length === 0){
+                if (this.clusterTimelineItemList.length === 0) {
                     return false;
                 }
 
-                if (cluster_id in this.clusterTimelineItems){
-                    if (state.clusterTimelineItems[cluster_id].timeline){
+                if (cluster_id in this.clusterTimelineItems) {
+                    if (state.clusterTimelineItems[cluster_id].timeline) {
                         return true;
-                     }
+                    }
                 }
 
                 return false;
             }
         },
-        getName(state){
+        getName(state) {
             return (cluster_id) => {
                 var name = "Not Found";
-                if (cluster_id in this.clusterTimelineItems){
+                if (cluster_id in this.clusterTimelineItems) {
                     name = state.clusterTimelineItems[cluster_id].name;
                 }
                 return name;
             }
         },
-        getTimeline(state){
+        getTimeline(state) {
             return (cluster_id) => {
-                if (cluster_id in this.clusterTimelineItems){
+                if (cluster_id in this.clusterTimelineItems) {
                     return state.clusterTimelineItems[cluster_id].timeline;
                 }
                 return null;
             }
         },
-        getID(state){
+        getID(state) {
             return (cluster_id) => {
-                if (cluster_id in this.clusterTimelineItems){
+                if (cluster_id in this.clusterTimelineItems) {
                     return state.clusterTimelineItems[cluster_id].id;
                 }
                 return -1;
@@ -70,12 +70,12 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
             }
             this.isLoading = true
 
-            return axios.get(`${config.API_LOCATION}/clusterTimelineItem/fetch`, { params: { video_id: video_id } })
+            return axios.get(`${config.API_LOCATION}/cluster/timeline/item/fetch`, { params: { video_id: video_id } })
                 .then((res) => {
                     if (res.data.status === "ok") {
                         this.replaceStore(res.data.entries);
                     }
-                    else{
+                    else {
                         console.log("error in fetchAll clusterTimelineItems");
                         console.log(res.data);
                     }
@@ -86,37 +86,37 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
         },
         async rename({ cluster_id, name }) {
             if (this.isLoading) {
-              return;
+                return;
             }
             this.isLoading = true;
-      
+
             let params = {
-              cti_id: this.clusterTimelineItems[cluster_id].id,
-              name: name,
+                cti_id: this.clusterTimelineItems[cluster_id].id,
+                name: name,
             };
 
             const updated_ctis = { ...this.clusterTimelineItems };
             updated_ctis[cluster_id].name = name;
             Vue.set(this, "clusterTimelineItems", updated_ctis);
-      
-            return axios
-                .post(`${config.API_LOCATION}/clusterTimelineItem/rename`, params)
-                .then((res) => {
-                if (res.data.status === "ok") {
 
-                }
-                else{
-                    console.log("Error in CTI Rename");
-                    console.log(res.data);
-                }
+            return axios
+                .post(`${config.API_LOCATION}/cluster/timeline/item/rename`, params)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+
+                    }
+                    else {
+                        console.log("Error in CTI Rename");
+                        console.log(res.data);
+                    }
                 })
                 .finally(() => {
                     this.isLoading = false;
                 });
         },
-        async create({cluster_id, name, video_id}){
+        async create({ cluster_id, name, video_id }) {
             if (this.isLoading) {
-              return;
+                return;
             }
             this.isLoading = true;
 
@@ -127,12 +127,12 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
             };
 
             return axios
-                .post(`${config.API_LOCATION}/clusterTimelineItem/create`, params)
+                .post(`${config.API_LOCATION}/cluster/timeline/item/create`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
                         this.addToStore(res.data.entry);
                     }
-                    else{
+                    else {
                         console.log("Error in clusterTimelineItem/create");
                         console.log(res.data);
                     }
@@ -142,9 +142,9 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                 });
 
         },
-        async setTimeline(cluster_id, timeline_id){
+        async setTimeline(cluster_id, timeline_id) {
             if (this.isLoading) {
-              return;
+                return;
             }
             this.isLoading = true;
 
@@ -154,12 +154,12 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
             };
 
             return axios
-                .post(`${config.API_LOCATION}/clusterTimelineItem/setTimeline`, params)
+                .post(`${config.API_LOCATION}/cluster/timeline/item/setTimeline`, params)
                 .then((res) => {
                     if (res.data.status === "ok") {
                         this.clusterTimelineItems[cluster_id].timeline = timeline_id;
                     }
-                    else{
+                    else {
                         console.log("Error in clusterTimelineItem/setTimeline");
                         console.log(res.data);
                     }
@@ -168,7 +168,7 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                     this.isLoading = false;
                 });
         },
-        async delete(cluster_id){
+        async delete(cluster_id) {
             if (this.isLoading) {
                 return;
             }
@@ -181,18 +181,18 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
             this.deleteFromStore(cluster_id);
 
             return axios
-                .post(`${config.API_LOCATION}/clusterTimelineItem/delete`, params)
+                .post(`${config.API_LOCATION}/cluster/timeline/item/delete`, params)
                 .then((res) => {
-                if (res.data.status === "ok") {
-                    // commit("delete", timeline_id);
-                }
+                    if (res.data.status === "ok") {
+                        // commit("delete", timeline_id);
+                    }
                 })
                 .finally(() => {
                     this.isLoading = false;
                 });
         },
-        setNewName(cluster_id, newname){
-            if (cluster_id in this.clusterTimelineItems){
+        setNewName(cluster_id, newname) {
+            if (cluster_id in this.clusterTimelineItems) {
                 this.clusterTimelineItems[cluster_id].name = newname;
                 return true;
             }
@@ -217,12 +217,12 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
         },
         deleteTimeline(timeline_id) {
             for (const [cluster_id, cti] of Object.entries(this.clusterTimelineItems)) {
-                if (cti.timeline && cti.timeline === timeline_id){
+                if (cti.timeline && cti.timeline === timeline_id) {
                     cti.timeline = false;
                 }
             }
         },
-        clearStore(){
+        clearStore() {
             this.clusterTimelineItems = {};
             this.clusterTimelineItemList = [];
         }
