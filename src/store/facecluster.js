@@ -112,7 +112,7 @@ export const useFaceclusterStore = defineStore("facecluster", {
 
 
 
-      // console.log(JSON.stringify(clustering, null, 2));
+      console.log(JSON.stringify(clustering, null, 2));
       // console.log(JSON.stringify(embeddings, null, 2));
       let results = clustering.data.cluster
         .sort(
@@ -129,6 +129,14 @@ export const useFaceclusterStore = defineStore("facecluster", {
               return face_ref.ref_id;
             })),
             timestamps: Array.from(cluster.object_refs.map((embedding_ref) => {
+              let timestamp = embeddings.data.embeddings.find(embedding => embedding.id == embedding_ref);
+              return timestamp.time;
+            })),
+            sample_faces_refs: Array.from(cluster.sample_object_refs.map((embedding_ref) => {
+              let face_ref = embeddings.data.embeddings.find(embedding => embedding.id == embedding_ref);
+              return face_ref.ref_id;
+            })),
+            sample_timestamps: Array.from(cluster.sample_object_refs.map((embedding_ref) => {
               let timestamp = embeddings.data.embeddings.find(embedding => embedding.id == embedding_ref);
               return timestamp.time;
             }))

@@ -215,7 +215,7 @@ export default {
                   max: 100,
                   value: 20,
                   step: 1,
-                  name: "max_faces",
+                  name: "max_samples_per_cluster",
                   hint_right: this.$t("modal.plugin.face_clustering.max_faces.hint_right"),
                   hint_left: this.$t("modal.plugin.face_clustering.max_faces.hint_left"),
                 },

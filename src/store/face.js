@@ -30,7 +30,7 @@ export const useFaceStore = defineStore("face", {
                 console.log("###################");
                 console.log(JSON.stringify(cluster, null, 2));
                 console.log(JSON.stringify(this.faces, null, 2));
-                cluster.faces_refs.forEach((face_ref) => {
+                cluster.sample_faces_refs.forEach((face_ref) => {
                     if (!this.faces[face_ref].deleted) {
                         result.push(this.faces[face_ref].image_path);
                     }
