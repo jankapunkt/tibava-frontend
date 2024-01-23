@@ -20,11 +20,18 @@
 
             <v-card-actions variant="tonal">
                 <v-row>
-                    <v-col cols="1">
-                        <v-text-field v-if="!loading" label="Minimum Cluster Size" v-model="desired_min_size" type="number"
+                    <v-col cols="2">
+                        <v-text-field v-if="!loading" label="Minimum Cluster Size" v-model="filter_min_cluster_size" type="number"
                             @input="updateText"></v-text-field>
                     </v-col>
-                    <v-col cols="1"></v-col>
+
+                    <v-col cols="2">
+                        <v-text-field v-if="!loading" label="Minimum Relations" v-model="filter_min_relations" type="number"
+                            @input="updateText"></v-text-field>
+                    </v-col>
+
+                    <v-spacer></v-spacer>
+
                     <v-col cols="5">
                         <v-label>Connect clusters if elements appeared in the same:</v-label>
                         <v-switch v-model="shotVisualization" label="Shot">
@@ -34,7 +41,9 @@
 
                         </v-switch>
                     </v-col>
+
                     <v-spacer></v-spacer>
+                    
                     <v-col cols="1">
                         <v-btn @click="close">{{ $t("button.close") }}</v-btn>
                     </v-col>
@@ -64,7 +73,8 @@ export default {
             loading: true,
             cluster_min_size: 0,
             cluster_max_size: null,
-            desired_min_size: 0,
+            filter_min_cluster_size: 0,
+            filter_min_relations: 0,
             network: null,
             data: null,
             options: null,
@@ -114,6 +124,7 @@ export default {
             const shotStore = useShotStore();
             const shots = shotStore.shots;
 
+            // get shots a face cluster is depicted in
             if (this.shotVisualization) {
                 // for each shot
                 for (const shot of shots) {
@@ -121,8 +132,7 @@ export default {
                     for (const [index, cluster] of Object.entries(this.clusterList)) {
                         // if an object of the cluster is in the shot
                         for (const timestamp of cluster.timestamps) {
-                            // console.log(timestamp);
-                            if (shot.start <= timestamp & shot.end >= timestamp) {
+                            if (timestamp >= shot.start & timestamp <= shot.end) {
                                 if (!cluster.shots.includes(shot.id)) {
                                     cluster.shots.push(shot.id);
                                 }
@@ -132,11 +142,11 @@ export default {
                 }
             }
 
-            // save the shotnumber to this cluster
 
+            // save nodes
             let dataset = [];
             this.clusterList.forEach((cluster) => {
-                if (cluster.timestamps.length < this.desired_min_size) {
+                if (cluster.timestamps.length < this.filter_min_cluster_size) {
                     return;
                 }
                 dataset.push({
@@ -148,17 +158,20 @@ export default {
 
             this.nodes = new DataSet(dataset);
 
+            // save edges
             let connections = [];
             let checked = [];
             this.clusterList.forEach((cluster) => {
-                if (cluster.timestamps.length < this.desired_min_size) {
+                if (cluster.timestamps.length < this.filter_min_cluster_size) {
                     return;
                 }
 
                 this.clusterList.forEach((conn_cluster) => {
+                    // do not add a relation to the node itself
                     if (cluster.id === conn_cluster.id) {
                         return;
                     }
+                    // do not add relations between two clusters twice
                     if (checked.includes(String(cluster.id) + String(conn_cluster.id))) {
                         return;
                     }
@@ -176,7 +189,7 @@ export default {
                             }
                         })
                     }
-                    if (value > 0) {
+                    if (value > this.filter_min_relations) {
                         connections.push({ from: cluster.id, to: conn_cluster.id, value: value, label: String(value) });
                     }
                     checked.push(String(cluster.id) + String(conn_cluster.id));
