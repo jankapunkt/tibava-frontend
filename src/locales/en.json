@@ -215,6 +215,10 @@
                 "max_faces": {
                     "hint_left": "Less faces per clusters",
                     "hint_right": "More faces per clusters"
+                },
+                "min_face_height": {
+                    "hint_left": "Smaller minimum face height",
+                    "hint_right": "Larger minimum face height"
                 }
             },
             "faceemotion": {

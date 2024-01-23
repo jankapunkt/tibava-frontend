@@ -219,6 +219,19 @@ export default {
                   hint_right: this.$t("modal.plugin.face_clustering.max_faces.hint_right"),
                   hint_left: this.$t("modal.plugin.face_clustering.max_faces.hint_left"),
                 },
+                {
+                  field: "slider",
+                  min: 0,
+                  max: 1.0,
+                  value: 0.1,
+                  step: 0.05,
+                  name: "min_face_height",
+                  hint_right: this.$t("modal.plugin.face_clustering.min_face_height.hint_right"),
+                  hint_left: this.$t("modal.plugin.face_clustering.min_face_height.hint_left"),
+                },
+
+
+
               ],
               optional_parameters: [
                 {
