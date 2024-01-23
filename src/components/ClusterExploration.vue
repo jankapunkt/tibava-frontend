@@ -84,10 +84,10 @@ export default {
 
             if (this.isFaceCluster) {
                 const faceStore = useFaceStore();
-                return this.markedForDeletion.length >= this.cluster.cluster.object_refs.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
+                return this.markedForDeletion.length >= this.cluster.cluster.embedding_ids.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
             } else {
                 const placeStore = usePlaceStore();
-                return this.markedForDeletion.length >= this.cluster.cluster.object_refs.length - placeStore.getDeletedPlaces(this.cluster.systemId).length;
+                return this.markedForDeletion.length >= this.cluster.cluster.embedding_ids.length - placeStore.getDeletedPlaces(this.cluster.systemId).length;
             }
         },
         mark(imageUrl) {
@@ -106,12 +106,12 @@ export default {
         async applyDeletion() {
             if (this.isFaceCluster) {
                 const faceStore = useFaceStore();
-                var object_refs_to_delete = this.markedForDeletion.map((path) => faceStore.getFaceRef(path));
-                await faceStore.setDeleted(object_refs_to_delete, this.cluster.systemId);
+                var embedding_ids_to_delete = this.markedForDeletion.map((path) => faceStore.getFaceRef(path));
+                await faceStore.setDeleted(embedding_ids_to_delete, this.cluster.systemId);
             } else {
                 const placeStore = usePlaceStore();
-                var object_refs_to_delete = this.markedForDeletion.map((path) => placeStore.getPlaceRef(path));
-                await placeStore.setDeleted(object_refs_to_delete, this.cluster.systemId);
+                var embedding_ids_to_delete = this.markedForDeletion.map((path) => placeStore.getPlaceRef(path));
+                await placeStore.setDeleted(embedding_ids_to_delete, this.cluster.systemId);
             }
 
             this.markedForDeletion = [];

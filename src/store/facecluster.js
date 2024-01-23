@@ -72,7 +72,6 @@ export const useFaceclusterStore = defineStore("facecluster", {
       //   }
       // }
 
-      console.log(JSON.stringify(state.current_clustering.results, null, 2));
 
       let clustering = state.current_clustering.results.filter((plugin_run_result) =>
         plugin_run_result.type == "CLUSTER"
@@ -91,6 +90,13 @@ export const useFaceclusterStore = defineStore("facecluster", {
         return [];
       }
       images = images[0]
+
+      let images_lut = {}
+
+      // console.log(JSON.stringify(images, null, 2));
+      images.data.images.forEach(element => {
+        images_lut[element.ref_id] = element
+      });
 
       let faces = state.current_clustering.results.filter((plugin_run_result) =>
         plugin_run_result.type == "FACE"
@@ -112,33 +118,25 @@ export const useFaceclusterStore = defineStore("facecluster", {
 
 
 
-      console.log(JSON.stringify(clustering, null, 2));
+      // console.log(JSON.stringify(clustering, null, 2));
       // console.log(JSON.stringify(embeddings, null, 2));
       let results = clustering.data.cluster
         .sort(
           // bigger clusters should come first
-          (a, b) => b.object_refs.length - a.object_refs.length
+          (a, b) => b.embedding_ref_ids.length - a.embedding_ref_ids.length
         ).map((cluster, index) => {
           return {
             id: index + 1,
             clustering_data_id: clustering.data_id,
             systemId: cluster.id,
             cluster: cluster,
-            faces_refs: Array.from(cluster.object_refs.map((embedding_ref) => {
-              let face_ref = embeddings.data.embeddings.find(embedding => embedding.id == embedding_ref);
-              return face_ref.ref_id;
+            faces_refs: cluster.embedding_ref_ids,
+            timestamps: Array.from(cluster.embedding_ref_ids.map((embedding_ref_id) => {
+              return images_lut[embedding_ref_id].time
             })),
-            timestamps: Array.from(cluster.object_refs.map((embedding_ref) => {
-              let timestamp = embeddings.data.embeddings.find(embedding => embedding.id == embedding_ref);
-              return timestamp.time;
-            })),
-            sample_faces_refs: Array.from(cluster.sample_object_refs.map((embedding_ref) => {
-              let face_ref = embeddings.data.embeddings.find(embedding => embedding.id == embedding_ref);
-              return face_ref.ref_id;
-            })),
-            sample_timestamps: Array.from(cluster.sample_object_refs.map((embedding_ref) => {
-              let timestamp = embeddings.data.embeddings.find(embedding => embedding.id == embedding_ref);
-              return timestamp.time;
+            sample_faces_refs: cluster.sample_embedding_ref_ids,
+            sample_timestamps: Array.from(cluster.sample_embedding_ref_ids.map((embedding_ref_id) => {
+              return images_lut[embedding_ref_id].time
             }))
           }
         })
@@ -148,15 +146,15 @@ export const useFaceclusterStore = defineStore("facecluster", {
   },
   actions: {
     getFilteredFaceRefs(deletedFaces, cluster_id) {
-      let current_cluster_object_refs = this.current_clustering.results[0].data.cluster
-        .filter((cluster) => cluster.id == cluster_id)[0].object_refs;
+      let current_cluster_embedding_ref_ids = this.current_clustering.results[0].data.cluster
+        .filter((cluster) => cluster.id == cluster_id)[0].embedding_ref_ids;
 
       if (deletedFaces.length > 0) {
-        current_cluster_object_refs = current_cluster_object_refs
+        current_cluster_embedding_ref_ids = current_cluster_embedding_ref_ids
           .filter((ref) => !deletedFaces.includes(ref));
       }
 
-      return current_cluster_object_refs.map((ref) => this.faceRefDict[ref]);
+      return current_cluster_embedding_ref_ids.map((ref) => this.faceRefDict[ref]);
     },
   }
 },);
