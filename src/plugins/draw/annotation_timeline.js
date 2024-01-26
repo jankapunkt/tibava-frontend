@@ -340,9 +340,9 @@ export class AnnotationTimeline extends Timeline {
   getSegmentOnPosition(xPos) {
     const time = this.xToTime(xPos)
     let result = null;
-    this.pTimeline.segments.forEach((s) => {
+    this.pTimeline.segments.forEach((s, i) => {
       if (time > s.start && time < s.end) {
-        result = s;
+        result = {segment: s, index: i};
       }
     });
     return result

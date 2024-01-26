@@ -589,7 +589,7 @@ export default {
       drawnTimeline.on("rightdown", (ev) => {
         const point = this.mapToGlobal(ev.data.global);
         const x = ev.data.getLocalPosition(drawnTimeline).x;
-        const segment = drawnTimeline.getSegmentOnPosition(x);
+        const segment = drawnTimeline.getSegmentOnPosition(x).segment;
 
         this.segmentMenu.show = true;
         this.segmentMenu.x = point.x;
@@ -614,7 +614,7 @@ export default {
         }
         this.timelineStore.addToSelection(timeline.id);
         if (segment) {
-          this.timelineSegmentStore.addToSelection(segment.id);
+          this.timelineSegmentStore.addToSelection(segment.segment.id);
         }
         const targetTime = this.xToTime(ev.data.global.x);
         this.playerStore.setTargetTime(targetTime);
@@ -650,7 +650,6 @@ export default {
           return;
         }
 
-        if (segment.annotations.length > 0) {
           const tooltipPoint = {
             x: ev.data.global.x,
             y: ev.data.global.y,
@@ -659,12 +658,15 @@ export default {
           this.timelineTooltip.show = true;
           this.timelineTooltip.x = point.x;
           this.timelineTooltip.y = point.y;
-          this.timelineTooltip.selected = segment.id;
+          this.timelineTooltip.selected = segment.segment.id;
 
-          const annotations = segment.annotations.map((e) => {
+          const annotations = segment.segment.annotations.map((e) => {
             return e.annotation.name;
           });
+        if (segment.segment.annotations.length > 0) {
           this.timelineTooltip.label = annotations.join("; ");
+        } else {
+          this.timelineTooltip.label = 'Segment ' + segment.index;
         }
         // ev.stopPropagation();
       });
@@ -687,11 +689,6 @@ export default {
             this.timelineTooltip.show = false;
             return;
           }
-          if (segment.annotations.length <= 0) {
-            this.timelineTooltip.label = "";
-            this.timelineTooltip.show = false;
-            return;
-          }
 
           this.timelineTooltip.show = true;
           const tooltipPoint = {
@@ -702,10 +699,14 @@ export default {
 
           this.timelineTooltip.x = point.x;
           this.timelineTooltip.y = point.y;
-          const annotations = segment.annotations.map((e) => {
+          const annotations = segment.segment.annotations.map((e) => {
             return e.annotation.name;
           });
-          this.timelineTooltip.label = annotations.join("; ");
+          if (segment.segment.annotations.length <= 0) {
+            this.timelineTooltip.label = 'Segment ' + segment.index;
+          } else {
+            this.timelineTooltip.label = annotations.join("; ");
+          }
         }
         // ev.stopPropagation();
       });
