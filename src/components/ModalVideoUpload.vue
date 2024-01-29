@@ -70,7 +70,7 @@ export default {
       return this.userStore.allowance > this.videoStore.all.length;
     },
     disabled() {
-      if (this.checkbox && this.file_valid) {
+      if (this.checkbox && this.file_valid && this.uploadingProgress == 0) {
         return false;
       }
       return true;
