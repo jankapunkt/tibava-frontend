@@ -107,6 +107,7 @@
           v-model="parameter.file"
           :label="parameter.text"
           :hint="parameter.hint"
+          accept="image/jpeg"
           persistent-hint
           filled
           prepend-icon=" mdi-camera"
@@ -119,6 +120,7 @@
           v-model="parameter.file"
           :label="parameter.text"
           :hint="parameter.hint"
+          accept="text/csv"
           persistent-hint
           filled
           prepend-icon=" mdi-file-delimited-outline"
