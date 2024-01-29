@@ -53,6 +53,7 @@ import ModalVideoRename from "@/components/ModalVideoRename.vue";
 import TimeMixin from "../mixins/time";
 import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video.js";
+import { useUserStore } from "@/store/user.js";
 import { usePluginRunStore } from "@/store/plugin_run.js";
 
 export default {
@@ -89,7 +90,15 @@ export default {
       // });
       return videos;
     },
-    ...mapStores(useVideoStore, usePluginRunStore),
+    ...mapStores(useVideoStore, usePluginRunStore, useUserStore),
+  },
+  watch: {
+    "userStore.loggedIn": function(value, oldValue) {
+      if (!oldValue && value) {
+        // fetch user's videos after login
+        this.fetchData();
+      }
+    }
   },
   components: {
     ModalVideoUpload,
