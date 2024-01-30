@@ -11,7 +11,7 @@
               </v-text-field>
             </v-sheet>
             <v-treeview :items="plugins_sorted" :search="search" :open.sync="open" activatable open-all
-              style="cursor: pointer; overflow-y: scroll; height: 100%;" :active.sync="active">
+              style="cursor: pointer; overflow-y: scroll; height: 500px;" :active.sync="active">
               <template v-slot:prepend="{ item }">
                 <v-icon>{{ item.icon }}</v-icon>
               </template>
@@ -843,6 +843,8 @@ export default {
       if (!this.active.length) return undefined;
 
       const id = this.active[0];
+      if (id < 100) return undefined;
+
       let plugin_group = this.plugins.find(
         (group) => group.id === parseInt(id / 100)
       );
