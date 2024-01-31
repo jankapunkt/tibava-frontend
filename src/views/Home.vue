@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <v-container class="py-8 px-6" fluid>
+      <v-container v-if="userStore.loggedIn" class="py-8 px-6" fluid>
         <v-row justify="space-around">
           <v-col cols="auto">
             <ModalVideoUpload />
@@ -41,6 +41,32 @@
             </v-card-text>
           </v-card>
         </v-container>
+      </v-container>
+      <v-container v-else>
+        <v-col justify="space-around">
+          <v-card class="welcome pa-5">
+            <v-card-title>
+              <h1 class="text-h2">{{ $t("welcome.title") }}</h1>
+            </v-card-title>
+
+            <v-card-text>
+              <p v-html="$t('welcome.text')"></p>
+              <h2 class="text-h5 mb-2">{{ $t("welcome.demo_title") }}</h2>
+              <p>
+                <video id = "welcome-video" controls>
+                  <source
+                    src="https://tib.eu/cloud/s/sMmqWqWYict3Zpb/download/TIB-AV-A_Einfuehrung_2.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+              </p>
+              <h2 class="text-h5 mb-1 mt-4">{{ $t("welcome.login_title") }}</h2>
+              <p v-html="$t('welcome.login_text')"></p>
+              <h2 class="text-h5 mb-1 mt-4">{{ $t("welcome.format_title") }}</h2>
+              <p v-html="$t('welcome.format_text')"></p>
+            </v-card-text>
+          </v-card>
+        </v-col>
       </v-container>
     </v-main>
   </v-app>
@@ -126,5 +152,13 @@ export default {
 
 .actions>.v-btn:not(:first-child) {
   margin-left: 8px !important;
+}
+#welcome-video {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  border-style: outset;
+  border-color: black;
+  max-width: 800px
 }
 </style>
