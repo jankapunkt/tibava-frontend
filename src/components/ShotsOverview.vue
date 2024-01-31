@@ -18,7 +18,8 @@ export default {
       const childContainer = this.$refs[`childContainer-${childID}`];
 
       if (parentContainer && childContainer) {
-        parentContainer.$el.scroll(0, childContainer.$el.parentElement.offsetTop - 50);
+        const offset = (parentContainer.$el.offsetHeight - childContainer.$el.offsetHeight) / 2;
+        parentContainer.$el.scroll(0, childContainer.$el.parentElement.offsetTop - offset);
       }
     },
   },
