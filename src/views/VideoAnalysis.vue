@@ -73,7 +73,11 @@
         </v-col>
       </v-row>
 
-      <VisualizationMenu align="center" style="box-shadow: none;"> </VisualizationMenu>
+      <v-row class="ma-2">
+        <v-col>
+          <VisualizationMenu></VisualizationMenu>
+        </v-col>
+      </v-row>
 
       <v-row class="ma-2">
         <v-col>
