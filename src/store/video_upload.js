@@ -54,6 +54,7 @@ export const useVideoUploadStore = defineStore('videoUpload', {
                 })
                 .finally(() => {
                     this.isUploading = false;
+                    this.progress = 0;
                 })
             // .catch((error) => {
             //     const info = { date: Date(), error, origin: "upload" };
