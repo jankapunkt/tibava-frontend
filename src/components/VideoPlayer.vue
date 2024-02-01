@@ -219,6 +219,7 @@ export default {
   height: 100%;
   max-height: 100%;
   background-color: black;
+  min-height: 480px;
 }
 
 .video-control {
