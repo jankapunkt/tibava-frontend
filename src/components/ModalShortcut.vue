@@ -1,9 +1,5 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    max-width="1000"
-    @keydown.esc="dialog = false"
-  >
+  <v-dialog v-model="dialog" max-width="1000" @keydown.esc="dialog = false">
     <v-card>
       <v-card-title class="mb-2">
         {{ $t("modal.shortcut.title") }}
@@ -13,66 +9,44 @@
         </v-btn>
       </v-card-title>
       <v-card-text>
-        <v-simple-table>
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th class="text-left">{{ $t("modal.shortcut.annotation") }}</th>
-                <th class="text-left">{{ $t("modal.shortcut.shortcut") }}</th>
-                <!-- <th class="text-right"></th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in items" :key="item.name">
-                <td>
-                  <v-chip>
-                    <v-btn
-                      disable
-                      icon
-                      x-small
-                      :color="item.color"
-                      class="mr-1"
-                    >
-                      <v-icon>{{ "mdi-palette" }}</v-icon>
-                    </v-btn>
-                    <v-btn
-                      v-if="item.category"
-                      disable
-                      x-small
-                      :color="item.color"
-                      class="mr-1"
-                    >
-                      {{ item.category.name }}
-                    </v-btn>
-                    <span>{{ item.name }}</span>
-                  </v-chip>
-                </td>
-                <td>
-                  <v-text-field
-                    solo
-                    flat
-                    single-line
-                    hide-details
-                    @keydown="onKeydown(index, $event)"
-                    @click:append-outer="clear(index)"
-                    append-outer-icon="mdi-close"
-                  >
-                    <template v-slot:prepend-inner>
-                      <v-chip v-for="key in item.keys" :key="key.index">
-                        <span>{{ key }}</span>
-                      </v-chip>
-                    </template>
-                  </v-text-field>
-                </td>
-                <!-- <td>
-                  <v-btn x-small icon>
-                    <v-icon>{{ "mdi-pencil" }}</v-icon>
-                  </v-btn>
-                </td> -->
-              </tr>
-            </tbody>
+        <v-data-table
+          :headers="headers"
+          :items="items"
+          :items-per-page="10"
+          class="elevation-1"
+        >
+          <template v-slot:item.name="{ item }">
+            <v-chip class="annotation-chip">
+              <v-btn
+                disable
+                icon
+                x-small
+                :color="item.color"
+                class="mr-1"
+              >
+                <v-icon>{{ "mdi-palette" }}</v-icon>
+              </v-btn>
+              {{ item.name }}
+            </v-chip>
           </template>
-        </v-simple-table>
+          <template v-slot:item.actions="{ item }">
+            <v-text-field
+              solo
+              flat
+              single-line
+              hide-details
+              @keydown="onKeydown(item, $event)"
+              @click:append-outer="clear(item)"
+              append-outer-icon="mdi-close"
+            >
+              <template v-slot:prepend-inner>
+                <v-chip v-for="key in item.keys" :key="key">
+                  <span>{{ key }}</span>
+                </v-chip>
+              </template>
+            </v-text-field>
+          </template>
+        </v-data-table>
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-btn class="mr-4" @click="submit" :disable="isSubmitting">
@@ -98,16 +72,18 @@ export default {
       dialog: false,
       isSubmitting: false,
       items: [],
+      headers: [
+        { text: "Annotation", value: "name" },
+        { text: "Shortcut", sortable: false, value: "actions" },
+      ],
     };
   },
   computed: {
     annotations() {
-      const annotations = this.annotationStore.all;
-      return annotations;
+      return this.annotationStore.all;
     },
     annotationShortcuts() {
-      const annotationShortcuts = this.annotationShortcutStore.all;
-      return annotationShortcuts;
+      return this.annotationShortcutStore.all;
     },
     shortcuts() {
       const shortcuts = this.shortcutStore.all;
@@ -120,7 +96,7 @@ export default {
     ),
   },
   methods: {
-    onKeydown(index, event) {
+    onKeydown(item, event) {
       event.preventDefault();
       let newKeys = [];
       if (event.ctrlKey) {
@@ -133,12 +109,12 @@ export default {
       if (lowerChar.length === 1) {
         newKeys.push(lowerChar);
       }
-      const newShortcut = { ...this.items[index], ...{ keys: newKeys } };
-      Vue.set(this.items, index, newShortcut);
+      const newShortcut = { ...item, ...{ keys: newKeys } };
+      Vue.set(this.items, this.items.indexOf(item), newShortcut);
     },
-    clear(index) {
-      const newShortcut = { ...this.items[index], ...{ keys: [] } };
-      Vue.set(this.items, index, newShortcut);
+    clear(item) {
+      const newShortcut = { ...item, ...{ keys: [] } };
+      Vue.set(this.items, this.items.indexOf(item), newShortcut);
     },
 
     async submit() {
@@ -195,3 +171,15 @@ export default {
   },
 };
 </script>
+<style>
+.annotation-chip {
+  height: auto !important;
+}
+.annotation-chip .v-chip__content {
+  max-width: 100%;
+  height: auto;
+  min-height: 32px;
+  white-space: pre-wrap;
+  padding: 5px 0;
+}
+</style>
