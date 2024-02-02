@@ -84,8 +84,8 @@ export const useTimelineStore = defineStore("timeline", {
     },
     getLatest(state) {
       return () => {
-          const id = this.timelineListAdded.at(-1)[1];
-          return this.timelines[id];
+          const id = state.timelineListAdded.at(-1)[1];
+          return state.timelines[id];
         }
     },
     segmentPosition(state) {
