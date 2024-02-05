@@ -3,8 +3,17 @@
     <v-card>
       <v-card-title class="mb-2">
         {{ $t("modal.shortcut.title") }}
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+          class="mt-0 pt-0"
+        ></v-text-field>
 
-        <v-btn icon @click="dialog = false" absolute top right>
+        <v-btn icon @click="dialog = false" >
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -14,6 +23,7 @@
           :items="items"
           :items-per-page="10"
           class="elevation-1"
+          :search="search"
         >
           <template v-slot:item.name="{ item }">
             <v-chip class="annotation-chip">
@@ -72,6 +82,7 @@ export default {
       dialog: false,
       isSubmitting: false,
       items: [],
+      search: '',
       headers: [
         { text: "Annotation", value: "name" },
         { text: "Shortcut", sortable: false, value: "actions" },

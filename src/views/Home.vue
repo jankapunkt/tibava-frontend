@@ -10,7 +10,7 @@
 
         <v-container class="d-flex flex-wrap video-gallery align-content-center">
           <v-card elevation="2" width="400px" :loading="item.loading" v-for="item in videos" :key="item.id">
-            <v-card-title>{{ item.name }}</v-card-title>
+            <v-card-title class="video-overview-title">{{ item.name }}</v-card-title>
             <v-card-text>
               <div>Video ID: {{ item.id }}</div>
               <div>
@@ -134,7 +134,7 @@ export default {
 </script>
 
 <style>
-.v-card__title {
+.video-overview-title {
   display: block !important;
   white-space: nowrap;
   overflow: hidden;
