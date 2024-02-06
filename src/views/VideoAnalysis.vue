@@ -30,7 +30,7 @@
           </div>
           <v-card v-else elevation="2" ref="resultCard" :height="resultCardHeight">
             <div class="sticky-tabs-bar">
-              <v-tabs v-model="tab" centered>
+              <v-tabs v-model="tab" centered show-arrows>
                 <v-tabs-slider />
                 <v-tab>Shots</v-tab>
                 <v-tab>Faces</v-tab>
