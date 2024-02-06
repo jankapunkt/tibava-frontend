@@ -5,21 +5,20 @@
   v-on:click="setVideoPlayerTime(shot.start)"
   >
     <v-row align="center" justify="center" class="px-2 py-0">
-      <v-col cols="4">
+      <v-col class="shotcard-left">
         <v-list-item three-line>
-          <v-list-item-content min-width>
-            <div style="font-size: 16px; margin-bottom:0.2cm">Shot {{ shot.id }}</div>
+          <v-list-item-content>
+            <div style="font-size: 16px; margin-bottom: 0.2cm">Shot {{ shot.id }}</div>
             <v-list-item-subtitle>Begin: {{ get_timecode(shot.start) }}</v-list-item-subtitle>
             <v-list-item-subtitle>End: {{ get_timecode(shot.end) }}</v-list-item-subtitle>
-            <v-list-item-subtitle>Duration:
-              {{ get_timecode(shot.end - shot.start) }}</v-list-item-subtitle>
+            <v-list-item-subtitle>Duration: {{ get_timecode(shot.end - shot.start) }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-col>
 
-      <v-col cols="8">
+      <v-col class="shotcard-right">
         <v-item-group>
-          <v-row>
+          <v-row class="shotcard-thumbs">
             <v-col v-for="(item, i) in shot.thumbnails" :key="i" cols="4">
               <v-img contain :src="item" max-height="100"> </v-img>
             </v-col>
@@ -70,3 +69,15 @@ export default {
   }
 };
 </script>
+<style>
+.shotcard-left {
+  max-width: 250px;
+  min-width: 150px;
+}
+.shotcard-right {
+  overflow-y: scroll;
+}
+.shotcard-thumbs {
+  min-width: 250px;
+}
+</style>
