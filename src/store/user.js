@@ -193,6 +193,7 @@ export const useUserStore = defineStore('user', {
                         //     this.email = res.data.data.email;
                         // }
                         // this.loggedIn = true;
+                        this.isLoading = false;
                         this.getUserData();
                     } else {
                         commit('error/update', info, { root: true });
