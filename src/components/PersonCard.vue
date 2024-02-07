@@ -35,8 +35,8 @@
 
           </div>
           <v-list-item-subtitle>Faces: {{ cluster.cluster.embedding_ids.length }}</v-list-item-subtitle>
-          <v-list-item-subtitle>First: {{ this.get_timecode(cluster.timestamps[0]) }}</v-list-item-subtitle>
-          <v-list-item-subtitle>Last: {{ this.get_timecode(cluster.timestamps[cluster.timestamps.length - 1])
+          <v-list-item-subtitle>First occurence: {{ this.get_timecode(cluster.timestamps[0]) }}</v-list-item-subtitle>
+          <v-list-item-subtitle>Last occurence: {{ this.get_timecode(cluster.timestamps[cluster.timestamps.length - 1])
           }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-col>

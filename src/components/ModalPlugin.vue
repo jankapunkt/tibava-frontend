@@ -22,7 +22,9 @@
               {{ $t("modal.plugin.search.select") }}
             </div>
             <v-card v-else :key="selected.id" class="pt-6 mx-auto" flat>
+              <v-card-title class="mb-0"> {{ selected.name }} </v-card-title>
               <v-card-text>
+                <div class="" style="padding-bottom: 2em;" v-html="selected.description"></div>
                 <Parameters :parameters="selected.parameters"> </Parameters>
                 <v-expansion-panels v-if="selected.optional_parameters &&
                   selected.optional_parameters.length > 0
@@ -80,6 +82,7 @@ export default {
           children: [
             {
               name: this.$t("modal.plugin.audio_rms.plugin_name"),
+              description: this.$t("modal.plugin.audio_rms.plugin_description"),
               icon: "mdi-waveform",
               plugin: "audio_rms",
               id: 101,
@@ -105,6 +108,7 @@ export default {
             },
             {
               name: this.$t("modal.plugin.audio_frequency.plugin_name"),
+              description: this.$t("modal.plugin.audio_frequency.plugin_description"),
               icon: "mdi-waveform",
               plugin: "audio_freq",
               id: 102,
@@ -139,6 +143,7 @@ export default {
             },
             {
               name: this.$t("modal.plugin.audio_waveform.plugin_name"),
+              description: this.$t("modal.plugin.audio_waveform.plugin_description"),
               icon: "mdi-waveform",
               plugin: "audio_amp",
               id: 103,
@@ -164,6 +169,7 @@ export default {
             },
             {
               name: this.$t("modal.plugin.whisper.plugin_name"),
+              description: this.$t("modal.plugin.whisper.plugin_description"),
               icon: "mdi-waveform",
               plugin: "whisper",
               id: 104,
@@ -185,6 +191,7 @@ export default {
           children: [
             {
               name: this.$t("modal.plugin.face_clustering.plugin_name"),
+              description: this.$t("modal.plugin.face_clustering.plugin_description"),
               icon: "mdi-ungroup",
               plugin: "face_clustering",
               id: 201,
@@ -247,6 +254,7 @@ export default {
             },
             {
               name: this.$t("modal.plugin.face_identification.plugin_name"),
+              description: this.$t("modal.plugin.face_identification.plugin_description"),
               icon: "mdi-account-search",
               plugin: "insightface_identification",
               id: 202,
@@ -285,6 +293,7 @@ export default {
             },
             {
               name: this.$t("modal.plugin.faceemotion.plugin_name"),
+              description: this.$t("modal.plugin.faceemotion.plugin_description"),
               icon: "mdi-emoticon-happy-outline",
               plugin: "deepface_emotion",
               id: 203,
@@ -326,39 +335,39 @@ export default {
                 },
               ],
             },
-            {
-              name: this.$t("modal.plugin.facesize.plugin_name"),
-              icon: "mdi-face-recognition",
-              plugin: "insightface_facesize",
-              id: 204,
-              parameters: [
-                {
-                  field: "text_field",
-                  name: "timeline",
-                  value: this.$t("modal.plugin.facesize.timeline_name"),
-                  text: this.$t("modal.plugin.timeline_name"),
-                },
-                {
-                  field: "select_timeline",
-                  name: "shot_timeline_id",
-                  // value: this.shot_timelines_names[0],
-                  // items: this.shot_timelines_names,
-                  text: this.$t("modal.plugin.shot_timeline_name"),
-                  hint: this.$t("modal.plugin.shot_timeline_hint"),
-                },
-              ],
-              optional_parameters: [
-                {
-                  field: "slider",
-                  min: 1,
-                  max: 10,
-                  value: 2,
-                  step: 1,
-                  name: "fps",
-                  text: this.$t("modal.plugin.fps"),
-                },
-              ],
-            },
+            // {
+            //   name: this.$t("modal.plugin.facesize.plugin_name"),
+            //   icon: "mdi-face-recognition",
+            //   plugin: "insightface_facesize",
+            //   id: 204,
+            //   parameters: [
+            //     {
+            //       field: "text_field",
+            //       name: "timeline",
+            //       value: this.$t("modal.plugin.facesize.timeline_name"),
+            //       text: this.$t("modal.plugin.timeline_name"),
+            //     },
+            //     {
+            //       field: "select_timeline",
+            //       name: "shot_timeline_id",
+            //       // value: this.shot_timelines_names[0],
+            //       // items: this.shot_timelines_names,
+            //       text: this.$t("modal.plugin.shot_timeline_name"),
+            //       hint: this.$t("modal.plugin.shot_timeline_hint"),
+            //     },
+            //   ],
+            //   optional_parameters: [
+            //     {
+            //       field: "slider",
+            //       min: 1,
+            //       max: 10,
+            //       value: 2,
+            //       step: 1,
+            //       name: "fps",
+            //       text: this.$t("modal.plugin.fps"),
+            //     },
+            //   ],
+            // },
           ],
         },
         {
@@ -367,6 +376,7 @@ export default {
           children: [
             {
               name: this.$t("modal.plugin.color_analysis.plugin_name"),
+              description: this.$t("modal.plugin.color_analysis.plugin_description"),
               icon: "mdi-palette",
               plugin: "color_analysis",
               id: 301,
@@ -421,6 +431,7 @@ export default {
               name: this.$t(
                 "modal.plugin.color_brightness_analysis.plugin_name"
               ),
+              description: this.$t("modal.plugin.color_brightness_analysis.plugin_description"),
               icon: "mdi-palette",
               plugin: "color_brightness_analysis",
               id: 302,
@@ -452,27 +463,24 @@ export default {
           id: 4,
           name: this.$t("modal.plugin.groups.identification"),
           children: [
-            {
-              name: this.$t("modal.plugin.places_classification.plugin_name"),
-              icon: "mdi-map-marker",
-              plugin: "places_classification",
-              id: 401,
+          {
+              name: this.$t("modal.plugin.clip.plugin_name"),
+              description: this.$t("modal.plugin.clip.plugin_description"),
+              icon: "mdi-eye",
+              plugin: "clip",
+              id: 403,
               parameters: [
                 {
                   field: "text_field",
                   name: "timeline",
-                  value: this.$t(
-                    "modal.plugin.places_classification.timeline_name"
-                  ),
+                  value: this.$t("modal.plugin.clip.timeline_name"),
                   text: this.$t("modal.plugin.timeline_name"),
                 },
                 {
-                  field: "select_timeline",
-                  name: "shot_timeline_id",
-                  // value: this.shot_timelines_names[0],
-                  // items: this.shot_timelines_names,
-                  text: this.$t("modal.plugin.shot_timeline_name"),
-                  hint: this.$t("modal.plugin.shot_timeline_hint"),
+                  field: "text_field",
+                  name: "search_term",
+                  value: "",
+                  text: this.$t("modal.plugin.clip.search_term"),
                 },
               ],
               optional_parameters: [
@@ -489,6 +497,7 @@ export default {
             },
             {
               name: this.$t("modal.plugin.clip_ontology.plugin_name"),
+              description: this.$t("modal.plugin.clip_ontology.plugin_description"),
               icon: "mdi-eye",
               plugin: "clip_ontology",
               id: 402,
@@ -528,38 +537,8 @@ export default {
               ],
             },
             {
-              name: this.$t("modal.plugin.clip.plugin_name"),
-              icon: "mdi-eye",
-              plugin: "clip",
-              id: 403,
-              parameters: [
-                {
-                  field: "text_field",
-                  name: "timeline",
-                  value: this.$t("modal.plugin.clip.timeline_name"),
-                  text: this.$t("modal.plugin.timeline_name"),
-                },
-                {
-                  field: "text_field",
-                  name: "search_term",
-                  value: "",
-                  text: this.$t("modal.plugin.clip.search_term"),
-                },
-              ],
-              optional_parameters: [
-                {
-                  field: "slider",
-                  min: 1,
-                  max: 10,
-                  value: 2,
-                  step: 1,
-                  name: "fps",
-                  text: this.$t("modal.plugin.fps"),
-                },
-              ],
-            },
-            {
               name: this.$t("modal.plugin.x_clip.plugin_name"),
+              description: this.$t("modal.plugin.x_clip.plugin_description"),
               icon: "mdi-eye",
               plugin: "x_clip",
               id: 404,
@@ -590,7 +569,44 @@ export default {
               ],
             },
             {
+              name: this.$t("modal.plugin.places_classification.plugin_name"),
+              description: this.$t("modal.plugin.places_classification.plugin_description"),
+              icon: "mdi-map-marker",
+              plugin: "places_classification",
+              id: 401,
+              parameters: [
+                {
+                  field: "text_field",
+                  name: "timeline",
+                  value: this.$t(
+                    "modal.plugin.places_classification.timeline_name"
+                  ),
+                  text: this.$t("modal.plugin.timeline_name"),
+                },
+                {
+                  field: "select_timeline",
+                  name: "shot_timeline_id",
+                  // value: this.shot_timelines_names[0],
+                  // items: this.shot_timelines_names,
+                  text: this.$t("modal.plugin.shot_timeline_name"),
+                  hint: this.$t("modal.plugin.shot_timeline_hint"),
+                },
+              ],
+              optional_parameters: [
+                {
+                  field: "slider",
+                  min: 1,
+                  max: 10,
+                  value: 2,
+                  step: 1,
+                  name: "fps",
+                  text: this.$t("modal.plugin.fps"),
+                },
+              ],
+            },
+            {
               name: this.$t("modal.plugin.place_clustering.plugin_name"),
+              description: this.$t("modal.plugin.place_clustering.plugin_description"),
               icon: "mdi-ungroup",
               plugin: "place_clustering",
               id: 405,
@@ -602,8 +618,8 @@ export default {
                   value: 0.25,
                   step: 0.01,
                   name: "cluster_threshold",
-                  hint_right: this.$t("modal.plugin.face_clustering.hint_left"),
-                  hint_left: this.$t("modal.plugin.face_clustering.hint_right"),
+                  hint_right: this.$t("modal.plugin.place_clustering.hint_right"),
+                  hint_left: this.$t("modal.plugin.place_clustering.hint_left"),
                 },
               ],
               optional_parameters: [
@@ -620,6 +636,7 @@ export default {
             },
             {
               name: this.$t("modal.plugin.blip.plugin_name"),
+              description: this.$t("modal.plugin.blip.plugin_description"),
               icon: "mdi-eye",
               plugin: "blip_vqa",
               id: 406,
@@ -657,6 +674,7 @@ export default {
           children: [
             {
               name: this.$t("modal.plugin.shot_detection.plugin_name"),
+              description: this.$t("modal.plugin.shot_detection.plugin_description"),
               icon: "mdi-arrow-expand-horizontal",
               plugin: "shotdetection",
               id: 501,
@@ -681,15 +699,8 @@ export default {
               ],
             },
             {
-              name: this.$t("modal.plugin.thumbnail.plugin_name"),
-              icon: "mdi-image-multiple",
-              plugin: "thumbnail",
-              id: 502,
-              parameters: [],
-              optional_parameters: [],
-            },
-            {
               name: this.$t("modal.plugin.shot_density.plugin_name"),
+              description: this.$t("modal.plugin.shot_density.plugin_description"),
               icon: "mdi-sine-wave",
               plugin: "shot_density",
               id: 503,
@@ -731,6 +742,7 @@ export default {
               name: this.$t(
                 "modal.plugin.shot_type_classification.plugin_name"
               ),
+              description: this.$t("modal.plugin.shot_type_classification.plugin_description"),
               icon: "mdi-video-switch",
               plugin: "shot_type_classification",
               id: 504,
@@ -764,6 +776,7 @@ export default {
             },
             {
               name: this.$t("modal.plugin.shot_scalar_annotation.plugin_name"),
+              description: this.$t("modal.plugin.shot_scalar_annotation.plugin_description"),
               icon: "mdi-label-outline",
               plugin: "shot_scalar_annotation",
               id: 505,
@@ -791,6 +804,15 @@ export default {
               ],
               optional_parameters: [],
             },
+            {
+              name: this.$t("modal.plugin.thumbnail.plugin_name"),
+              description: this.$t("modal.plugin.thumbnail.plugin_description"),
+              icon: "mdi-image-multiple",
+              plugin: "thumbnail",
+              id: 502,
+              parameters: [],
+              optional_parameters: [],
+            },
           ],
         },
         {
@@ -799,6 +821,7 @@ export default {
           children: [
             {
               name: this.$t("modal.plugin.aggregation.plugin_name"),
+              description: this.$t("modal.plugin.aggregation.plugin_description"),
               icon: "mdi-sigma",
               plugin: "aggregate_scalar",
               id: 601,
