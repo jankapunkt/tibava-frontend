@@ -11,7 +11,7 @@
         </span>
       </v-btn>
     </template>
-    <v-data-table :items-per-page="20" :headers="headers" :items="pluginRuns" item-key="id" class="elevation-1">
+    <v-data-table :items-per-page="10" :headers="headers" :items="pluginRuns" item-key="id" class="elevation-1">
       <template v-slot:item.status="{ value }">
         <v-chip :color="progressColor(value)"> {{ value }}</v-chip>
       </template>
