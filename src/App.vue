@@ -10,10 +10,10 @@
       </v-btn>
 
       <v-spacer></v-spacer>
-      <PluginMenu style="margin-right: 10px;" v-if="videoLoaded" />
-      <History style="margin-right: 10px;" v-if="videoLoaded" />
-      <AnnotationMenu style="margin-right: 10px;" v-if="videoLoaded" />
-      <VideoMenu style="margin-right: 10px;" v-if="videoLoaded" />
+      <PluginMenu style="margin-right: 10px;" v-if="videoView" />
+      <History style="margin-right: 10px;" v-if="videoView" />
+      <AnnotationMenu style="margin-right: 10px;" v-if="videoView" />
+      <VideoMenu style="margin-right: 10px;" v-if="videoView" />
       <UserMenu />
     </v-app-bar>
     <router-view />
@@ -41,8 +41,8 @@ export default {
     loggedIn() {
       return this.userStore.loggedIn;
     },
-    videoLoaded() {
-      return this.playerStore.videoId !== null;
+    videoView() {
+      return this.$route.name === 'VideoAnalysis';
     },
 
     ...mapStores(useUserStore, usePlayerStore),

@@ -37,7 +37,7 @@ export default {
     async logout() {
       const loggedOut = await this.userStore.logout();
       if (loggedOut) {
-        this.$router.go("/");
+        this.$router.push({ name: 'Home' });
       }
     },
   },
