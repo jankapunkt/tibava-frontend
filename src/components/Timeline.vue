@@ -666,7 +666,7 @@ export default {
         if (segment.segment.annotations.length > 0) {
           this.timelineTooltip.label = annotations.join("; ");
         } else {
-          this.timelineTooltip.label = 'Segment ' + segment.index;
+          this.timelineTooltip.label = 'Segment ' + (segment.index + 1);
         }
         // ev.stopPropagation();
       });
@@ -703,7 +703,7 @@ export default {
             return e.annotation.name;
           });
           if (segment.segment.annotations.length <= 0) {
-            this.timelineTooltip.label = 'Segment ' + segment.index;
+            this.timelineTooltip.label = 'Segment ' + (segment.index + 1);
           } else {
             this.timelineTooltip.label = annotations.join("; ");
           }
