@@ -129,7 +129,7 @@
       "timeline_name": "Timeline Name",
       "shot_timeline_name": "Shot Boundaries from Timeline",
       "shot_timeline_hint": "*The annotations are created based on the shot boundaries of the selected timeline",
-      "scalar_timeline_name": "Select Timelines",
+      "scalar_timeline_name": "Select Timeline",
       "scalar_timeline_hint": "*The scalar values of the selected timelines will be aggregated",
       "fps": "Frames per Second (FPS)",
       "normalize": "Normalize Results?",
@@ -346,7 +346,8 @@
         "link": "Visualization",
         "name": "Timeline Name",
         "update": "OK",
-        "close": "Close"
+        "close": "Close",
+        "description": "The color map of the timeline can be changed to one of the following maps:"
       },
       "delete": {
         "title": "Delete Timeline",
