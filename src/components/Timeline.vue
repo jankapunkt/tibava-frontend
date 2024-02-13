@@ -66,10 +66,6 @@
 
                 <v-spacer></v-spacer>
 
-                <v-btn icon small disabled>
-                  <v-icon>mdi-eye-off</v-icon>
-                </v-btn>
-
                 <v-menu bottom right>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn icon small>
