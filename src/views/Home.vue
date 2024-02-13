@@ -17,7 +17,6 @@
                 Length:
                 {{ get_display_time(item.duration) }}
               </div>
-              <div>License: {{ item.license }}</div>
               <div>Uploaded: {{ item.date.slice(0, 10) }}</div>
               <div>Timelines: {{ item.num_timelines }}</div>
 

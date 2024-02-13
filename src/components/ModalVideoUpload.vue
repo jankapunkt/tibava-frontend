@@ -13,7 +13,6 @@
         <v-card-text>
           <v-form>
             <v-text-field v-model="video.title" :counter="120" label="Video title" required></v-text-field>
-            <v-select v-model="video.license" :items="licenses" label="Video license" required></v-select>
             <v-file-input v-model="video.file" :rules="[validateFile]" label="Select a video file [mp4]" filled
               prepend-icon="mdi-movie-filter"></v-file-input>
 
@@ -59,7 +58,6 @@ export default {
         },
       ],
       selected_analysers: ["shotdetection"],
-      licenses: ["CC-BY-0", "CC-BY-2"],
       checkbox: false,
       dialog: false,
       file_valid: false,
@@ -70,10 +68,7 @@ export default {
       return this.userStore.allowance > this.videoStore.all.length;
     },
     disabled() {
-      if (this.checkbox && this.file_valid && this.uploadingProgress == 0) {
-        return false;
-      }
-      return true;
+      return !this.checkbox || !this.file_valid || this.uploadingProgress != 0;
     },
     isUploading() {
       return this.videoUploadStore.isUploading;

@@ -24,7 +24,6 @@ export const useVideoUploadStore = defineStore('videoUpload', {
             const formData = new FormData();
             formData.append("file", params.video.file);
             formData.append("title", params.video.title);
-            formData.append("license", params.video.license);
             formData.append("analyser", params.analyser);
             this.isUploading = true;
             // commit('loading/update', true, { root: true });
