@@ -30,7 +30,7 @@
           <v-row>
             <v-list class="color-map-list">
               <v-subheader>
-                {{ $t("modal.timeline.visualization.color_map.title") }}
+                {{ $t("modal.timeline.visualization.description") }}
               </v-subheader>
               <v-list-item-group v-model="colormap_idx" color="primary">
                 <template v-for="(colormap, i) in colormap_options">
