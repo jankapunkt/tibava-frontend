@@ -17,6 +17,7 @@
             @change="onAnnotationChange"
             @keydown="onKeydown"
             item-text="name"
+            class="mb-9"
           >
             <template v-slot:no-data>
               <v-list-item>
