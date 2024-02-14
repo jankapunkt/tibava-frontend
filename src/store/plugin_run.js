@@ -123,6 +123,8 @@ export const usePluginRunStore = defineStore("pluginRun", {
         currentPluginRunStatus = this.all()
       }
       currentPluginRunStatus = currentPluginRunStatus.map((e) => { return { id: e.id, status: e.status } })
+      this.pluginInProgress = currentPluginRunStatus.filter((e) => e.status === "RUNNING" || e.status === "QUEUED").length > 0;
+
       return axios
         .get(`${config.API_LOCATION}/plugin/run/list`, { params })
         .then((res) => {
@@ -146,7 +148,7 @@ export const usePluginRunStore = defineStore("pluginRun", {
             const result = {
               allDone: diff.filter((e) => {
                 {
-                  return e.status === "DONE" || e.status === "ERROR";
+                  return e.status === "DONE" || e.status === "ERROR" || e.status === "UNKNOWN";
                 }
               }).length == diff.length,
               newDone: diff.filter((e) => {
@@ -156,10 +158,7 @@ export const usePluginRunStore = defineStore("pluginRun", {
               }).map((e) => { return e.id }),
             }
             // check if all plugins are done
-            if (result.allDone) {
-              this.pluginInProgress = false;
-
-            }
+            this.pluginInProgress = !result.allDone;
 
             // get the results from the plugin
             if (fetchResults) {
