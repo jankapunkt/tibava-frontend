@@ -933,11 +933,11 @@ export default {
       return timelines;
     },
     timelinesAdded() {
-      let timelines = this.timelineStore.added;
+      let timelines = this.timelineStore.added.filter((t) => t[1].type !== "TRANSCRIPT");
       return timelines;
     },
     timelinesChanged() {
-      let timelines = this.timelineStore.changed;
+      let timelines = this.timelineStore.changed.filter((t) => t[1].type !== "TRANSCRIPT");
       return timelines;
     },
     timelinesDeleted() {
