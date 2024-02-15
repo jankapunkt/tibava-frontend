@@ -63,17 +63,10 @@
               </ClusterExploration>
             </v-list-item>
             <v-list-item>
-              <v-tooltip :disabled="!toTimelineDisabled" left>
-                <template v-slot:activator="{ on }">
-                  <div v-on="on" class="d-inline-block">
-                    <v-btn :disabled="toTimelineDisabled" text @click="createTimeline" v-on="on">
-                      <v-icon left>{{ "mdi-barcode" }}</v-icon>
-                      {{ $t("button.totimeline") }}
-                    </v-btn>
-                  </div>
-                </template>
-                A timeline for this Cluster already exists. Delete it before you create another one.
-              </v-tooltip>
+              <v-btn text @click="createTimeline">
+                <v-icon left>{{ "mdi-barcode" }}</v-icon>
+                {{ $t("button.totimeline") }}
+              </v-btn>
             </v-list-item>
             <v-list-item>
               <v-btn text @click="deleteCluster">
@@ -115,12 +108,10 @@ export default {
       thumbnail_ids: [],
       isSubmitting: false,
       showDotMenu: false,
-      toTimelineDisabled: false,
     }
   },
   mounted() {
     this.fill_thumbnails();
-    this.toTimelineDisabled = this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId);
   },
   methods: {
     fill_thumbnails() {
@@ -157,15 +148,6 @@ export default {
       }
       this.renaming = true;
 
-      if (this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId)) {
-        var timelineId = this.clusterTimelineItemStore.getTimeline(this.cluster.systemId);
-        if (timelineId) {
-          await this.timelineStore.rename({
-            timelineId: timelineId,
-            name: this.nameProxy,
-          });
-        }
-      }
 
       if (this.clusterTimelineItemStore.getID(this.cluster.systemId) !== -1) {
         await this.clusterTimelineItemStore.rename({
@@ -261,24 +243,6 @@ export default {
       return this.timelineStore.all;
     },
     ...mapStores(usePlayerStore, usePluginRunStore, useClusterTimelineItemStore, useTimelineStore, useFaceclusterStore),
-  },
-  watch: {
-    timelines(values) {
-      this.toTimelineDisabled = this.clusterTimelineItemStore.hasTimeline(this.cluster.systemId);
-      if (values.length == 0 || this.renaming) {
-        return;
-      }
-
-      const newTimeline = this.timelineStore.getLatest();
-
-      // make sure this is the right card
-      if (newTimeline.name != this.nameProxy) {
-        return;
-      }
-
-      this.clusterTimelineItemStore.setTimeline(this.cluster.systemId, newTimeline.id);
-      this.toTimelineDisabled = true;
-    }
   },
   components: {
     ClusterExploration,

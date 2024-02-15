@@ -21,21 +21,6 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                 return state.clusterTimelineItems[id];
             };
         },
-        hasTimeline(state) {
-            return (cluster_id) => {
-                if (this.clusterTimelineItemList.length === 0) {
-                    return false;
-                }
-
-                if (cluster_id in this.clusterTimelineItems) {
-                    if (state.clusterTimelineItems[cluster_id].timeline) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        },
         getName(state) {
             return (cluster_id) => {
                 var name = "Not Found";
@@ -141,32 +126,6 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                     this.isLoading = false;
                 });
 
-        },
-        async setTimeline(cluster_id, timeline_id) {
-            if (this.isLoading) {
-                return;
-            }
-            this.isLoading = true;
-
-            let params = {
-                cti_id: this.clusterTimelineItems[cluster_id].id,
-                timeline_id: timeline_id,
-            };
-
-            return axios
-                .post(`${config.API_LOCATION}/cluster/timeline/item/setTimeline`, params)
-                .then((res) => {
-                    if (res.data.status === "ok") {
-                        this.clusterTimelineItems[cluster_id].timeline = timeline_id;
-                    }
-                    else {
-                        console.log("Error in clusterTimelineItem/setTimeline");
-                        console.log(res.data);
-                    }
-                })
-                .finally(() => {
-                    this.isLoading = false;
-                });
         },
         async delete(cluster_id) {
             if (this.isLoading) {
