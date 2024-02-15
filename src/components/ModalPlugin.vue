@@ -463,7 +463,7 @@ export default {
           id: 4,
           name: this.$t("modal.plugin.groups.identification"),
           children: [
-          {
+            {
               name: this.$t("modal.plugin.clip.plugin_name"),
               description: this.$t("modal.plugin.clip.plugin_description"),
               icon: "mdi-eye",
@@ -604,68 +604,68 @@ export default {
                 },
               ],
             },
-            {
-              name: this.$t("modal.plugin.place_clustering.plugin_name"),
-              description: this.$t("modal.plugin.place_clustering.plugin_description"),
-              icon: "mdi-ungroup",
-              plugin: "place_clustering",
-              id: 405,
-              parameters: [
-                {
-                  field: "slider",
-                  min: 0.0,
-                  max: 1.0,
-                  value: 0.25,
-                  step: 0.01,
-                  name: "cluster_threshold",
-                  hint_right: this.$t("modal.plugin.place_clustering.hint_right"),
-                  hint_left: this.$t("modal.plugin.place_clustering.hint_left"),
-                },
-              ],
-              optional_parameters: [
-                {
-                  field: "slider",
-                  min: 1,
-                  max: 10,
-                  value: 2,
-                  step: 1,
-                  name: "fps",
-                  text: this.$t("modal.plugin.fps"),
-                },
-              ],
-            },
-            {
-              name: this.$t("modal.plugin.blip.plugin_name"),
-              description: this.$t("modal.plugin.blip.plugin_description"),
-              icon: "mdi-eye",
-              plugin: "blip_vqa",
-              id: 406,
-              parameters: [
-                {
-                  field: "text_field",
-                  name: "timeline",
-                  value: this.$t("modal.plugin.blip.timeline_name"),
-                  text: this.$t("modal.plugin.timeline_name"),
-                },
-                {
-                  field: "text_field",
-                  name: "query_term",
-                  value: "",
-                  text: this.$t("modal.plugin.blip.search_term"),
-                },
-              ],
-              optional_parameters: [
-                {
-                  field: "slider",
-                  min: 1,
-                  max: 10,
-                  value: 2,
-                  step: 1,
-                  name: "fps",
-                  text: this.$t("modal.plugin.fps"),
-                },
-              ],
-            },
+            // {
+            //   name: this.$t("modal.plugin.place_clustering.plugin_name"),
+            //   description: this.$t("modal.plugin.place_clustering.plugin_description"),
+            //   icon: "mdi-ungroup",
+            //   plugin: "place_clustering",
+            //   id: 405,
+            //   parameters: [
+            //     {
+            //       field: "slider",
+            //       min: 0.0,
+            //       max: 1.0,
+            //       value: 0.25,
+            //       step: 0.01,
+            //       name: "cluster_threshold",
+            //       hint_right: this.$t("modal.plugin.place_clustering.hint_right"),
+            //       hint_left: this.$t("modal.plugin.place_clustering.hint_left"),
+            //     },
+            //   ],
+            //   optional_parameters: [
+            //     {
+            //       field: "slider",
+            //       min: 1,
+            //       max: 10,
+            //       value: 2,
+            //       step: 1,
+            //       name: "fps",
+            //       text: this.$t("modal.plugin.fps"),
+            //     },
+            //   ],
+            // },
+            // {
+            //   name: this.$t("modal.plugin.blip.plugin_name"),
+            //   description: this.$t("modal.plugin.blip.plugin_description"),
+            //   icon: "mdi-eye",
+            //   plugin: "blip_vqa",
+            //   id: 406,
+            //   parameters: [
+            //     {
+            //       field: "text_field",
+            //       name: "timeline",
+            //       value: this.$t("modal.plugin.blip.timeline_name"),
+            //       text: this.$t("modal.plugin.timeline_name"),
+            //     },
+            //     {
+            //       field: "text_field",
+            //       name: "query_term",
+            //       value: "",
+            //       text: this.$t("modal.plugin.blip.search_term"),
+            //     },
+            //   ],
+            //   optional_parameters: [
+            //     {
+            //       field: "slider",
+            //       min: 1,
+            //       max: 10,
+            //       value: 2,
+            //       step: 1,
+            //       name: "fps",
+            //       text: this.$t("modal.plugin.fps"),
+            //     },
+            //   ],
+            // },
           ],
         },
         {
