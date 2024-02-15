@@ -929,7 +929,7 @@ export default {
       return end;
     },
     timelines() {
-      let timelines = this.timelineStore.all;
+      let timelines = this.timelineStore.all.filter((t) => t.type !== "TRANSCRIPT");
       return timelines;
     },
     timelinesAdded() {
