@@ -173,14 +173,7 @@ export default {
               icon: "mdi-waveform",
               plugin: "whisper",
               id: 104,
-              parameters: [
-                {
-                  field: "text_field",
-                  name: "timeline",
-                  value: this.$t("modal.plugin.whisper.timeline_name"),
-                  text: this.$t("modal.plugin.timeline_name"),
-                },
-              ],
+              parameters: [],
               optional_parameters: [],
             },
           ],
