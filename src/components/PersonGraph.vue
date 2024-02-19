@@ -58,16 +58,13 @@ import "vis";
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import { mapStores } from "pinia";
-import { useFaceclusterStore } from "@/store/facecluster";
 import { useShotStore } from "@/store/shot";
 import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
 
 export default {
-    props: ["clusters"],
     data() {
         return {
             show: false,
-            clusterList: [],
             nodes: null,
             edges: null,
             loading: true,
@@ -83,7 +80,6 @@ export default {
         };
     },
     created() {
-        this.fetchClusters();
         this.prepareData();
     },
     mounted() {
@@ -106,14 +102,13 @@ export default {
             if (this.clusterList.length == 0) {
                 return;
             }
-            const clusterTimelineItemStore = useClusterTimelineItemStore();
 
             this.clusterList.forEach((cluster) => {
-                if (cluster.timestamps.length < this.cluster_min_size) {
-                    this.cluster_min_size = cluster.timestamps.length;
+                if (cluster.items.length < this.cluster_min_size) {
+                    this.cluster_min_size = cluster.items.length;
                 }
-                if (cluster.timestamps.length > this.cluster_max_size) {
-                    this.cluster_max_size = cluster.timestamps.length;
+                if (cluster.items.length > this.cluster_max_size) {
+                    this.cluster_max_size = cluster.items.length;
                 }
                 if (this.shotVisualization) {
                     cluster.shots = [];
@@ -121,8 +116,7 @@ export default {
             });
 
 
-            const shotStore = useShotStore();
-            const shots = shotStore.shots;
+            const shots = this.shotStore.shots;
 
             // get shots a face cluster is depicted in
             if (this.shotVisualization) {
@@ -131,7 +125,7 @@ export default {
                     // iterate over all clusters
                     for (const [index, cluster] of Object.entries(this.clusterList)) {
                         // if an object of the cluster is in the shot
-                        for (const timestamp of cluster.timestamps) {
+                        for (const timestamp of this.timestamps(cluster)) {
                             if (timestamp >= shot.start & timestamp <= shot.end) {
                                 if (!cluster.shots.includes(shot.id)) {
                                     cluster.shots.push(shot.id);
@@ -146,13 +140,13 @@ export default {
             // save nodes
             let dataset = [];
             this.clusterList.forEach((cluster) => {
-                if (cluster.timestamps.length < this.filter_min_cluster_size) {
+                if (cluster.items.length < this.filter_min_cluster_size) {
                     return;
                 }
                 dataset.push({
                     id: cluster.id,
-                    label: clusterTimelineItemStore.getName(cluster.systemId),
-                    value: cluster.timestamps.length
+                    label: cluster.name,
+                    value: cluster.items.length
                 })
             });
 
@@ -162,7 +156,7 @@ export default {
             let connections = [];
             let checked = [];
             this.clusterList.forEach((cluster) => {
-                if (cluster.timestamps.length < this.filter_min_cluster_size) {
+                if (cluster.items.length < this.filter_min_cluster_size) {
                     return;
                 }
 
@@ -177,8 +171,8 @@ export default {
                     }
                     let value = 0;
                     if (!this.shotVisualization) {
-                        cluster.timestamps.forEach((timestamp) => {
-                            if (conn_cluster.timestamps.includes(timestamp)) {
+                        this.timestamps(cluster).forEach((timestamp) => {
+                            if (this.timestamps(conn_cluster).includes(timestamp)) {
                                 value++;
                             }
                         });
@@ -258,30 +252,20 @@ export default {
                 this.network.on('afterDrawing', functionThatDoesWhatYouNeed);
             })
         },
-        fetchClusters() {
-            let tempList = this.faceclusterStore.clusters;
-
-            if (tempList.length == 0) {
-                return
-            }
-
-            this.clusterList = tempList.filter((item) => this.clusterTimelineItemStore.getID(item.systemId) !== -1);
-        },
         close() {
             this.show = false;
         },
+        timestamps(cluster) {
+            return cluster.items.map((i) => i.time);
+        },
     },
     computed: {
-        availableClusters() {
-            const clusterTimelineItemStore = useClusterTimelineItemStore();
-            return clusterTimelineItemStore.all.length;
+        clusterList() {
+            return this.clusterTimelineItemStore.latestFaceClustering();
         },
-        ...mapStores(useFaceclusterStore, useClusterTimelineItemStore, useShotStore)
+        ...mapStores(useClusterTimelineItemStore, useShotStore)
     },
     watch: {
-        availableClusters(num) {
-            this.fetchClusters();
-        },
         shotVisualization(shot) {
             this.openGraph();
         }
