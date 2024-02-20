@@ -355,10 +355,6 @@ export const useTimelineStore = defineStore("timeline", {
       const timelineSegmentStore = useTimelineSegmentStore();
       timelineSegmentStore.deleteTimeline(timeline_id);
 
-      // update ctis
-      const clusterTimelineItemStore = useClusterTimelineItemStore();
-      clusterTimelineItemStore.deleteTimeline(timeline_id);
-
       return axios
         .post(`${config.API_LOCATION}/timeline/delete`, params)
         .then((res) => {
