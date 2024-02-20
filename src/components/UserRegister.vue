@@ -41,6 +41,7 @@
           :rules="[checkLength]"
           clearable
         ></v-text-field>
+        <p v-if="error_message.length>0" class="text-uppercase font-weight-bold red--text">Error: {{ error_message }}</p>
       </v-card-text>
 
       <v-card-actions class="px-6 pb-6">
@@ -70,12 +71,18 @@ export default {
       user: {},
       dialog: false,
       showPassword: false,
+      error_message: ""
     };
   },
   methods: {
-    register() {
-      this.userStore.register(this.user);
-      this.dialog = false;
+    async register() {
+      const status = await this.userStore.register(this.user);
+      if (status.status === "ok") {
+        this.dialog = false;
+        this.error_message = "";
+      } else {
+        this.error_message = status.message;
+      }
     },
     checkLength(value) {
       if (value) {

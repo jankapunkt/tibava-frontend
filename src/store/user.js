@@ -104,8 +104,6 @@ export const useUserStore = defineStore('user', {
             }
             this.isLoading = true
 
-            // commit('loading/update', true, { root: true });
-            let info = { date: Date(), origin: 'login' };
             return axios.post(`${config.API_LOCATION}/user/login`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
@@ -125,23 +123,16 @@ export const useUserStore = defineStore('user', {
                             this.max_video_size = res.data.data.max_video_size;
                         }
                         this.loggedIn = true;
-                        return true;
+                    }
+                    if (res.data.status === "ok" || "message" in res.data) {
+                        return res.data
                     } else {
-
-                        // commit('error/update', info, { root: true });
-                        return false;
+                        return {"status": "error", "message": "Invalid message."}
                     }
                 })
                 .finally(() => {
                     this.isLoading = false;
-                })
-            // .catch((error) => {
-            //     return false;
-            //     // commit('error/update', { ...info, error }, { root: true });
-            // })
-            // .finally(() => {
-            //   commit('loading/update', false, { root: true });
-            // });
+                });
         },
         async logout() {
             if (this.isLoading) {
@@ -186,28 +177,18 @@ export const useUserStore = defineStore('user', {
             return axios.post(`${config.API_LOCATION}/user/register`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
-                        // if ("username" in res.data.data) {
-                        //     this.username = res.data.data.username;
-                        // }
-                        // if ("email" in res.data.data) {
-                        //     this.email = res.data.data.email;
-                        // }
-                        // this.loggedIn = true;
                         this.isLoading = false;
                         this.getUserData();
+                    }
+                    if (res.data.status === "ok" || "message" in res.data) {
+                        return res.data
                     } else {
-                        commit('error/update', info, { root: true });
+                        return {"status": "error", "message": "Invalid message."}
                     }
                 })
                 .finally(() => {
                     this.isLoading = false;
                 })
-            // .catch((error) => {
-            //     commit('error/update', { ...info, error }, { root: true });
-            // })
-            // .finally(() => {
-            //   commit('loading/update', false, { root: true });
-            // });
         },
     },
     persist: {
