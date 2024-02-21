@@ -70,6 +70,7 @@ export const useVideoStore = defineStore("video", {
             const faceStore = useFaceStore();
             const placeStore = usePlaceStore();
 
+            playerStore.clearStore();
             promises.push(playerStore.fetchVideo({ videoId }));
             if (includeAnnotation) {
                 annotationCategoryStore.clearStore()
