@@ -72,6 +72,8 @@ export const usePlayerStore = defineStore("player", {
       this.targetTime = 0.0;
       this.playing = false;
       this.ended = false;
+      this.selectedTimeRange.start = 0;
+      this.selectedTimeRange.end = 0;
     },
     setSelectedTimeRangeStart(time) {
       this.selectedTimeRange.start = time;

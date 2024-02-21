@@ -64,6 +64,7 @@ export const useVideoStore = defineStore("video", {
             const shotStore = useShotStore();
             const clusterTimelineItemStore = useClusterTimelineItemStore();
 
+            playerStore.clearStore();
             promises.push(playerStore.fetchVideo({ videoId }));
             if (includeAnnotation) {
                 annotationCategoryStore.clearStore()
