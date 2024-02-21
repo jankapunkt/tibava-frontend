@@ -26,7 +26,8 @@
         "linePlot": "Line Plot",
         "scatterPlot": "Scatter Plot",
         "histogramChart": "Histogram Chart",
-        "stackedBarChart": "Stacked Bar Chart"
+        "stackedBarChart": "Stacked Bar Chart",
+        "constellationGraph": "Timeline Constellation Graph"
       },
       "mapping": {
         "mappingTitle": "Visualization mapping",

@@ -120,7 +120,6 @@ import { useShortcutStore } from "@/store/shortcut";
 import { useAnnotationShortcutStore } from "../store/annotation_shortcut.js";
 import { usePluginRunStore } from "../store/plugin_run.js";
 import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
-import { thresholdFreedmanDiaconis } from "d3";
 import ClusterTimelineItemOverview from "../components/ClusterTimelineItemOverview.vue";
 
 export default {
