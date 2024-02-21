@@ -18,18 +18,11 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
         latestPlaceClustering(state) {
             return () => {
                 const pluginRunStore = usePluginRunStore();
-                const pluginRunResultStore = usePluginRunResultStore();
                 const playerStore = usePlayerStore();
 
                 let place_clustering = pluginRunStore
                     .forVideo(playerStore.videoId)
-                    .filter((e) => {
-                        return e.type == "place_clustering" && e.status == "DONE";
-                    })
-                    .map((e) => {
-                        e.results = pluginRunResultStore.forPluginRun(e.id);
-                        return e;
-                    })
+                    .filter((e) => e.type == "place_clustering" && e.status == "DONE")
                     .sort((a, b) => {
                         return new Date(b.date) - new Date(a.date);
                     })
@@ -45,18 +38,11 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
         latestFaceClustering(state) {
             return () => {
                 const pluginRunStore = usePluginRunStore();
-                const pluginRunResultStore = usePluginRunResultStore();
                 const playerStore = usePlayerStore();
 
                 let face_clustering = pluginRunStore
                     .forVideo(playerStore.videoId)
-                    .filter((e) => {
-                        return e.type == "face_clustering" && e.status == "DONE";
-                    })
-                    .map((e) => {
-                        e.results = pluginRunResultStore.forPluginRun(e.id);
-                        return e;
-                    })
+                    .filter((e) => e.type == "face_clustering" && e.status == "DONE")
                     .sort((a, b) => {
                         return new Date(b.date) - new Date(a.date);
                     })
