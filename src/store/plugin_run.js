@@ -116,10 +116,10 @@ export const usePluginRunStore = defineStore("pluginRun", {
       // get the current status of all plugins
       let currentPluginRunStatus = null;
       if (videoId) {
-        currentPluginRunStatus = this.forVideo(videoId)
+        currentPluginRunStatus = this.forVideo(videoId);
       }
       else {
-        currentPluginRunStatus = this.all()
+        currentPluginRunStatus = this.all;
       }
       currentPluginRunStatus = currentPluginRunStatus.map((e) => { return { id: e.id, status: e.status } })
       this.pluginInProgress = currentPluginRunStatus.filter((e) => e.status === "RUNNING" || e.status === "QUEUED").length > 0;
@@ -135,7 +135,7 @@ export const usePluginRunStore = defineStore("pluginRun", {
               newPluginRunStatus = this.forVideo(videoId)
             }
             else {
-              newPluginRunStatus = this.all()
+              newPluginRunStatus = this.all
             }
             newPluginRunStatus = newPluginRunStatus.map((e) => { return { id: e.id, status: e.status } })
             const diff = newPluginRunStatus.map(t1 => {
