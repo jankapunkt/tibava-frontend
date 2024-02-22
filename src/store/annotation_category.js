@@ -1,7 +1,7 @@
-import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
+import { usePlayerStore } from "@/store/player";
 
 export const useAnnotationCategoryStore = defineStore('annotationCategory', {
     state: () => {
