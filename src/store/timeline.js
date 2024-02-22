@@ -5,7 +5,7 @@ import { defineStore } from "pinia";
 import { useTimelineSegmentAnnotationStore } from "@/store/timeline_segment_annotation";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { usePlayerStore } from "@/store/player";
-import { useClusterTimelineItemStore } from "@/store/cluster_timeline_item";
+import { usePluginRunResultStore } from "@/store/plugin_run_result";
 
 export const useTimelineStore = defineStore("timeline", {
   state: () => {
@@ -224,6 +224,16 @@ export const useTimelineStore = defineStore("timeline", {
         .then((res) => {
           if (res.data.status === "ok") {
             this.updateStore(res.data.entries);
+            // load plugin_run_results into timeline objects
+            const pluginRunResultStore = usePluginRunResultStore();
+            res.data.entries.forEach((timeline) => {
+              if (!('plugin' in timeline) && timeline.type == "PLUGIN_RESULT" && "plugin_run_result_id" in timeline) {
+                const result = pluginRunResultStore.get(timeline.plugin_run_result_id);
+                if (result) {
+                  timeline.plugin = { data: result.data, type: result.type };
+                }
+              }
+            });
           }
         })
         .finally(() => {

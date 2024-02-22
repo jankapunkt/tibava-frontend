@@ -3,7 +3,7 @@
     <v-col cols="3">
       <h5 class="mt-6 subtitle-2">Timelines</h5>
       <v-list dense>
-        <v-list-item v-for="timeline in timelineSettings" :key="timeline.name">
+        <v-list-item v-for="timeline in visibleTimelines" :key="timeline.name">
           <v-list-item-action>
             <v-checkbox v-model="timeline.active"></v-checkbox>
           </v-list-item-action>
@@ -44,6 +44,7 @@ import { useTimelineStore } from "@/store/timeline";
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import Vue from "vue";
+import time from "../mixins/time";
 
 
 export default {
@@ -60,17 +61,22 @@ export default {
   },
   methods: {
     updateTimelineSettings() {
-      let previous = Object.keys(this.timelineSettings);
-      for (let timeline of this.timelines) {
-        Vue.set(this.timelineSettings, timeline.id, {
-          active: false,
-          threshold: 0.5,
-          name: timeline.name
-        });
-        previous.splice(previous.indexOf(timeline.id), 1);
+      for (let settings of Object.values(this.timelineSettings)) {
+        settings.visible = false;
       }
-      for (let key of previous) {
-        Vue.delete(this.timelineSettings, key);
+      for (let timeline of this.timelines) {
+        if (!(timeline.id in this.timelineSettings)) {
+          Vue.set(this.timelineSettings, timeline.id, {
+            active: false,
+            threshold: 0.5,
+            name: timeline.name,
+            // visible needed as timelines are briefly deleted and then reinserted
+            // when updating the store and we want to persist the setting
+            visible: true
+          });
+        } else {
+          this.timelineSettings[timeline.id].visible = true;
+        }
       }
     },
     renderGraph() {
@@ -123,7 +129,7 @@ export default {
       return data.y.filter(v => v >= threshold).reduce((v1, v2) => v1 + v2, 0);
     },
     getConstellations() {
-      const active_timelines = this.timelines.filter((t) => this.timelineSettings[t.id].active);
+      const active_timelines = this.timelines.filter((t) => this.timelineSettings[t.id].active && this.timelineSettings[t.id].visible);
       const nodes = new DataSet(
         active_timelines.map((t) => ({
           id: t.id,
@@ -158,6 +164,9 @@ export default {
         .all
         .filter((timeline) => timeline.type === "PLUGIN_RESULT" && timeline.plugin.type === 'SCALAR');
     },
+    visibleTimelines() {
+      return Object.values(this.timelineSettings).filter((t) => t.visible);
+    },
     ...mapStores(useTimelineStore),
   },
   watch: {
@@ -168,7 +177,7 @@ export default {
       handler: function() {
         this.loading = true;
         clearTimeout(this.timeoutId);
-        this.timeoutId = setTimeout(this.renderGraph, 1000);
+        this.timeoutId = setTimeout(this.renderGraph, 3000);
       },
       deep: true
     }
