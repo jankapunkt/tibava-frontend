@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="90%">
+  <v-dialog v-model="dialog" max-width="90%" style="height: 80vh;">
     <v-card>
       <v-card-title class="mb-0"> {{ $t("modal.plugin.title") }} </v-card-title>
       <v-card-text>
@@ -21,7 +21,7 @@
             <div v-if="!selected" class="text-h6 grey--text font-weight-light" style="text-align: center;">
               {{ $t("modal.plugin.search.select") }}
             </div>
-            <v-card v-else :key="selected.id" class="pt-6 mx-auto" flat>
+            <v-card v-else :key="selected.id" class="mx-auto overflow-y-auto" style="max-height: calc(80vh - 50px);" flat>
               <v-card-title class="mb-0"> {{ selected.name }} </v-card-title>
               <v-card-text>
                 <div class="" style="padding-bottom: 2em;" v-html="selected.description"></div>
@@ -42,13 +42,6 @@
                 </v-expansion-panels>
               </v-card-text>
               <v-card-actions class="pt-0">
-                <v-btn @click="
-                  runPlugin(
-                    selected.plugin,
-                    selected.parameters,
-                    selected.optional_parameters
-                  )
-                  ">{{ $t("modal.plugin.run") }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -56,6 +49,14 @@
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-btn @click="dialog = false">{{ $t("modal.plugin.close") }}</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn v-if="selected" @click="
+          runPlugin(
+            selected.plugin,
+            selected.parameters,
+            selected.optional_parameters
+          )
+          ">{{ $t("modal.plugin.run") }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
