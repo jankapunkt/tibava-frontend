@@ -11,7 +11,6 @@ import { useAnnotationCategoryStore } from "./annotation_category";
 import { useTimelineStore } from "./timeline";
 import { useTimelineSegmentStore } from "./timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "./timeline_segment_annotation";
-import { useShotStore} from "./shot"
 
 import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
@@ -61,7 +60,6 @@ export const useVideoStore = defineStore("video", {
             const pluginRunResultStore = usePluginRunResultStore();
             const shortcutStore = useShortcutStore();
             const annotationShortcutStore = useAnnotationShortcutStore();
-            const shotStore = useShotStore();
             const clusterTimelineItemStore = useClusterTimelineItemStore();
 
             playerStore.clearStore();
@@ -292,7 +290,7 @@ export const useVideoStore = defineStore("video", {
             this.videoList = []
         },
         deleteFromStore(ids) {
-            ids.forEach((id, i) => {
+            ids.forEach((id) => {
                 let index = this.videoList.findIndex((f) => f === id);
                 this.videoList.splice(index, 1);
                 delete this.videos[id];
@@ -305,7 +303,7 @@ export const useVideoStore = defineStore("video", {
         replaceStore(videos) {
             this.videos = {};
             this.videoList = [];
-            videos.forEach((e, i) => {
+            videos.forEach((e) => {
                 this.videos[e.id] = e;
                 this.videoList.push(e.id);
             });

@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
+import { DropShadowFilter } from "pixi-filters";
 
 
 export class Timeline extends PIXI.Container {

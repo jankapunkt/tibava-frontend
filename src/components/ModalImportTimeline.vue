@@ -31,14 +31,14 @@
               </p>
               {{ $t("modal.export.json") }}
             </div>
-          </v-btn> -->
+          </v-btn>
+        </v-row>-->
           <v-file-input
             v-model="importfile"
             label="Select an ELAN file to import [eaf]"
             filled
             prepend-icon="mdi-file"
           ></v-file-input>
-        </v-row>
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-btn class="mr-4" @click="submit" :disabled="isSubmitting">
@@ -53,7 +53,6 @@
 </template>
 
 <script>
-import Vue from "vue";
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
 

@@ -65,7 +65,6 @@
 </template>
 
 <script>
-import Vue from "vue";
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
 import { usePluginRunResultStore } from "@/store/plugin_run_result";

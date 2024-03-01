@@ -525,7 +525,7 @@ export const useTimelineStore = defineStore("timeline", {
         });
     },
     async notifyChanges({ timelineIds }) {
-      timelineIds.forEach((id, i) => {
+      timelineIds.forEach((id) => {
         this.timelineListChanged.push([Date.now(), id]);
       });
     },
@@ -538,7 +538,7 @@ export const useTimelineStore = defineStore("timeline", {
       this.timelineList = [];
     },
     deleteFromStore(ids) {
-      ids.forEach((id, i) => {
+      ids.forEach((id) => {
         this.timelineListDeleted.push([Date.now(), id]);
         let index = this.timelineList.findIndex((f) => f === id);
         this.timelineList.splice(index, 1);
@@ -547,7 +547,7 @@ export const useTimelineStore = defineStore("timeline", {
       this.updateVisibleStore();
     },
     addToStore(timelines) {
-      timelines.forEach((e, i) => {
+      timelines.forEach((e) => {
         this.timelineListAdded.push([Date.now(), e.id]);
         this.timelines[e.id] = e;
         this.timelineList.push(e.id);
@@ -555,7 +555,7 @@ export const useTimelineStore = defineStore("timeline", {
       this.updateVisibleStore();
     },
     updateStore(timelines) {
-      timelines.forEach((e, i) => {
+      timelines.forEach((e) => {
         if (e.id in this.timelines) {
           return;
         }

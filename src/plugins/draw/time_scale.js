@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
+import { DropShadowFilter } from "pixi-filters";
 
 import * as Time from "../time.js";
 
@@ -81,7 +81,7 @@ export class TimeScale extends PIXI.Container {
             .fill(0)
             .map((_, i) => i);
             
-        timestamps.forEach((time100, index) => {
+        timestamps.forEach((time100) => {
             const timeFraction = Math.round(time100);
             const time = timeFraction / 10;
             const timeCode = Time.get_timecode(time, 0);
@@ -164,7 +164,7 @@ export class TimeScale extends PIXI.Container {
         const minorStroke = time_interval_length_in_ms / desired_num_of_minor_strokes;
         
         var largestX = 0;
-        this.pBars.forEach((e, i) => {
+        this.pBars.forEach((e) => {
             const time = e.time;
 
             if (this.pStartTime <= time && time <= this.pEndTime) {

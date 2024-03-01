@@ -57,7 +57,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             //     commit('error/update', info, { root: true });
             // });
         },
-        async fetchForVideo({ videoId = null, clearStore = true }) {
+        async fetchForVideo({ videoId = null }) {
             if (this.isLoading) {
                 return
             }
@@ -98,14 +98,14 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
             this.annotationCategoryList = []
         },
         addToStore(annotationCategories) {
-            annotationCategories.forEach((e, i) => {
+            annotationCategories.forEach((e) => {
                 this.annotationCategories[e.id] = e
                 this.annotationCategoryList.push(e.id)
             });
         },
 
         updateStore(annotationCategories) {
-            annotationCategories.forEach((e, i) => {
+            annotationCategories.forEach((e) => {
                 if (e.id in this.annotationCategories) {
                     return;
                 }

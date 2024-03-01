@@ -52,20 +52,20 @@ export default {
   computed: {
     isHighlighted() {
       const cur_time = this.playerStore.currentTime;
-      if (this.shot.start <= cur_time && this.shot.end > cur_time){
-        if(!this.emitted && this.syncTime){
-          this.$emit('childHighlighted', this.shot.id);
-        }
-        this.emitted = true;
-        return true
-      }
-      this.emitted = false;
-      return false;
+      return this.shot.start <= cur_time && this.shot.end > cur_time;
     },
     syncTime() {
       return this.playerStore.syncTime;
     },
     ...mapStores(usePlayerStore),
+  },
+  watch: {
+    isHighlighted(newVal) {
+      if (newVal && !this.emitted && this.syncTime){
+        this.$emit('childHighlighted', this.shot.id);
+      }
+      this.emitted = newVal;
+    }
   }
 };
 </script>

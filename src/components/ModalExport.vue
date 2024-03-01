@@ -42,13 +42,11 @@
 </template>
 
 <script>
-import AnnotationForm from "./AnnotationForm.vue";
 import Parameters from "./Parameters.vue";
 import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video";
 
 export default {
-  components: { AnnotationForm },
   props: ["value"],
   data() {
     return {
@@ -145,7 +143,7 @@ export default {
   },
   computed: {
     export_formats_sorted() {
-      return this.export_formats.sort((a, b) => a.name.localeCompare(b.name));
+      return this.export_formats.slice(0).sort((a, b) => a.name.localeCompare(b.name));
     },
     ...mapStores(useVideoStore),
   },

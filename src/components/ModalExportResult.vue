@@ -59,14 +59,12 @@
 </template>
 
 <script>
-import AnnotationForm from "./AnnotationForm.vue";
 import Parameters from "./Parameters.vue";
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
 import { usePluginRunResultStore } from "@/store/plugin_run_result";
 
 export default {
-  components: { AnnotationForm },
   props: ["value", "timeline"],
   data() {
     return {
@@ -114,12 +112,12 @@ export default {
   },
   computed: {
     export_formats_sorted() {
-      return this.export_formats.sort((a, b) => a.name.localeCompare(b.name));
+      return this.export_formats.slice(0).sort((a, b) => a.name.localeCompare(b.name));
     },
     ...mapStores(useTimelineStore, usePluginRunResultStore),
   },
   methods: {
-    async downloadExport(format, parameters) {
+    async downloadExport() {
       const timelineStore = useTimelineStore();
       const pluginRunResultStore = usePluginRunResultStore();
 

@@ -2,6 +2,8 @@ import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
+import { usePlayerStore } from "./player";
+
 
 export const useAnnotationStore = defineStore('annotation', {
     state: () => {
@@ -160,19 +162,19 @@ export const useAnnotationStore = defineStore('annotation', {
         },
         updateInStore(annotations) {
             const newAnnotations = { ...this.annotations };
-            annotations.forEach((e, i) => {
+            annotations.forEach((e) => {
                 Vue.set(newAnnotations, e.id, e);
             });
             this.annotations = newAnnotations;
         },
         addToStore(annotations) {
-            annotations.forEach((e, i) => {
+            annotations.forEach((e) => {
                 this.annotations[e.id] = e;
                 this.annotationList.push(e.id);
             });
         },
         updateStore(annotations) {
-            annotations.forEach((e, i) => {
+            annotations.forEach((e) => {
                 if (e.id in this.annotations) {
                     return;
                 }

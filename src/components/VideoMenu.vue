@@ -2,7 +2,7 @@
   <div>
     <v-menu min-width="175" offset-y bottom left>
       <!-- open-on-hover close-delay -->
-      <template v-slot:activator="{ attrs, on }">
+      <template v-slot:activator="{ attrs }">
         <v-btn tile text v-bind="attrs" @click="showModalExport = true" class="ml-n2">
           <v-icon color="primary">mdi-swap-vertical-bold</v-icon>
           Export

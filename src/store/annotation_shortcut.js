@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
@@ -121,7 +120,7 @@ export const useAnnotationShortcutStore = defineStore('annotationShortcut', {
         replaceAll(annotationShortcuts) {
             this.annotationShortcuts = {};
             this.annotationShortcutList = [];
-            annotationShortcuts.forEach((e, i) => {
+            annotationShortcuts.forEach((e) => {
                 this.annotationShortcuts[e.id] = e;
                 this.annotationShortcutList.push(e.id);
             });

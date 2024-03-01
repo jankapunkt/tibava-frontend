@@ -128,7 +128,6 @@ export const usePluginRunStore = defineStore("pluginRun", {
         .get(`${config.API_LOCATION}/plugin/run/list`, { params })
         .then((res) => {
           if (res.data.status === "ok") {
-            const playerStore = usePlayerStore();
             this.updateAll(res.data.entries);
             let newPluginRunStatus = null;
             if (videoId) {
@@ -210,7 +209,7 @@ export const usePluginRunStore = defineStore("pluginRun", {
       )
     },
     updateAll(pluginRuns) {
-      pluginRuns.forEach((e, i) => {
+      pluginRuns.forEach((e) => {
         if (e.id in this.pluginRuns) {
           const newPluginRuns = { ...this.pluginRuns };
           newPluginRuns[e.id] = e;

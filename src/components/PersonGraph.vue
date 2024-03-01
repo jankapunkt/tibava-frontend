@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="show" width="100%" persistent>
-        <template v-slot:activator="{ on }">
+        <template v-slot:activator="{}">
             <v-btn @click="openGraph" style="color: rgb(175, 20, 20);">&nbsp; Show as Graph&nbsp;
                 <v-icon color="primary">mdi-arrow-top-right-bold-box-outline</v-icon>
             </v-btn>
@@ -123,7 +123,7 @@ export default {
                 // for each shot
                 for (const shot of shots) {
                     // iterate over all clusters
-                    for (const [index, cluster] of Object.entries(this.clusterList)) {
+                    for (const cluster of Object.entries(this.clusterList)) {
                         // if an object of the cluster is in the shot
                         for (const timestamp of this.timestamps(cluster)) {
                             if (timestamp >= shot.start & timestamp <= shot.end) {
@@ -266,7 +266,7 @@ export default {
         ...mapStores(useClusterTimelineItemStore, useShotStore)
     },
     watch: {
-        shotVisualization(shot) {
+        shotVisualization() {
             this.openGraph();
         }
     }

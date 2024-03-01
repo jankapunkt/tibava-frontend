@@ -7,6 +7,7 @@ import { useAnnotationCategoryStore } from "@/store/annotation_category";
 import { useAnnotationStore } from "@/store/annotation";
 import { useTimelineStore } from "@/store/timeline";
 import { useShotStore } from "@/store/shot";
+import { usePlayerStore } from "@/store/player";
 
 export const useTimelineSegmentStore = defineStore("timelineSegment", {
   state: () => {
@@ -461,7 +462,7 @@ export const useTimelineSegmentStore = defineStore("timelineSegment", {
       });
     },
     addToStore(timelineSegments) {
-      timelineSegments.forEach((e, i) => {
+      timelineSegments.forEach((e) => {
         this.timelineSegmentListAdded.push(e.id);
         this.timelineSegments[e.id] = e;
         this.timelineSegmentList.push(e.id);
@@ -472,7 +473,7 @@ export const useTimelineSegmentStore = defineStore("timelineSegment", {
       this.updateTimeStore();
     },
     deleteFromStore(ids) {
-      ids.forEach((id, i) => {
+      ids.forEach((id) => {
         this.timelineSegmentListDeleted.push(id);
         // delete from selected
         let index = this.timelineSegmentListSelected.findIndex((f) => f === id);
@@ -489,7 +490,7 @@ export const useTimelineSegmentStore = defineStore("timelineSegment", {
       timelineSegments = timelineSegments.sort((a, b) => {
         return a.start - b.start;
       });
-      timelineSegments.forEach((e, i) => {
+      timelineSegments.forEach((e) => {
         if (e.id in this.timelineSegments) {
           return;
         }

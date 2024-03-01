@@ -99,7 +99,6 @@ import VideoPlayer from "@/components/VideoPlayer.vue";
 import TranscriptOverview from "@/components/TranscriptOverview.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
-import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 import ShotsOverview from "@/components/ShotsOverview.vue";
@@ -308,8 +307,7 @@ export default {
       });
     },
     async fetchPlugin() {
-
-      let updateState = await this.pluginRunStore.fetchForVideo({
+      await this.pluginRunStore.fetchForVideo({
         videoId: this.$route.params.id,
         fetchResults: true,
       });
@@ -364,7 +362,6 @@ export default {
     TranscriptOverview,
     Timeline,
     TimeSelector,
-    EntitiesCard,
     CurrentEntitiesOverView,
     ModalTimelineSegmentAnnotate,
     ShotsOverview,
@@ -375,7 +372,7 @@ export default {
 },
 
   watch: {
-    pluginInProgress(newState, oldState) {
+    pluginInProgress(newState) {
       if (newState) {
         this.fetchPluginTimer = setInterval(
           function () {

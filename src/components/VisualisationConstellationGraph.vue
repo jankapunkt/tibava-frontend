@@ -44,7 +44,6 @@ import { useTimelineStore } from "@/store/timeline";
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import Vue from "vue";
-import time from "../mixins/time";
 
 
 export default {

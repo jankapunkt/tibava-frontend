@@ -41,8 +41,8 @@ export default {
       tool: null,
       redraw: false,
 
-      hiddenStartTime: this.startTime,
-      hiddenEndTime: this.endTime,
+      hiddenStartTime: 0,
+      hiddenEndTime: 0,
       minTime: 1.0,
 
       mainStrokes: null,
@@ -111,7 +111,7 @@ export default {
       let minorTimeStrokes = 4;
       let timestamps = this.linspace(0, mainTimeStrokes, time_interval_length_in_seconds);
       let mainStrokes = [];
-      timestamps.forEach((time, index) => {
+      timestamps.forEach((time) => {
         let path = new paper.Path();
 
         let x = this.timeToX(time);
@@ -124,7 +124,7 @@ export default {
 
       timestamps.pop();
       let textList = [];
-      timestamps.forEach((time, index) => {
+      timestamps.forEach((time) => {
         let x = this.timeToX(time);
         let text = new paper.PointText(new paper.Point(x, 50));
         text.content = this.get_timecode(time, 0);
@@ -139,7 +139,7 @@ export default {
 
       let otherTimestamps = this.linspace(0, mainTimeStrokes * minorTimeStrokes, time_interval_length_in_seconds/minorTimeStrokes);
       let otherStrokes = [];
-      otherTimestamps.forEach((time, index) => {
+      otherTimestamps.forEach((time) => {
         let path = new paper.Path();
 
         let x = this.timeToX(time);
@@ -258,7 +258,7 @@ export default {
       return x / this.timeScale;
     },
     // some event handler
-    onResize(event) {
+    onResize() {
       this.$nextTick(() => {
         this.draw();
       });
@@ -266,7 +266,6 @@ export default {
     onSelectionChange() {
       let posStart = this.timeToX(this.hiddenStartTime);
       let posEnd = this.timeToX(this.hiddenEndTime);
-      let timeSpan = posEnd - posStart;
       this.handleLeft.position.x = posStart;
       this.handleRight.position.x = posEnd;
       this.handleBar.segments[0].point.x = posStart + this.radius;
@@ -330,7 +329,7 @@ export default {
 
     let self = this;
 
-    this.scope.view.onFrame = (event) => {
+    this.scope.view.onFrame = () => {
       if (
         self.$refs.container.clientWidth !== self.containerWidth ||
         self.$refs.container.clientHeight !== self.containerHeight
@@ -340,7 +339,7 @@ export default {
       }
     };
 
-    this.scope.view.onResize = (event) => {
+    this.scope.view.onResize = () => {
       clearTimeout(self.redraw);
       self.redraw = setTimeout(self.onResize(), 100);
     };

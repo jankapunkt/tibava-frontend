@@ -30,7 +30,7 @@
               </v-list-item>
             </template>
 
-            <template v-slot:item="{ attrs, item }">
+            <template v-slot:item="{ item }">
               <v-chip>
                 <v-btn disable icon x-small :color="item.color" class="mr-1">
                   <v-icon>{{ "mdi-palette" }}</v-icon>
@@ -47,7 +47,7 @@
               </v-chip>
             </template>
 
-            <template v-slot:selection="{ attrs, item, index }">
+            <template v-slot:selection="{ item, index }">
               <v-chip>
                 <v-menu
                   v-model="item.colorMenu"
@@ -113,10 +113,10 @@
                         flat
                         @change="onAnnotationCategoryChange(item)"
                       >
-                        <template v-slot:item="{ attrs, item }">
+                        <template v-slot:item="{ item }">
                           {{ item.name }}
                         </template>
-                        <template v-slot:selection="{ attrs, item }">
+                        <template v-slot:selection="{ item }">
                           {{ item.name }}
                         </template>
                       </v-combobox>
@@ -479,7 +479,7 @@ export default {
     },
   },
   watch: {
-    show(newValue, oldValue) {
+    show(newValue) {
       if (newValue) {
         this.search = null;
         this.lastKey = null;

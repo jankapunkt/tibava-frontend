@@ -3,7 +3,6 @@ import axios from "../plugins/axios";
 import config from "../../app.config";
 import { usePlayerStore } from "./player";
 import { usePluginRunStore } from "./plugin_run";
-import { usePluginRunResultStore } from "./plugin_run_result";
 
 import { defineStore } from "pinia";
 
@@ -130,10 +129,7 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
             return axios
                 .post(`${config.API_LOCATION}/cluster/timeline/item/rename`, params)
                 .then((res) => {
-                    if (res.data.status === "ok") {
-
-                    }
-                    else {
+                    if (res.data.status !== "ok") {
                         console.log("Error in CTI Rename");
                         console.log(res.data);
                     }
@@ -225,7 +221,7 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
         },
         replaceStore(items) {
             this.clearStore();
-            items.forEach((e, i) => {this.addToStore(e)});
+            items.forEach((e) => {this.addToStore(e)});
         },
         clearStore() {
             Object.keys(this.clusterTimelineItems).forEach(key => {

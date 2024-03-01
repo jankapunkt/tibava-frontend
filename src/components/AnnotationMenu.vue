@@ -2,7 +2,7 @@
   <div>
     <v-menu min-width="175" offset-y bottom left>
       <!-- open-on-hover close-delay -->
-      <template v-slot:activator="{ attrs, on }">
+      <template v-slot:activator="{ attrs }">
         <v-btn tile text v-bind="attrs" @click="showModalShortcut = true" class="ml-n2">
           <v-icon color="primary">mdi-label-multiple-outline</v-icon>
           Shortcuts
@@ -15,8 +15,6 @@
 </template>
 
 <script>
-import ModalExport from "@/components/ModalExport.vue";
-import ModalPlugin from "@/components/ModalPlugin.vue";
 import ModalShortcut from "@/components/ModalShortcut.vue";
 
 import { mapStores } from "pinia";
@@ -43,8 +41,6 @@ export default {
     ...mapStores(useUserStore, usePlayerStore),
   },
   components: {
-    ModalExport,
-    ModalPlugin,
     ModalShortcut,
   },
 };

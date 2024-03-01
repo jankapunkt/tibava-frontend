@@ -854,7 +854,7 @@ export default {
   },
   computed: {
     plugins_sorted() {
-      return this.plugins.sort((a, b) => a.name.localeCompare(b.name));
+      return this.plugins.slice(0).sort((a, b) => a.name.localeCompare(b.name));
     },
     selected() {
       if (!this.active.length) return undefined;

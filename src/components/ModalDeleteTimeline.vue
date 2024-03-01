@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import Vue from "vue";
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
 

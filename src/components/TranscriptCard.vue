@@ -31,40 +31,40 @@ import { mapStores } from "pinia";
 import { usePlayerStore } from "@/store/player";
 
 export default {
-mixins: [TimeMixin],
-props: ["transcript"],
-data () {
-  return {
-    // this variable ensures that the signal to scroll is only emitted once 
-    emitted: false
-  }
-},
-methods: {
-  setVideoPlayerTime(time) {
-    this.playerStore.setTargetTime(time);
-  },
-},
-computed: {
-  isHighlighted() {
-    const cur_time = this.playerStore.currentTime;
-    if (this.transcript.start <= cur_time && this.transcript.end > cur_time){
-      if(!this.emitted && this.syncTime){
-        this.$emit('childHighlighted', this.transcript.id);
-      }
-      this.emitted = true;
-      return true
+  mixins: [TimeMixin],
+  props: ["transcript"],
+  data () {
+    return {
+      // this variable ensures that the signal to scroll is only emitted once 
+      emitted: false
     }
-    this.emitted = false;
-    return false;
   },
-  time(){
-    return this.playerStore.currentTime;
+  methods: {
+    setVideoPlayerTime(time) {
+      this.playerStore.setTargetTime(time);
+    },
   },
-  syncTime() {
-    return this.playerStore.syncTime;
+  computed: {
+    isHighlighted() {
+      const cur_time = this.playerStore.currentTime;
+      return this.transcript.start <= cur_time && this.transcript.end > cur_time;
+    },
+    time(){
+      return this.playerStore.currentTime;
+    },
+    syncTime() {
+      return this.playerStore.syncTime;
+    },
+    ...mapStores(usePlayerStore),
   },
-  ...mapStores(usePlayerStore),
-}
+  watch: {
+    isHighlighted(newVal) {
+        if (newVal && !this.emitted && this.syncTime){
+          this.$emit('childHighlighted', this.shot.id);
+        }
+        this.emitted = newVal;
+      }
+    }
 };
 </script>
 

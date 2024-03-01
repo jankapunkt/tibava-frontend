@@ -218,7 +218,6 @@ import {
 } from "../plugins/draw";
 
 import * as PIXI from "pixi.js";
-import { NoiseFilter } from "@pixi/filter-noise";
 
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
@@ -418,7 +417,7 @@ export default {
         collapse: !node.open,
       });
     },
-    async change(node, targetTree, oldTree) {
+    async change(node) {
       // after drop, only when the node position changed
 
       // set new order of timelines
@@ -667,7 +666,7 @@ export default {
         // ev.stopPropagation();
       });
 
-      drawnTimeline.on("pointerout", (ev) => {
+      drawnTimeline.on("pointerout", () => {
         this.timelineTooltip.enabled = false;
         this.timelineTooltip.show = false;
         // ev.stopPropagation();
@@ -776,7 +775,6 @@ export default {
         drawnTimeline.interactive = true;
         drawnTimeline.buttonMode = true;
         drawnTimeline.on("click", (ev) => {
-          const x = ev.data.getLocalPosition(drawnTimeline).x;
           if (!ev.data.originalEvent.ctrlKey) {
             this.timelineSegmentStore.clearSelection();
             this.timelineStore.clearSelection();
@@ -968,7 +966,7 @@ export default {
     ),
   },
   watch: {
-    isLoading(newValue, oldValue) {
+    isLoading(newValue) {
       if (newValue === false) {
         this.enabled = true;
       }
@@ -1036,7 +1034,7 @@ export default {
 
       let latestTimestamp = -1;
       // handle timeline deletion
-      this.timelinesDeleted.forEach((data, i) => {
+      this.timelinesDeleted.forEach((data) => {
         const [date, id] = data;
 
         if (date <= this.lastTimestamp) {
@@ -1056,7 +1054,7 @@ export default {
       });
 
       // handle timeline added
-      this.timelinesAdded.forEach((data, i) => {
+      this.timelinesAdded.forEach((data) => {
         const [date, timeline] = data;
 
         if (date <= this.lastTimestamp) {
@@ -1079,7 +1077,7 @@ export default {
       });
 
       // handle timeline change
-      this.timelinesChanged.forEach((data, i) => {
+      this.timelinesChanged.forEach((data) => {
         const [date, timeline] = data;
 
         if (date <= this.lastTimestamp) {

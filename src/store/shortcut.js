@@ -1,9 +1,8 @@
-import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
 
-import { useAnnotationShortcutStore } from '@/store/annotation_shortcut'
+import { usePlayerStore } from '@/store/player'
 
 import * as Keyboard from "../plugins/keyboard.js";
 
@@ -114,7 +113,7 @@ export const useShortcutStore = defineStore('shortcut', {
         replaceAll(shortcuts) {
             this.shortcuts = {};
             this.shortcutList = [];
-            shortcuts.forEach((e, i) => {
+            shortcuts.forEach((e) => {
                 this.shortcuts[e.id] = e;
                 this.shortcutList.push(e.id);
             });

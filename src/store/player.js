@@ -2,7 +2,6 @@ import axios from "../plugins/axios";
 import config from "../../app.config";
 
 import { defineStore } from "pinia";
-import { useVideoStore } from "./video";
 // useStore could be anything like useUser, useCart
 // the first argument is a unique id of the store across your application
 export const usePlayerStore = defineStore("player", {

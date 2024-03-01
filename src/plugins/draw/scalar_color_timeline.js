@@ -1,5 +1,4 @@
 import * as PIXI from "pixi.js";
-import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 
 import { Timeline } from "./timeline";
 
@@ -105,9 +104,6 @@ export class ScalarColorTimeline extends Timeline {
   }
 
   scaleContainer() {
-    const targetSize = this.pOversampling * this.pResolution;
-
-
     if (this.cRects) {
       const width =
         this.timeToX(this.pDuration) - this.timeToX(0);
