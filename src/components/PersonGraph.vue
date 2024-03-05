@@ -123,7 +123,7 @@ export default {
                 // for each shot
                 for (const shot of shots) {
                     // iterate over all clusters
-                    for (const cluster of Object.entries(this.clusterList)) {
+                    for (const cluster of Object.values(this.clusterList)) {
                         // if an object of the cluster is in the shot
                         for (const timestamp of this.timestamps(cluster)) {
                             if (timestamp >= shot.start & timestamp <= shot.end) {
