@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
+import { DropShadowFilter } from "pixi-filters";
 
 export class TimeBar extends PIXI.Container {
     constructor(x, y, width, height, time = 0, startTime = 0, endTime = 10) {

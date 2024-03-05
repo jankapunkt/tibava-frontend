@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { useTimelineSegmentStore } from "@/store/timeline_segment";
 import { useAnnotationCategoryStore } from "@/store/annotation_category";
 import { useAnnotationStore } from "@/store/annotation";
+import { usePlayerStore } from "@/store/player";
 
 export const useTimelineSegmentAnnotationStore = defineStore(
   "timelineSegmentAnnotation",
@@ -150,12 +151,12 @@ export const useTimelineSegmentAnnotationStore = defineStore(
           )
           .then((res) => {
             if (res.data.status === "ok") {
-              [res.data.entry].forEach((id, i) => {
-                let index = state.timelineSegmentAnnotationList.findIndex(
+              [res.data.entry].forEach((id) => {
+                let index = this.timelineSegmentAnnotationList.findIndex(
                   (f) => f === id
                 );
-                state.timelineSegmentAnnotationList.splice(index, 1);
-                delete state.timelineSegmentAnnotations[id];
+                this.timelineSegmentAnnotationList.splice(index, 1);
+                delete this.timelineSegmentAnnotations[id];
               });
               timelineSegmentStore.deleteAnnotation([id]);
             }
@@ -213,7 +214,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
         this.timelineSegmentAnnotationList = [];
       },
       deleteFromStore(timelineSegmentAnnotations) {
-        timelineSegmentAnnotations.forEach((id, i) => {
+        timelineSegmentAnnotations.forEach((id) => {
           this.timelineSegmentAnnotationListDeleted.push(id);
           let index = this.timelineSegmentAnnotationList.findIndex(
             (f) => f === id
@@ -243,7 +244,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
         // console.log('+w+wür+wqrüwq+rüwq+ü')
         // console.log(JSON.stringify(timelineSegmentAnnotations))
 
-        timelineSegmentAnnotations.forEach((e, i) => {
+        timelineSegmentAnnotations.forEach((e) => {
           this.timelineSegmentAnnotationListAdded.push(e.id);
           this.timelineSegmentAnnotations[e.id] = e;
           this.timelineSegmentAnnotationList.push(e.id);
@@ -269,7 +270,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
             if (
               this.timelineSegmentAnnotationBySegment.has(timelineSegment.id)
             ) {
-              var ids = this.timelineSegmentAnnotationBySegment.get(
+              let ids = this.timelineSegmentAnnotationBySegment.get(
                 timelineSegment.id
               );
               ids.push(e.id);
@@ -288,7 +289,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       },
       updateStore(timelineSegmentAnnotations) {
         const timelineSegmentStore = useTimelineSegmentStore();
-        timelineSegmentAnnotations.forEach((e, i) => {
+        timelineSegmentAnnotations.forEach((e) => {
           if (e.id in this.timelineSegmentAnnotations) {
             return;
           }
@@ -316,7 +317,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
             if (
               this.timelineSegmentAnnotationBySegment.has(timelineSegment.id)
             ) {
-              var ids = this.timelineSegmentAnnotationBySegment.get(
+              let ids = this.timelineSegmentAnnotationBySegment.get(
                 timelineSegment.id
               );
               ids.push(e.id);

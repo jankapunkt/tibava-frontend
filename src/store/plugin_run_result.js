@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia';
@@ -85,7 +84,7 @@ export const usePluginRunResultStore = defineStore('pluginRunResult', {
             )
           },
         updateAll(pluginRunResults) {
-            pluginRunResults.forEach((e, i) => {
+            pluginRunResults.forEach((e) => {
                 if (e.id in this.pluginRunResults) {
                     return;
                 }

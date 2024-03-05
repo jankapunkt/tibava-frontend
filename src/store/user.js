@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', {
                         this.csrfToken = csrftoken;
                     }
                 })
-                .catch((error) => {
+                .catch(() => {
                 })
                 .finally(() => {
                     this.isLoading = false;
@@ -91,7 +91,7 @@ export const useUserStore = defineStore('user', {
                         this.max_video_size = 0;
                     }
                 })
-                .catch((error) => {
+                .catch(() => {
                 })
                 .finally(() => {
                     this.isLoading = false;
@@ -173,7 +173,6 @@ export const useUserStore = defineStore('user', {
             this.isLoading = true
 
             // commit('loading/update', true, { root: true });
-            let info = { date: Date(), origin: 'register' };
             return axios.post(`${config.API_LOCATION}/user/register`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {

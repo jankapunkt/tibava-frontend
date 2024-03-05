@@ -11,13 +11,10 @@ import { useAnnotationCategoryStore } from "./annotation_category";
 import { useTimelineStore } from "./timeline";
 import { useTimelineSegmentStore } from "./timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "./timeline_segment_annotation";
-import { useShotStore} from "./shot"
 
 import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
 import { useClusterTimelineItemStore } from "./cluster_timeline_item";
-import { useFaceStore } from "./face";
-import { usePlaceStore } from "./place";
 
 // useStore could be anything like useUser, useCart
 // the first argument is a unique id of the store across your application
@@ -48,8 +45,6 @@ export const useVideoStore = defineStore("video", {
             includeAnalyser = true,
             includeShortcut = true,
             includeClusterTimelineItem = true,
-            includeFaces = true,
-            includePlaces = true,
             addResults = true,
         }) {
             this.isLoading = true;
@@ -65,10 +60,7 @@ export const useVideoStore = defineStore("video", {
             const pluginRunResultStore = usePluginRunResultStore();
             const shortcutStore = useShortcutStore();
             const annotationShortcutStore = useAnnotationShortcutStore();
-            const shotStore = useShotStore();
             const clusterTimelineItemStore = useClusterTimelineItemStore();
-            const faceStore = useFaceStore();
-            const placeStore = usePlaceStore();
 
             playerStore.clearStore();
             promises.push(playerStore.fetchVideo({ videoId }));
@@ -113,14 +105,6 @@ export const useVideoStore = defineStore("video", {
             if (includeClusterTimelineItem){
                 clusterTimelineItemStore.clearStore();
                 promises.push(clusterTimelineItemStore.fetchAll(videoId));
-            }
-            if (includeFaces){
-                faceStore.clearStore();
-                promises.push(faceStore.fetchAll(videoId));
-            }
-            if (includePlaces){
-                placeStore.clearStore();
-                promises.push(placeStore.fetchAll(videoId));
             }
             return Promise.all(promises).finally(() => {
                 console.log("Loading done!");
@@ -306,7 +290,7 @@ export const useVideoStore = defineStore("video", {
             this.videoList = []
         },
         deleteFromStore(ids) {
-            ids.forEach((id, i) => {
+            ids.forEach((id) => {
                 let index = this.videoList.findIndex((f) => f === id);
                 this.videoList.splice(index, 1);
                 delete this.videos[id];
@@ -319,7 +303,7 @@ export const useVideoStore = defineStore("video", {
         replaceStore(videos) {
             this.videos = {};
             this.videoList = [];
-            videos.forEach((e, i) => {
+            videos.forEach((e) => {
                 this.videos[e.id] = e;
                 this.videoList.push(e.id);
             });

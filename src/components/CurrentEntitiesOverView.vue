@@ -15,7 +15,6 @@
         <div v-for="(item, i) in annotations" :key="i" class="my-2">
           <v-progress-linear
             :color="item.color"
-            color="#d99090"
             height="30"
             rounded
             :value="((time - item.start) / (item.end - item.start)) * 100"

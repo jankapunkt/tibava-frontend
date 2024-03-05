@@ -1,14 +1,14 @@
 <template>
     <div>
         <v-dialog v-model="show" width="90%" persistent>
-            <template v-slot:activator="{ on }">
-                <v-btn @click="showCanvas" v-on="on" text block large>
+            <template v-slot:activator="{ on, attrs }">
+                <v-btn v-bind="attrs" v-on="on" text block large>
                     <v-icon left>{{ "mdi-eye-outline" }}</v-icon>
                     {{ $t("button.edit") }}
                 </v-btn>
             </template>
             <v-card v-show="show" class="canvasContainer" ref="canvasContainer" style="height: 90vh;">
-                <v-card-title>Cluster {{ this.cluster.id }} </v-card-title>
+                <v-card-title>Cluster {{ this.cluster.name }} </v-card-title>
                 <v-card-subtitle>Click on images to mark them for deletion.</v-card-subtitle>
                 <v-card-text class="scrollable-content">
                     <!-- Scrollable Content -->
@@ -29,8 +29,8 @@
                     Confirm
                 </v-card-title>
                 <v-card-text>
-                    Delete {{ this.markedForDeletion.length }} images from Cluster {{ this.cluster.id }}?
-                    <v-card-text style="color: red" v-if="allImagesMarked()"> <b>You selected all images. This removes the
+                    Delete {{ this.markedForDeletion.length }} images from Cluster "{{ this.cluster.name }}"?
+                    <v-card-text style="color: red" v-if="allImagesMarked"> <b>You selected all images. This removes the
                             cluster.</b></v-card-text>
                 </v-card-text>
                 <v-card-actions>
@@ -44,51 +44,23 @@
   
 <script>
 import { mapStores } from "pinia";
-import { useFaceStore } from "@/store/face";
-import { usePlaceStore } from "@/store/place";
+import { useClusterTimelineItemStore } from '../store/cluster_timeline_item';
 
 export default {
-    props: ["cluster", "isFaceCluster"],
+    props: ["cluster"],
     data() {
         return {
             show: false,
             showConfirmation: false,
-            displayedImages: [], // Array to store the displayed images
             markedForDeletion: [],
         };
     },
     methods: {
-        showCanvas() {
-            // Clear the displayedImages array before adding new images
-            this.displayedImages = [];
-
-            // Create a copy of the cluster array to avoid directly modifying the prop
-            if (this.isFaceCluster) {
-                const faceStore = useFaceStore();
-                this.displayedImages = faceStore.getImagePaths(this.cluster);
-            } else {
-                const placeStore = usePlaceStore();
-                this.displayedImages = placeStore.getImagePaths(this.cluster);
-            }
-
-            // Set show to true to show the v-card
-            this.show = true;
-        },
         marked(imageUrl) {
             return this.markedForDeletion.includes(imageUrl);
         },
         imagesSelectedForDeletion() {
             return this.markedForDeletion.length > 0;
-        },
-        allImagesMarked() {
-
-            if (this.isFaceCluster) {
-                const faceStore = useFaceStore();
-                return this.markedForDeletion.length >= this.cluster.cluster.embedding_ids.length - faceStore.getDeletedFaces(this.cluster.systemId).length;
-            } else {
-                const placeStore = usePlaceStore();
-                return this.markedForDeletion.length >= this.cluster.cluster.embedding_ids.length - placeStore.getDeletedPlaces(this.cluster.systemId).length;
-            }
         },
         mark(imageUrl) {
             if (this.marked(imageUrl)) {
@@ -104,21 +76,15 @@ export default {
             return ''
         },
         async applyDeletion() {
-            if (this.isFaceCluster) {
-                const faceStore = useFaceStore();
-                var embedding_ids_to_delete = this.markedForDeletion.map((path) => faceStore.getFaceRef(path));
-                await faceStore.setDeleted(embedding_ids_to_delete, this.cluster.systemId);
-            } else {
-                const placeStore = usePlaceStore();
-                var embedding_ids_to_delete = this.markedForDeletion.map((path) => placeStore.getPlaceRef(path));
-                await placeStore.setDeleted(embedding_ids_to_delete, this.cluster.systemId);
-            }
+            const item_ids_to_delete = this.cluster.items.filter((i) => this.markedForDeletion.includes(i.image_path))
+                                                         .map((i) => i.id);
+            await this.clusterTimelineItemStore.deleteItems(this.cluster.cluster_id, item_ids_to_delete);
 
             this.markedForDeletion = [];
             this.showConfirmation = false;
             this.show = false;
             this.$emit("update");
-            if (this.allImagesMarked()) {
+            if (this.allImagesMarked) {
                 this.$emit("deleteCluster");
             }
         },
@@ -128,7 +94,15 @@ export default {
             this.$emit("update");
         }
     },
-    ...mapStores(useFaceStore, usePlaceStore),
+    computed: {
+        allImagesMarked() {
+            return this.markedForDeletion.length === this.displayedImages.length;
+        },
+        displayedImages() {
+            return this.cluster.items.filter((i) => i.is_sample).map((i) => i.image_path);
+        },
+        ...mapStores(useClusterTimelineItemStore),
+    }
 };
 </script>
 

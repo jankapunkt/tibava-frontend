@@ -1,8 +1,7 @@
 import * as PIXI from "pixi.js";
-import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 
 import { Timeline } from "./timeline";
-import { resampleApprox, scalarToHex, scalarToRGB } from "./utils"
+import { resampleApprox, scalarToRGB } from "./utils"
 
 export class HistTimeline extends Timeline {
     constructor({
@@ -47,7 +46,6 @@ export class HistTimeline extends Timeline {
 
     renderGraph() {
         const renderWidth = this.pResolution;
-        const r = renderWidth / this.pDuration
 
         const brt = new PIXI.BaseRenderTexture({
             width: renderWidth,
@@ -57,16 +55,13 @@ export class HistTimeline extends Timeline {
 
             resolution: 1
         });
-        const rt = new PIXI.RenderTexture(brt);
+        new PIXI.RenderTexture(brt);
 
         // const sprite = new PIXI.Sprite(rt);
 
         const targetSize = this.pOversampling * this.pResolution
         const hist = resampleApprox({ data: this.pData.hist, targetSize: targetSize })
-        const times = resampleApprox({ data: this.pData.time, targetSize: targetSize })
 
-        const deltaTime = this.pData.delta_time * this.pData.time.length / times.length
-        let colorRects = new PIXI.Graphics();
         const width = hist.length
         const height = hist[0].length
         const flatdata = new Array(hist.length * hist[0].length)

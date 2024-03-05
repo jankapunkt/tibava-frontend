@@ -74,7 +74,7 @@ export default {
       const custom_filter = ["", "..", ".", "?", "!"]
 
       filteredText.forEach((word) => {
-        if (dictionary.hasOwnProperty(word)) {
+        if (Object.prototype.hasOwnProperty.call(dictionary, word)) {
           dictionary[word]++;
         } else if (!custom_filter.includes(word)) {
           dictionary[word] = 1;
@@ -139,7 +139,7 @@ export default {
     ...mapStores(useTimelineSegmentAnnotationStore),
   },
   watch: {
-    stopword_selection(value) {
+    stopword_selection() {
       d3.select(this.$refs.wordcloudContainer).select('svg').remove();
       this.createWordCloud();
     },

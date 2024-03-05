@@ -10,7 +10,6 @@ import { useTimelineStore } from "./timeline";
 import { useTimelineSegmentStore } from "./timeline_segment";
 import { useTimelineSegmentAnnotationStore } from "./timeline_segment_annotation";
 import { useClusterTimelineItemStore } from "./cluster_timeline_item";
-import { useFaceStore } from "./face";
 
 export const usePluginRunStore = defineStore("pluginRun", {
   state: () => {
@@ -129,7 +128,6 @@ export const usePluginRunStore = defineStore("pluginRun", {
         .get(`${config.API_LOCATION}/plugin/run/list`, { params })
         .then((res) => {
           if (res.data.status === "ok") {
-            const playerStore = usePlayerStore();
             this.updateAll(res.data.entries);
             let newPluginRunStatus = null;
             if (videoId) {
@@ -170,7 +168,6 @@ export const usePluginRunStore = defineStore("pluginRun", {
               const timelineSegmentAnnotationStore =
                 useTimelineSegmentAnnotationStore();
               const clusterTimelineItemStore = useClusterTimelineItemStore();
-              const faceStore = useFaceStore();
               // start fetching new plugin run results
               result.newDone.forEach((e) => {
                 let promises = [];
@@ -183,7 +180,6 @@ export const usePluginRunStore = defineStore("pluginRun", {
                 promises.push(timelineSegmentStore.fetchForVideo({ videoId }));
                 promises.push(timelineSegmentAnnotationStore.fetchForVideo({ videoId }));
                 promises.push(clusterTimelineItemStore.fetchAll(videoId));
-                promises.push(faceStore.fetchAll(videoId));
                 Promise.all(promises).then(
                   () => {
                     timelineStore.fetchForVideo({ videoId })
@@ -213,7 +209,7 @@ export const usePluginRunStore = defineStore("pluginRun", {
       )
     },
     updateAll(pluginRuns) {
-      pluginRuns.forEach((e, i) => {
+      pluginRuns.forEach((e) => {
         if (e.id in this.pluginRuns) {
           const newPluginRuns = { ...this.pluginRuns };
           newPluginRuns[e.id] = e;

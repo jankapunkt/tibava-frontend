@@ -1,5 +1,4 @@
 import * as PIXI from "pixi.js";
-import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 
 import { Timeline } from "./timeline";
 
@@ -79,7 +78,7 @@ export class AnnotationTimeline extends Timeline {
     // let textContainer = new PIXI.Graphics();
     // let text
     if (this.pTimeline.segments) {
-      this.pTimeline.segments.forEach((s, i) => {
+      this.pTimeline.segments.forEach((s) => {
 
         // check if we have to render something here
         const annotationLength = s.annotations.length;
@@ -182,7 +181,7 @@ export class AnnotationTimeline extends Timeline {
 
 
     if (this.pTimeline.segments) {
-      this.pTimeline.segments.forEach((s, i) => {
+      this.pTimeline.segments.forEach((s) => {
 
         const annotationLength = s.annotations.length;
         if (annotationLength <= 0) {
@@ -280,8 +279,6 @@ export class AnnotationTimeline extends Timeline {
 
   scaleContainer() {
     if (this.cSegments) {
-      const scale = (this.pRenderedEnd - this.pRenderedStart) / (this.pEndTime - this.pStartTime)
-
       this.pTextsObjects.forEach((e) =>
         e.destroy()
       )

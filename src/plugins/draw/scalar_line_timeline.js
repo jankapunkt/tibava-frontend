@@ -1,5 +1,4 @@
 import * as PIXI from "pixi.js";
-import { DropShadowFilter, TiltShiftAxisFilter } from "pixi-filters";
 
 import { Timeline } from "./timeline";
 // import * as tf from '@tensorflow/tfjs';
@@ -39,7 +38,7 @@ export class ScalarLineTimeline extends Timeline {
     this.scaleContainer();
   }
 
-  renderGraph(renderer, resolution) {
+  renderGraph() {
     const renderWidth = this.pResolution;
     const r = renderWidth / this.pDuration
 
@@ -62,7 +61,7 @@ export class ScalarLineTimeline extends Timeline {
     const y = resampleApprox({ data: this.pData.y, targetSize: targetSize })
     const times = resampleApprox({ data: this.pData.time, targetSize: targetSize })
 
-    const deltaTime = this.pData.delta_time * this.pData.time.length / times.length
+    this.pData.delta_time * this.pData.time.length / times.length
     times.forEach((t, i) => {
       if (i == 0) {
         path.moveTo(

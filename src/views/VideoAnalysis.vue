@@ -50,11 +50,11 @@
                 <div :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']">
                   <PersonGraph />
                 </div>
-                <PersonOverview />
+                <ClusterTimelineItemOverview name="Face" :clusters="faceClusters"></ClusterTimelineItemOverview>
               </v-tab-item>
 
               <v-tab-item style="height: 100%">
-                <PlacesOverview />
+                <ClusterTimelineItemOverview name="Place" :clusters="placeClusters"></ClusterTimelineItemOverview>
               </v-tab-item>
 
               <v-tab-item>
@@ -99,14 +99,11 @@ import VideoPlayer from "@/components/VideoPlayer.vue";
 import TranscriptOverview from "@/components/TranscriptOverview.vue";
 import Timeline from "@/components/Timeline.vue";
 import TimeSelector from "@/components/TimeSelector.vue";
-import EntitiesCard from "@/components/EntitiesCard.vue";
 import CurrentEntitiesOverView from "@/components/CurrentEntitiesOverView.vue";
 import ModalTimelineSegmentAnnotate from "@/components/ModalTimelineSegmentAnnotate.vue";
 import ShotsOverview from "@/components/ShotsOverview.vue";
 import WordcloudCard from "@/components/WordcloudCard.vue";
 import VisualizationMenu from "@/components/VisualizationMenu.vue";
-import PersonOverview from "@/components/PersonOverview.vue";
-import PlacesOverview from "@/components/PlacesOverview.vue";
 import PersonGraph from "../components/PersonGraph.vue";
 
 import * as Keyboard from "../plugins/keyboard.js";
@@ -122,8 +119,7 @@ import { useShortcutStore } from "@/store/shortcut";
 import { useAnnotationShortcutStore } from "../store/annotation_shortcut.js";
 import { usePluginRunStore } from "../store/plugin_run.js";
 import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
-import { useFaceStore } from "../store/face";
-import { thresholdFreedmanDiaconis } from "d3";
+import ClusterTimelineItemOverview from "../components/ClusterTimelineItemOverview.vue";
 
 export default {
   data() {
@@ -311,8 +307,7 @@ export default {
       });
     },
     async fetchPlugin() {
-
-      let updateState = await this.pluginRunStore.fetchForVideo({
+      await this.pluginRunStore.fetchForVideo({
         videoId: this.$route.params.id,
         fetchResults: true,
       });
@@ -327,6 +322,12 @@ export default {
     },
     timelineNames() {
       return this.timelines.map((e) => e.name);
+    },
+    faceClusters() {
+      return this.clusterTimelineItemStore.latestFaceClustering();
+    },
+    placeClusters() {
+      return this.clusterTimelineItemStore.latestPlaceClustering();
     },
     selectedTimeline: {
       get() {
@@ -349,7 +350,6 @@ export default {
       useShortcutStore,
       useAnnotationShortcutStore,
       useClusterTimelineItemStore,
-      useFaceStore,
     ),
   },
   async created() {
@@ -362,19 +362,17 @@ export default {
     TranscriptOverview,
     Timeline,
     TimeSelector,
-    EntitiesCard,
     CurrentEntitiesOverView,
     ModalTimelineSegmentAnnotate,
     ShotsOverview,
     WordcloudCard,
-    PersonOverview,
-    PlacesOverview,
     VisualizationMenu,
-    PersonGraph
-  },
+    PersonGraph,
+    ClusterTimelineItemOverview
+},
 
   watch: {
-    pluginInProgress(newState, oldState) {
+    pluginInProgress(newState) {
       if (newState) {
         this.fetchPluginTimer = setInterval(
           function () {

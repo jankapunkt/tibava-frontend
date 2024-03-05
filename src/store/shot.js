@@ -7,7 +7,7 @@ import { usePluginRunResultStore } from "./plugin_run_result";
 
 export const useShotStore = defineStore("shot", {
   getters: {
-    shots (state) {
+    shots () {
       const pluginRunStore = usePluginRunStore();
       const pluginRunResultStore = usePluginRunResultStore();
       const playerStore = usePlayerStore();
