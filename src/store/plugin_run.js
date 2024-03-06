@@ -211,15 +211,12 @@ export const usePluginRunStore = defineStore("pluginRun", {
     updateAll(pluginRuns) {
       pluginRuns.forEach((e) => {
         if (e.id in this.pluginRuns) {
-          const newPluginRuns = { ...this.pluginRuns };
-          newPluginRuns[e.id] = e;
-          Vue.set(this, "pluginRuns", newPluginRuns);
-
-          // if (e.status !== "DONE") {
-          //   console.log("set");
-          //   console.log(e);
-          //   console.log(this.pluginRuns[e.id]);
-          // }
+          const curr_plugin = this.pluginRuns[e.id];
+          if (e.status !== curr_plugin.status || e.progress !== curr_plugin.progress || e.update_date !== curr_plugin.update_date) {
+            const newPluginRuns = { ...this.pluginRuns };
+            newPluginRuns[e.id] = e;
+            Vue.set(this, "pluginRuns", newPluginRuns);
+          }
           return;
         }
 
