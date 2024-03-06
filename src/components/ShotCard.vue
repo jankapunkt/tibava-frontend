@@ -75,8 +75,8 @@ export default {
   min-width: 150px;
 }
 .shotcard-right {
-  overflow-y: none;
-  overflow-x: scroll;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
 .shotcard-thumbs {
   min-width: 250px;
