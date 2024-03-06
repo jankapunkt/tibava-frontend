@@ -1,38 +1,64 @@
 <template>
   <v-row>
-    <v-col cols="3">
+    <v-col cols="3" style="max-height: 700px" class="overflow-y-auto">
+      <h5 class="mt-6 subtitle-2">Filter</h5>
+      <v-list dense>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>Minimum Cluster Size</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-text-field
+              v-model="min_node"
+              hide-details
+              step="1"
+              single-line
+              type="number"
+              label="Minimum Cluster Size"
+              min="1"
+              style="width: 60px"></v-text-field>
+          </v-list-item-action>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>Minimum Relations</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-text-field
+              v-model="min_edge"
+              hide-details
+              step="1"
+              single-line
+              type="number"
+              label="Minimum Relations"
+              min="1"
+              style="width: 60px"></v-text-field>
+          </v-list-item-action>
+        </v-list-item>
+      </v-list>
       <h5 class="mt-6 subtitle-2">Timelines</h5>
       <v-list dense>
-        <v-list-item v-for="timeline in visibleTimelines" :key="timeline.name">
+        <v-list-item v-for="timeline in visibleTimelines" :key="timeline.id">
           <v-list-item-action>
             <v-checkbox v-model="timeline.active"></v-checkbox>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title :class="{'grey--text': !timeline.active}">{{ timeline.name }}</v-list-item-title>
+            <v-list-item-title :class="{ 'grey--text': !timeline.active }">{{ timeline.name }}</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>
-            <v-text-field
-              :disabled="!timeline.active"
-              v-model="timeline.threshold"
-              hide-details
-              step="0.1"
-              single-line
-              type="number"
-              min="0"
-              max="1"
-              style="width: 60px"
-            ></v-text-field>
+            <v-text-field :disabled="!timeline.active" v-model="timeline.threshold" hide-details step="0.1" single-line
+              type="number" min="0" max="1" style="width: 60px"></v-text-field>
           </v-list-item-action>
         </v-list-item>
       </v-list>
     </v-col>
     <v-col cols="9">
-      <div v-show="!loading" ref="visualizationTimelineConstellationGraph" style="height: 500px"></div>
+      <div v-show="!loading" ref="visualizationTimelineConstellationGraph" style="min-height: 500px; height: 85%"></div>
       <div v-if="loading" class="mx-auto text-center mt-10" style="height: 500px">
-          <div class="spinner">
-              <i class="mdi mdi-loading mdi-spin"></i>
-          </div>
-          <div class="loading-text">Loading...</div>
+        <div class="spinner">
+          <i class="mdi mdi-loading mdi-spin"></i>
+        </div>
+        <div class="loading-text">Loading...</div>
       </div>
     </v-col>
   </v-row>
@@ -51,7 +77,9 @@ export default {
     return {
       timelineSettings: {},
       network: null,
-      loading: false
+      loading: false,
+      min_node: 1,
+      min_edge: 1
     };
   },
   mounted() {
@@ -80,18 +108,18 @@ export default {
     },
     renderGraph() {
       const options = {
-          nodes: {
-              color: { background: '#ffffff', border: '#ae1313', highlight: '#ae1313' },
-              shape: 'dot',
-              font: { size: 25, },
-              borderWidth: 2,
-              shadow: true,
-              scaling: { max: 50 }
-          },
-          edges: {
-              length: 300,
-              smooth: { forceDirection: "none" }
-          },
+        nodes: {
+          color: { background: '#ffffff', border: '#ae1313', highlight: '#ae1313' },
+          shape: 'dot',
+          font: { size: 25, },
+          borderWidth: 2,
+          shadow: true,
+          scaling: { max: 50 }
+        },
+        edges: {
+          length: 300,
+          smooth: { forceDirection: "none" }
+        },
       };
       if (this.network) {
         this.network.destroy()
@@ -125,16 +153,19 @@ export default {
       return counter;
     },
     countAppearance(data, threshold) {
-      return data.y.filter(v => v >= threshold).reduce((v1, v2) => v1 + v2, 0);
+      return data.y.filter(v => v >= threshold).reduce((v1) => v1 + 1, 0);
     },
     getConstellations() {
       const active_timelines = this.timelines.filter((t) => this.timelineSettings[t.id].active && this.timelineSettings[t.id].visible);
       const nodes = new DataSet(
-        active_timelines.map((t) => ({
-          id: t.id,
-          label: t.name,
-          value: this.countAppearance(t.plugin.data, this.timelineSettings[t.id].threshold)
-        }))
+        active_timelines.map((t) => {
+          const count = this.countAppearance(t.plugin.data, this.timelineSettings[t.id].threshold);
+          return {
+            id: t.id,
+            label: t.name + ' ' + count,
+            value: count
+          };
+        }).filter((t) => t.value > this.min_node)
       );
 
       // build all combinations of two timelines
@@ -142,20 +173,29 @@ export default {
         active_timelines.slice(i + 1).map((w) => [v, w])
       );
       const edges = new DataSet(
-        node_combinations.map((c) => ({
-          from: c[0].id,
-          to: c[1].id,
-          id: c[0].id + c[1].id,
-          value: this.calcTimelineOverlap(
+        node_combinations.map((c) => {
+          const overlap = this.calcTimelineOverlap(
             c[0].plugin.data,
             c[1].plugin.data,
             Math.min(this.timelineSettings[c[0].id].threshold, this.timelineSettings[c[1].id].threshold),
           )
-        }))
+          return {
+            from: c[0].id,
+            to: c[1].id,
+            id: c[0].id + c[1].id,
+            label: String(overlap),
+            value: overlap
+          };
+        }).filter((nc) => nc.value > this.min_edge)
       );
 
       return { nodes: nodes, edges: edges };
     },
+    debounced_graph_loading() {
+      this.loading = true;
+      clearTimeout(this.timeoutId);
+      this.timeoutId = setTimeout(this.renderGraph, 3000);
+    }
   },
   computed: {
     timelines() {
@@ -173,12 +213,16 @@ export default {
       this.updateTimelineSettings();
     },
     'timelineSettings': {
-      handler: function() {
-        this.loading = true;
-        clearTimeout(this.timeoutId);
-        this.timeoutId = setTimeout(this.renderGraph, 3000);
+      handler: function () {
+        this.debounced_graph_loading();
       },
       deep: true
+    },
+    min_edge() {
+      this.debounced_graph_loading();
+    },
+    min_node() {
+      this.debounced_graph_loading();
     }
   },
 };
