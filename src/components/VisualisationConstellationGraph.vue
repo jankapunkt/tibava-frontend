@@ -162,7 +162,7 @@ export default {
           const count = this.countAppearance(t.plugin.data, this.timelineSettings[t.id].threshold);
           return {
             id: t.id,
-            label: t.name + ' ' + count,
+            label: t.name + ': ' + count,
             value: count
           };
         }).filter((t) => t.value > this.min_node)
