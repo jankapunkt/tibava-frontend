@@ -47,7 +47,7 @@ export const useShotStore = defineStore("shot", {
       if (!thumbnail.length) {
         return results;
       }
-      thumbnail = thumbnail.at(-1); // use latest thumbnails
+      thumbnail = thumbnail.at(0); // use latest thumbnails
 
       // get start and end times for each shot
       let results = [];
