@@ -1,6 +1,6 @@
 <template>
   <v-container class="d-flex flex-column">
-    <v-row class="video-container">
+    <v-row ref="videocontainer" class="video-container">
       <video
         class="video-player"
         ref="video"
@@ -109,7 +109,20 @@ export default {
         { title: "1.75", value: 1.75 },
         { title: "2.00", value: 2.0 },
       ],
+      observer: undefined
     };
+  },
+  mounted() {
+    const threshold = 0.1
+    this.observer = new IntersectionObserver(([e]) => {
+        this.$refs.video.classList.toggle('sticky-video', e.intersectionRatio < threshold);
+      },
+      {threshold: [threshold]}
+    );
+    this.observer.observe(this.$refs.videocontainer);
+  },
+  beforeDestroy() {
+    this.observer.disconnect();
   },
   methods: {
     toggle() {
@@ -214,12 +227,21 @@ export default {
 </script>
 
 <style>
+.sticky-video {
+  position: fixed;
+  height: auto !important;
+  width: 15vw !important;
+  z-index: 3;
+  min-height: unset !important;
+  top: 80px;
+  right: 15px;
+}
 .video-player {
   max-width: 100%;
   height: 100%;
   max-height: 100%;
-  background-color: black;
   min-height: 480px;
+  background-color: black;
 }
 
 .video-control {
@@ -242,5 +264,7 @@ export default {
 .video-container {
   background-color: black;
   justify-content: center;
+  max-height: 100%;
+  min-height: 480px;
 }
 </style>
