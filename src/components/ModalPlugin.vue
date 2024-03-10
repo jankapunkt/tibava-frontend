@@ -449,6 +449,12 @@ export default {
                   name: "fps",
                   text: this.$t("modal.plugin.fps"),
                 },
+                {
+                  field: "checkbox",
+                  name: "normalize",
+                  text: this.$t("modal.plugin.normalize"),
+                  value: true
+                },
               ],
             },
           ],
