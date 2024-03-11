@@ -13,8 +13,6 @@ export const useTimelineSegmentAnnotationStore = defineStore(
     state: () => {
       return {
         timelineSegmentAnnotations: {},
-        timelineSegmentAnnotationByTime: new Map(),
-        timelineSegmentAnnotationBySegment: new Map(),
         isLoading: false,
       };
     },
@@ -65,29 +63,8 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       },
       forTimelineSegment(state) {
         return (timelineSegmentId) => {
-          if (
-            !state.timelineSegmentAnnotationBySegment.has(timelineSegmentId)
-          ) {
-            return [];
-          }
-          const timelineSegmentIds =
-            state.timelineSegmentAnnotationBySegment.get(timelineSegmentId);
-          // console.log(timelineSegmentIds)
-          return timelineSegmentIds.map((id) => {
-            return state.timelineSegmentAnnotations[id];
-          });
+          return Object.values(state.timelineSegmentAnnotations).filter((a) => a.timeline_segment_id == timelineSegmentId);
         };
-      },
-      forTimeLUT: (state) => (time) => {
-        const timeSecond = Math.round(time);
-        if (!state.timelineSegmentAnnotationByTime.has(timeSecond)) {
-          return [];
-        }
-        const timelineSegmentIds =
-          state.timelineSegmentAnnotationByTime.get(timeSecond);
-        return timelineSegmentIds.map((id) => {
-          return state.timelineSegmentAnnotations[id];
-        });
       },
     },
     actions: {
@@ -196,8 +173,6 @@ export const useTimelineSegmentAnnotationStore = defineStore(
         // });
       },
       clearStore() {
-        this.timelineSegmentAnnotationByTime = new Map();
-        this.timelineSegmentAnnotationBySegment = new Map();
         Object.keys(this.timelineSegmentAnnotations).forEach(key => {
           Vue.delete(this.timelineSegmentAnnotations, key);
         });
@@ -205,110 +180,19 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       deleteFromStore(timelineSegmentAnnotations) {
         timelineSegmentAnnotations.forEach((id) => {
           Vue.delete(this.timelineSegmentAnnotations, id);
-
-          this.timelineSegmentAnnotationByTime.forEach((v, k, m) => {
-            let index = v.findIndex((f) => f === id);
-            if (index >= 0) {
-              v.splice(index, 1);
-              m.set(k, v);
-            }
-          });
-
-          this.timelineSegmentAnnotationBySegment.forEach((v, k, m) => {
-            let index = v.findIndex((f) => f === id);
-            if (index >= 0) {
-              v.splice(index, 1);
-              m.set(k, v);
-            }
-          });
         });
       },
       addToStore(timelineSegmentAnnotations) {
-        const timelineSegmentStore = useTimelineSegmentStore();
-
         timelineSegmentAnnotations.forEach((e) => {
           Vue.set(this.timelineSegmentAnnotations, e.id, e);
-
-          const timelineSegment = timelineSegmentStore.get(
-            e.timeline_segment_id
-          );
-          if (timelineSegment) {
-            for (
-              var i = Math.floor(timelineSegment.start);
-              i < Math.ceil(timelineSegment.end);
-              i++
-            ) {
-              if (this.timelineSegmentAnnotationByTime.has(i)) {
-                var ids = this.timelineSegmentAnnotationByTime.get(i);
-                ids.push(e.id);
-                this.timelineSegmentAnnotationByTime.set(i, ids);
-              } else {
-                this.timelineSegmentAnnotationByTime.set(i, [e.id]);
-              }
-            }
-
-            if (
-              this.timelineSegmentAnnotationBySegment.has(timelineSegment.id)
-            ) {
-              let ids = this.timelineSegmentAnnotationBySegment.get(
-                timelineSegment.id
-              );
-              ids.push(e.id);
-              this.timelineSegmentAnnotationBySegment.set(
-                timelineSegment.id,
-                ids
-              );
-            } else {
-              this.timelineSegmentAnnotationBySegment.set(timelineSegment.id, [
-                e.id,
-              ]);
-              console.log("ADD_TO_CACHE")
-            }
-          }
         });
       },
       updateStore(timelineSegmentAnnotations) {
-        const timelineSegmentStore = useTimelineSegmentStore();
         timelineSegmentAnnotations.forEach((e) => {
           if (e.id in this.timelineSegmentAnnotations) {
             return;
           }
           Vue.set(this.timelineSegmentAnnotations, e.id, e);
-
-          const timelineSegment = timelineSegmentStore.get(
-            e.timeline_segment_id
-          );
-          if (timelineSegment) {
-            for (
-              var i = Math.floor(timelineSegment.start);
-              i < Math.ceil(timelineSegment.end);
-              i++
-            ) {
-              if (this.timelineSegmentAnnotationByTime.has(i)) {
-                var ids = this.timelineSegmentAnnotationByTime.get(i);
-                ids.push(e.id);
-                this.timelineSegmentAnnotationByTime.set(i, ids);
-              } else {
-                this.timelineSegmentAnnotationByTime.set(i, [e.id]);
-              }
-            }
-            if (
-              this.timelineSegmentAnnotationBySegment.has(timelineSegment.id)
-            ) {
-              let ids = this.timelineSegmentAnnotationBySegment.get(
-                timelineSegment.id
-              );
-              ids.push(e.id);
-              this.timelineSegmentAnnotationBySegment.set(
-                timelineSegment.id,
-                ids
-              );
-            } else {
-              this.timelineSegmentAnnotationBySegment.set(timelineSegment.id, [
-                e.id,
-              ]);
-            }
-          }
         });
       },
     },

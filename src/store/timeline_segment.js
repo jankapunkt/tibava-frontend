@@ -1,3 +1,4 @@
+import Vue from "vue";
 import axios from "../plugins/axios";
 import config from "../../app.config";
 import { defineStore } from "pinia";
@@ -509,7 +510,7 @@ export const useTimelineSegmentStore = defineStore("timelineSegment", {
           (f) => f === e.id
         );
         this.timelineSegmentList.splice(segment_index, 1);
-        delete this.timelineSegments[e.id];
+        Vue.delete(this.timelineSegments, e.id);
       });
       this.updateTimeStore();
     },
