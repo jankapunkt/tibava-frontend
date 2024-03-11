@@ -9,14 +9,13 @@ export const useAnnotationStore = defineStore('annotation', {
     state: () => {
         return {
             annotations: {},
-            annotationList: [],
             isLoading: false,
         }
     },
     getters: {
 
         all: (state) => {
-            return state.annotationList.map((id) => state.annotations[id]);
+            return Object.values(state.annotations);
         },
         get: (state) => (id) => {
             return state.annotations[id];
@@ -157,8 +156,9 @@ export const useAnnotationStore = defineStore('annotation', {
             // });
         },
         clearStore() {
-            this.annotations = {}
-            this.annotationList = []
+            Object.keys(this.annotations).forEach(key => {
+                Vue.delete(this.annotations, key);
+            });
         },
         updateInStore(annotations) {
             const newAnnotations = { ...this.annotations };
@@ -169,8 +169,7 @@ export const useAnnotationStore = defineStore('annotation', {
         },
         addToStore(annotations) {
             annotations.forEach((e) => {
-                this.annotations[e.id] = e;
-                this.annotationList.push(e.id);
+                Vue.set(this.annotations, e.id, e);
             });
         },
         updateStore(annotations) {
@@ -178,8 +177,7 @@ export const useAnnotationStore = defineStore('annotation', {
                 if (e.id in this.annotations) {
                     return;
                 }
-                this.annotations[e.id] = e;
-                this.annotationList.push(e.id);
+                Vue.set(this.annotations, e.id, e);
             });
         },
     },

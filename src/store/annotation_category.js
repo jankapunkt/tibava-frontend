@@ -1,3 +1,4 @@
+import Vue from "vue";
 import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia';
@@ -7,16 +8,15 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
     state: () => {
         return {
             annotationCategories: {},
-            annotationCategoryList: [],
             isLoading: false,
         }
     },
     getters: {
         all: (state) => {
-            return state.annotationCategoryList.map(id => state.annotationCategories[id])
+            return Object.values(state.annotationCategories);
         },
         get: (state) => (id) => {
-            return state.annotationCategories[id]
+            return state.annotationCategories[id];
         }
     },
     actions: {
@@ -41,7 +41,6 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
                 }
             }
 
-            // console.log(`ANNOTATION_CATEGORY_CREATE ${JSON.stringify(params)}`);
             return axios.post(`${config.API_LOCATION}/annotation/category/create`, params)
                 .then((res) => {
                     if (res.data.status === 'ok') {
@@ -76,7 +75,6 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
                     params.video_id = videoId;
                 }
             }
-            // console.log(`AnnotationCategory::listUpdate ${JSON.stringify(params)}`)
             return axios.get(`${config.API_LOCATION}/annotation/category/list`, { params })
                 .then((res) => {
                     if (res.data.status === 'ok') {
@@ -94,13 +92,13 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
 
 
         clearStore() {
-            this.annotationCategories = {}
-            this.annotationCategoryList = []
+            Object.keys(this.annotationCategories ).forEach(key => {
+                Vue.delete(this.annotationCategories , key);
+            });
         },
         addToStore(annotationCategories) {
             annotationCategories.forEach((e) => {
-                this.annotationCategories[e.id] = e
-                this.annotationCategoryList.push(e.id)
+                Vue.set(this.annotationCategories, e.id, e);
             });
         },
 
@@ -109,8 +107,7 @@ export const useAnnotationCategoryStore = defineStore('annotationCategory', {
                 if (e.id in this.annotationCategories) {
                     return;
                 }
-                this.annotationCategories[e.id] = e
-                this.annotationCategoryList.push(e.id)
+                Vue.set(this.annotationCategories, e.id, e);
             });
         }
     },

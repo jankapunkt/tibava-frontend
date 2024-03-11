@@ -58,7 +58,8 @@ export default {
     },
     noTranscripts() {
       return this.timelineSegmentAnnotationStore.transcriptSegments.length === 0;
-    }, transcripts() {
+    }, 
+    transcripts() {
       return this.timelineSegmentAnnotationStore.transcriptSegments.filter(
         (t) =>
           this.search == "" ||

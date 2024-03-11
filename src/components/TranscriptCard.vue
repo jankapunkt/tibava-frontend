@@ -60,7 +60,7 @@ export default {
   watch: {
     isHighlighted(newVal) {
         if (newVal && !this.emitted && this.syncTime){
-          this.$emit('childHighlighted', this.shot.id);
+          this.$emit('childHighlighted', this.transcript.id);
         }
         this.emitted = newVal;
       }

@@ -1,3 +1,4 @@
+import Vue from "vue";
 import axios from "../plugins/axios";
 import config from "../../app.config";
 import { defineStore } from "pinia";
@@ -14,35 +15,28 @@ export const useTimelineSegmentAnnotationStore = defineStore(
         timelineSegmentAnnotations: {},
         timelineSegmentAnnotationByTime: new Map(),
         timelineSegmentAnnotationBySegment: new Map(),
-        timelineSegmentAnnotationList: [],
-
-        timelineSegmentAnnotationListAdded: [],
-        timelineSegmentAnnotationListDeleted: [],
         isLoading: false,
       };
     },
     getters: {
       all: (state) => {
-        return state.timelineSegmentAnnotationList.map(
-          (id) => state.timelineSegmentAnnotations[id]
-        );
+        return Object.values(state.timelineSegmentAnnotations);
       },
       transcriptSegments(state) {
         const annotationCatygoryStore = useAnnotationCategoryStore();
         const segmentStore = useTimelineSegmentStore();
         const annotationStore = useAnnotationStore();
-        return state.timelineSegmentAnnotationList.map(
-          (id, i) => {
-            const segment_annotation = state.timelineSegmentAnnotations[id];
-            // console.log(JSON.stringify(segment_annotation));
-
+        return Object.values(state.timelineSegmentAnnotations).map(
+          (segment_annotation, i) => {
             let segment = null;
             let start = 0;
             let end = 0;
             if (segment_annotation.timeline_segment_id) {
               segment = segmentStore.get(segment_annotation.timeline_segment_id);
-              start = segment.start;
-              end = segment.end;
+              if (segment) {
+                start = segment.start;
+                end = segment.end;
+              }
             }
             let annotation = null;
             if (segment_annotation.annotation_id) {
@@ -152,11 +146,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
           .then((res) => {
             if (res.data.status === "ok") {
               [res.data.entry].forEach((id) => {
-                let index = this.timelineSegmentAnnotationList.findIndex(
-                  (f) => f === id
-                );
-                this.timelineSegmentAnnotationList.splice(index, 1);
-                delete this.timelineSegmentAnnotations[id];
+                Vue.delete(this.timelineSegmentAnnotations, id);
               });
               timelineSegmentStore.deleteAnnotation([id]);
             }
@@ -208,19 +198,13 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       clearStore() {
         this.timelineSegmentAnnotationByTime = new Map();
         this.timelineSegmentAnnotationBySegment = new Map();
-        this.timelineSegmentAnnotationListAdded = [];
-        this.timelineSegmentAnnotationListDeleted = [];
-        this.timelineSegmentAnnotations = {};
-        this.timelineSegmentAnnotationList = [];
+        Object.keys(this.timelineSegmentAnnotations).forEach(key => {
+          Vue.delete(this.timelineSegmentAnnotations, key);
+        });
       },
       deleteFromStore(timelineSegmentAnnotations) {
         timelineSegmentAnnotations.forEach((id) => {
-          this.timelineSegmentAnnotationListDeleted.push(id);
-          let index = this.timelineSegmentAnnotationList.findIndex(
-            (f) => f === id
-          );
-          this.timelineSegmentAnnotationList.splice(index, 1);
-          delete this.timelineSegmentAnnotations[id];
+          Vue.delete(this.timelineSegmentAnnotations, id);
 
           this.timelineSegmentAnnotationByTime.forEach((v, k, m) => {
             let index = v.findIndex((f) => f === id);
@@ -241,13 +225,9 @@ export const useTimelineSegmentAnnotationStore = defineStore(
       },
       addToStore(timelineSegmentAnnotations) {
         const timelineSegmentStore = useTimelineSegmentStore();
-        // console.log('+w+wür+wqrüwq+rüwq+ü')
-        // console.log(JSON.stringify(timelineSegmentAnnotations))
 
         timelineSegmentAnnotations.forEach((e) => {
-          this.timelineSegmentAnnotationListAdded.push(e.id);
-          this.timelineSegmentAnnotations[e.id] = e;
-          this.timelineSegmentAnnotationList.push(e.id);
+          Vue.set(this.timelineSegmentAnnotations, e.id, e);
 
           const timelineSegment = timelineSegmentStore.get(
             e.timeline_segment_id
@@ -293,9 +273,7 @@ export const useTimelineSegmentAnnotationStore = defineStore(
           if (e.id in this.timelineSegmentAnnotations) {
             return;
           }
-          this.timelineSegmentAnnotationListAdded.push(e.id);
-          this.timelineSegmentAnnotations[e.id] = e;
-          this.timelineSegmentAnnotationList.push(e.id);
+          Vue.set(this.timelineSegmentAnnotations, e.id, e);
 
           const timelineSegment = timelineSegmentStore.get(
             e.timeline_segment_id
