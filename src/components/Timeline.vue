@@ -927,15 +927,15 @@ export default {
       return end;
     },
     timelines() {
-      let timelines = this.timelineStore.all.filter((t) => t.type !== "TRANSCRIPT");
+      let timelines = this.timelineStore.all;
       return timelines;
     },
     timelinesAdded() {
-      let timelines = this.timelineStore.added.filter((t) => t[1].type !== "TRANSCRIPT");
+      let timelines = this.timelineStore.added;
       return timelines;
     },
     timelinesChanged() {
-      let timelines = this.timelineStore.changed.filter((t) => t[1].type !== "TRANSCRIPT");
+      let timelines = this.timelineStore.changed;
       return timelines;
     },
     timelinesDeleted() {
