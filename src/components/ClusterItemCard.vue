@@ -77,6 +77,7 @@
               <v-dialog
                 v-model="mergeDialog"
                 width="500"
+                scrollable="false"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn :disabled="mergableClusters.length==0" text v-bind="attrs" v-on="on">
@@ -85,7 +86,7 @@
                   </v-btn>
                 </template>
 
-                <v-card>
+                <v-card style="max-height:80vh; overflow-y: auto;">
                   <v-card-title class="text-h5 grey lighten-2">
                     You can merge this cluster with one of the other clusters. Select one below:
                   </v-card-title>
@@ -112,7 +113,7 @@
                     <v-btn
                       color="primary"
                       text
-                      @click="mergeDialog = false"
+                      @click="cancelMergeClusters"
                     >
                       Cancel
                     </v-btn>
@@ -203,6 +204,10 @@ export default {
         cluster_from_id: this.cluster.cluster_id, 
         cluster_to_id: this.mergableClusters[this.toMergeCluster].cluster_id
       });
+      this.mergeDialog = false;
+      this.showDotMenu = false;
+    },
+    cancelMergeClusters() {
       this.mergeDialog = false;
       this.showDotMenu = false;
     },
