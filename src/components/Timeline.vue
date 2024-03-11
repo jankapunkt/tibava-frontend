@@ -528,7 +528,7 @@ export default {
     drawTimeline(timeline) {
       const width = this.timeToX(this.endTime) - this.timeToX(this.startTime);
       const height = this.timelineHeight;
-      if (timeline.type == "ANNOTATION") {
+      if (timeline.type == "ANNOTATION" || timeline.type == "TRANSCRIPT") {
         return this.drawAnnotationTimeline(timeline, width, height);
       } else if (timeline.type == "PLUGIN_RESULT") {
         return this.drawGraphicTimeline(timeline, width, height);
