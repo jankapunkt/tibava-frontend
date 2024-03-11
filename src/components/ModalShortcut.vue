@@ -91,7 +91,7 @@ export default {
   },
   computed: {
     annotations() {
-      return this.annotationStore.all;
+      return this.annotationStore.nonTranscripts;
     },
     annotationShortcuts() {
       return this.annotationShortcutStore.all;

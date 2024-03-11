@@ -3,6 +3,7 @@ import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
 import { usePlayerStore } from "./player";
+import { useAnnotationCategoryStore } from "@/store/annotation_category";
 
 
 export const useAnnotationStore = defineStore('annotation', {
@@ -13,7 +14,11 @@ export const useAnnotationStore = defineStore('annotation', {
         }
     },
     getters: {
-
+        nonTranscripts: (state) => {
+            const annotationCategoryStore = useAnnotationCategoryStore();
+            return Object.values(state.annotations)
+                         .filter((a) => !annotationCategoryStore.get(a.category_id) || annotationCategoryStore.get(a.category_id).name !== "Transcript");
+        },
         all: (state) => {
             return Object.values(state.annotations);
         },
