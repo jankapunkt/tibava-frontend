@@ -4,7 +4,7 @@
     v-bind:class="{'d-flex': isContainerFlex, 'd-none': isContainerNone }"
     max-width="100%"
     elevation="2"
-    scrollable="False"
+    :scrollable="false"
     >
         <v-card-title>
             <span class="text-h5">Plot visualization</span>

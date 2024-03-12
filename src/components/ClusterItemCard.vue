@@ -77,7 +77,7 @@
               <v-dialog
                 v-model="mergeDialog"
                 width="500"
-                scrollable="false"
+                :scrollable="false"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn :disabled="mergableClusters.length==0" text v-bind="attrs" v-on="on">
