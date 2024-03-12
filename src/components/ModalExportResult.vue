@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" max-width="1000">
     <template v-slot:activator="{ on }">
       <v-btn v-on="on" text block large>
-        <v-icon left>{{ "mdi-chart-line-variant" }}</v-icon>
+        <v-icon left>mdi-swap-vertical</v-icon>
         {{ $t("modal.timeline.export_result.link") }}
       </v-btn>
     </template>
