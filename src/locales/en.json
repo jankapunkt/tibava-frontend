@@ -63,7 +63,9 @@
     "edit": "Edit",
     "apply": "Apply",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "delete": "Delete",
+    "create": "Create"
   },
   "modal": {
     "video": {
@@ -356,6 +358,12 @@
         "yes": "Yes",
         "no": "No"
       }
+    },
+    "cluster_edit": {
+      "move_new": "Move to new Cluster",
+      "move": "Move",
+      "new_cluster": "New Cluster",
+      "move_existing": "Move to existing Cluster"
     }
   },
   "user": {

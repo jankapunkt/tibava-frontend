@@ -138,16 +138,17 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                     this.isLoading = false;
                 });
         },
-        async create({ cluster_id, name, video_id }) {
+        async create(name, video_id, plugin_run, type) {
             if (this.isLoading) {
                 return;
             }
             this.isLoading = true;
 
-            let params = {
-                cluster_id: cluster_id,
+            const params = {
                 name: name,
                 video_id: video_id,
+                plugin_run: plugin_run,
+                type: type
             };
 
             return axios
@@ -155,6 +156,7 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                 .then((res) => {
                     if (res.data.status === "ok") {
                         this.addToStore(res.data.entry);
+                        return res.data.entry;
                     }
                     else {
                         console.log("Error in clusterTimelineItem/create");
@@ -205,7 +207,38 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                         Vue.set(this.clusterTimelineItems[cluster_id], "items", this.clusterTimelineItems[cluster_id].items.filter((i) => !item_ids.includes(i.id)));
                     }
                     else {
-                        console.log("Error in clusterTimelineItem/setTimeline");
+                        console.log("Error in clusterTimelineItem/delete");
+                        console.log(res.data);
+                    }
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
+        moveItemsToCluster(oldClusterId, itemsIds, newClusterId) {
+            if (this.isLoading) {
+                return;
+            }
+            this.isLoading = true;
+
+            let params = {
+                item_ids: itemsIds,
+                new_cluster_id: this.clusterTimelineItems[newClusterId].id
+            };
+
+            return axios
+                .post(`${config.API_LOCATION}/cluster/item/move`, params)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                        const oldClusterItems = this.clusterTimelineItems[oldClusterId].items.filter((i) => itemsIds.indexOf(i.id) < 0)
+                        const items = this.clusterTimelineItems[oldClusterId].items.filter((i) => itemsIds.indexOf(i.id) >= 0)
+                        Vue.set(this.clusterTimelineItems[oldClusterId], "items", oldClusterItems);
+                        Vue.set(this.clusterTimelineItems[newClusterId], "items", 
+                            [...this.clusterTimelineItems[newClusterId].items, ...items]
+                        );
+                    }
+                    else {
+                        console.log("Error in clusterTimelineItem/move");
                         console.log(res.data);
                     }
                 })

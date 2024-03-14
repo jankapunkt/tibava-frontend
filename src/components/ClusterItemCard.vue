@@ -35,8 +35,8 @@
 
           </div>
           <v-list-item-subtitle>{{ type_name }}s: {{ cluster.items.length }}</v-list-item-subtitle>
-          <v-list-item-subtitle>First occurence: {{ this.get_timecode(cluster.items[0].time) }}</v-list-item-subtitle>
-          <v-list-item-subtitle>Last occurence: {{ this.get_timecode(cluster.items.at(-1).time) }}</v-list-item-subtitle>
+          <v-list-item-subtitle>First occurence: {{ firstOccurence }}</v-list-item-subtitle>
+          <v-list-item-subtitle>Last occurence: {{ lastOccurence }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-col>
 
@@ -57,7 +57,7 @@
           </template>
           <v-list>
             <v-list-item>
-              <ClusterExploration :cluster="this.cluster" @deleteCluster="deleteCluster">
+              <ClusterExploration :cluster="cluster" :allClusters="allClusters" @deleteCluster="deleteCluster">
               </ClusterExploration>
             </v-list-item>
             <v-list-item>
@@ -150,7 +150,7 @@ import ClusterExploration from "@/components/ClusterExploration.vue";
 
 export default {
   mixins: [TimeMixin],
-  props: ["cluster", 'type_name'],
+  props: ["cluster", "allClusters", 'type_name'],
   data() {
     return {
       // card shows loading animation while the faceidentification plugin runs
@@ -237,17 +237,25 @@ export default {
 
   },
   computed: {
-    clusters() {
-      return this.clusterTimelineItemStore.latestFaceClustering();
+    firstOccurence() {
+      if (this.cluster.items.length > 0) {
+        return this.get_timecode(this.cluster.items[0].time);
+      }
+      return 0;
+    },
+    lastOccurence() {
+      if (this.cluster.items.length > 0) {
+        return this.get_timecode(this.cluster.items.at(-1).time);
+      }
+      return 0;
     },
     mergableClusters() {
-      return this.clusters.filter((c) => c.id !== this.cluster.id);
+      return this.allClusters.filter((c) => c.id !== this.cluster.id);
     },
     thumbnails() {
       // sample 4 elements
-      const sample_items = this.cluster.items.filter((i) => i.is_sample);
-      return sample_items.reduce((arr, item, i) => {
-        if (i % Math.ceil(sample_items.length/4) == 0) {
+      return this.cluster.items.reduce((arr, item, i) => {
+        if (i % Math.ceil(this.cluster.items.length/4) == 0) {
           arr.push(item);
         } 
         return arr;
