@@ -128,10 +128,6 @@ export default {
       fetchPluginTimer: null,
 
       selectedTimelineProxy: null,
-      videoTime: 0,
-      targetTime: 0,
-      startTime: 0,
-      endTime: 0,
       tab: null,
       addedAnnotation: null,
       labels: [],
@@ -234,6 +230,8 @@ export default {
         if (!nextTimelineSegment) {
           return;
         }
+        // jump the player to the start time of this segment
+        this.playerStore.setTargetTime(nextTimelineSegment.start);
         if (!event.ctrlKey) {
           this.timelineSegmentStore.clearSelection();
         }
@@ -249,6 +247,8 @@ export default {
         if (!nextTimelineSegment) {
           return;
         }
+        // jump the player to the start time of this segment
+        this.playerStore.setTargetTime(nextTimelineSegment.start);
         if (!event.ctrlKey) {
           this.timelineSegmentStore.clearSelection();
         }
