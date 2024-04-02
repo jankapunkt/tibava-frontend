@@ -46,6 +46,29 @@
             <v-list-item-title :class="{ 'grey--text': !timeline.active }">{{ timeline.name }}</v-list-item-title>
           </v-list-item-content>
           <v-list-item-action>
+            <v-menu
+              :disabled="!timeline.active"
+            >
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  disable
+                  icon
+                  x-small
+                  :color="timeline.color"
+                  class="mr-1"
+                  v-on="on"
+                >
+                  <v-icon>{{ "mdi-palette" }}</v-icon>
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-text class="pa-0">
+                  <v-color-picker v-model="timeline.color" flat />
+                </v-card-text>
+              </v-card>
+            </v-menu>
+          </v-list-item-action>
+          <v-list-item-action>
             <v-text-field :disabled="!timeline.active" v-model="timeline.threshold" hide-details step="0.1" single-line
               type="number" min="0" max="1" style="width: 60px"></v-text-field>
           </v-list-item-action>
@@ -99,7 +122,8 @@ export default {
             name: timeline.name,
             // visible needed as timelines are briefly deleted and then reinserted
             // when updating the store and we want to persist the setting
-            visible: true
+            visible: true,
+            color: '#ae1313'
           });
         } else {
           this.timelineSettings[timeline.id].visible = true;
@@ -109,7 +133,6 @@ export default {
     renderGraph() {
       const options = {
         nodes: {
-          color: { background: '#ffffff', border: '#ae1313', highlight: '#ae1313' },
           shape: 'dot',
           font: { size: 25, },
           borderWidth: 2,
@@ -163,7 +186,12 @@ export default {
           return {
             id: t.id,
             label: t.name + ': ' + count,
-            value: count
+            value: count,
+            color: {
+              background: '#ffffff',
+              border: this.timelineSettings[t.id].color,
+              highlight: this.timelineSettings[t.id].color
+            }
           };
         }).filter((t) => t.value > this.min_node)
       );
@@ -184,7 +212,10 @@ export default {
             to: c[1].id,
             id: c[0].id + c[1].id,
             label: String(overlap),
-            value: overlap
+            value: overlap,
+            color: {
+              color: this.blendColors(this.timelineSettings[c[0].id].color, this.timelineSettings[c[1].id].color)
+            }
           };
         }).filter((nc) => nc.value > this.min_edge)
       );
@@ -195,6 +226,14 @@ export default {
       this.loading = true;
       clearTimeout(this.timeoutId);
       this.timeoutId = setTimeout(this.renderGraph, 3000);
+    },
+    blendColors(colorA, colorB) {
+      const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
+      const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
+      const r = Math.round(rA + (rB - rA) * 0.5).toString(16).padStart(2, '0');
+      const g = Math.round(gA + (gB - gA) * 0.5).toString(16).padStart(2, '0');
+      const b = Math.round(bA + (bB - bA) * 0.5).toString(16).padStart(2, '0');
+      return '#' + r + g + b;
     }
   },
   computed: {
