@@ -21,14 +21,15 @@
             <div v-if="!selected" class="text-h6 grey--text font-weight-light" style="text-align: center;">
               {{ $t("modal.plugin.search.select") }}
             </div>
-            <v-card v-else :key="selected.id" class="mx-auto overflow-y-auto" style="max-height: calc(80vh - 50px);" flat>
+            <v-card v-else :key="selected.id" class="mx-auto overflow-y-auto" style="max-height: calc(80vh - 50px);"
+              flat>
               <v-card-title class="mb-0"> {{ selected.name }} </v-card-title>
               <v-card-text>
                 <div class="" style="padding-bottom: 2em;" v-html="selected.description"></div>
                 <Parameters :parameters="selected.parameters"> </Parameters>
                 <v-expansion-panels v-if="selected.optional_parameters &&
-                  selected.optional_parameters.length > 0
-                  ">
+    selected.optional_parameters.length > 0
+    ">
                   <v-expansion-panel>
                     <v-expansion-panel-header expand-icon="mdi-menu-down">
                       Advanced Options
@@ -51,12 +52,12 @@
         <v-btn @click="dialog = false">{{ $t("modal.plugin.close") }}</v-btn>
         <v-spacer></v-spacer>
         <v-btn v-if="selected" @click="
-          runPlugin(
-            selected.plugin,
-            selected.parameters,
-            selected.optional_parameters
-          )
-          ">{{ $t("modal.plugin.run") }}</v-btn>
+    runPlugin(
+      selected.plugin,
+      selected.parameters,
+      selected.optional_parameters
+    )
+    ">{{ $t("modal.plugin.run") }}</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -634,38 +635,29 @@ export default {
             //     },
             //   ],
             // },
-            // {
-            //   name: this.$t("modal.plugin.blip.plugin_name"),
-            //   description: this.$t("modal.plugin.blip.plugin_description"),
-            //   icon: "mdi-eye",
-            //   plugin: "blip_vqa",
-            //   id: 406,
-            //   parameters: [
-            //     {
-            //       field: "text_field",
-            //       name: "timeline",
-            //       value: this.$t("modal.plugin.blip.timeline_name"),
-            //       text: this.$t("modal.plugin.timeline_name"),
-            //     },
-            //     {
-            //       field: "text_field",
-            //       name: "query_term",
-            //       value: "",
-            //       text: this.$t("modal.plugin.blip.search_term"),
-            //     },
-            //   ],
-            //   optional_parameters: [
-            //     {
-            //       field: "slider",
-            //       min: 1,
-            //       max: 10,
-            //       value: 2,
-            //       step: 1,
-            //       name: "fps",
-            //       text: this.$t("modal.plugin.fps"),
-            //     },
-            //   ],
-            // },
+            {
+              name: this.$t("modal.plugin.blip.plugin_name"),
+              description: this.$t("modal.plugin.blip.plugin_description"),
+              icon: "mdi-eye",
+              plugin: "blip_vqa",
+              id: 406,
+              parameters: [
+                {
+                  field: "text_field",
+                  name: "timeline",
+                  value: this.$t("modal.plugin.blip.timeline_name"),
+                  text: this.$t("modal.plugin.timeline_name"),
+                },
+                {
+                  field: "text_field",
+                  name: "query_term",
+                  value: "",
+                  text: this.$t("modal.plugin.blip.search_term"),
+                },
+              ],
+              optional_parameters: [
+              ],
+            },
           ],
         },
         {
@@ -916,4 +908,3 @@ div.tabs-left [role="tab"] {
   justify-content: flex-start;
 }
 </style>
-
