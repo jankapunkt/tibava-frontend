@@ -349,7 +349,8 @@
         "name": "Timeline Name",
         "update": "OK",
         "close": "Close",
-        "description": "The color map of the timeline can be changed to one of the following maps:"
+        "description": "The color map of the timeline can be changed to one of the following maps:",
+        "colormap_inverse": "Invert color"
       },
       "delete": {
         "title": "Delete Timeline",

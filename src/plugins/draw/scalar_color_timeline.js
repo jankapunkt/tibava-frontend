@@ -18,6 +18,7 @@ export class ScalarColorTimeline extends Timeline {
     resolution = 1024,
     oversampling = 1,
     colormap = null,
+    colormapInverse = false,
   }) {
     super({ timelineId, width, height, startTime, endTime, duration, fill });
 
@@ -28,6 +29,8 @@ export class ScalarColorTimeline extends Timeline {
     else {
       this.pColormap = colormap;
     }
+
+    this.pColormapInverse = colormapInverse;
 
     this.pDataMinTime = getMin(data.time);
     this.pDataMaxTime = getMax(data.time);
@@ -87,7 +90,7 @@ export class ScalarColorTimeline extends Timeline {
       // console.log(this.pData.delta_time)
       // console.log(deltaTime)
 
-      let color = scalarToHex(y[i], false, this.pColormap);
+      let color = scalarToHex(y[i], this.pColormapInverse, this.pColormap);
       colorRects.beginFill(color);
       // colorRects.drawRect(r * t, 0, r * deltaTime, this.pHeight);
       colorRects.drawRect(

@@ -50,6 +50,9 @@
               </v-list-item-group>
             </v-list>
           </v-row>
+          <v-row>
+            <v-checkbox v-model="colormap_inverse" :label="$t('modal.timeline.visualization.colormap_inverse')"></v-checkbox>
+          </v-row>
         </v-col>
       </v-card-text>
       <v-card-actions class="pt-0">
@@ -80,6 +83,7 @@ export default {
       visualization_proxy: null,
       visualization_options: [],
       items: [],
+      colormap_inverse_proxy: null,
       colormap_idx: null,
       colormap_proxy: null,
       colormap_options: [],
@@ -114,6 +118,17 @@ export default {
         this.visualization_proxy = val;
       },
     },
+    colormap_inverse: {
+      get() {
+        const timeline = this.timelineStore.get(this.timeline);
+        return this.colormap_inverse_proxy === null
+          ? timeline.colormap_inverse
+          : this.colormap_inverse_proxy;
+      },
+      set(val) {
+        this.colormap_inverse_proxy = val;
+      },
+    },
     colormap: {
       get() {
         const timeline = this.timelineStore.get(this.timeline);
@@ -139,20 +154,18 @@ export default {
         visualization =
           this.visualization_options[this.visualization_idx].value;
       }
-      console.log(this.colormap_idx);
-      console.log(this.colormap_options);
       let colormap = null;
       if (this.colormap_idx === null) {
         colormap = this.colormap_default;
       } else {
         colormap = this.colormap_options[this.colormap_idx].value;
       }
-      console.log(colormap);
 
       await this.timelineStore.changeVisualization({
         timelineId: this.timeline,
         visualization: visualization,
         colormap: colormap,
+        colormap_inverse: this.colormap_inverse
       });
 
       this.isSubmitting = false;
@@ -161,7 +174,7 @@ export default {
     colormapBackground(colormapName) {
       const colorStops = Array.from(Array(10).keys())
         .map((k) => k / 10)
-        .map((k) => `${scalarToString(k, false, colormapName)} ${k * 100}%`)
+        .map((k) => `${scalarToString(k, this.colormap_inverse, colormapName)} ${k * 100}%`)
         .join(",");
       const cssString = `linear-gradient(90deg, ${colorStops})`;
       return cssString;

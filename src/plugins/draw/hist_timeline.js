@@ -28,6 +28,7 @@ export class HistTimeline extends Timeline {
             this.pColormap = colormap;
         }
 
+        this.pColormapInverse = colormapInverse;
 
         this.pDataMinTime = Math.min(...data.time);
         this.pDataMaxTime = Math.max(...data.time);
@@ -71,7 +72,7 @@ export class HistTimeline extends Timeline {
             });
         });
 
-        const data = new Uint8Array(flatdata.map((value) => { return scalarToRGB(value, false, this.pColormap) }).flat())
+        const data = new Uint8Array(flatdata.map((value) => { return scalarToRGB(value, this.pColormapInverse, this.pColormap) }).flat())
         const bt = new PIXI.Texture(new PIXI.BaseTexture(new PIXI.BufferResource(data, { width: width, height: height })));
         // console.log(bt)
 

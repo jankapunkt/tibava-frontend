@@ -742,6 +742,7 @@ export default {
             data: timeline.plugin.data,
             renderer: this.app.renderer,
             colormap: timeline.colormap,
+            colormapInverse: timeline.colormap_inverse,
           });
         }
         if (timeline.visualization == "SCALAR_LINE") {
@@ -755,6 +756,7 @@ export default {
             data: timeline.plugin.data,
             renderer: this.app.renderer,
             colormap: timeline.colormap,
+            colormapInverse: timeline.colormap_inverse,
           });
         }
         if (timeline.visualization == "HIST") {
@@ -768,6 +770,7 @@ export default {
             data: timeline.plugin.data,
             renderer: this.app.renderer,
             colormap: timeline.colormap,
+            colormapInverse: timeline.colormap_inverse,
           });
         }
       }

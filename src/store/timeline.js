@@ -428,7 +428,7 @@ export const useTimelineStore = defineStore("timeline", {
       //     commit('error/update', info, { root: true });
       // });
     },
-    async changeVisualization({ timelineId, visualization, colormap = null }) {
+    async changeVisualization({ timelineId, visualization, colormap = null , colormap_inverse = false}) {
       if (this.isLoading) {
         return;
       }
@@ -438,11 +438,14 @@ export const useTimelineStore = defineStore("timeline", {
         id: timelineId,
         visualization: visualization,
         colormap: colormap,
+        colormap_inverse: colormap_inverse,
       };
 
       const newTimelines = { ...this.timelines };
       newTimelines[timelineId].visualization = visualization;
       newTimelines[timelineId].colormap = colormap;
+      newTimelines[timelineId].colormap_inverse = colormap_inverse;
+      console.log(JSON.stringify(newTimelines[timelineId]))
       Vue.set(this, "timelines", newTimelines);
 
       this.timelineListChanged.push([Date.now(), timelineId]);
