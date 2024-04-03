@@ -10,7 +10,7 @@
       </template>
     </v-menu>
 
-    <ModalPlugin v-model="showModalPlugin"> </ModalPlugin>
+    <ModalPlugin v-model="showModalPlugin" :videoIds="[videoId]"></ModalPlugin>
   </div>
 </template>
 
@@ -118,6 +118,9 @@ export default {
     },
   },
   computed: {
+    videoId() {
+      return this.playerStore.videoId;
+    },
     loggedIn() {
       return this.userStore.loggedIn;
     },

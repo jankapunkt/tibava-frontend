@@ -2,14 +2,21 @@
   <v-app>
     <v-main>
       <v-container v-if="userStore.loggedIn" class="py-8 px-6" fluid>
-        <v-row justify="space-around">
-          <v-col cols="auto">
+        <v-row justify="center">
+          <v-col cols="2">
             <ModalVideoUpload />
+          </v-col>
+          <v-col cols="2">
+            <v-btn :disabled="selectedVideosIds.length == 0" @click="showModalPlugin = true" class="ma-6">
+              <v-icon color="primary">mdi-plus</v-icon>
+              Run Batch Plugin
+            </v-btn>
+            <ModalPlugin v-model="showModalPlugin" :videoIds="selectedVideosIds" />
           </v-col>
         </v-row>
 
         <v-container class="d-flex flex-wrap video-gallery align-content-center">
-          <v-card elevation="2" width="400px" :loading="item.loading" v-for="item in videos" :key="item.id">
+          <v-card elevation="2" width="420px" :loading="item.loading" v-for="item in videos" :key="item.id">
             <v-card-title class="video-overview-title">{{ item.name }}</v-card-title>
             <v-card-text>
               <div>Video ID: {{ item.id }}</div>
@@ -36,8 +43,14 @@
                 <v-btn color="red" outlined @click="deleteVideo(item.id)">
                   <v-icon>{{ "mdi-trash-can-outline" }}</v-icon> Delete
                 </v-btn>
+                <v-checkbox
+                  v-model="selectedVideos[item.id]"
+                  color="primary"
+                  class="ms-2"
+                ></v-checkbox>
               </v-card-actions>
             </v-card-text>
+            <v-progress-linear :value="videosProgress[item.id]"></v-progress-linear>
           </v-card>
         </v-container>
       </v-container>
@@ -72,7 +85,9 @@
 </template>
 
 <script>
+import Vue from "vue";
 import router from "../router";
+import ModalPlugin from "@/components/ModalPlugin.vue";
 import ModalVideoUpload from "@/components/ModalVideoUpload.vue";
 import ModalVideoRename from "@/components/ModalVideoRename.vue";
 import TimeMixin from "../mixins/time";
@@ -80,42 +95,57 @@ import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video.js";
 import { useUserStore } from "@/store/user.js";
 import { usePluginRunStore } from "@/store/plugin_run.js";
+import { useTimelineStore } from "@/store/timeline";
+import { usePluginRunResultStore } from "../store/plugin_run_result";
 
 export default {
   mixins: [TimeMixin],
+  data() {
+    return {
+      showModalPlugin: false,
+      selectedVideos: {},
+      fetchPluginTimer: null,
+    }
+  },
   mounted() {
     this.fetchData();
   },
+  beforeDestroy() {
+    if (this.fetchPluginTimer) {
+      clearInterval(this.fetchPluginTimer);
+    }
+  },
   methods: {
     deleteVideo(video_id) {
-      console.log(video_id);
       this.videoStore.delete(video_id);
     },
     showVideo(video_id) {
       router.push({ path: `/videoanalysis/${video_id}` });
     },
-    async fetchData() {
-      // Ask backend about all videos
+    async fetchData(fetchTimelines = false) {
       await this.videoStore.fetchAll();
-
-      await this.pluginRunStore.fetchAll({
-        addResults: false,
-      });
-    },
+      await this.pluginRunStore.fetchAll({ addResults: false, });
+      if (fetchTimelines) {
+        await this.timelineStore.fetchAll({ addResultsType: true });
+      }
+    }
   },
   computed: {
     videos() {
-      let videos = this.videoStore.all;
-      // console.log(videos);
-      // videos.forEach((v) => {
-      //   v.pluginRuns = this.pluginRunStore.fetchForVideo(v.id);
-      // });
-      // videos.forEach((v) => {
-      //   v.loading = !v.pluginRuns.reduce((a, b) => a && b.status === "D", true);
-      // });
-      return videos;
+      return this.videoStore.all;
     },
-    ...mapStores(useVideoStore, usePluginRunStore, useUserStore),
+    selectedVideosIds() {
+      return Object.entries(this.selectedVideos).filter((e) => e[1]).map((e) => e[0]);
+    },
+    videosProgress() {
+      const progress = {}
+      for (const vid of this.videos) {
+        const runs = this.pluginRunStore.forVideo(vid.id);
+        progress[vid.id] = runs.filter((r) => r.status !== 'RUNNING' && r.status !== 'QUEUED').length * 100 / runs.length;
+      }
+      return progress
+    },
+    ...mapStores(useVideoStore, usePluginRunStore, useUserStore, useTimelineStore, usePluginRunResultStore),
   },
   watch: {
     "userStore.loggedIn": function(value, oldValue) {
@@ -123,11 +153,43 @@ export default {
         // fetch user's videos after login
         this.fetchData();
       }
+    },
+    'pluginRunStore.pluginInProgress': {
+      immediate: true,
+      handler(newState) {
+        if (newState) {
+          this.fetchPluginTimer = setInterval(
+            function () {
+              this.fetchData();
+            }.bind(this),
+            2000
+          );
+        } else {
+          clearInterval(this.fetchPluginTimer);
+        } 
+      }
+    },
+    videosProgress(newState, oldState) {
+      if (Object.keys(newState).some(k => oldState && (!(k in oldState) || newState[k] !== oldState[k]))) {
+        // already fetch partial progress and not just when all plugins are finished
+        this.fetchData(true);
+      }
+    },
+    videos(newState, oldState) {
+      if (newState.length !== oldState.length) {
+        for (const vid of newState.filter(v => !oldState.includes(v))) {
+          Vue.set(this.selectedVideos, vid.id, false);
+        }
+        for (const vid of oldState.filter(v => !newState.includes(v))) {
+          Vue.delete(this.selectedVideos, vid.id);
+        }
+      }
     }
   },
   components: {
     ModalVideoUpload,
     ModalVideoRename,
+    ModalPlugin
   },
 };
 </script>

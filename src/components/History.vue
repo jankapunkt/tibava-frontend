@@ -170,9 +170,6 @@ export default {
     },
   },
   computed: {
-    loggedIn() {
-      return this.userStore.loggedIn;
-    },
     pluginRuns() {
       const pluginRuns = this.pluginRunStore
         .forVideo(this.playerStore.videoId)

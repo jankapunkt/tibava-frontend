@@ -14,7 +14,7 @@
         :label="parameter.text"
         :hint="parameter.hint"
         item-text="name"
-        item-value="id"
+        item-value="ids"
         v-if="parameter.field == 'select_timeline' && shot_timelines.length > 0"
         :key="parameter.name"
         persistent-hint
@@ -26,7 +26,7 @@
         :label="parameter.text"
         :hint="parameter.hint"
         item-text="name"
-        item-value="id"
+        item-value="ids"
         v-if="
           parameter.field == 'select_scalar_timelines' &&
           scalar_timelines.length > 0
@@ -42,7 +42,7 @@
         :label="parameter.text"
         :hint="parameter.hint"
         item-text="name"
-        item-value="id"
+        item-value="ids"
         v-if="
           parameter.field == 'select_scalar_timeline' &&
           scalar_timelines.length > 0
@@ -148,41 +148,40 @@ import { useTimelineStore } from "../store/timeline";
 import { usePluginRunResultStore } from "../store/plugin_run_result";
 
 export default {
-  props: ["parameters"],
+  props: ["parameters", "videoIds"],
+  methods: {
+    groupTimelines(timelines) {
+      let timelinesGroups = {};
+      for (const timeline of timelines) {
+        if (!(timeline.name in timelinesGroups)) {
+          timelinesGroups[timeline.name] = {
+            name: timeline.name, 
+            ids: {
+              timeline_ids: [], 
+              video_ids: []
+            }
+          }
+        } else if (timelinesGroups[timeline.name].ids.video_ids.indexOf(timeline.video_id) >= 0) {
+          continue
+        }
+        timelinesGroups[timeline.name].ids.timeline_ids.push(timeline.id);
+        timelinesGroups[timeline.name].ids.video_ids.push(timeline.video_id);
+      }
+      return Object.values(timelinesGroups)
+                   .filter((t) => t.ids.video_ids.length == this.videoIds.length);
+    }
+  },
   computed: {
     shot_timelines() {
-      var timelines = this.timelineStore.all.filter(
-        (timeline) => timeline.type == "ANNOTATION"
+      let timelines = this.timelineStore.all.filter(
+        (timeline) => timeline.type == "ANNOTATION" && this.videoIds.indexOf(timeline.video_id) >= 0
       );
-
-      function getTimelineDict(timeline) {
-        return { name: timeline.name, id: timeline.id };
-      }
-
-      timelines = timelines.map(getTimelineDict);
-      return timelines;
+      return this.groupTimelines(timelines);
     },
     scalar_timelines() {
-      var timelines = this.timelineStore.all
-        .filter((timeline) => timeline.type === "PLUGIN_RESULT")
-        .map((timeline) => {
-          const result = this.pluginRunResultStore.get(
-            timeline.plugin_run_result_id
-          );
-          if (result === undefined) {
-            return null;
-          } else {
-            if (result.type !== "SCALAR") {
-              return null;
-            }
-            timeline.plugin = { data: result.data, type: result.type };
-          }
-          return timeline;
-        })
-        .filter((timeline) => timeline !== null)
-        .map((timeline) => {
-          return { name: timeline.name, id: timeline.id };
-        });
+      let timelines = this.timelineStore.all
+        .filter((t) => t.type === "PLUGIN_RESULT" && t.plugin.type == 'SCALAR' && this.videoIds.indexOf(t.video_id) >= 0)
+      timelines = this.groupTimelines(timelines);
 
       return timelines;
     },

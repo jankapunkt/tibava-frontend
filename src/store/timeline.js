@@ -60,7 +60,7 @@ export const useTimelineStore = defineStore("timeline", {
       };
     },
     all(state) {
-      return state.timelineList.map((id) => state.timelines[id]);
+      return Object.values(state.timelines);
     },
     added(state) {
       return state.timelineListAdded.map((data) => [
@@ -198,6 +198,24 @@ export const useTimelineStore = defineStore("timeline", {
       // if (timelineSegmentId in this.timelineSegments) {
       //     this.timelineSegments[timelineSegmentId].selected = false;
       // }
+    },
+    async fetchAll({ addResultsType = false}) {
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      let params = { add_results_type: addResultsType };
+
+      return axios
+        .get(`${config.API_LOCATION}/timeline/list_all`, { params })
+        .then((res) => {
+          if (res.data.status === "ok") {
+            this.updateStore(res.data.entries);
+          }
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     async fetchForVideo({ videoId = null, clear = true }) {
       if (this.isLoading) {
@@ -534,7 +552,9 @@ export const useTimelineStore = defineStore("timeline", {
       this.timelineListAdded = [];
       this.timelineListDeleted = [];
       this.timelineListChanged = [];
-      this.timelines = {};
+      Object.keys(this.timelines).forEach(key => {
+          Vue.delete(this.timelines , key);
+      });
       this.timelineList = [];
     },
     deleteFromStore(ids) {
@@ -542,14 +562,14 @@ export const useTimelineStore = defineStore("timeline", {
         this.timelineListDeleted.push([Date.now(), id]);
         let index = this.timelineList.findIndex((f) => f === id);
         this.timelineList.splice(index, 1);
-        delete this.timelines[id];
+        Vue.delete(this.timelines, id);
       });
       this.updateVisibleStore();
     },
     addToStore(timelines) {
       timelines.forEach((e) => {
         this.timelineListAdded.push([Date.now(), e.id]);
-        this.timelines[e.id] = e;
+        Vue.set(this.timelines, e.id, e);
         this.timelineList.push(e.id);
       });
       this.updateVisibleStore();
@@ -560,7 +580,7 @@ export const useTimelineStore = defineStore("timeline", {
           return;
         }
         this.timelineListAdded.push([Date.now(), e.id]);
-        this.timelines[e.id] = e;
+        Vue.set(this.timelines, e.id, e);
         this.timelineList.push(e.id);
       });
       this.updateVisibleStore();

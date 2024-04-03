@@ -26,7 +26,7 @@
               <v-card-title class="mb-0"> {{ selected.name }} </v-card-title>
               <v-card-text>
                 <div class="" style="padding-bottom: 2em;" v-html="selected.description"></div>
-                <Parameters :parameters="selected.parameters"> </Parameters>
+                <Parameters :parameters="selected.parameters" :videoIds="videoIds"> </Parameters>
                 <v-expansion-panels v-if="selected.optional_parameters &&
     selected.optional_parameters.length > 0
     ">
@@ -36,7 +36,7 @@
                     </v-expansion-panel-header>
 
                     <v-expansion-panel-content>
-                      <Parameters :parameters="selected.optional_parameters">
+                      <Parameters :parameters="selected.optional_parameters" :videoIds="videoIds">
                       </Parameters>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
@@ -70,7 +70,7 @@ import Parameters from "./Parameters.vue";
 // import { useTimelineStore } from "../store/timeline";
 
 export default {
-  props: ["value"],
+  props: ["value", "videoIds"],
   data() {
     return {
       dialog: false,
@@ -882,11 +882,25 @@ export default {
           return { name: e.name, value: e.value };
         }
       });
-      this.pluginRunStore
-        .submit({ plugin: plugin, parameters: parameters })
-        .then(() => {
-          this.dialog = false;
-        });
+      for (const video of this.videoIds) {
+        const video_params = []
+        // if multiple videos were selected, choose the correct timeline in parameters
+        for (const param of parameters) {
+          if (param.name === 'shot_timeline_id' || param.name == 'scalar_timeline_id') {
+            video_params.push({
+              name: param.name,
+              value: param.value.timeline_ids[param.value.video_ids.indexOf(video)]
+            });
+          } else {
+            video_params.push(param);
+          }
+        }
+        this.pluginRunStore
+          .submit({ plugin: plugin, parameters: video_params, videoId: video })
+          .then(() => {
+            this.dialog = false;
+          });
+      }
     },
   },
   watch: {

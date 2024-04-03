@@ -91,6 +91,7 @@ export const usePluginRunStore = defineStore("pluginRun", {
         .then((res) => {
           if (res.data.status === "ok") {
             this.updateAll(res.data.entries);
+            this.pluginInProgress = this.all.filter((e) => e.status === "RUNNING" || e.status === "QUEUED").length > 0;
           }
         })
         .finally(() => {
