@@ -135,7 +135,7 @@ export default {
         nodes: {
           shape: 'dot',
           font: { size: 25, },
-          borderWidth: 2,
+          borderWidth: 6,
           shadow: true,
           scaling: { max: 50 }
         },
