@@ -16,7 +16,8 @@ export class HistTimeline extends Timeline {
         renderer = null,
         resolution = 1024,
         oversampling = 1,
-        colormap = null
+        colormap = null,
+        colormapInverse = false,
     }) {
         super({ timelineId, width, height, startTime, endTime, duration, fill });
 
