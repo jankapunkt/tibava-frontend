@@ -915,12 +915,16 @@ export default {
         const video_params = []
         // if multiple videos were selected, choose the correct timeline in parameters
         for (const param of parameters) {
-          console.log(JSON.stringify(param));
-          if (param.name === 'shot_timeline_id' || param.name == 'scalar_timeline_id' || param.name == 'timeline_ids') {
+          if (param.name === 'shot_timeline_id' || param.name == 'scalar_timeline_id') {
             video_params.push({
               name: param.name,
               value: param.value.timeline_ids[param.value.video_ids.indexOf(video)]
             });
+          } else if (param.name === 'timeline_ids') {
+            video_params.push({
+              name: param.name,
+              value: param.value.map(t => t.timeline_ids[t.video_ids.indexOf(video)])
+            })
           } else {
             video_params.push(param);
           }
