@@ -852,6 +852,27 @@ export default {
                 },
               ],
               optional_parameters: [],
+            }, {
+              name: this.$t("modal.plugin.invert.plugin_name"),
+              description: this.$t("modal.plugin.invert.plugin_description"),
+              icon: "mdi-numeric-negative-1",
+              plugin: "invert_scalar",
+              id: 602,
+              parameters: [
+                {
+                  field: "text_field",
+                  name: "timeline",
+                  value: this.$t("modal.plugin.invert.timeline_name"),
+                  text: this.$t("modal.plugin.timeline_name"),
+                },
+                {
+                  field: "select_scalar_timeline",
+                  name: "scalar_timeline_id",
+                  text: this.$t("modal.plugin.scalar_timeline_name"),
+                  hint: this.$t("modal.plugin.scalar_timeline_hint"),
+                },
+              ],
+              optional_parameters: [],
             },
           ],
         },
@@ -894,7 +915,8 @@ export default {
         const video_params = []
         // if multiple videos were selected, choose the correct timeline in parameters
         for (const param of parameters) {
-          if (param.name === 'shot_timeline_id' || param.name == 'scalar_timeline_id') {
+          console.log(JSON.stringify(param));
+          if (param.name === 'shot_timeline_id' || param.name == 'scalar_timeline_id' || param.name == 'timeline_ids') {
             video_params.push({
               name: param.name,
               value: param.value.timeline_ids[param.value.video_ids.indexOf(video)]
