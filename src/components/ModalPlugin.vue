@@ -649,6 +649,14 @@ export default {
                   text: this.$t("modal.plugin.timeline_name"),
                 },
                 {
+                  field: "select_timeline",
+                  name: "shot_timeline_id",
+                  // value: this.shot_timelines_names[0],
+                  // items: this.shot_timelines_names,
+                  text: this.$t("modal.plugin.shot_timeline_name"),
+                  hint: this.$t("modal.plugin.shot_timeline_hint"),
+                },
+                {
                   field: "text_field",
                   name: "query_term",
                   value: "",
