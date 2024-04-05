@@ -18,7 +18,7 @@
             <v-card flat height="100%">
               <v-card-title>{{ export_format.name }} </v-card-title>
               <v-card-text>
-                <Parameters :parameters="export_format.parameters">
+                <Parameters :videoIds="[videoId]" :parameters="export_format.parameters">
                 </Parameters>
               </v-card-text>
 
@@ -45,6 +45,7 @@
 import Parameters from "./Parameters.vue";
 import { mapStores } from "pinia";
 import { useVideoStore } from "@/store/video";
+import { usePlayerStore } from "@/store/player";
 
 export default {
   props: ["value"],
@@ -142,16 +143,21 @@ export default {
     };
   },
   computed: {
+    videoId() {
+      return this.playerStore.videoId;
+    },
     export_formats_sorted() {
       return this.export_formats.slice(0).sort((a, b) => a.name.localeCompare(b.name));
     },
-    ...mapStores(useVideoStore),
+    ...mapStores(useVideoStore, usePlayerStore),
   },
   methods: {
     async downloadExport(format, parameters) {
       parameters = parameters.map((e) => {
         if ("file" in e) {
           return { name: e.name, file: e.file };
+        } else if (e.name === "shot_timeline_id") {
+          return { name: e.name, value: e.value.timeline_ids[0] };
         } else {
           return { name: e.name, value: e.value };
         }
