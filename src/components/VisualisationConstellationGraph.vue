@@ -35,6 +35,20 @@
               style="width: 60px"></v-text-field>
           </v-list-item-action>
         </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>Aggregation</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-switch class="shot-aggregation-switch"
+              v-model="shot_aggregation"
+              label="Shots">
+              <template #prepend>
+                <v-label class="pt-1">Frames</v-label>
+              </template>
+            </v-switch>
+          </v-list-item-action>
+        </v-list-item>
       </v-list>
       <h5 class="mt-6 subtitle-2">Timelines</h5>
       <v-list dense>
@@ -90,6 +104,7 @@
 <script>
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
+import { useShotStore } from "@/store/shot";
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import Vue from "vue";
@@ -102,7 +117,8 @@ export default {
       network: null,
       loading: false,
       min_node: 1,
-      min_edge: 1
+      min_edge: 1,
+      shot_aggregation: false,
     };
   },
   mounted() {
@@ -154,29 +170,42 @@ export default {
       });
     },
     calcTimelineOverlap(data1, data2, threshold) {
-      let i1 = 0, i2 = 0;
-      let counter = 0;
-      const len1 = data1.time.length;
-      const len2 = data2.time.length;
+      if (this.shot_aggregation) {
+        return this.shotStore.shots.map(s => data1.y.filter(( y, index ) => s.start <= data1.time[index] && data1.time[index] <= s.end && y >= threshold).length > 0 &&
+                                             data2.y.filter(( y, index ) => s.start <= data2.time[index] && data2.time[index] <= s.end && y >= threshold).length > 0)
+                                   .filter(v => v)
+                                   .length;
+      } else { // frame based
+        let i1 = 0, i2 = 0;
+        let counter = 0;
+        const len1 = data1.time.length;
+        const len2 = data2.time.length;
 
-      while (i1 < len1 && i2 < len2) {
-        const t1 = data1.time[i1];
-        const t2 = data2.time[i2];
+        while (i1 < len1 && i2 < len2) {
+          const t1 = data1.time[i1];
+          const t2 = data2.time[i2];
 
-        if (t1 === t2 && Math.min(data1.y[i1], data2.y[i2]) >= threshold) {
-          counter++;
-          i1++;
-          i2++;
-        } else if (t1 < t2) {
-          i1++;
-        } else {
-          i2++;
+          if (t1 === t2 && Math.min(data1.y[i1], data2.y[i2]) >= threshold) {
+            counter++;
+            i1++;
+            i2++;
+          } else if (t1 < t2) {
+            i1++;
+          } else {
+            i2++;
+          }
         }
+        return counter;
       }
-      return counter;
     },
     countAppearance(data, threshold) {
-      return data.y.filter(v => v >= threshold).reduce((v1) => v1 + 1, 0);
+      if (this.shot_aggregation) {
+        return this.shotStore.shots.map(s => data.y.filter(( y, index ) => s.start <= data.time[index] && data.time[index] <= s.end && y >= threshold))
+                                   .filter(ys => ys.length > 0)
+                                   .length;
+      } else { // frame based
+        return data.y.filter(v => v >= threshold).length;
+      }
     },
     getConstellations() {
       const active_timelines = this.timelines.filter((t) => this.timelineSettings[t.id].active && this.timelineSettings[t.id].visible);
@@ -245,7 +274,7 @@ export default {
     visibleTimelines() {
       return Object.values(this.timelineSettings).filter((t) => t.visible);
     },
-    ...mapStores(useTimelineStore),
+    ...mapStores(useTimelineStore, useShotStore),
   },
   watch: {
     timelines() {
@@ -262,7 +291,16 @@ export default {
     },
     min_node() {
       this.debounced_graph_loading();
+    },
+    shot_aggregation() {
+      this.debounced_graph_loading();
     }
   },
 };
 </script>
+<style>
+.shot-aggregation-switch label {
+  padding-left: 10px;
+  padding-top: 4px;
+}
+</style>
