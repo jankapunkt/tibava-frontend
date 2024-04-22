@@ -217,6 +217,7 @@
       },
       "face_clustering": {
         "plugin_name": "Face Clustering",
+        "clustering_method_name": "Select a clustering method",
         "plugin_description": "This plugin automatically performs a clustering algorithm to automatically determine the dominant faces (persons) in the video. Selecting the threshold for clustering is crucial to achieve good results. After performing the clustering, each resulting cluster visible in the tab \"Faces\" should ideally only contain images of the same person. If this is not the case, the threshold needs to be lowered so that fewer images are grouped in the same cluster. <br><br>Note that after performing the clustering, the clusters can be manually adjusted and a person constellation graph can be created in the tab \"Faces\". Moreover, you can create a timeline for a specific person to see when the person is visible in the video.",
         "threshold": {
           "hint_left": "More clusters, higher cluster purity",
@@ -255,9 +256,17 @@
       },
       "place_clustering": {
         "plugin_name": "Place Clustering",
-        "plugin_description": "This plugin automatically clusters the video for similar places using a deep learning model. Selecting the threshold for clustering is crucial to achieve good results. After performing the clustering, each resulting cluster visible in the tab \"Places\" should ideally only contain images of the same place. If this is not the case, the threshold needs to be lowered so that fewer images are grouped in the same cluster.",
-        "hint_left": "More clusters, higher cluster purity",
-        "hint_right": "Less clusters, lower cluster purity"
+        "plugin_description": "This plugin automatically performs a clustering algorithm to automatically determine the dominant places in the video. Selecting the threshold for clustering is crucial to achieve good results. After performing the clustering, each resulting cluster visible in the tab \"Places\" should ideally only contain images of the same place. If this is not the case, the threshold needs to be lowered so that fewer images are grouped in the same cluster. <br><br>Note that after performing the clustering, the clusters can be manually adjusted and a constellation graph can be created. Moreover, you can create a timeline for a specific place to see when the place is visible in the video.",
+        "encoder_name": "Select an image encoder",
+        "clustering_method_name": "Select a clustering method",
+        "threshold": {
+          "hint_left": "More clusters, higher cluster purity",
+          "hint_right": "Less clusters, lower cluster purity"
+        },
+        "max_cluster": {
+          "hint_left": "Less clusters to display",
+          "hint_right": "More clusters to display"
+        }
       },
       "place_identification": {
         "plugin_name": "Place Identification"

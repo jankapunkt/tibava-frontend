@@ -192,6 +192,13 @@ export default {
               id: 201,
               parameters: [
                 {
+                  field: "select_options",
+                  text: this.$t("modal.plugin.face_clustering.clustering_method_name"),
+                  hint: this.$t("modal.plugin.face_clustering.clustering_method_hint"),
+                  items: ["Agglomerative", "DBScan"],
+                  name: "clustering_method", 
+                },
+                {
                   field: "slider",
                   min: 0.0,
                   max: 1.0,
@@ -231,9 +238,6 @@ export default {
                   hint_right: this.$t("modal.plugin.face_clustering.min_face_height.hint_right"),
                   hint_left: this.$t("modal.plugin.face_clustering.min_face_height.hint_left"),
                 },
-
-
-
               ],
               optional_parameters: [
                 {
@@ -605,36 +609,56 @@ export default {
                 },
               ],
             },
-            // {
-            //   name: this.$t("modal.plugin.place_clustering.plugin_name"),
-            //   description: this.$t("modal.plugin.place_clustering.plugin_description"),
-            //   icon: "mdi-ungroup",
-            //   plugin: "place_clustering",
-            //   id: 405,
-            //   parameters: [
-            //     {
-            //       field: "slider",
-            //       min: 0.0,
-            //       max: 1.0,
-            //       value: 0.25,
-            //       step: 0.01,
-            //       name: "cluster_threshold",
-            //       hint_right: this.$t("modal.plugin.place_clustering.hint_right"),
-            //       hint_left: this.$t("modal.plugin.place_clustering.hint_left"),
-            //     },
-            //   ],
-            //   optional_parameters: [
-            //     {
-            //       field: "slider",
-            //       min: 1,
-            //       max: 10,
-            //       value: 2,
-            //       step: 1,
-            //       name: "fps",
-            //       text: this.$t("modal.plugin.fps"),
-            //     },
-            //   ],
-            // },
+            {
+              name: this.$t("modal.plugin.place_clustering.plugin_name"),
+              description: this.$t("modal.plugin.place_clustering.plugin_description"),
+              icon: "mdi-ungroup",
+              plugin: "place_clustering",
+              id: 405,
+              parameters: [
+                {
+                  field: "select_timeline",
+                  name: "shot_timeline_id",
+                  text: this.$t("modal.plugin.shot_timeline_name"),
+                  hint: this.$t("modal.plugin.shot_timeline_hint"),
+                },
+                {
+                  field: "select_options",
+                  text: this.$t("modal.plugin.place_clustering.encoder_name"),
+                  hint: this.$t("modal.plugin.place_clustering.encoder_hint"),
+                  items: ["CLIP", "Places"],
+                  name: "encoder", 
+                },
+                {
+                  field: "select_options",
+                  text: this.$t("modal.plugin.place_clustering.clustering_method_name"),
+                  hint: this.$t("modal.plugin.place_clustering.clustering_method_hint"),
+                  items: ["Agglomerative", "DBScan"],
+                  name: "clustering_method", 
+                },
+                {
+                  field: "slider",
+                  min: 0.0,
+                  max: 1.0,
+                  value: 0.5,
+                  step: 0.01,
+                  name: "cluster_threshold",
+                  hint_right: this.$t("modal.plugin.place_clustering.threshold.hint_right"),
+                  hint_left: this.$t("modal.plugin.place_clustering.threshold.hint_left"),
+                },
+                {
+                  field: "slider",
+                  min: 1,
+                  max: 100,
+                  value: 50,
+                  step: 1,
+                  name: "max_cluster",
+                  hint_right: this.$t("modal.plugin.place_clustering.max_cluster.hint_right"),
+                  hint_left: this.$t("modal.plugin.place_clustering.max_cluster.hint_left"),
+                },
+              ],
+              optional_parameters: [],
+            },
             {
               name: this.$t("modal.plugin.blip.plugin_name"),
               description: this.$t("modal.plugin.blip.plugin_description"),
