@@ -50,7 +50,41 @@
           </v-list-item-action>
         </v-list-item>
       </v-list>
-      <h5 class="mt-6 subtitle-2">Timelines</h5>
+      <h5 v-if="Object.keys(clusterSettings).length > 0" class="mt-6 subtitle-2">Clustering</h5>
+      <v-list dense>
+        <v-list-item v-for="(cluster, id) in clusterSettings" :key="id">
+          <v-list-item-action>
+            <v-checkbox v-model="cluster.active"></v-checkbox>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title :class="{ 'grey--text': !cluster.active }">{{ cluster.name }}</v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-menu
+              :disabled="!cluster.active"
+            >
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  disable
+                  icon
+                  x-small
+                  :color="cluster.color"
+                  class="mr-1"
+                  v-on="on"
+                >
+                  <v-icon>{{ "mdi-palette" }}</v-icon>
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-text class="pa-0">
+                  <v-color-picker v-model="cluster.color" flat />
+                </v-card-text>
+              </v-card>
+            </v-menu>
+          </v-list-item-action>
+        </v-list-item>
+      </v-list>
+      <h5 v-if="visibleTimelines.length > 0" class="mt-6 subtitle-2">Timelines</h5>
       <v-list dense>
         <v-list-item v-for="timeline in visibleTimelines" :key="timeline.id">
           <v-list-item-action>
@@ -89,9 +123,9 @@
         </v-list-item>
       </v-list>
     </v-col>
-    <v-col cols="9">
-      <div v-show="!loading" ref="visualizationTimelineConstellationGraph" style="min-height: 500px; height: 85%"></div>
-      <div v-if="loading" class="mx-auto text-center mt-10" style="height: 500px">
+    <v-col cols="9" style="position: relative;">
+      <div ref="visualizationTimelineConstellationGraph" style="min-height: 500px; height: 95%"></div>
+      <div v-if="loading" class="text-center pt-10" style="height: 95%; background-color: white; top:0; width: 100%; z-index: 2; position: absolute;">
         <div class="spinner">
           <i class="mdi mdi-loading mdi-spin"></i>
         </div>
@@ -105,6 +139,7 @@
 import { mapStores } from "pinia";
 import { useTimelineStore } from "@/store/timeline";
 import { useShotStore } from "@/store/shot";
+import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import Vue from "vue";
@@ -114,6 +149,7 @@ export default {
   data() {
     return {
       timelineSettings: {},
+      clusterSettings: {},
       network: null,
       loading: false,
       min_node: 1,
@@ -123,6 +159,8 @@ export default {
   },
   mounted() {
     this.updateTimelineSettings();
+    this.updateClusterSettings(this.latestFaceClustering, 'Face Clustering');
+    this.updateClusterSettings(this.latestPlaceClustering, 'Place Clustering');
     this.renderGraph();
   },
   methods: {
@@ -135,6 +173,7 @@ export default {
           Vue.set(this.timelineSettings, timeline.id, {
             active: false,
             threshold: 0.5,
+            id: timeline.id,
             name: timeline.name,
             // visible needed as timelines are briefly deleted and then reinserted
             // when updating the store and we want to persist the setting
@@ -146,12 +185,29 @@ export default {
         }
       }
     },
+    updateClusterSettings(clustering, name) {
+      const clusterData = clustering.map(c => ({
+        name: c.name,
+        id: c.id,
+        timestamps: c.items.map(i => i.time),
+      }));
+      if (name in this.clusterSettings) {
+        Vue.set(this.clusterSettings[name], 'data', clusterData);
+      } else {
+        Vue.set(this.clusterSettings, name, {
+          name: name,
+          data: clusterData,
+          color: '#ae1313',
+          active: false
+        });
+      }
+    },
     renderGraph() {
       const options = {
         nodes: {
           shape: 'dot',
           font: { size: 25, },
-          borderWidth: 6,
+          borderWidth: 4,
           shadow: true,
           scaling: { max: 50 }
         },
@@ -166,75 +222,69 @@ export default {
       this.$nextTick(() => {
         const container = this.$refs.visualizationTimelineConstellationGraph;
         this.network = new Network(container, this.getConstellations(), options);
-        this.loading = false;
+        this.network.on('afterDrawing', () => {this.loading = false;});
       });
     },
-    calcTimelineOverlap(data1, data2, threshold) {
+    calcTimelineOverlap(timestamps1, timestamps2) {
       if (this.shot_aggregation) {
-        return this.shotStore.shots.map(s => data1.y.filter(( y, index ) => s.start <= data1.time[index] && data1.time[index] <= s.end && y >= threshold).length > 0 &&
-                                             data2.y.filter(( y, index ) => s.start <= data2.time[index] && data2.time[index] <= s.end && y >= threshold).length > 0)
+        return this.shotStore.shots.map(s => timestamps1.filter(t => s.start <= t && t <= s.end).length > 0 &&
+                                             timestamps2.filter(t => s.start <= t && t <= s.end).length > 0)
                                    .filter(v => v)
                                    .length;
       } else { // frame based
-        let i1 = 0, i2 = 0;
-        let counter = 0;
-        const len1 = data1.time.length;
-        const len2 = data2.time.length;
-
-        while (i1 < len1 && i2 < len2) {
-          const t1 = data1.time[i1];
-          const t2 = data2.time[i2];
-
-          if (t1 === t2 && Math.min(data1.y[i1], data2.y[i2]) >= threshold) {
-            counter++;
-            i1++;
-            i2++;
-          } else if (t1 < t2) {
-            i1++;
-          } else {
-            i2++;
-          }
-        }
-        return counter;
+        return timestamps1.filter(t => timestamps2.includes(t)).length;
       }
     },
-    countAppearance(data, threshold) {
+    countAppearance(timestamps) {
       if (this.shot_aggregation) {
-        return this.shotStore.shots.map(s => data.y.filter(( y, index ) => s.start <= data.time[index] && data.time[index] <= s.end && y >= threshold))
+        return this.shotStore.shots.map(s => timestamps.filter(t => s.start <= t && t <= s.end))
                                    .filter(ys => ys.length > 0)
                                    .length;
       } else { // frame based
-        return data.y.filter(v => v >= threshold).length;
+        return timestamps.length;
       }
     },
     getConstellations() {
-      const active_timelines = this.timelines.filter((t) => this.timelineSettings[t.id].active && this.timelineSettings[t.id].visible);
+      const activeTimelines = Object.values(this.timelineSettings)
+                                    .filter(t => t.active && t.visible)
+                                    .map((tSetting) => {
+                                      const timeline = this.timelines.find(i => i.id == tSetting.id);
+                                      tSetting.timestamps = timeline.plugin.data.time.filter((time, index) => timeline.plugin.data.y[index] >= tSetting.threshold);
+                                      return tSetting;
+                                    });
+      const clusterTimelines = Object.values(this.clusterSettings)
+                                     .filter(c => c.active)
+                                     .map(c => {
+                                        c.data.forEach(i => i.color = c.color)
+                                        return c.data
+                                      })
+                                     .flat(1)
+                                     .concat(activeTimelines);
       const nodes = new DataSet(
-        active_timelines.map((t) => {
-          const count = this.countAppearance(t.plugin.data, this.timelineSettings[t.id].threshold);
+        clusterTimelines.map((t) => {
+          const count = this.countAppearance(t.timestamps);
           return {
             id: t.id,
             label: t.name + ': ' + count,
             value: count,
             color: {
               background: '#ffffff',
-              border: this.timelineSettings[t.id].color,
-              highlight: this.timelineSettings[t.id].color
+              border: t.color,
+              highlight: t.color
             }
           };
-        }).filter((t) => t.value > this.min_node)
+        }).filter((t) => t.value >= this.min_node)
       );
 
       // build all combinations of two timelines
-      const node_combinations = active_timelines.flatMap((v, i) =>
-        active_timelines.slice(i + 1).map((w) => [v, w])
+      const node_combinations = clusterTimelines.flatMap((v, i) =>
+        clusterTimelines.slice(i + 1).map((w) => [v, w])
       );
       const edges = new DataSet(
         node_combinations.map((c) => {
           const overlap = this.calcTimelineOverlap(
-            c[0].plugin.data,
-            c[1].plugin.data,
-            Math.min(this.timelineSettings[c[0].id].threshold, this.timelineSettings[c[1].id].threshold),
+            c[0].timestamps,
+            c[1].timestamps,
           )
           return {
             from: c[0].id,
@@ -243,10 +293,10 @@ export default {
             label: String(overlap),
             value: overlap,
             color: {
-              color: this.blendColors(this.timelineSettings[c[0].id].color, this.timelineSettings[c[1].id].color)
+              color: this.blendColors(c[0].color, c[1].color)
             }
           };
-        }).filter((nc) => nc.value > this.min_edge)
+        }).filter((nc) => nc.value >= this.min_edge)
       );
 
       return { nodes: nodes, edges: edges };
@@ -274,13 +324,25 @@ export default {
     visibleTimelines() {
       return Object.values(this.timelineSettings).filter((t) => t.visible);
     },
-    ...mapStores(useTimelineStore, useShotStore),
+    latestFaceClustering() {
+      return this.clusterTimelineItemStore.latestFaceClustering();
+    },
+    latestPlaceClustering() {
+      return this.clusterTimelineItemStore.latestPlaceClustering();
+    },
+    ...mapStores(useTimelineStore, useShotStore, useClusterTimelineItemStore),
   },
   watch: {
     timelines() {
       this.updateTimelineSettings();
     },
     'timelineSettings': {
+      handler: function () {
+        this.debounced_graph_loading();
+      },
+      deep: true
+    },
+    'clusterSettings': {
       handler: function () {
         this.debounced_graph_loading();
       },
@@ -294,6 +356,12 @@ export default {
     },
     shot_aggregation() {
       this.debounced_graph_loading();
+    },
+    latestFaceClustering() {
+      this.updateClusterSettings(this.latestFaceClustering, 'Face Clustering');
+    },
+    latestPlaceClustering() {
+      this.updateClusterSettings(this.latestPlaceClustering, 'Place Clustering');
     }
   },
 };
