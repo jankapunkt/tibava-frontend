@@ -154,7 +154,7 @@ export default {
       loading: false,
       min_node: 1,
       min_edge: 1,
-      shot_aggregation: false,
+      shot_aggregation: true,
     };
   },
   mounted() {
