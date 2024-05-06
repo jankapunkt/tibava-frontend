@@ -68,6 +68,10 @@
     "create": "Create"
   },
   "modal": {
+    "error": {
+      "title": "Error",
+      "close": "Close"
+    },
     "video": {
       "rename": {
         "title": "Rename Video",

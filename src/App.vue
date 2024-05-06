@@ -17,6 +17,7 @@
       <UserMenu />
     </v-app-bar>
     <router-view />
+    <ModalError />
   </v-app>
 </template>
 
@@ -26,10 +27,12 @@ import VideoMenu from "@/components/VideoMenu.vue";
 import PluginMenu from "@/components/PluginMenu.vue";
 import AnnotationMenu from "@/components/AnnotationMenu.vue";
 import History from "./components/History.vue";
+import ModalError from "./components/ModalError.vue";
 
 import { mapStores } from "pinia";
 import { useUserStore } from "@/store/user";
 import { usePlayerStore } from "@/store/player";
+import { useErrorStore } from "@/store/error";
 
 export default {
   data() {
@@ -45,14 +48,15 @@ export default {
       return this.$route.name === 'VideoAnalysis';
     },
 
-    ...mapStores(useUserStore, usePlayerStore),
+    ...mapStores(useUserStore, usePlayerStore, useErrorStore),
   },
   components: {
     UserMenu,
     VideoMenu,
     PluginMenu,
     AnnotationMenu,
-    History
+    History,
+    ModalError
   },
 };
 </script>

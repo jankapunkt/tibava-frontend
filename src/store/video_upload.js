@@ -2,6 +2,7 @@ import axios from '../plugins/axios';
 import config from '../../app.config';
 import { defineStore } from 'pinia'
 import { useVideoStore } from './video'
+import { useErrorStore } from './error'
 
 export const useVideoUploadStore = defineStore('videoUpload', {
     state: () => {
@@ -50,15 +51,21 @@ export const useVideoUploadStore = defineStore('videoUpload', {
                         });
                     }
                 })
+                .catch((error) => {
+                    const errorStore = useErrorStore();
+                    if (error.response.data) {
+                        if (error.response.data.hasOwnProperty("type")) {
+                            errorStore.setError("video_upload", error.response.data.type);
+                            return
+                        }
+                    }
+                    errorStore.setError("video_upload", "unknown");
+
+                })
                 .finally(() => {
                     this.isUploading = false;
                     this.progress = 0;
                 })
-            // .catch((error) => {
-            //     const info = { date: Date(), error, origin: "upload" };
-            //     commit("error/update", info, { root: true });
-            //     commit("stopUploading");
-            // });
         },
     },
 })
