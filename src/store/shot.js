@@ -1,3 +1,4 @@
+import axios from "../plugins/axios";
 import config from "../../app.config";
 import { defineStore } from "pinia";
 
@@ -8,8 +9,37 @@ import { useTimelineSegmentStore } from "./timeline_segment";
 import { usePluginRunResultStore } from "./plugin_run_result";
 
 export const useShotStore = defineStore("shot", {
+  state: () => {
+    return {
+      isLoading: false,
+      selectedShots: null,
+    };
+  },
   getters: {
-    shots() {
+    shotsList() {
+
+      const timelineStore = useTimelineStore();
+      const playerStore = usePlayerStore();
+
+      let timeline = timelineStore
+        .forVideo(playerStore.videoId)
+        .filter((e) => {
+          return e.type == "ANNOTATION";
+        })
+
+      if (timeline.length) {
+        return timeline.map((e, i) => {
+          return {
+            index: e.id,
+            name: e.name
+          }
+        })
+      }
+
+      return []
+
+    },
+    shots(state) {
 
       const pluginRunStore = usePluginRunStore();
       const pluginRunResultStore = usePluginRunResultStore();
@@ -17,34 +47,11 @@ export const useShotStore = defineStore("shot", {
       const timelineSegmentStore = useTimelineSegmentStore();
       const playerStore = usePlayerStore();
 
-      // selection of timeline to be used for the thumbnails
-      let shotdetection = pluginRunStore
-        .forVideo(playerStore.videoId)
-        .filter((e) => {
-          return e.type == "shotdetection" && e.status == "DONE";
-        })
-        .map((e) => {
-          e.results = pluginRunResultStore.forPluginRun(e.id);
-          return e;
-        })
-        .sort((a, b) => {
-          return new Date(b.date) - new Date(a.date);
-        });
+      let results = []
 
-      if (!shotdetection.length) {
-        console.error("Shots: No shotdetection run")
-        return [];
-      }
+      let selectedShots = state.selectedShots
+      if (!state.selectedShots) {
 
-      shotdetection = shotdetection.at(-1); // use latest shotdetection
-
-      let results = [];
-
-
-      // Something is wrong here
-      if (!shotdetection.results.length) {
-
-        console.error("Shots: No shotdetection run results")
         let timeline = timelineStore
           .forVideo(playerStore.videoId)
           .filter((e) => {
@@ -55,28 +62,15 @@ export const useShotStore = defineStore("shot", {
           console.error("Shots: No annotation timeline")
           return results
         }
-        results = timelineSegmentStore.forTimeline(timeline.at(0).id).map((e) => {
-          return {
-            start: e.start,
-            end: e.end,
-          };
-        })
+        selectedShots = timeline[0].id
       }
-      else {
-        // get start and end times for each shot
-        if (
-          "results" in shotdetection &&
-          shotdetection.results.length > 0 &&
-          "data" in shotdetection.results[0]
-        ) {
-          results = shotdetection.results[0].data.shots.map((e) => {
-            return {
-              start: e.start,
-              end: e.end,
-            };
-          });
-        }
-      }
+
+      results = timelineSegmentStore.forTimeline(selectedShots).map((e) => {
+        return {
+          start: e.start,
+          end: e.end,
+        };
+      })
 
       // selection of thumbnails to be used
       let thumbnail = pluginRunStore
@@ -138,6 +132,93 @@ export const useShotStore = defineStore("shot", {
 
       return results;
     }
+  },
+  actions: {
+    async setSelectedShots({ videoId = null, shotTimeline = null }) {
+      this.selectedShots = shotTimeline;
+
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+
+      //use video id or take it from the current video
+      let params = { timeline_id: shotTimeline };
+      if (videoId) {
+        params.video_id = videoId;
+      } else {
+        const playerStore = usePlayerStore();
+        const videoId = playerStore.videoId;
+        if (videoId) {
+          params.video_id = videoId;
+        }
+      }
+
+      return axios
+        .post(`${config.API_LOCATION}/video/analysis/setselectedshots`, params)
+        .then((res) => {
+          if (res.data.status === "ok") {
+
+
+          }
+        })
+        .catch(() => { })
+        .finally(() => {
+          this.isLoading = false;
+        });
+    },
+    async fetchForVideo({ videoId = null }) {
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+
+      //use video id or take it from the current video
+      let params = {};
+      if (videoId) {
+        params.video_id = videoId;
+      } else {
+        const playerStore = usePlayerStore();
+        const videoId = playerStore.videoId;
+        if (videoId) {
+          params.video_id = videoId;
+        }
+      }
+      return axios
+        .get(`${config.API_LOCATION}/video/analysis/get`, { params })
+        .then((res) => {
+          if (res.data.status === "ok") {
+            let selectedShots = res.data.entry.selected_shots;
+            if (!selectedShots) {
+              let timeline = timelineStore
+                .forVideo(playerStore.videoId)
+                .filter((e) => {
+                  return e.type == "ANNOTATION";
+                })
+
+              if (!timeline.length) {
+                console.error("Shots: No annotation timeline")
+                return results
+              }
+              selectedShots = timeline[0].id;
+            }
+
+            this.selectedShots = selectedShots;
+
+            console.log("selectedShots " + this.selectedShots);
+
+          }
+        })
+        .catch(() => { })
+        .finally(() => {
+          this.isLoading = false;
+        });
+      // .catch((error) => {
+      //     const info = { date: Date(), error, origin: 'collection' };
+      //     commit('error/update', info, { root: true });
+      // });
+    },
   }
+
 },
 );

@@ -334,10 +334,6 @@ export const useTimelineSegmentStore = defineStore("timelineSegment", {
             // let timeline know that something change
             const timelineStore = useTimelineStore();
             timelineStore.notifyChanges({ timelineIds: [timelineId] });
-
-            // update shot list
-            const shotStore = useShotStore();
-            shotStore.shots();
           }
         })
         .finally(() => {

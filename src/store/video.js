@@ -16,6 +16,8 @@ import { usePluginRunStore } from "./plugin_run";
 import { usePluginRunResultStore } from "./plugin_run_result";
 import { useClusterTimelineItemStore } from "./cluster_timeline_item";
 
+import { useShotStore } from "./shot";
+
 // useStore could be anything like useUser, useCart
 // the first argument is a unique id of the store across your application
 export const useVideoStore = defineStore("video", {
@@ -62,8 +64,11 @@ export const useVideoStore = defineStore("video", {
             const annotationShortcutStore = useAnnotationShortcutStore();
             const clusterTimelineItemStore = useClusterTimelineItemStore();
 
+            const shotStore = useShotStore();
+
             playerStore.clearStore();
             promises.push(playerStore.fetchVideo({ videoId }));
+            promises.push(shotStore.fetchForVideo({ videoId }))
             if (includeAnnotation) {
                 annotationCategoryStore.clearStore()
                 annotationStore.clearStore()
@@ -102,7 +107,7 @@ export const useVideoStore = defineStore("video", {
                 promises.push(shortcutStore.fetchForVideo({ videoId }));
                 promises.push(annotationShortcutStore.fetchForVideo({ videoId }));
             }
-            if (includeClusterTimelineItem){
+            if (includeClusterTimelineItem) {
                 clusterTimelineItemStore.clearStore();
                 promises.push(clusterTimelineItemStore.fetchAll(videoId));
             }
@@ -222,7 +227,7 @@ export const useVideoStore = defineStore("video", {
                     console.log("data");
                     console.log(res.data);
                     if (res.data.status === "ok") {
-                        if (res.data.extension === "zip"){
+                        if (res.data.extension === "zip") {
                             const filecontent = Buffer.from(res.data.file, 'base64');
                             let blob = new Blob([filecontent], { type: `application/zip` });
                             let link = document.createElement("a");
@@ -230,7 +235,7 @@ export const useVideoStore = defineStore("video", {
                             link.download = `timelines.${res.data.extension}`;
                             link.click();
                         }
-                        else if (res.data.extension === "csv" || res.data.extension === "eaf"){
+                        else if (res.data.extension === "csv" || res.data.extension === "eaf") {
                             let blob = new Blob([res.data.file], { type: `text/${res.data.extension}` });
                             let link = document.createElement("a");
                             link.href = window.URL.createObjectURL(blob);

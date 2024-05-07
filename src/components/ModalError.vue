@@ -10,7 +10,6 @@
       </v-card-title>
       <v-card-text>
         {{ errorMessage }}
-
       </v-card-text>
       <v-card-actions class="pt-0">
         <v-btn @click="clearError()">{{ $t("modal.error.close") }}</v-btn>
