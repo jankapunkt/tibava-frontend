@@ -11,9 +11,47 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
         return {
             clusterTimelineItems: {},
             isLoading: false,
+            selectedPlaceClustering: null,
+            selectedFaceClustering: null,
         };
     },
     getters: {
+        faceClusteringList() {
+
+            const pluginRunStore = usePluginRunStore();
+            const playerStore = usePlayerStore();
+
+            return pluginRunStore
+                .forVideo(playerStore.videoId)
+                .filter((e) => e.type == "face_clustering" && e.status == "DONE")
+                .sort((a, b) => {
+                    return new Date(b.date) - new Date(a.date);
+                }).map((e) => {
+                    return {
+                        index: e.id,
+                        name: new Date(e.date)
+                    }
+                });
+
+        },
+        placeClusteringList() {
+
+            const pluginRunStore = usePluginRunStore();
+            const playerStore = usePlayerStore();
+
+            return pluginRunStore
+                .forVideo(playerStore.videoId)
+                .filter((e) => e.type == "place_clustering" && e.status == "DONE")
+                .sort((a, b) => {
+                    return new Date(b.date) - new Date(a.date);
+                }).map((e) => {
+                    return {
+                        index: e.id,
+                        name: new Date(e.date)
+                    }
+                });
+
+        },
         latestPlaceClustering(state) {
             return () => {
                 const pluginRunStore = usePluginRunStore();
@@ -30,8 +68,8 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                     return [];
                 }
                 return Object.values(state.clusterTimelineItems)
-                             .filter((cti) => cti.plugin_run === place_clustering[0].id)
-                             .sort((a, b) => b.items.length - a.items.length);
+                    .filter((cti) => cti.plugin_run === state.selectedPlaceClustering)
+                    .sort((a, b) => b.items.length - a.items.length);
             }
         },
         latestFaceClustering(state) {
@@ -50,12 +88,75 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                     return [];
                 }
                 return Object.values(state.clusterTimelineItems)
-                             .filter((cti) => cti.plugin_run === face_clustering[0].id)
-                             .sort((a, b) => b.items.length - a.items.length);
+                    .filter((cti) => cti.plugin_run === state.selectedFaceClustering)
+                    .sort((a, b) => b.items.length - a.items.length);
             }
         },
     },
     actions: {
+        async setSelectedPlaceClustering({ videoId = null, pluginRunId = null }) {
+            this.selectedPlaceClustering = pluginRunId;
+
+            if (this.isLoading) {
+                return;
+            }
+            this.isLoading = true;
+
+            //use video id or take it from the current video
+            let params = { plugin_run_id: pluginRunId };
+            if (videoId) {
+                params.video_id = videoId;
+            } else {
+                const playerStore = usePlayerStore();
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
+                }
+            }
+
+            return axios
+                .post(`${config.API_LOCATION}/video/analysis/setselectedplaceclustering`, params)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                    }
+                })
+                .catch(() => { })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
+        async setSelectedFaceClustering({ videoId = null, pluginRunId = null }) {
+            this.selectedFaceClustering = pluginRunId;
+
+            if (this.isLoading) {
+                return;
+            }
+            this.isLoading = true;
+
+            //use video id or take it from the current video
+            let params = { plugin_run_id: pluginRunId };
+            if (videoId) {
+                params.video_id = videoId;
+            } else {
+                const playerStore = usePlayerStore();
+                const videoId = playerStore.videoId;
+                if (videoId) {
+                    params.video_id = videoId;
+                }
+            }
+
+            return axios
+                .post(`${config.API_LOCATION}/video/analysis/setselectedfaceclustering`, params)
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                    }
+                })
+                .catch(() => { })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
+
         async fetchAll(videoId) {
             if (videoId == null || videoId == undefined) {
                 const playerStore = usePlayerStore();
@@ -66,7 +167,8 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
             }
             this.isLoading = true
 
-            return axios.get(`${config.API_LOCATION}/cluster/timeline/item/fetch`, { params: { video_id: videoId } })
+            let promises = [];
+            const fetch_item = axios.get(`${config.API_LOCATION}/cluster/timeline/item/fetch`, { params: { video_id: videoId } })
                 .then((res) => {
                     if (res.data.status === "ok") {
                         this.replaceStore(res.data.entries);
@@ -76,9 +178,21 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                         console.log(res.data);
                     }
                 })
-                .finally(() => {
-                    this.isLoading = false;
-                });
+            promises.push(fetch_item)
+
+            const fetch_selected = axios
+                .get(`${config.API_LOCATION}/video/analysis/get`, { params: { video_id: videoId } })
+                .then((res) => {
+                    if (res.data.status === "ok") {
+                        this.selectedPlaceClustering = res.data.entry.selected_place_clustering;
+                        this.selectedFaceClustering = res.data.entry.selected_face_clustering;
+                    }
+                })
+            promises.push(fetch_selected)
+
+            return Promise.all(promises).finally(() => {
+                this.isLoading = false;
+            });
         },
         async merge({ cluster_from_id, cluster_to_id }) {
             if (this.isLoading) {
@@ -233,7 +347,7 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
                         const oldClusterItems = this.clusterTimelineItems[oldClusterId].items.filter((i) => itemsIds.indexOf(i.id) < 0)
                         const items = this.clusterTimelineItems[oldClusterId].items.filter((i) => itemsIds.indexOf(i.id) >= 0)
                         Vue.set(this.clusterTimelineItems[oldClusterId], "items", oldClusterItems);
-                        Vue.set(this.clusterTimelineItems[newClusterId], "items", 
+                        Vue.set(this.clusterTimelineItems[newClusterId], "items",
                             [...this.clusterTimelineItems[newClusterId].items, ...items]
                         );
                     }
@@ -254,7 +368,7 @@ export const useClusterTimelineItemStore = defineStore("clusterTimelineItem", {
         },
         replaceStore(items) {
             this.clearStore();
-            items.forEach((e) => {this.addToStore(e)});
+            items.forEach((e) => { this.addToStore(e) });
         },
         clearStore() {
             Object.keys(this.clusterTimelineItems).forEach(key => {

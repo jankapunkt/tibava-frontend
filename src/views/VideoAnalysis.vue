@@ -43,17 +43,29 @@
 
             <v-tabs-items v-model="tab" style="height: 92%;">
               <v-tab-item style="height: 100%">
+
+                <div :class="['d-flex', 'flex-column', 'px-2', 'mx-4', 'my-2']">
+                  <v-select solo hide-details dense :items="shotsList" v-model="selectedShots" />
+                </div>
                 <ShotsOverview />
               </v-tab-item>
 
               <v-tab-item style="height: 100%">
-                <div :class="['d-flex', 'flex-column', 'pa-2', 'ma-4']">
+
+                <div :class="['d-flex', 'flex-column', 'px-2', 'mx-4', 'my-2']">
+                  <v-select solo hide-details dense :items="faceClusteringList" v-model="selectedFaceClustering" />
+                </div>
+                <div :class="['d-flex', 'flex-column', 'px-2', 'mx-4', 'my-2']">
                   <PersonGraph />
                 </div>
                 <ClusterTimelineItemOverview name="Face" :clusters="faceClusters"></ClusterTimelineItemOverview>
               </v-tab-item>
 
               <v-tab-item style="height: 100%">
+
+                <div :class="['d-flex', 'flex-column', 'px-2', 'mx-4', 'my-2']">
+                  <v-select solo hide-details dense :items="placeClusteringList" v-model="selectedPlaceClustering" />
+                </div>
                 <ClusterTimelineItemOverview name="Place" :clusters="placeClusters"></ClusterTimelineItemOverview>
               </v-tab-item>
 
@@ -119,6 +131,7 @@ import { useShortcutStore } from "@/store/shortcut";
 import { useAnnotationShortcutStore } from "../store/annotation_shortcut.js";
 import { usePluginRunStore } from "../store/plugin_run.js";
 import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
+import { useShotStore } from "@/store/shot";
 import ClusterTimelineItemOverview from "../components/ClusterTimelineItemOverview.vue";
 
 export default {
@@ -126,6 +139,10 @@ export default {
     return {
       //timer
       fetchPluginTimer: null,
+
+      selectedShotsProxy: null,
+      selectedFaceClusteringProxy: null,
+      selectedPlaceClusteringProxy: null,
 
       selectedTimelineProxy: null,
       tab: null,
@@ -329,6 +346,48 @@ export default {
     placeClusters() {
       return this.clusterTimelineItemStore.latestPlaceClustering();
     },
+    selectedShots: {
+      get() {
+        const selectedShots = this.shotStore.selectedShots;
+        return this.selectedShotsProxy === null ? selectedShots : this.selectedShotsProxy;
+      },
+      set(val) {
+        this.selectedShotsProxy = val;
+
+        this.shotStore.setSelectedShots({ shotTimeline: val });
+      },
+    },
+    shotsList() {
+      return this.shotStore.shotsList.map((e) => { return { text: e.name, value: e.index } });
+    },
+    selectedFaceClustering: {
+      get() {
+        const selectedFaceClustering = this.clusterTimelineItemStore.selectedFaceClustering;
+        return this.selectedFaceClusteringProxy === null ? selectedFaceClustering : this.selectedFaceClusteringProxy;
+      },
+      set(val) {
+        this.selectedFaceClusteringProxy = val;
+
+        this.clusterTimelineItemStore.setSelectedFaceClustering({ pluginRunId: val });
+      },
+    },
+    faceClusteringList() {
+      return this.clusterTimelineItemStore.faceClusteringList.map((e) => { return { text: e.name, value: e.index } });
+    },
+    selectedPlaceClustering: {
+      get() {
+        const selectedPlaceClustering = this.clusterTimelineItemStore.selectedPlaceClustering;
+        return this.selectedPlaceClusteringProxy === null ? selectedPlaceClustering : this.selectedPlaceClusteringProxy;
+      },
+      set(val) {
+        this.selectedPlaceClusteringProxy = val;
+
+        this.clusterTimelineItemStore.setSelectedPlaceClustering({ pluginRunId: val });
+      },
+    },
+    placeClusteringList() {
+      return this.clusterTimelineItemStore.placeClusteringList.map((e) => { return { text: e.name, value: e.index } });
+    },
     selectedTimeline: {
       get() {
         return this.selectedTimelineProxy === null
@@ -345,6 +404,7 @@ export default {
       usePluginRunStore,
       usePlayerStore,
       useTimelineStore,
+      useShotStore,
       useTimelineSegmentStore,
       useTimelineSegmentAnnotationStore,
       useShortcutStore,
@@ -369,7 +429,7 @@ export default {
     VisualizationMenu,
     PersonGraph,
     ClusterTimelineItemOverview
-},
+  },
 
   watch: {
     pluginInProgress(newState) {
@@ -421,20 +481,20 @@ export default {
 }
 
 .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
 }
 
 .spinner {
-    font-size: 48px;
-    color: #ac1414;
+  font-size: 48px;
+  color: #ac1414;
 }
 
 .loading-text {
-    margin-top: 10px;
-    font-size: 18px;
+  margin-top: 10px;
+  font-size: 18px;
 }
 </style>

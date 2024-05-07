@@ -84,9 +84,9 @@ export const useTimelineStore = defineStore("timeline", {
     },
     getLatest(state) {
       return () => {
-          const id = state.timelineListAdded.at(-1)[1];
-          return state.timelines[id];
-        }
+        const id = state.timelineListAdded.at(-1)[1];
+        return state.timelines[id];
+      }
     },
     segmentPosition(state) {
       return (segmentId) => {
@@ -199,7 +199,7 @@ export const useTimelineStore = defineStore("timeline", {
       //     this.timelineSegments[timelineSegmentId].selected = false;
       // }
     },
-    async fetchAll({ addResultsType = false}) {
+    async fetchAll({ addResultsType = false }) {
       if (this.isLoading) {
         return;
       }
@@ -428,7 +428,7 @@ export const useTimelineStore = defineStore("timeline", {
       //     commit('error/update', info, { root: true });
       // });
     },
-    async changeVisualization({ timelineId, visualization, colormap = null , colormap_inverse = false}) {
+    async changeVisualization({ timelineId, visualization, colormap = null, colormap_inverse = false }) {
       if (this.isLoading) {
         return;
       }
@@ -445,7 +445,6 @@ export const useTimelineStore = defineStore("timeline", {
       newTimelines[timelineId].visualization = visualization;
       newTimelines[timelineId].colormap = colormap;
       newTimelines[timelineId].colormap_inverse = colormap_inverse;
-      console.log(JSON.stringify(newTimelines[timelineId]))
       Vue.set(this, "timelines", newTimelines);
 
       this.timelineListChanged.push([Date.now(), timelineId]);
@@ -556,7 +555,7 @@ export const useTimelineStore = defineStore("timeline", {
       this.timelineListDeleted = [];
       this.timelineListChanged = [];
       Object.keys(this.timelines).forEach(key => {
-          Vue.delete(this.timelines , key);
+        Vue.delete(this.timelines, key);
       });
       this.timelineList = [];
     },
