@@ -1,127 +1,130 @@
 <template>
   <v-row>
-    <v-col cols="3" style="max-height: 700px" class="overflow-y-auto">
-      <h5 class="mt-6 subtitle-2">Filter</h5>
-      <v-list dense>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>Minimum Cluster Size</v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-text-field
-              v-model="min_node"
-              hide-details
-              step="1"
-              single-line
-              type="number"
-              label="Minimum Cluster Size"
-              min="1"
-              style="width: 60px"></v-text-field>
-          </v-list-item-action>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>Minimum Relations</v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-text-field
-              v-model="min_edge"
-              hide-details
-              step="1"
-              single-line
-              type="number"
-              label="Minimum Relations"
-              min="1"
-              style="width: 60px"></v-text-field>
-          </v-list-item-action>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>Aggregation</v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-switch class="shot-aggregation-switch"
-              v-model="shot_aggregation"
-              label="Shots">
-              <template #prepend>
-                <v-label class="pt-1">Frames</v-label>
-              </template>
-            </v-switch>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
-      <h5 v-if="Object.keys(clusterSettings).length > 0" class="mt-6 subtitle-2">Clustering</h5>
-      <v-list dense>
-        <v-list-item v-for="(cluster, id) in clusterSettings" :key="id">
-          <v-list-item-action>
-            <v-checkbox v-model="cluster.active"></v-checkbox>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title :class="{ 'grey--text': !cluster.active }">{{ cluster.name }}</v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-menu
-              :disabled="!cluster.active"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  disable
-                  icon
-                  x-small
-                  :color="cluster.color"
-                  class="mr-1"
-                  v-on="on"
-                >
-                  <v-icon>{{ "mdi-palette" }}</v-icon>
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-text class="pa-0">
-                  <v-color-picker v-model="cluster.color" flat />
-                </v-card-text>
-              </v-card>
-            </v-menu>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
-      <h5 v-if="visibleTimelines.length > 0" class="mt-6 subtitle-2">Timelines</h5>
-      <v-list dense>
-        <v-list-item v-for="timeline in visibleTimelines" :key="timeline.id">
-          <v-list-item-action>
-            <v-checkbox v-model="timeline.active"></v-checkbox>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title :class="{ 'grey--text': !timeline.active }">{{ timeline.name }}</v-list-item-title>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-menu
-              :disabled="!timeline.active"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  disable
-                  icon
-                  x-small
-                  :color="timeline.color"
-                  class="mr-1"
-                  v-on="on"
-                >
-                  <v-icon>{{ "mdi-palette" }}</v-icon>
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-text class="pa-0">
-                  <v-color-picker v-model="timeline.color" flat />
-                </v-card-text>
-              </v-card>
-            </v-menu>
-          </v-list-item-action>
-          <v-list-item-action>
-            <v-text-field :disabled="!timeline.active" v-model="timeline.threshold" hide-details step="0.1" single-line
-              type="number" min="0" max="1" style="width: 60px"></v-text-field>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
+    <v-col cols="3">
+      <v-btn class="my-3 d-print-block mx-auto" :disabled="loading" @click="renderGraph" style="display: block !important">Render Graph</v-btn>
+      <div style="max-height: 700px" class="overflow-y-auto">
+        <h5 class="mt-6 subtitle-2">Filter</h5>
+        <v-list dense>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>Minimum Cluster Size</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-text-field
+                v-model="min_node"
+                hide-details
+                step="1"
+                single-line
+                type="number"
+                label="Minimum Cluster Size"
+                min="1"
+                style="width: 60px"></v-text-field>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>Minimum Relations</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-text-field
+                v-model="min_edge"
+                hide-details
+                step="1"
+                single-line
+                type="number"
+                label="Minimum Relations"
+                min="1"
+                style="width: 60px"></v-text-field>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>Aggregation</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-switch class="shot-aggregation-switch"
+                v-model="shot_aggregation"
+                label="Shots">
+                <template #prepend>
+                  <v-label class="pt-1">Frames</v-label>
+                </template>
+              </v-switch>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+        <h5 v-if="Object.keys(clusterSettings).length > 0" class="mt-6 subtitle-2">Clustering</h5>
+        <v-list dense>
+          <v-list-item v-for="(cluster, id) in clusterSettings" :key="id">
+            <v-list-item-action>
+              <v-checkbox v-model="cluster.active"></v-checkbox>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title :class="{ 'grey--text': !cluster.active }">{{ cluster.name }}</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-menu
+                :disabled="!cluster.active"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    disable
+                    icon
+                    x-small
+                    :color="cluster.color"
+                    class="mr-1"
+                    v-on="on"
+                  >
+                    <v-icon>{{ "mdi-palette" }}</v-icon>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-text class="pa-0">
+                    <v-color-picker v-model="cluster.color" flat />
+                  </v-card-text>
+                </v-card>
+              </v-menu>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+        <h5 v-if="visibleTimelines.length > 0" class="mt-6 subtitle-2">Timelines</h5>
+        <v-list dense>
+          <v-list-item v-for="timeline in visibleTimelines" :key="timeline.id">
+            <v-list-item-action>
+              <v-checkbox v-model="timeline.active"></v-checkbox>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title :class="{ 'grey--text': !timeline.active }">{{ timeline.name }}</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-menu
+                :disabled="!timeline.active"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    disable
+                    icon
+                    x-small
+                    :color="timeline.color"
+                    class="mr-1"
+                    v-on="on"
+                  >
+                    <v-icon>{{ "mdi-palette" }}</v-icon>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-text class="pa-0">
+                    <v-color-picker v-model="timeline.color" flat />
+                  </v-card-text>
+                </v-card>
+              </v-menu>
+            </v-list-item-action>
+            <v-list-item-action>
+              <v-text-field :disabled="!timeline.active" v-model="timeline.threshold" hide-details step="0.1" single-line
+                type="number" min="0" max="1" style="width: 60px"></v-text-field>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </div>
     </v-col>
     <v-col cols="9" style="position: relative;">
       <div ref="visualizationTimelineConstellationGraph" style="min-height: 500px; height: 95%"></div>
@@ -152,8 +155,8 @@ export default {
       clusterSettings: {},
       network: null,
       loading: false,
-      min_node: 1,
-      min_edge: 1,
+      min_node: 3,
+      min_edge: 3,
       shot_aggregation: true,
     };
   },
@@ -203,6 +206,7 @@ export default {
       }
     },
     renderGraph() {
+      this.loading = true;
       const options = {
         nodes: {
           shape: 'dot',
@@ -301,11 +305,6 @@ export default {
 
       return { nodes: nodes, edges: edges };
     },
-    debounced_graph_loading() {
-      this.loading = true;
-      clearTimeout(this.timeoutId);
-      this.timeoutId = setTimeout(this.renderGraph, 3000);
-    },
     blendColors(colorA, colorB) {
       const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
       const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
@@ -335,27 +334,6 @@ export default {
   watch: {
     timelines() {
       this.updateTimelineSettings();
-    },
-    'timelineSettings': {
-      handler: function () {
-        this.debounced_graph_loading();
-      },
-      deep: true
-    },
-    'clusterSettings': {
-      handler: function () {
-        this.debounced_graph_loading();
-      },
-      deep: true
-    },
-    min_edge() {
-      this.debounced_graph_loading();
-    },
-    min_node() {
-      this.debounced_graph_loading();
-    },
-    shot_aggregation() {
-      this.debounced_graph_loading();
     },
     latestFaceClustering() {
       this.updateClusterSettings(this.latestFaceClustering, 'Face Clustering');
