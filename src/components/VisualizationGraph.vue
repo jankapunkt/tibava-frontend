@@ -1,5 +1,5 @@
 <template>
-  <div ref="plotContainer" :id="plotContainerId" style="height: 400px; width: calc(100vw - 120px);"></div>
+  <div ref="plotContainer" :id="plotContainerId"></div>
 </template>
 
 <script>
@@ -13,10 +13,10 @@ import * as Plotly from "plotly.js";
 export default {
   data() {
     return {
-      plotContainerId: "plotContainer" + this.plotType,
+      plotContainerId: "plotContainer-" + crypto.randomUUID(),
     };
   },
-  props: ['plotType'],
+  props: ['plotType', 'showLegend', 'timelineId', 'threshold'],
   mounted() {
     this.renderPlot();
   },
@@ -26,16 +26,27 @@ export default {
         return;
       }
 
-      const shape = {
+      const shapes = [{
         type: "line",
         x0: xValue,
         x1: xValue,
         y1: this.minMaxY.max * 1.1,
         y0: this.minMaxY.min,
         line: { color: "rgb(175, 20, 20)", width: 2 },
-      };
+      }];
 
-      Plotly.relayout(this.$refs.plotContainer, { shapes: [shape] });
+      if (this.threshold != undefined) {
+        shapes.push({
+          type: "line",
+          x0: 0,
+          x1: this.minMaxY.maxX,
+          y0: this.threshold,
+          y1: this.threshold,
+          line: { color: "rgb(0, 0, 0)", width: 2 },
+        });
+      }
+
+      Plotly.relayout(this.$refs.plotContainer, { shapes: shapes });
     },
     renderPlot() {
       Plotly.newPlot(
@@ -44,7 +55,7 @@ export default {
         {
           xaxis: { title: "Time (Seconds)" },
           yaxis: { title: "Value" },
-          showlegend: true,
+          showlegend: this.showLegend,
           hovermode: "x",
           value: "closest",
         },
@@ -63,16 +74,17 @@ export default {
   },
   computed: {
     plotData() {
-      return this.timelineStore.all
-        .filter((timeline) => timeline.type === "PLUGIN_RESULT")
+      const timelines = this.timelineStore.all
+        .filter((timeline) => timeline.type === "PLUGIN_RESULT" && (this.timelineId === undefined || this.timelineId === timeline.id))
         .map((timeline) => ({ timeline: timeline, result: this.pluginRunResultStore.get(timeline.plugin_run_result_id) }))
-        .filter((tr) => tr.result && tr.result.type == "SCALAR")
-        .map((tr) => ({
+        .filter((tr) => tr.result && tr.result.type == "SCALAR");
+
+      return timelines.map((tr) => ({
           x: tr.result.data.time,
           y: tr.result.data.y,
           type: "scatter",
           name: tr.timeline.name,
-          visible: "legendonly",
+          visible: timelines.length <= 1 ? true : 'legendonly',
           mode: this.lineMode,
         }));
     },
@@ -80,17 +92,15 @@ export default {
       // used to draw the time marker with the correct height
       let max = 0;
       let min = -0.1;
+      let maxX = 0;
       for (let data of this.plotData) {
         for (let y of data.y) {
-          if (max < y) {
-            max = y;
-          }
-          if (min > y) {
-            min = y;
-          }
+          max = Math.max(y, max);
+          min = Math.min(y, min);
         }
+        maxX = Math.max(data.x[data.x.length-1], maxX);
       }
-      return { max: max, min: min };
+      return { max: max, min: min, maxX: maxX };
     },
     duration() {
       return this.playerStore.videoDuration;
@@ -113,6 +123,9 @@ export default {
     },
     plotData() {
       this.renderPlot();
+    },
+    threshold() {
+      this.drawMarker(this.currentTime);
     }
   },
 };

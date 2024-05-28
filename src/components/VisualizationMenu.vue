@@ -25,10 +25,10 @@
             </span>
           </v-tab>
           <v-tab-item>
-            <VisualizationGraph v-if="!collapsed" plotType="scatter" style="height: 400px; width: calc(100vw - 120px);"></VisualizationGraph>
+            <VisualizationGraph v-if="!collapsed" showLegend="true" plotType="scatter" style="height: 400px; width: calc(100vw - 120px);"></VisualizationGraph>
           </v-tab-item>
           <v-tab-item>
-            <VisualizationGraph v-if="!collapsed" plotType="line" style="height: 400px; width: calc(100vw - 120px);"></VisualizationGraph>
+            <VisualizationGraph v-if="!collapsed" showLegend="true" plotType="line" style="height: 400px; width: calc(100vw - 120px);"></VisualizationGraph>
           </v-tab-item>
           <v-tab-item>
             <VisualisationConstellationGraph v-if="!collapsed"></VisualisationConstellationGraph>

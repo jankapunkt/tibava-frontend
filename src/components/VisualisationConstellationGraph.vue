@@ -87,8 +87,10 @@
           </v-list-item>
         </v-list>
         <h5 v-if="visibleTimelines.length > 0" class="mt-6 subtitle-2">Timelines</h5>
-        <v-list dense>
-          <v-list-item v-for="timeline in visibleTimelines" :key="timeline.id">
+
+
+        <v-list>
+          <v-list-item v-for="timeline in visibleTimelines" :key="timeline.id" style="flex-wrap: wrap">
             <v-list-item-action>
               <v-checkbox v-model="timeline.active"></v-checkbox>
             </v-list-item-action>
@@ -122,6 +124,18 @@
               <v-text-field :disabled="!timeline.active" v-model="timeline.threshold" hide-details step="0.1" single-line
                 type="number" min="0" max="1" style="width: 60px"></v-text-field>
             </v-list-item-action>
+            <v-list-item-action class="ms-2">
+              <v-btn
+                disable
+                icon
+                x-small
+                class="ml-1"
+                @click="timeline.showPlot = !timeline.showPlot"
+              >
+                <v-icon> mdi-chart-scatter-plot </v-icon>
+              </v-btn>
+            </v-list-item-action>
+            <VisualizationGraph v-if="timeline.showPlot" :threshold="timeline.threshold" showLegend="false" plotType="scatter" :timelineId="timeline.id" style="max-width: 20vw; max-height: 400px"></VisualizationGraph>
           </v-list-item>
         </v-list>
       </div>
@@ -145,6 +159,7 @@ import { useShotStore } from "@/store/shot";
 import { useClusterTimelineItemStore } from "../store/cluster_timeline_item";
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
+import VisualizationGraph from "./VisualizationGraph.vue";
 import Vue from "vue";
 
 
@@ -160,6 +175,7 @@ export default {
       shot_aggregation: true,
     };
   },
+  components: { VisualizationGraph },
   mounted() {
     this.updateTimelineSettings();
     this.updateClusterSettings(this.latestFaceClustering, 'Face Clustering');
@@ -181,7 +197,8 @@ export default {
             // visible needed as timelines are briefly deleted and then reinserted
             // when updating the store and we want to persist the setting
             visible: true,
-            color: '#ae1313'
+            color: '#ae1313',
+            showPlot: false
           });
         } else {
           this.timelineSettings[timeline.id].visible = true;

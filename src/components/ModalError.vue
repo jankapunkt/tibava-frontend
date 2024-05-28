@@ -23,7 +23,6 @@ import { mapStores } from "pinia";
 import { useErrorStore } from "@/store/error";
 
 export default {
-  props: ["error"],
   data() {
     return {
       dialog: false,
