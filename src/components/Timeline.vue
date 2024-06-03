@@ -976,8 +976,8 @@ export default {
     },
     timelines(values) {
       function findChildren(elem, parent) {
-        var hierarchy = [];
-        elem.forEach((e) => {
+        let hierarchy = [];
+        elem.sort((a,b) => a.order > b.order).forEach((e) => {
           if (e.parent_id == parent) {
             let children = findChildren(elem, e.id);
             hierarchy.push({

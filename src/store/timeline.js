@@ -530,7 +530,7 @@ export const useTimelineStore = defineStore("timeline", {
       Vue.set(this, "timelineList", order);
 
       this.timelineList.forEach((id, i) => {
-        this.timelines[id].order = i;
+        Vue.set(this.timelines[id], 'order', i);
       });
 
       return axios
