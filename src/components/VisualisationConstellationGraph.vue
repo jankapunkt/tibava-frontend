@@ -1,7 +1,8 @@
 <template>
   <v-row>
     <v-col cols="3">
-      <v-btn class="my-3 d-print-block mx-auto" :disabled="loading" @click="renderGraph" style="display: block !important">Render Graph</v-btn>
+      <v-btn class="my-3 d-print-block mx-auto" :disabled="loading" @click="renderGraph"
+        style="display: block !important">Render Graph</v-btn>
       <div style="max-height: 700px" class="overflow-y-auto">
         <h5 class="mt-6 subtitle-2">Filter</h5>
         <v-list dense>
@@ -10,15 +11,8 @@
               <v-list-item-title>Minimum Cluster Size</v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
-              <v-text-field
-                v-model="min_node"
-                hide-details
-                step="1"
-                single-line
-                type="number"
-                label="Minimum Cluster Size"
-                min="1"
-                style="width: 60px"></v-text-field>
+              <v-text-field v-model="min_node" hide-details step="1" single-line type="number"
+                label="Minimum Cluster Size" min="1" style="width: 60px"></v-text-field>
             </v-list-item-action>
           </v-list-item>
           <v-list-item>
@@ -26,15 +20,8 @@
               <v-list-item-title>Minimum Relations</v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
-              <v-text-field
-                v-model="min_edge"
-                hide-details
-                step="1"
-                single-line
-                type="number"
-                label="Minimum Relations"
-                min="1"
-                style="width: 60px"></v-text-field>
+              <v-text-field v-model="min_edge" hide-details step="1" single-line type="number" label="Minimum Relations"
+                min="1" style="width: 60px"></v-text-field>
             </v-list-item-action>
           </v-list-item>
           <v-list-item>
@@ -42,9 +29,7 @@
               <v-list-item-title>Aggregation</v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
-              <v-switch class="shot-aggregation-switch"
-                v-model="shot_aggregation"
-                label="Shots">
+              <v-switch class="shot-aggregation-switch" v-model="shot_aggregation" label="Shots">
                 <template #prepend>
                   <v-label class="pt-1">Frames</v-label>
                 </template>
@@ -62,18 +47,9 @@
               <v-list-item-title :class="{ 'grey--text': !cluster.active }">{{ cluster.name }}</v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
-              <v-menu
-                :disabled="!cluster.active"
-              >
+              <v-menu :disabled="!cluster.active">
                 <template v-slot:activator="{ on }">
-                  <v-btn
-                    disable
-                    icon
-                    x-small
-                    :color="cluster.color"
-                    class="mr-1"
-                    v-on="on"
-                  >
+                  <v-btn disable icon x-small :color="cluster.color" class="mr-1" v-on="on">
                     <v-icon>{{ "mdi-palette" }}</v-icon>
                   </v-btn>
                 </template>
@@ -98,18 +74,9 @@
               <v-list-item-title :class="{ 'grey--text': !timeline.active }">{{ timeline.name }}</v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
-              <v-menu
-                :disabled="!timeline.active"
-              >
+              <v-menu :disabled="!timeline.active">
                 <template v-slot:activator="{ on }">
-                  <v-btn
-                    disable
-                    icon
-                    x-small
-                    :color="timeline.color"
-                    class="mr-1"
-                    v-on="on"
-                  >
+                  <v-btn disable icon x-small :color="timeline.color" class="mr-1" v-on="on">
                     <v-icon>{{ "mdi-palette" }}</v-icon>
                   </v-btn>
                 </template>
@@ -121,28 +88,25 @@
               </v-menu>
             </v-list-item-action>
             <v-list-item-action>
-              <v-text-field :disabled="!timeline.active" v-model="timeline.threshold" hide-details step="0.1" single-line
-                type="number" min="0" max="1" style="width: 60px"></v-text-field>
+              <v-text-field :disabled="!timeline.active" v-model="timeline.threshold" hide-details step="0.1"
+                single-line type="number" min="0" max="1" style="width: 60px"></v-text-field>
             </v-list-item-action>
             <v-list-item-action class="ms-2">
-              <v-btn
-                disable
-                icon
-                x-small
-                class="ml-1"
-                @click="timeline.showPlot = !timeline.showPlot"
-              >
+              <v-btn disable icon x-small class="ml-1" @click="timeline.showPlot = !timeline.showPlot">
                 <v-icon> mdi-chart-scatter-plot </v-icon>
               </v-btn>
             </v-list-item-action>
-            <VisualizationGraph v-if="timeline.showPlot" :threshold="timeline.threshold" showLegend="false" plotType="scatter" :timelineId="timeline.id" style="max-width: 20vw; max-height: 400px"></VisualizationGraph>
+            <VisualizationGraph v-if="timeline.showPlot" :threshold="timeline.threshold" showLegend="false"
+              plotType="scatter" :timelineId="timeline.id" style="max-width: 20vw; max-height: 400px">
+            </VisualizationGraph>
           </v-list-item>
         </v-list>
       </div>
     </v-col>
     <v-col cols="9" style="position: relative;">
       <div ref="visualizationTimelineConstellationGraph" style="min-height: 500px; height: 95%"></div>
-      <div v-if="loading" class="text-center pt-10" style="height: 95%; background-color: white; top:0; width: 100%; z-index: 2; position: absolute;">
+      <div v-if="loading" class="text-center pt-10"
+        style="height: 95%; background-color: white; top:0; width: 100%; z-index: 2; position: absolute;">
         <div class="spinner">
           <i class="mdi mdi-loading mdi-spin"></i>
         </div>
@@ -243,15 +207,15 @@ export default {
       this.$nextTick(() => {
         const container = this.$refs.visualizationTimelineConstellationGraph;
         this.network = new Network(container, this.getConstellations(), options);
-        this.network.on('afterDrawing', () => {this.loading = false;});
+        this.network.on('afterDrawing', () => { this.loading = false; });
       });
     },
     calcTimelineOverlap(timestamps1, timestamps2) {
       if (this.shot_aggregation) {
         return this.shotStore.shots.map(s => timestamps1.filter(t => s.start <= t && t <= s.end).length > 0 &&
-                                             timestamps2.filter(t => s.start <= t && t <= s.end).length > 0)
-                                   .filter(v => v)
-                                   .length;
+          timestamps2.filter(t => s.start <= t && t <= s.end).length > 0)
+          .filter(v => v)
+          .length;
       } else { // frame based
         return timestamps1.filter(t => timestamps2.includes(t)).length;
       }
@@ -259,28 +223,28 @@ export default {
     countAppearance(timestamps) {
       if (this.shot_aggregation) {
         return this.shotStore.shots.map(s => timestamps.filter(t => s.start <= t && t <= s.end))
-                                   .filter(ys => ys.length > 0)
-                                   .length;
+          .filter(ys => ys.length > 0)
+          .length;
       } else { // frame based
         return timestamps.length;
       }
     },
     getConstellations() {
       const activeTimelines = Object.values(this.timelineSettings)
-                                    .filter(t => t.active && t.visible)
-                                    .map((tSetting) => {
-                                      const timeline = this.timelines.find(i => i.id == tSetting.id);
-                                      tSetting.timestamps = timeline.plugin.data.time.filter((time, index) => timeline.plugin.data.y[index] >= tSetting.threshold);
-                                      return tSetting;
-                                    });
+        .filter(t => t.active && t.visible)
+        .map((tSetting) => {
+          const timeline = this.timelines.find(i => i.id == tSetting.id);
+          tSetting.timestamps = timeline.plugin.data.time.filter((time, index) => timeline.plugin.data.y[index] >= tSetting.threshold);
+          return tSetting;
+        });
       const clusterTimelines = Object.values(this.clusterSettings)
-                                     .filter(c => c.active)
-                                     .map(c => {
-                                        c.data.forEach(i => i.color = c.color)
-                                        return c.data
-                                      })
-                                     .flat(1)
-                                     .concat(activeTimelines);
+        .filter(c => c.active)
+        .map(c => {
+          c.data.forEach(i => i.color = c.color)
+          return c.data
+        })
+        .flat(1)
+        .concat(activeTimelines);
       const nodes = new DataSet(
         clusterTimelines.map((t) => {
           const count = this.countAppearance(t.timestamps);
@@ -335,7 +299,7 @@ export default {
     timelines() {
       return this.timelineStore
         .all
-        .filter((timeline) => timeline.type === "PLUGIN_RESULT" && timeline.plugin.type === 'SCALAR');
+        .filter((timeline) => timeline.type === "PLUGIN_RESULT" && timeline.plugin && timeline.plugin.type === 'SCALAR');
     },
     visibleTimelines() {
       return Object.values(this.timelineSettings).filter((t) => t.visible);
