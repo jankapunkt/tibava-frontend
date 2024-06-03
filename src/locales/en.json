@@ -175,7 +175,7 @@
         "n_fft": "Length of the FFT (Fast Fourier Transform) window"
       },
       "blip": {
-        "plugin_name": "Visual Question Anwerering (InstructBLIP)",
+        "plugin_name": "Visual Question Answering (InstructBLIP)",
         "plugin_description": "This plugin uses the large vision language model <a href=\"https://arxiv.org/abs/2305.06500\">InstructBLIP</a> that is similar to GPT-4 to perform question answering over the video. It can be used for various purposes, for example, to automatically find concepts within the video. Here are some examples: <br><br> <em>Does this image show a car? Please answer with yes or no! <br> Does this image show at least three persons? Please answer with yes or no! <br> Is this photo taken in a restaurant? Please answer with yes or no!</em>",
         "timeline_name": "InstructBLIP Visual QA",
         "search_term": "Question"
