@@ -192,16 +192,9 @@ export default {
               id: 201,
               parameters: [
                 {
-                  field: "select_options",
-                  text: this.$t("modal.plugin.face_clustering.clustering_method_name"),
-                  hint: this.$t("modal.plugin.face_clustering.clustering_method_hint"),
-                  items: ["Agglomerative", "DBScan"],
-                  name: "clustering_method", 
-                },
-                {
                   field: "slider",
-                  min: 0.0,
-                  max: 1.0,
+                  min: 0.3,
+                  max: 0.7,
                   value: 0.5,
                   step: 0.01,
                   name: "cluster_threshold",
@@ -240,6 +233,13 @@ export default {
                 },
               ],
               optional_parameters: [
+                {
+                  field: "select_options",
+                  text: this.$t("modal.plugin.face_clustering.clustering_method_name"),
+                  hint: this.$t("modal.plugin.face_clustering.clustering_method_hint"),
+                  items: ["Agglomerative", "DBScan"],
+                  name: "clustering_method",
+                },
                 {
                   field: "slider",
                   min: 1,
@@ -622,25 +622,18 @@ export default {
                   text: this.$t("modal.plugin.shot_timeline_name"),
                   hint: this.$t("modal.plugin.shot_timeline_hint"),
                 },
-                {
-                  field: "select_options",
-                  text: this.$t("modal.plugin.place_clustering.encoder_name"),
-                  hint: this.$t("modal.plugin.place_clustering.encoder_hint"),
-                  items: ["CLIP", "Places"],
-                  name: "encoder", 
-                },
-                {
-                  field: "select_options",
-                  text: this.$t("modal.plugin.place_clustering.clustering_method_name"),
-                  hint: this.$t("modal.plugin.place_clustering.clustering_method_hint"),
-                  items: ["Agglomerative", "DBScan"],
-                  name: "clustering_method", 
-                },
+//                {
+//                  field: "select_options",
+//                  text: this.$t("modal.plugin.place_clustering.encoder_name"),
+//                  hint: this.$t("modal.plugin.place_clustering.encoder_hint"),
+//                  items: ["CLIP", "Places"],
+//                  name: "encoder",
+//                },
                 {
                   field: "slider",
-                  min: 0.0,
-                  max: 1.0,
-                  value: 0.5,
+                  min: 0.05,
+                  max: 0.3,
+                  value: 0.15,
                   step: 0.01,
                   name: "cluster_threshold",
                   hint_right: this.$t("modal.plugin.place_clustering.threshold.hint_right"),
@@ -657,7 +650,15 @@ export default {
                   hint_left: this.$t("modal.plugin.place_clustering.max_cluster.hint_left"),
                 },
               ],
-              optional_parameters: [],
+              optional_parameters: [
+                {
+                  field: "select_options",
+                  text: this.$t("modal.plugin.place_clustering.clustering_method_name"),
+                  hint: this.$t("modal.plugin.place_clustering.clustering_method_hint"),
+                  items: ["Agglomerative", "DBScan"],
+                  name: "clustering_method",
+                }
+              ],
             },
             {
               name: this.$t("modal.plugin.blip.plugin_name"),
