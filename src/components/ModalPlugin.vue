@@ -239,6 +239,7 @@ export default {
                   hint: this.$t("modal.plugin.face_clustering.clustering_method_hint"),
                   items: ["Agglomerative", "DBScan"],
                   name: "clustering_method",
+                  value: "DBScan"
                 },
                 {
                   field: "slider",
@@ -657,6 +658,7 @@ export default {
                   hint: this.$t("modal.plugin.place_clustering.clustering_method_hint"),
                   items: ["Agglomerative", "DBScan"],
                   name: "clustering_method",
+                  value: "DBScan"
                 }
               ],
             },
