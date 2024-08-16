@@ -52,12 +52,12 @@ export default {
       video: {},
       analysers: [
         {
-          label: "Shot Detection",
+          label: "ocr_video_detector_onnx",
           disabled: false,
-          model: "shotdetection",
+          model: "ocr_video_detector_onnx",
         },
       ],
-      selected_analysers: ["shotdetection"],
+      selected_analysers: ["ocr_video_detector_onnx"],
       checkbox: false,
       dialog: false,
       file_valid: false,
