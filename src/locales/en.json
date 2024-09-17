@@ -254,6 +254,11 @@
         "query_images": "Select query image (jpg format)",
         "query_images_hint": "*The image should only the person you want to search for in good resolution and quality"
       },
+      "ocr": {
+        "plugin_name": "OCR",
+        "timeline_name": "OCR",
+        "search_term": "Search Term"
+      },
       "facesize": {
         "plugin_name": "Face Size Analysis",
         "timeline_name": "Face Size"

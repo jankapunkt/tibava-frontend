@@ -693,6 +693,37 @@ export default {
               optional_parameters: [
               ],
             },
+            {
+              name: this.$t("modal.plugin.ocr.plugin_name"),
+              icon: "mdi-text-shadow",
+              plugin: "ocr_video_detector_onnx",
+              id: 407,
+              parameters: [
+                {
+                  field: "text_field",
+                  name: "timeline",
+                  value: this.$t("modal.plugin.ocr.timeline_name"),
+                  text: this.$t("modal.plugin.ocr.timeline_name"),
+                },
+                {
+                  field: "text_field",
+                  name: "search_term",
+                  value: "",
+                  text: this.$t("modal.plugin.ocr.search_term"),
+                },
+              ],
+              optional_parameters: [
+                {
+                  field: "slider",
+                  min: 1,
+                  max: 10,
+                  value: 2,
+                  step: 1,
+                  name: "fps",
+                  text: this.$t("modal.plugin.fps"),
+                },
+              ],
+            },
           ],
         },
         {
